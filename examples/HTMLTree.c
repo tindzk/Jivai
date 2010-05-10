@@ -11,44 +11,44 @@ void IndentTree(int level) {
 }
 
 void PrintTree(HTML_Tree_Node *node, int level) {
-	String tmp;
+	HTML_Tree_Foreach(node, ^(HTML_Tree_Node *node) {
+		String tmp;
 
-	if (node->type == HTML_Tree_NodeType_Tag) {
-		IndentTree(level);
-
-		String_Print(tmp = String_Format(String("tag=%\n"), node->value));
-		String_Destroy(&tmp);
-
-		for (size_t i = 0; i < node->attrs->len; i++) {
+		if (node->type == HTML_Tree_NodeType_Tag) {
 			IndentTree(level);
 
-			String_Print(tmp = String_Format(
-				String("name=\"%\" value=\"%\"\n"),
-				node->attrs->buf[i].name, node->attrs->buf[i].value));
-
+			String_Print(tmp = String_Format(String("tag=%\n"), node->value));
 			String_Destroy(&tmp);
+
+			for (size_t i = 0; i < node->attrs->len; i++) {
+				IndentTree(level);
+
+				String_Print(tmp = String_Format(
+					String("name=\"%\" value=\"%\"\n"),
+					node->attrs->buf[i].name, node->attrs->buf[i].value));
+
+				String_Destroy(&tmp);
+			}
+		} else if (node->type == HTML_Tree_NodeType_Value) {
+			IndentTree(level);
+
+			/* HTML_Tree also creates nodes for values only consisting
+			 * of whitespaces. In some cases this is useful, but not for
+			 * printing trees.
+			 */
+			String_Trim(&node->value);
+
+			if (node->value.len > 0) {
+				String_Print(tmp = String_Format(
+					String("value=\"%\"\n"),
+					node->value));
+
+				String_Destroy(&tmp);
+			}
 		}
 
-		for (size_t i = 0; i < node->cnt; i++) {
-			PrintTree(node->nodes[i], level + 1);
-		}
-	} else if (node->type == HTML_Tree_NodeType_Value) {
-		IndentTree(level);
-
-		/* HTML_Tree also creates nodes for values only consisting
-		 * of whitespaces. In some cases this is useful, but not for
-		 * printing trees.
-		 */
-		String_Trim(&node->value);
-
-		if (node->value.len > 0) {
-			String_Print(tmp = String_Format(
-				String("value=\"%\"\n"),
-				node->value));
-
-			String_Destroy(&tmp);
-		}
-	}
+		PrintTree(node, level + 1);
+	});
 }
 
 int main(void) {
