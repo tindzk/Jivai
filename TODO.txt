@@ -1,0 +1,20 @@
+Exception:
+  - Merge `Exception' and `ExceptionManager'.
+
+Terminal:
+  - "InputLine" is not fully Unicode-aware.
+  - "Selection" will not work properly for chunks exceeding
+    the terminal width.
+
+Backtrace:
+  - Backtraces do not work on 64-bit systems when compiling
+    with -O2. libunwind is necessary.
+    See also: http://code.google.com/p/chromium/issues/detail?id=36687
+
+HTTP:
+  - Request: File uploads are not supported yet. Implement a
+    MIME parser.
+
+Integer:
+  - Integer[64]_ToString() macro calls Integer[64]_CountDigits()
+    three (!) times.

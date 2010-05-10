@@ -1,0 +1,6 @@
+Tim Nieradzik
+   Core development
+
+Felix von Leitner
+   The `Char' and `NetworkAddress' modules are heavily based upon
+   Leitner's diet libc code.
