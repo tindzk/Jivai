@@ -24,13 +24,11 @@ void Exception_Print(Exception *e) {
 		String("Uncaught exception '%' in %:%\n"),
 		*(String *) e->p,
 		e->file,
-		Integer_ToString(e->line)
-	);
+		Integer_ToString(e->line));
 #else
 	String s = String_Format(
 		String("Uncaught exception '%'\n"),
-		*(String *) e->p
-	);
+		*(String *) e->p);
 #endif
 
 	String_Print(s);
