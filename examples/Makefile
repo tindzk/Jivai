@@ -74,6 +74,9 @@ TerminalInputLine:
 HTMLTokenizer:
 	$(CC) -o build/HTMLTokenizer.bin $(CFLAGS) HTMLTokenizer.c $(LIBFILES)
 
+HTMLTree:
+	$(CC) -o build/HTMLTree.bin $(CFLAGS) HTMLTree.c $(LIBFILES)
+
 # Delete all compiled binaries with a `make clean'.
 clean:
 	rm build/*.bin
