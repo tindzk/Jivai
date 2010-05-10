@@ -4,10 +4,10 @@
  * Supports persistent connections as well as pipelining.
  * It is compatible to HTTP/1.0 and HTTP/1.1.
  *
- * If you plan to use this code, you should add proper
- * error checking (particularly HTTP_Request exceptions)
- * because the server will crash on malformed requests
- * otherwise.
+ * If you want to use this code in production systems, you
+ * should consider including proper error checking (in
+ * particular for `HTTP_Request' exceptions). Otherwise,
+ * the server will most likely crash on malformed requests.
  */
 
 #include <Client.h>
@@ -101,11 +101,7 @@ bool Request_OnRespond(Request *this, bool persistent) {
 				"test=%<br />"
 				"test2=%<br />"
 			),
-
-			this->path,
-			this->paramTest,
-			this->paramTest2
-		));
+			this->path, this->paramTest, this->paramTest2));
 
 		String_Destroy(&tmp);
 	}
@@ -135,7 +131,7 @@ bool Request_OnRespond(Request *this, bool persistent) {
 	String_Destroy(&envelope);
 	String_Destroy(&msg);
 
-	this->paramTest.len = 0;
+	this->paramTest.len  = 0;
 	this->paramTest2.len = 0;
 
 	return persistent;
@@ -150,8 +146,8 @@ void Request_Init(Request *this, SocketConnection *conn) {
 	this->path = HeapString(0);
 
 	/* paramTest and paramTest2 must not be longer than 256 bytes,
-	 * otherwise a HTTP.Query.ExceedsPermittedLengthException will
-	 * be thrown
+	 * otherwise an `HTTP_Query_ExceedsPermittedLengthException'
+	 * exception will be thrown.
 	 */
 
 	this->paramTest  = HeapString(256);
