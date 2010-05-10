@@ -34,11 +34,7 @@ void HTML_Tree_DestroyNode(HTML_Tree_Node *node) {
 }
 
 HTML_Tree_Node* HTML_Tree_GetRoot(HTML_Tree *this) {
-	if (this->tree.root.cnt > 0) {
-		return (HTML_Tree_Node *) this->tree.root.nodes[0];
-	}
-
-	return NULL;
+	return (HTML_Tree_Node *) &this->tree.root;
 }
 
 void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, String value) {
