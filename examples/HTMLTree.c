@@ -21,7 +21,7 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 			String_Destroy(&tmp);
 
 			for (size_t i = 0; i < node->attrs->len; i++) {
-				IndentTree(level);
+				IndentTree(level + 1);
 
 				String_Print(tmp = String_Format(
 					String("name=\"%\" value=\"%\"\n"),
@@ -29,6 +29,8 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 
 				String_Destroy(&tmp);
 			}
+
+			PrintTree(node, level + 1);
 		} else if (node->type == HTML_Tree_NodeType_Value) {
 			IndentTree(level);
 
@@ -44,10 +46,10 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 					node->value));
 
 				String_Destroy(&tmp);
+			} else {
+				String_Print(String("value={empty}\n"));
 			}
 		}
-
-		PrintTree(node, level + 1);
 	});
 }
 
