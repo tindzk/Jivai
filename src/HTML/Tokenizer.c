@@ -113,40 +113,48 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 	/* Parse tokens, their attributes and options. */
 	if (Char_IsWhitespace(c) || c == '/' || c == '>') {
 		if (BitMask_Has(this->state, HTML_Tokenizer_State_TagName)) {
-			/* Expecting a tag name (true by default when a tag is
-			 * introduced with `<'. */
+			if (this->buf.len > 0) {
+				if (!String_BeginsWith(&this->buf, String("/"))) {
+					/* Start of token. */
+					this->onToken(this->context, HTML_Tokenizer_TokenType_TagStart, this->buf);
 
-			if (String_BeginsWith(&this->buf, String("/"))) {
-				/* End of token */
-				String_Crop(&this->buf, 1, 0);
-				this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->buf);
-			} else {
-				/* Start of token */
-				this->onToken(this->context, HTML_Tokenizer_TokenType_TagStart, this->buf);
-
-				/* For XHTML-ish tags */
-				String_Copy(&this->curToken, this->buf);
+					/* For XHTML-ish tags. */
+					String_Copy(&this->curToken, this->buf);
+				}
 			}
 
-			if (Char_IsWhitespace(c)) {
-				/* The token's end is not reached yet,
-				 * hence we are expecting an attribute name. */
-				BitMask_Set(this->state, HTML_Tokenizer_State_AttrName);
-			}
+			if (c != '/') {
+				/* Expecting a tag name (true by default when a tag is
+				 * introduced with `<'. */
 
-			BitMask_Clear(this->state, HTML_Tokenizer_State_TagName);
+				if (String_BeginsWith(&this->buf, String("/"))) {
+					/* End of token. */
+					if (this->buf.len > 1) {
+						String_Crop(&this->buf, 1, String_End);
+						this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->buf);
+					} else {
+						this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->curToken);
+					}
+				}
+
+				if (Char_IsWhitespace(c)) {
+					/* The token's end is not reached yet,
+					 * hence we are expecting an attribute name. */
+					BitMask_Set(this->state, HTML_Tokenizer_State_AttrName);
+				}
+
+				BitMask_Clear(this->state, HTML_Tokenizer_State_TagName);
+			}
 		} else if (BitMask_Has(this->state, HTML_Tokenizer_State_AttrValue)) {
-			/* expecting an attribute value */
+			/* Expecting an attribute value. */
 
-			/* unescape quotes */
 			HTML_Unescape(&this->buf);
-
 			this->onToken(this->context, HTML_Tokenizer_TokenType_AttrValue, this->buf);
 
 			BitMask_Set(this->state, HTML_Tokenizer_State_AttrName);
 			BitMask_Clear(this->state, HTML_Tokenizer_State_AttrValue);
 		} else if (String_Equals(&this->buf, String("/"))) {
-			/* Create a fake end-token for XHTML-Tags such as <br />. */
+			/* Create a fake `end'-token for XHTML tags such as `<br />'. */
 			this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->curToken);
 		} else {
 			/* Neither a name nor a value, thus we are assuming the current
