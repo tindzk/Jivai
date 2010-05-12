@@ -105,7 +105,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
 		found = false;
 
 		for (size_t i = 0; i < node->cnt; i++) {
-			if (node->type == HTML_Tree_NodeType_Tag) {
+			if (node->nodes[i]->type == HTML_Tree_NodeType_Tag) {
 				if (String_Equals(s, node->nodes[i]->value)) {
 					node = node->nodes[i];
 					found = true;
