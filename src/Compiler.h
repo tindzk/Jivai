@@ -4,6 +4,9 @@
 #define UNUSED \
 	__attribute__ ((unused))
 
+#define OVERLOAD \
+	__attribute__((overloadable))
+
 #define likely(x) \
 	__builtin_expect((x), 1)
 
