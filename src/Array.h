@@ -66,4 +66,7 @@
 		(this)->len++;                      \
 	} while(0)
 
+#define Array_Sort(this, cmp) \
+	qsort((this)->buf, (this)->len, sizeof(*(this)->buf), (void *) cmp)
+
 #endif
