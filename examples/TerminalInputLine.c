@@ -45,11 +45,6 @@ int main(void) {
 
 	line.context = &context;
 
-	line.onKeyUp = NULL;
-	line.onKeyDown = NULL;
-	line.onKeyLeft = NULL;
-	line.onKeyRight = NULL;
-	line.onKeyBack = NULL;
 	line.onKeyPress = (void *) &OnKeyPress;
 	line.onKeyEnter = (void *) &OnKeyEnter;
 

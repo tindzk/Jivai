@@ -11,6 +11,15 @@ void Terminal_InputLine0(ExceptionManager *e) {
 void Terminal_InputLine_Init(Terminal_InputLine *this, Terminal *term) {
 	this->term = term;
 
+	this->context    = NULL;
+	this->onKeyUp    = NULL;
+	this->onKeyDown  = NULL;
+	this->onKeyLeft  = NULL;
+	this->onKeyRight = NULL;
+	this->onKeyBack  = NULL;
+	this->onKeyPress = NULL;
+	this->onKeyEnter = NULL;
+
 	this->pos = 0;
 	this->line = HeapString(150);
 }
