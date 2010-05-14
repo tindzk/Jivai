@@ -83,6 +83,7 @@ void HTTP_Request_ParseHttpVersion(HTTP_Request *this, String version);
 void HTTP_Request_ParseMethod(HTTP_Request *this, String method);
 void HTTP_Request_ParseUri(HTTP_Request *this, String uri);
 void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s);
+ssize_t HTTP_Request_GetLength(const char *buf, size_t buflen);
 HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection *conn);
 HTTP_Request_Result HTTP_Request_ReadBody(HTTP_Request *this, SocketConnection *conn);
 HTTP_Request_Result HTTP_Request_Dispatch(HTTP_Request *this);

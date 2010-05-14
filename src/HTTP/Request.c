@@ -199,8 +199,7 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
  *   >0         actual request length, including last \r\n\r\n
  */
 
-static ssize_t
-getRequestLength(const char *buf, size_t buflen) {
+ssize_t HTTP_Request_GetLength(const char *buf, size_t buflen) {
 	const char *s, *e;
 	ssize_t len = 0;
 
@@ -241,7 +240,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 	while (this->header.len < this->header.size) {
 		/* Do this now because the buffer might already contain the next
 		 * request. */
-		requestOffset = getRequestLength(this->header.buf, this->header.len);
+		requestOffset = HTTP_Request_GetLength(this->header.buf, this->header.len);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -281,7 +280,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 
 	/* This is the case when this->header.len >= this->header.size. */
 	if (requestOffset == 0) {
-		requestOffset = getRequestLength(this->header.buf, this->header.len);
+		requestOffset = HTTP_Request_GetLength(this->header.buf, this->header.len);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
