@@ -23,13 +23,16 @@
 		(this)->size = cnt;     \
 	} while(0)
 
-#define Array_Destroy(this)           \
-	do {                              \
-		(this)->len  = 0;             \
-		(this)->size = 0;             \
-		if ((this)->buf != NULL) {    \
-			Memory_Free((this)->buf); \
-		}                             \
+#define Array_Destroy(this, freeItem)              \
+	do {                                           \
+		for (size_t i = 0; i < (this)->len; i++) { \
+			freeItem(&(this)->buf[i]);              \
+		}                                          \
+		(this)->len  = 0;                          \
+		(this)->size = 0;                          \
+		if ((this)->buf != NULL) {                 \
+			Memory_Free((this)->buf);              \
+		}                                          \
 	} while(0)
 
 #define Array_Resize(this, cnt)    \

@@ -23,12 +23,11 @@ void HTML_Tree_DestroyNode(HTML_Tree_Node *node) {
 	String_Destroy(&node->value);
 
 	if (node->type == HTML_Tree_NodeType_Tag) {
-		for (size_t i = 0; i < node->attrs->len; i++) {
-			String_Destroy(&node->attrs->buf[i].name);
-			String_Destroy(&node->attrs->buf[i].value);
-		}
+		Array_Destroy(node->attrs, ^(HTML_Tree_Attr *item) {
+			String_Destroy(&item->name);
+			String_Destroy(&item->value);
+		});
 
-		Array_Destroy(node->attrs);
 		Memory_Free(node->attrs);
 	}
 }

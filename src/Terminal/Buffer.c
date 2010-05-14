@@ -9,7 +9,10 @@ void Terminal_Buffer_Init(Terminal_Buffer *this, Terminal *term, size_t spacing)
 
 void Terminal_Buffer_Destroy(Terminal_Buffer *this) {
 	Terminal_Buffer_Clear(this);
-	Array_Destroy(&this->chunks);
+
+	Array_Destroy(&this->chunks, ^(Terminal_Buffer_Chunk *item) {
+		String_Destroy(&item->value);
+	});
 }
 
 size_t Terminal_Buffer_NewChunk(Terminal_Buffer *this) {

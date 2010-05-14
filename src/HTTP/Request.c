@@ -129,11 +129,9 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 				} else if (String_Equals(&value, String("keep-alive"))) {
 					this->headers.persistentConnection = true;
 				}
-
-				String_Destroy(&chunks.buf[i]);
 			}
 
-			Array_Destroy(&chunks);
+			Array_Destroy(&chunks, String_Destroy);
 		} else {
 			if (this->method == HTTP_Method_Post) {
 				String_ToLower(&value);
