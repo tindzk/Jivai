@@ -11,53 +11,27 @@
 		type *buf;        \
 	} name
 
-#define Array_Init(this, cnt)   \
-	do {                        \
-		if ((cnt) > 0) {        \
-			(this)->buf =       \
-				Memory_Alloc((cnt) * sizeof(typeof((this)->buf[0]))); \
-		} else {                \
-			(this)->buf = NULL; \
-		}                       \
-		(this)->len  = 0;       \
-		(this)->size = cnt;     \
-	} while(0)
+typedef Array(void *, Array);
 
-#define Array_Destroy(this, freeItem)              \
-	do {                                           \
-		for (size_t i = 0; i < (this)->len; i++) { \
-			freeItem(&(this)->buf[i]);              \
-		}                                          \
-		(this)->len  = 0;                          \
-		(this)->size = 0;                          \
-		if ((this)->buf != NULL) {                 \
-			Memory_Free((this)->buf);              \
-		}                                          \
-	} while(0)
+void Array_CustomInit(Array *this, size_t len, size_t size);
+void Array_CustomDestroy(Array *this);
+void Array_CustomResize(Array *this, size_t len, size_t size);
+void Array_CustomAlign(Array *this, size_t len, size_t size);
 
-#define Array_Resize(this, cnt)    \
-	do {                           \
-		if ((this)->buf == NULL) { \
-			(this)->buf =          \
-				Memory_Alloc((cnt) * sizeof(typeof((this)->buf[0]))); \
-		} else {                   \
-			(this)->buf =          \
-				Memory_Realloc((this)->buf, (cnt) * sizeof(typeof((this)->buf[0]))); \
-		}                          \
-		(this)->size = cnt;        \
-		if ((this)->len > (cnt)) { \
-			(this)->len = cnt;     \
-		}                          \
-	} while(0)
+#define Array_Init(this, cnt) \
+	Array_CustomInit((void *) this, cnt, sizeof(typeof((this)->buf[0])))
 
-#define Array_Align(this, cnt)                              \
-	do {                                                    \
-		if ((cnt) > 0) {                                    \
-			if ((this)->len == 0 || (cnt) > (this)->size) { \
-				Array_Resize(this, cnt);                    \
-			}                                               \
-		}                                                   \
-	} while(0)
+#define Array_Destroy(this, freeItem)          \
+	for (size_t i = 0; i < (this)->len; i++) { \
+		freeItem(&(this)->buf[i]);             \
+	}                                          \
+	Array_CustomDestroy((void *) this);
+
+#define Array_Resize(this, cnt) \
+	Array_CustomResize((void *) this, cnt, sizeof(typeof((this)->buf[0])))
+
+#define Array_Align(this, cnt) \
+	Array_CustomAlign((void *) this, cnt, sizeof(typeof((this)->buf[0])))
 
 #define Array_Push(this, data)              \
 	do {                                    \
