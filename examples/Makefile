@@ -80,6 +80,9 @@ HTMLTree:
 File:
 	$(CC) -o build/File.bin $(CFLAGS) File.c $(LIBFILES)
 
+Array:
+	$(CC) -o build/Array.bin $(CFLAGS) Array.c $(LIBFILES)
+
 # Delete all compiled binaries with a `make clean'.
 clean:
 	rm build/*.bin
