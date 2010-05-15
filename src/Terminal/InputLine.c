@@ -29,7 +29,9 @@ void Terminal_InputLine_Destroy(Terminal_InputLine *this) {
 }
 
 void Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
-	Terminal_MoveLeft(this->term, Unicode_Count(this->line));
+	size_t n = Unicode_CountRange(this->line, 0, this->pos);
+
+	Terminal_InputLine_MoveLeft(this, n);
 	Terminal_DeleteUntilEol(this->term);
 
 	this->line.len = 0;
