@@ -148,7 +148,10 @@ String String_Clone(String s) {
 }
 
 char* String_CloneBuf(String s, char *buf) {
-	Memory_Copy(buf, s.buf, s.len);
+	if (s.len > 0) {
+		Memory_Copy(buf, s.buf, s.len);
+	}
+
 	return buf;
 }
 
