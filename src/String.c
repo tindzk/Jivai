@@ -291,20 +291,19 @@ String String_Join(String *first, ...) {
 
 	VarArg_Start(argptr, first);
 
+	s = first;
+
 	while (true) {
-		if (res.len == 0) {
-			s = first;
-		} else {
-			s = VarArg_Get(argptr, String *);
+		if (s->len > 0) {
+			Memory_Copy(res.buf + res.len, s->buf, s->len);
+			res.len += s->len;
 		}
+
+		s = VarArg_Get(argptr, String *);
 
 		if (s == NULL) {
 			break;
 		}
-
-		Memory_Copy(res.buf + res.len, s->buf, s->len);
-
-		res.len += s->len;
 	}
 
 	VarArg_End(argptr);
