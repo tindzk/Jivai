@@ -10,6 +10,11 @@ typedef struct {
 
 typedef Array(Item, Items);
 
+void DestroyItem(Item *item) {
+	String_Destroy(&item->field1);
+	String_Destroy(&item->field2);
+}
+
 int main(void) {
 	ExceptionManager_Init(&exc);
 
@@ -17,8 +22,18 @@ int main(void) {
 
 	Items arr;
 
+	/* Initialize the array allocating memory for 5 elements. You
+	 * can add more than 5 elements, but this involves resizing
+	 * the array (which is done automatically).
+	 */
 	Array_Init(&arr, 5);
 
+	/* Fill in the array with 50 elements. If you already know the
+	 * amount of elements you are going to add in advance,
+	 * use Array_Align() for better performance. This prevents
+	 * the situation that every time Array_Push() is called,
+	 * more memory is requested from the kernel.
+	 */
 	for (size_t i = 0; i < 50; i++) {
 		Item item;
 
@@ -27,6 +42,9 @@ int main(void) {
 
 		Array_Push(&arr, item);
 	}
+
+	/* Shrink the array to 40 elements. */
+	Array_Resize(&arr, 40, DestroyItem);
 
 	for (size_t i = 0; i < arr.len; i++) {
 		String tmp;
@@ -39,10 +57,11 @@ int main(void) {
 		String_Destroy(&tmp);
 	}
 
-	Array_Destroy(&arr, ^(Item *item) {
-		String_Destroy(&item->field1);
-		String_Destroy(&item->field2);
-	});
+	/* Limit the array to 30 elements, but do not reduce the
+	 * allocated memory like Array_Resize() does. */
+	Array_Reset(&arr, 30, DestroyItem);
+
+	Array_Destroy(&arr, DestroyItem);
 
 	return EXIT_SUCCESS;
 }
