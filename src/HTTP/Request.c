@@ -131,7 +131,7 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 				}
 			}
 
-			Array_Destroy(&chunks, String_Destroy);
+			StringArray_Destroy(&chunks);
 		} else {
 			if (this->method == HTTP_Method_Post) {
 				String_ToLower(&value);
