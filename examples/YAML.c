@@ -64,7 +64,7 @@ int main(void) {
 	File_Seek(&file, 0, SEEK_SET);
 	BufferedStream_Reset(&stream);
 
-	/* Parse the file again. No memory should gets leaked. (Verify
+	/* Parse the file again. No memory should get leaked. (Verify
 	 * with Valgrind.) */
 	YAML_Parse(&yml);
 
