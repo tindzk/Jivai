@@ -86,6 +86,9 @@ Array:
 Exception:
 	$(CC) -o build/Exception.bin $(CFLAGS) Exception.c $(LIBFILES)
 
+String:
+	$(CC) -o build/String.bin $(CFLAGS) String.c $(LIBFILES)
+
 # Delete all compiled binaries with a `make clean'.
 clean:
 	rm build/*.bin
