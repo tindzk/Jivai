@@ -83,7 +83,7 @@ void HTTP_Request_ParseUri(HTTP_Request *this, String uri) {
 
 	ssize_t pos;
 
-	if ((pos = String_FindChar(&uri, '?')) == -1) {
+	if ((pos = String_Find(&uri, '?')) == String_NotFound) {
 		this->onPath(this->context, uri);
 	} else {
 		if (this->onQueryParameter == NULL) {

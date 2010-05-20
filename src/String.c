@@ -390,8 +390,8 @@ StringArray String_SplitChar(String *this, size_t offset, char c) {
 	return res;
 }
 
-ssize_t String_FindChar(String *this, char c) {
-	for (size_t i = 0; i < this->len; i++) {
+static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, char c) {
+	for (size_t i = offset; i < len; i++) {
 		if (this->buf[i] == c) {
 			return i;
 		}
@@ -410,7 +410,7 @@ ssize_t String_ReverseFindChar(String *this, char c) {
 	return String_NotFound;
 }
 
-static inline ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle) {
+static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle) {
 	size_t cntEqual = 0;
 
 	while (offset < len) {
@@ -443,6 +443,18 @@ ssize_t OVERLOAD String_Find(String *this, size_t offset, String needle) {
 
 ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, String needle) {
 	return String_FindRange(this, offset, len, needle);
+}
+
+ssize_t OVERLOAD String_Find(String *this, char c) {
+	return String_FindRange(this, 0, this->len, c);
+}
+
+ssize_t OVERLOAD String_Find(String *this, size_t offset, char c) {
+	return String_FindRange(this, offset, this->len - offset, c);
+}
+
+ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, char c) {
+	return String_FindRange(this, offset, len, c);
 }
 
 void String_TrimLeft(String *this) {

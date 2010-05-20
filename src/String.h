@@ -43,12 +43,15 @@ bool String_RangeEquals(String *this, ssize_t offset, String needle, ssize_t nee
 void String_ToLower(String *this);
 void String_ToUpper(String *this);
 StringArray String_SplitChar(String *this, size_t offset, char c);
-ssize_t String_FindChar(String *this, char c);
 ssize_t String_ReverseFindChar(String *this, char c);
-static inline ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle);
+static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, char c);
+static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle);
 ssize_t OVERLOAD String_Find(String *this, String needle);
 ssize_t OVERLOAD String_Find(String *this, size_t offset, String needle);
 ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, String needle);
+ssize_t OVERLOAD String_Find(String *this, char c);
+ssize_t OVERLOAD String_Find(String *this, size_t offset, char c);
+ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, char c);
 void String_Trim(String *this);
 void String_TrimLeft(String *this);
 String String_Format(String fmt, ...);
