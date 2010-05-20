@@ -48,8 +48,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 
 		copied += this->stream->read(this->data,
 			buf + copied,
-			len - copied
-		);
+			len - copied);
 
 		if (copied < len) {
 			this->eof = true;
@@ -64,8 +63,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 		if (this->inbuf.size - this->inbuf.len > this->inbufThreshold) {
 			size_t read = this->stream->read(this->data,
 				this->inbuf.buf  + this->inbuf.len,
-				this->inbuf.size - this->inbuf.len
-			);
+				this->inbuf.size - this->inbuf.len);
 
 			if (read < this->inbuf.size - this->inbuf.len) {
 				this->eof = true;
@@ -97,7 +95,9 @@ size_t BufferedStream_Write(BufferedStream *this, void *buf, size_t len) {
 
 		/* Handle the remaining chunk. */
 		if (len - tmp.len > 0) {
-			BufferedStream_Write(this, buf + tmp.len, len - tmp.len);
+			BufferedStream_Write(this,
+				buf + tmp.len,
+				len - tmp.len);
 		}
 	} else {
 		tmp.buf = buf;
