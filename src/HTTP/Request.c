@@ -422,8 +422,7 @@ HTTP_Request_Result HTTP_Request_ReadBody(HTTP_Request *this, SocketConnection *
 			try (exc) {
 				len = SocketConnection_Read(conn,
 					this->body.buf  + this->body.len,
-					this->body.size - this->body.len
-				);
+					this->body.size - this->body.len);
 			} catch(&SocketConnection_EmptyQueueException, e) {
 				incomplete = true;
 			} finally {
