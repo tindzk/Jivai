@@ -401,7 +401,7 @@ ssize_t String_FindChar(String *this, char c) {
 }
 
 ssize_t String_ReverseFindChar(String *this, char c) {
-	for (ssize_t i = this->len; i >= 0; i--) {
+	for (ssize_t i = this->len - 1; i >= 0; i--) {
 		if (this->buf[i] == c) {
 			return i;
 		}
