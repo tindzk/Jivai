@@ -130,7 +130,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 				if (String_BeginsWith(&this->buf, String("/"))) {
 					/* End of token. */
 					if (this->buf.len > 1) {
-						String_Crop(&this->buf, 1, String_End);
+						String_Crop(&this->buf, 1);
 						this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->buf);
 					} else {
 						this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->curToken);

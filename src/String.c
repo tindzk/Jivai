@@ -97,7 +97,7 @@ void String_Copy(String *this, String src) {
 	this->heap = true;
 }
 
-void String_CopyRange(
+void OVERLOAD String_CopyRange(
 	String *this,
 	String src,
 	ssize_t srcOffset,
@@ -109,7 +109,7 @@ void String_CopyRange(
 		srcOffset += src.len;
 	}
 
-	if (srcLength <= 0) {
+	if (srcLength < 0) {
 		srcRight = srcLength + src.len;
 	} else {
 		srcRight = srcLength + srcOffset;
@@ -123,12 +123,17 @@ void String_CopyRange(
 
 	String_Align(this, this->len + srcRight - srcOffset);
 
-	Memory_Copy(this->buf,
-		src.buf  + srcOffset,
-		srcRight - srcOffset
-	);
+	if (srcRight - srcOffset > 0) {
+		Memory_Copy(this->buf,
+			src.buf  + srcOffset,
+			srcRight - srcOffset);
+	}
 
 	this->len = srcRight - srcOffset;
+}
+
+void OVERLOAD String_CopyRange(String *this, String src, ssize_t srcOffset) {
+	String_CopyRange(this, src, srcOffset, src.len - srcOffset);
 }
 
 String String_Clone(String s) {
@@ -155,7 +160,7 @@ char* String_CloneBuf(String s, char *buf) {
 	return buf;
 }
 
-String String_Slice(String *this, ssize_t offset, ssize_t length) {
+String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
 	String out;
 	size_t right;
 
@@ -163,7 +168,7 @@ String String_Slice(String *this, ssize_t offset, ssize_t length) {
 		offset += this->len;
 	}
 
-	if (length <= 0) {
+	if (length < 0) {
 		right = length + this->len;
 	} else {
 		right = length + offset;
@@ -190,14 +195,18 @@ String String_Slice(String *this, ssize_t offset, ssize_t length) {
 	return out;
 }
 
-void String_Crop(String *this, ssize_t offset, ssize_t length) {
+String OVERLOAD String_Slice(String *this, ssize_t offset) {
+	return String_Slice(this, offset, this->len - offset);
+}
+
+void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
 	size_t right;
 
 	if (offset < 0) {
 		offset += this->len;
 	}
 
-	if (length <= 0) {
+	if (length < 0) {
 		right = length + this->len;
 	} else {
 		right = length + offset;
@@ -224,6 +233,10 @@ void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	} else {
 		this->len = right;
 	}
+}
+
+void OVERLOAD String_Crop(String *this, ssize_t offset) {
+	String_Crop(this, offset, this->len - offset);
 }
 
 void String_Delete(String *this, ssize_t offset, ssize_t length) {
@@ -468,7 +481,7 @@ void String_TrimLeft(String *this) {
 		}
 	}
 
-	String_Crop(this, pos, String_End);
+	String_Crop(this, pos, this->len);
 }
 
 void String_Trim(String *this) {

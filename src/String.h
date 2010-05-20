@@ -30,11 +30,14 @@ char* String_ToNulBuf(String *this, char *buf);
 void String_Resize(String *this, size_t len);
 void String_Align(String *this, size_t len);
 void String_Copy(String *this, String src);
-void String_CopyRange(String *this, String src, ssize_t srcOffset, ssize_t srcLength);
+void OVERLOAD String_CopyRange(String *this, String src, ssize_t srcOffset, ssize_t srcLength);
+void OVERLOAD String_CopyRange(String *this, String src, ssize_t srcOffset);
 String String_Clone(String s);
 char* String_CloneBuf(String s, char *buf);
-String String_Slice(String *this, ssize_t offset, ssize_t length);
-void String_Crop(String *this, ssize_t offset, ssize_t length);
+String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length);
+String OVERLOAD String_Slice(String *this, ssize_t offset);
+void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length);
+void OVERLOAD String_Crop(String *this, ssize_t offset);
 void String_Delete(String *this, ssize_t offset, ssize_t length);
 void String_Append(String *this, String s);
 void String_AppendChar(String *this, char c);
@@ -57,7 +60,6 @@ void String_TrimLeft(String *this);
 String String_Format(String fmt, ...);
 void String_Print(String s);
 
-#define String_End       0
 #define String_NotFound -1
 
 #define String(s) \

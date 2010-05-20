@@ -35,7 +35,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 
 	if (this->inbuf.len >= len) {
 		Memory_Copy(buf, this->inbuf.buf, len);
-		String_Crop(&this->inbuf, len, String_End);
+		String_Crop(&this->inbuf, len);
 		copied = len;
 	} else if (this->inbuf.len > 0) {
 		Memory_Copy(buf, this->inbuf.buf, this->inbuf.len);

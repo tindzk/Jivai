@@ -90,7 +90,7 @@ void HTTP_Request_ParseUri(HTTP_Request *this, String uri) {
 			return;
 		}
 
-		String params = String_Slice(&uri, pos + 1, String_End);
+		String params = String_Slice(&uri, pos + 1);
 
 		uri.len = pos;
 		this->onPath(this->context, uri);
@@ -108,7 +108,7 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 
 	if ((pos = String_Find(&s, String(": "))) != String_NotFound) {
 		String name  = String_Slice(&s, 0, pos);
-		String value = String_Slice(&s, pos + 2, 0);
+		String value = String_Slice(&s, pos + 2);
 
 		if (this->onHeader != NULL) {
 			this->onHeader(this, name, value);
@@ -154,8 +154,7 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 						String_CopyRange(
 							&this->headers.boundary,
 							value,
-							posBoundary + sizeof("boundary=") - 1,
-							String_End
+							posBoundary + sizeof("boundary=") - 1
 						);
 					} else {
 						throw(exc, &HTTP_Request_UnknownContentTypeException);
@@ -369,10 +368,10 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
 				 */
-				String_Crop(&this->header, requestOffset + this->headers.contentLength, String_End);
+				String_Crop(&this->header, requestOffset + this->headers.contentLength);
 			} else {
 				/* The body is only partial. */
-				String_CopyRange(&this->body, this->header, requestOffset, this->header.len - requestOffset);
+				String_CopyRange(&this->body, this->header, requestOffset);
 
 				/* See comment below. */
 				this->header.len = 0;
@@ -400,7 +399,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 		 * current requestion, String_Crop() empties the string.
 		 */
 
-		String_Crop(&this->header, requestOffset, String_End);
+		String_Crop(&this->header, requestOffset);
 
 		this->state = HTTP_Request_State_Dispatch;
 	}

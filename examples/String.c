@@ -70,7 +70,7 @@ int main(void) {
 	String_Destroy(&tmp);
 
 	/* pos..end */
-	String_Print(tmp = String_Slice(&s, pos, String_End));
+	String_Print(tmp = String_Slice(&s, pos));
 	String_Print(String("\n"));
 	String_Destroy(&tmp);
 
