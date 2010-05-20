@@ -397,8 +397,20 @@ StringArray String_SplitChar(String *this, size_t offset, char c) {
 	return res;
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, char c) {
-	for (size_t i = offset; i < len; i++) {
+static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, char c) {
+	size_t right;
+
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	if (length < 0) {
+		right = length + this->len;
+	} else {
+		right = length + offset;
+	}
+
+	for (size_t i = offset; i < right; i++) {
 		if (this->buf[i] == c) {
 			return i;
 		}
@@ -417,24 +429,34 @@ ssize_t String_ReverseFindChar(String *this, char c) {
 	return String_NotFound;
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle) {
-	size_t cntEqual = 0;
+static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, String needle) {
+	size_t right;
 
-	while (offset < len) {
-		if (this->buf[offset] == needle.buf[cntEqual]) {
-			cntEqual++;
+	if (offset < 0) {
+		offset += this->len;
+	}
 
-			if (cntEqual == needle.len) {
-				return offset - needle.len + 1;
+	if (length < 0) {
+		right = length + this->len;
+	} else {
+		right = length + offset;
+	}
+
+	size_t cnt = 0;
+
+	for (size_t i = offset; i < right; i++) {
+		if (this->buf[i] == needle.buf[cnt]) {
+			cnt++;
+
+			if (cnt == needle.len) {
+				return i - needle.len + 1;
 			}
 		} else {
-			if (cntEqual > 0) {
-				cntEqual = 0;
-				offset--;
+			if (cnt > 0) {
+				cnt = 0;
+				i--;
 			}
 		}
-
-		offset++;
 	}
 
 	return String_NotFound;
@@ -444,24 +466,24 @@ ssize_t OVERLOAD String_Find(String *this, String needle) {
 	return String_FindRange(this, 0, this->len, needle);
 }
 
-ssize_t OVERLOAD String_Find(String *this, size_t offset, String needle) {
+ssize_t OVERLOAD String_Find(String *this, ssize_t offset, String needle) {
 	return String_FindRange(this, offset, this->len - offset, needle);
 }
 
-ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, String needle) {
-	return String_FindRange(this, offset, len, needle);
+ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, String needle) {
+	return String_FindRange(this, offset, length, needle);
 }
 
 ssize_t OVERLOAD String_Find(String *this, char c) {
 	return String_FindRange(this, 0, this->len, c);
 }
 
-ssize_t OVERLOAD String_Find(String *this, size_t offset, char c) {
+ssize_t OVERLOAD String_Find(String *this, ssize_t offset, char c) {
 	return String_FindRange(this, offset, this->len - offset, c);
 }
 
-ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, char c) {
-	return String_FindRange(this, offset, len, c);
+ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, char c) {
+	return String_FindRange(this, offset, length, c);
 }
 
 void String_TrimLeft(String *this) {
