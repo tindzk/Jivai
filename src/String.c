@@ -410,16 +410,8 @@ ssize_t String_ReverseFindChar(String *this, char c) {
 	return String_NotFound;
 }
 
-ssize_t String_FindRange(String *this,
-	size_t offset,
-	size_t len,
-	String needle)
-{
+static inline ssize_t String_FindRange(String *this, size_t offset, size_t len, String needle) {
 	size_t cntEqual = 0;
-
-	if (len == String_End) {
-		len = this->len;
-	}
 
 	while (offset < len) {
 		if (this->buf[offset] == needle.buf[cntEqual]) {
@@ -439,6 +431,18 @@ ssize_t String_FindRange(String *this,
 	}
 
 	return String_NotFound;
+}
+
+ssize_t OVERLOAD String_Find(String *this, String needle) {
+	return String_FindRange(this, 0, this->len, needle);
+}
+
+ssize_t OVERLOAD String_Find(String *this, size_t offset, String needle) {
+	return String_FindRange(this, offset, this->len - offset, needle);
+}
+
+ssize_t OVERLOAD String_Find(String *this, size_t offset, size_t len, String needle) {
+	return String_FindRange(this, offset, len, needle);
 }
 
 void String_TrimLeft(String *this) {

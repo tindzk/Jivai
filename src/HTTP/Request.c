@@ -106,7 +106,7 @@ void HTTP_Request_ParseUri(HTTP_Request *this, String uri) {
 void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 	ssize_t pos;
 
-	if ((pos = String_Find(&s, String(": "))) != -1) {
+	if ((pos = String_Find(&s, String(": "))) != String_NotFound) {
 		String name  = String_Slice(&s, 0, pos);
 		String value = String_Slice(&s, pos + 2, 0);
 
@@ -142,14 +142,12 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 					} else if (String_BeginsWith(&value, String("multipart/form-data"))) {
 						this->headers.contentType = HTTP_Request_ContentType_MultiPart;
 
-						ssize_t posBoundary = String_FindRange(
+						ssize_t posBoundary = String_Find(
 							&value,
 							sizeof("multipart/form-data") - 1,
-							String_End,
-							String("boundary=")
-						);
+							String("boundary="));
 
-						if (posBoundary < 0) {
+						if (posBoundary == String_NotFound) {
 							throw(exc, &HTTP_Request_UnknownContentTypeException);
 						}
 
@@ -302,7 +300,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 	s.len = requestOffset;
 
 	ssize_t pos1stLine = 0;
-	if ((pos1stLine = String_Find(&s, String("\n"))) == -1) {
+	if ((pos1stLine = String_Find(&s, String("\n"))) == String_NotFound) {
 		throw(exc, &HTTP_Request_RequestMalformedException);
 	}
 
@@ -312,7 +310,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 	}
 
 	ssize_t posMethod;
-	if ((posMethod = String_FindRange(&s, 0, 5, String(" "))) == -1) {
+	if ((posMethod = String_Find(&s, 0, 5, String(" "))) == String_NotFound) {
 		throw(exc, &HTTP_Request_RequestMalformedException);
 	}
 
