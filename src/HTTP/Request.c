@@ -339,13 +339,15 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 				len = i - last - 1;
 			}
 
-			String_Copy(&res, s, last + 1, len);
+			if (len > 0) {
+				String_Copy(&res, s, last + 1, len);
 
-			try(exc) {
-				HTTP_Request_ParseHeaderLine(this, res);
-			} finally {
-				String_Destroy(&res);
-			} tryEnd;
+				try(exc) {
+					HTTP_Request_ParseHeaderLine(this, res);
+				} finally {
+					String_Destroy(&res);
+				} tryEnd;
+			}
 
 			last = i;
 		}
