@@ -151,11 +151,7 @@ void HTTP_Request_ParseHeaderLine(HTTP_Request *this, String s) {
 							throw(exc, &HTTP_Request_UnknownContentTypeException);
 						}
 
-						String_CopyRange(
-							&this->headers.boundary,
-							value,
-							posBoundary + sizeof("boundary=") - 1
-						);
+						String_Copy(&this->headers.boundary, value, posBoundary + sizeof("boundary=") - 1);
 					} else {
 						throw(exc, &HTTP_Request_UnknownContentTypeException);
 					}
@@ -343,7 +339,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 				len = i - last - 1;
 			}
 
-			String_CopyRange(&res, s, last + 1, len);
+			String_Copy(&res, s, last + 1, len);
 
 			try(exc) {
 				HTTP_Request_ParseHeaderLine(this, res);
@@ -363,7 +359,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 		if (this->header.len != (size_t) requestOffset) {
 			if (this->header.len - requestOffset >= this->headers.contentLength) {
 				/* We have the whole body in this->header. */
-				String_CopyRange(&this->body, this->header, requestOffset, this->headers.contentLength);
+				String_Copy(&this->body, this->header, requestOffset, this->headers.contentLength);
 
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
@@ -371,7 +367,7 @@ HTTP_Request_Result HTTP_Request_ReadHeader(HTTP_Request *this, SocketConnection
 				String_Crop(&this->header, requestOffset + this->headers.contentLength);
 			} else {
 				/* The body is only partial. */
-				String_CopyRange(&this->body, this->header, requestOffset);
+				String_Copy(&this->body, this->header, requestOffset);
 
 				/* See comment below. */
 				this->header.len = 0;

@@ -71,38 +71,7 @@ void String_Align(String *this, size_t len) {
 	}
 }
 
-void String_Copy(String *this, String src) {
-	if (src.len > 0) {
-		if (!this->heap) {
-			throw(exc, &String_NotHeapAllocatedException);
-		}
-
-		if (this->buf == NULL) {
-			this->buf = Memory_Alloc(src.len);
-		} else if (this->size < src.len) {
-			this->size = src.len;
-			this->buf  = Memory_Realloc(this->buf, src.len);
-		}
-
-		Memory_Copy(this->buf, src.buf, src.len);
-	} else if (this->buf != NULL) {
-		if (this->heap) {
-			Memory_Free(this->buf);
-		} else {
-			this->buf = NULL;
-		}
-	}
-
-	this->len  = src.len;
-	this->heap = true;
-}
-
-void OVERLOAD String_CopyRange(
-	String *this,
-	String src,
-	ssize_t srcOffset,
-	ssize_t srcLength)
-{
+void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
 	size_t srcRight;
 
 	if (srcOffset < 0) {
@@ -132,8 +101,34 @@ void OVERLOAD String_CopyRange(
 	this->len = srcRight - srcOffset;
 }
 
-void OVERLOAD String_CopyRange(String *this, String src, ssize_t srcOffset) {
-	String_CopyRange(this, src, srcOffset, src.len - srcOffset);
+void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset) {
+	String_Copy(this, src, srcOffset, src.len - srcOffset);
+}
+
+void OVERLOAD String_Copy(String *this, String src) {
+	if (src.len > 0) {
+		if (!this->heap) {
+			throw(exc, &String_NotHeapAllocatedException);
+		}
+
+		if (this->buf == NULL) {
+			this->buf = Memory_Alloc(src.len);
+		} else if (this->size < src.len) {
+			this->size = src.len;
+			this->buf  = Memory_Realloc(this->buf, src.len);
+		}
+
+		Memory_Copy(this->buf, src.buf, src.len);
+	} else if (this->buf != NULL) {
+		if (this->heap) {
+			Memory_Free(this->buf);
+		} else {
+			this->buf = NULL;
+		}
+	}
+
+	this->len  = src.len;
+	this->heap = true;
 }
 
 String String_Clone(String s) {
