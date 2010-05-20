@@ -261,7 +261,7 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-void String_Append(String *this, String s) {
+void OVERLOAD String_Append(String *this, String s) {
 	if (s.len == 0) {
 		return;
 	}
@@ -273,7 +273,7 @@ void String_Append(String *this, String s) {
 	this->len = this->len + s.len;
 }
 
-void String_AppendChar(String *this, char c) {
+void OVERLOAD String_Append(String *this, char c) {
 	String_Align(this, this->len + 1);
 	this->buf[this->len] = c;
 	this->len++;

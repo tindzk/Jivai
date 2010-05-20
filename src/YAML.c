@@ -125,7 +125,7 @@ void YAML_Parse(YAML *this) {
 				} else if (c == '\t') {
 					whitespaces += this->depthWidth;
 				} else if (c != '\n') {
-					String_AppendChar(&buf, c);
+					String_Append(&buf, c);
 					state = KEY;
 				}
 
@@ -162,7 +162,7 @@ void YAML_Parse(YAML *this) {
 						popChar = true;
 					}
 				} else if (c != ' ' && c != '\t' && c != '\n') {
-					String_AppendChar(&buf, c);
+					String_Append(&buf, c);
 				}
 
 				break;
@@ -179,7 +179,7 @@ void YAML_Parse(YAML *this) {
 					whitespaces = 0;
 					state = DEPTH;
 				} else {
-					String_AppendChar(&buf, c);
+					String_Append(&buf, c);
 				}
 
 				break;

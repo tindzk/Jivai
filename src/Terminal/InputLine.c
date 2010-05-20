@@ -206,13 +206,13 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 
 		if (len == 0) {
 			ch = StackString(1);
-			String_AppendChar(&ch, key.c);
+			String_Append(&ch, key.c);
 		} else {
 			ch = StackString(len);
-			String_AppendChar(&ch, key.c);
+			String_Append(&ch, key.c);
 
 			while (--len) {
-				String_AppendChar(&ch, Terminal_ReadChar(this->term));
+				String_Append(&ch, Terminal_ReadChar(this->term));
 			}
 		}
 

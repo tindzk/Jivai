@@ -26,7 +26,7 @@ int main(void) {
 	for (size_t i = 0; i < s.len; i++) {
 		/* Put the current character into a string. */
 		String c = StackString(1);
-		String_AppendChar(&c, s.buf[i]);
+		String_Append(&c, s.buf[i]);
 
 		String fmt = String_Format(
 			/* % is a placeholder. */

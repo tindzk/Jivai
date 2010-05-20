@@ -39,7 +39,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 		}
 
 		/* Buffer value */
-		String_AppendChar(&this->buf, c);
+		String_Append(&this->buf, c);
 
 		return;
 	}
@@ -61,7 +61,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 
 	/* Within comment */
 	if (BitMask_Has(this->state, HTML_Tokenizer_State_Comment)) {
-		String_AppendChar(&this->buf, c);
+		String_Append(&this->buf, c);
 
 		return;
 	}
@@ -71,7 +71,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 		BitMask_Set(this->state, HTML_Tokenizer_State_Comment);
 
 		this->buf.len = 0;
-		String_AppendChar(&this->buf, c);
+		String_Append(&this->buf, c);
 
 		return;
 	}
@@ -85,14 +85,14 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 				&& this->curQuote == c
 				&& this->last != '\\') {
 			BitMask_Clear(this->state, HTML_Tokenizer_State_Quote);
-			String_AppendChar(&this->buf, c);
+			String_Append(&this->buf, c);
 
 			return;
 		}
 	}
 
 	if (BitMask_Has(this->state, HTML_Tokenizer_State_Quote)) {
-		String_AppendChar(&this->buf, c);
+		String_Append(&this->buf, c);
 		this->last = c;
 
 		return;
@@ -174,7 +174,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 		BitMask_Clear(this->state, HTML_Tokenizer_State_Tag);
 		this->buf.len = 0;
 	} else if (!Char_IsWhitespace(c)) {
-		String_AppendChar(&this->buf, c);
+		String_Append(&this->buf, c);
 	}
 }
 
