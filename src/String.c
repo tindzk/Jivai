@@ -10,7 +10,7 @@ void String0(ExceptionManager *e) {
 }
 
 void String_Destroy(String *this) {
-	this->len = 0;
+	this->len  = 0;
 	this->size = 0;
 
 	if (this->heap && this->buf != NULL) {
@@ -28,7 +28,7 @@ void String_ToHeap(String *this) {
 	buf = Memory_Alloc(this->size);
 	Memory_Copy(buf, this->buf, this->len);
 
-	this->buf = buf;
+	this->buf  = buf;
 	this->heap = true;
 }
 
@@ -44,29 +44,29 @@ char* String_ToNulBuf(String *this, char *buf) {
 	return buf;
 }
 
-void String_Resize(String *this, size_t len) {
+void String_Resize(String *this, size_t length) {
 	if (!this->heap) {
 		throw(exc, &String_NotHeapAllocatedException);
 	}
 
 	if (this->buf == NULL) {
-		this->buf = Memory_Alloc(len);
+		this->buf = Memory_Alloc(length);
 	} else {
-		this->buf = Memory_Realloc(this->buf, len);
+		this->buf = Memory_Realloc(this->buf, length);
 	}
 
-	this->size = len;
+	this->size = length;
 
-	if (this->len > len) {
+	if (this->len > length) {
 		/* The string was shortened. */
-		this->len = len;
+		this->len = length;
 	}
 }
 
-void String_Align(String *this, size_t len) {
-	if (len > 0) {
-		if (this->size == 0 || len > this->size) {
-			String_Resize(this, len);
+void String_Align(String *this, size_t length) {
+	if (length > 0) {
+		if (this->size == 0 || length > this->size) {
+			String_Resize(this, length);
 		}
 	}
 }
@@ -280,9 +280,9 @@ void OVERLOAD String_Append(String *this, char c) {
 }
 
 String String_Join(String *first, ...) {
-	VarArg argptr;
 	String *s;
-	size_t len = first->len;
+	VarArg argptr;
+	size_t length = first->len;
 
 	VarArg_Start(argptr, first);
 
@@ -293,12 +293,12 @@ String String_Join(String *first, ...) {
 			break;
 		}
 
-		len += s->len;
+		length += s->len;
 	}
 
 	VarArg_End(argptr);
 
-	String res = HeapString(len);
+	String res = HeapString(length);
 
 	VarArg_Start(argptr, first);
 
@@ -322,11 +322,7 @@ String String_Join(String *first, ...) {
 	return res;
 }
 
-bool String_RangeEquals(String *this,
-	ssize_t offset,
-	String needle,
-	ssize_t needleOffset)
-{
+bool String_RangeEquals(String *this, ssize_t offset, String needle, ssize_t needleOffset) {
 	if (this->len == 0 || needle.len == 0) {
 		return false;
 	}
@@ -531,7 +527,7 @@ void String_Trim(String *this) {
 String String_Format(String fmt, ...) {
 	VarArg argptr;
 	String param;
-	size_t i = 0, len = 0;
+	size_t i = 0, length = 0;
 
 	VarArg_Start(argptr, fmt);
 
@@ -541,9 +537,9 @@ String String_Format(String fmt, ...) {
 			(i == 0 || (i > 0 && fmt.buf[i - 1] != '!'))
 		) {
 			param = VarArg_Get(argptr, String);
-			len += param.len;
+			length += param.len;
 		} else {
-			len++;
+			length++;
 		}
 
 		i++;
@@ -551,7 +547,7 @@ String String_Format(String fmt, ...) {
 
 	VarArg_End(argptr);
 
-	String res = HeapString(len);
+	String res = HeapString(length);
 
 	VarArg_Start(argptr, fmt);
 
