@@ -354,8 +354,7 @@ bool String_RangeEquals(String *this,
 	return Memory_Equals(
 		this->buf  + offset,
 		needle.buf + needleOffset,
-		needle.len - needleOffset
-	);
+		needle.len - needleOffset);
 }
 
 void String_ToLower(String *this) {
