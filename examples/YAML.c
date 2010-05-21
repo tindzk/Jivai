@@ -30,7 +30,7 @@ void PrintTree(YAML_Node *node, int depth) {
 		}
 	}
 
-	for (size_t i = 0; i < node->cnt; i++) {
+	for (size_t i = 0; i < node->len; i++) {
 		PrintTree(node->nodes[i], depth + 1);
 	}
 }

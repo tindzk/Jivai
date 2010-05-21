@@ -103,7 +103,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
 
 		found = false;
 
-		for (size_t i = 0; i < node->cnt; i++) {
+		for (size_t i = 0; i < node->len; i++) {
 			if (node->nodes[i]->type == HTML_Tree_NodeType_Tag) {
 				if (String_Equals(s, node->nodes[i]->value)) {
 					node = node->nodes[i];
@@ -137,7 +137,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...) {
 			break;
 		}
 
-		if ((size_t) id >= node->cnt) {
+		if ((size_t) id >= node->len) {
 			found = false;
 			break;
 		}
@@ -153,7 +153,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...) {
 }
 
 void HTML_Tree_Foreach(HTML_Tree_Node *node, void (^cb)(HTML_Tree_Node *)) {
-	for (size_t i = 0; i < node->cnt; i++) {
+	for (size_t i = 0; i < node->len; i++) {
 		cb(node->nodes[i]);
 	}
 }

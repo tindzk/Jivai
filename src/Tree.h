@@ -5,7 +5,7 @@
 
 #define Tree_Define(type)  \
 	/* Number of nodes. */ \
-	size_t cnt;            \
+	size_t len;            \
                            \
 	/* Children nodes. */  \
 	struct type **nodes;   \
