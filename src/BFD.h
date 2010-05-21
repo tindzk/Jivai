@@ -10,6 +10,7 @@
 #include <link.h>
 
 #include "Memory.h"
+#include "BitMask.h"
 #include "Compiler.h"
 
 typedef struct {

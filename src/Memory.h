@@ -1,7 +1,6 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include "Logger.h"
 #include "String.h"
 #include "Exception.h"
 
