@@ -43,10 +43,10 @@ extern File *File_StdErr;
 void File0(ExceptionManager *e);
 
 void File_Open(File *this, String path, int mode);
+void File_Close(File *this);
 off64_t File_GetSize(File *this);
 size_t File_Read(File *this, void *buf, size_t len);
 size_t File_Write(File *this, void *buf, size_t len);
-void File_Close(File *this);
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence);
 off64_t File_Tell(File *this);
 

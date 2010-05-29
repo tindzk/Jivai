@@ -1,19 +1,19 @@
 #include "File.h"
 
 static File _File_StdIn = {
-	.fd = STDIN_FILENO,
+	.fd       = STDIN_FILENO,
 	.readable = true,
 	.writable = false
 };
 
 static File _File_StdOut = {
-	.fd = STDOUT_FILENO,
+	.fd       = STDOUT_FILENO,
 	.readable = false,
 	.writable = true
 };
 
 static File _File_StdErr = {
-	.fd = STDERR_FILENO,
+	.fd       = STDERR_FILENO,
 	.readable = false,
 	.writable = true
 };
@@ -46,7 +46,7 @@ void File0(ExceptionManager *e) {
 void File_Open(File *this, String path, int mode) {
 	errno = 0;
 
-	if ((this->fd = open(String_ToNul(&path), mode, 0666)) < 0) {
+	if ((this->fd = open(String_ToNul(&path), mode, 0666)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == ENOENT) {
@@ -79,6 +79,10 @@ void File_Open(File *this, String path, int mode) {
 	}
 }
 
+void File_Close(File *this) {
+	close(this->fd);
+}
+
 off64_t File_GetSize(File *this) {
 	struct stat64 stat_buf;
 	fstat64(this->fd, &stat_buf);
@@ -92,12 +96,16 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 	errno = 0;
 
-	ssize_t res = read(this->fd, buf, len);
+	ssize_t res;
 
-	if (errno == EINTR) {
-		throw(exc, &File_ReadingInterruptedException);
-	} else if (res < 0) {
-		throw(exc, &File_ReadingFailedException);
+	if ((res = read(this->fd, buf, len)) == -1) {
+		if (errno == EINTR) {
+			throw(exc, &File_ReadingInterruptedException);
+		} else if (errno == EISDIR) {
+			throw(exc, &File_IsDirectoryException);
+		} else {
+			throw(exc, &File_ReadingFailedException);
+		}
 	}
 
 	return res;
@@ -110,19 +118,19 @@ size_t File_Write(File *this, void *buf, size_t len) {
 
 	errno = 0;
 
-	ssize_t res = write(this->fd, buf, len);
+	ssize_t res;
 
-	if (errno == EINTR) {
-		throw(exc, &File_WritingInterruptedException);
-	} else if (res < 0) {
-		throw(exc, &File_WritingFailedException);
+	if ((res = write(this->fd, buf, len)) == -1) {
+		if (errno == EINTR) {
+			throw(exc, &File_WritingInterruptedException);
+		} else if (errno == EISDIR) {
+			throw(exc, &File_IsDirectoryException);
+		} else {
+			throw(exc, &File_WritingFailedException);
+		}
 	}
 
 	return res;
-}
-
-void File_Close(File *this) {
-	close(this->fd);
 }
 
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
@@ -132,14 +140,16 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 
 	errno = 0;
 
-	off64_t pos = lseek64(this->fd, offset, whence);
+	off64_t pos;
 
-	if (errno == EBADF) {
-		throw(exc, &File_InvalidFileDescriptorException);
-	} else if (errno == EINVAL) {
-		throw(exc, &File_InvalidParameterException);
-	} else if (errno != 0) {
-		throw(exc, &File_SeekingFailedException);
+	if ((pos = lseek64(this->fd, offset, whence)) == -1) {
+		if (errno == EBADF) {
+			throw(exc, &File_InvalidFileDescriptorException);
+		} else if (errno == EINVAL) {
+			throw(exc, &File_InvalidParameterException);
+		} else {
+			throw(exc, &File_SeekingFailedException);
+		}
 	}
 
 	return pos;
