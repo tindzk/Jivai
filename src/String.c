@@ -576,6 +576,22 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
+String String_Between(String *this, String left, String right) {
+	ssize_t posLeft, posRight;
+
+	if ((posLeft = String_Find(this, left)) == String_NotFound) {
+		return String("");
+	}
+
+	posLeft += left.len;
+
+	if ((posRight = String_Find(this, posLeft + 1, right)) == String_NotFound) {
+		return String("");
+	}
+
+	return String_Slice(this, posLeft, posRight - posLeft);
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(1, s.buf, s.len);

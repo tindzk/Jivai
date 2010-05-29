@@ -58,6 +58,7 @@ ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, char 
 void String_Trim(String *this);
 void String_TrimLeft(String *this);
 String String_Format(String fmt, ...);
+String String_Between(String *this, String left, String right);
 void String_Print(String s);
 
 #define String_NotFound -1
