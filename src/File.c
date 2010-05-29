@@ -34,6 +34,7 @@ Exception_Define(File_NotWritableException);
 Exception_Define(File_ReadingFailedException);
 Exception_Define(File_ReadingInterruptedException);
 Exception_Define(File_SeekingFailedException);
+Exception_Define(File_StatFailedException);
 Exception_Define(File_WritingFailedException);
 Exception_Define(File_WritingInterruptedException);
 
@@ -83,10 +84,26 @@ void File_Close(File *this) {
 	close(this->fd);
 }
 
+struct stat64 File_GetStat(File *this) {
+	errno = 0;
+
+	struct stat64 attr;
+
+	if (fstat64(this->fd, &attr) == -1) {
+		if (errno == EACCES) {
+			throw(exc, &File_AccessDeniedException);
+		} else if (errno == EBADF) {
+			throw(exc, &File_InvalidFileDescriptorException);
+		} else {
+			throw(exc, &File_StatFailedException);
+		}
+	}
+
+	return attr;
+}
+
 off64_t File_GetSize(File *this) {
-	struct stat64 stat_buf;
-	fstat64(this->fd, &stat_buf);
-	return stat_buf.st_size;
+	return File_GetStat(this).st_size;
 }
 
 size_t File_Read(File *this, void *buf, size_t len) {

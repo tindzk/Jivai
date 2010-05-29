@@ -21,6 +21,7 @@ Exception_Export(File_NotWritableException);
 Exception_Export(File_ReadingFailedException);
 Exception_Export(File_ReadingInterruptedException);
 Exception_Export(File_SeekingFailedException);
+Exception_Export(File_StatFailedException);
 Exception_Export(File_WritingFailedException);
 Exception_Export(File_WritingInterruptedException);
 
@@ -44,6 +45,7 @@ void File0(ExceptionManager *e);
 
 void File_Open(File *this, String path, int mode);
 void File_Close(File *this);
+struct stat64 File_GetStat(File *this);
 off64_t File_GetSize(File *this);
 size_t File_Read(File *this, void *buf, size_t len);
 size_t File_Write(File *this, void *buf, size_t len);
