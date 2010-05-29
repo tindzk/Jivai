@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "Logger.h"
+#include "String.h"
 #include "Exception.h"
 
 Exception_Export(File_AccessDeniedException);
