@@ -12,6 +12,9 @@ typedef struct {
 #define StringArray_Init(...) \
 	Array_Init(__VA_ARGS__)
 
+#define StringArray_Push(this, s) \
+	Array_Push(this, String_Clone(s))
+
 #define StringArray_Reset(this, cnt) \
 	Array_Reset(this, cnt, String_Destroy)
 
