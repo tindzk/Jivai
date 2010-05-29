@@ -1,8 +1,7 @@
 #ifndef CHAR_H
 #define CHAR_H
 
-#include <stdbool.h>
-
+#include "Boolean.h"
 #include "UniStd.h" /* write() */
 
 /* See also: http://php.net/manual/en/function.trim.php */
