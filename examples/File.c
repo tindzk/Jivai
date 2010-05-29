@@ -26,6 +26,10 @@ int main(void) {
 		String_Print(s);
 	} while (s.len > 0);
 
+	String_Print(String("size: "));
+	String_Print(Integer64_ToString(File_GetSize(&file)));
+	String_Print(String("\n"));
+
 	File_Close(&file);
 
 	return EXIT_SUCCESS;
