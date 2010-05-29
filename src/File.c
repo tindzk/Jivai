@@ -35,6 +35,7 @@ Exception_Define(File_ReadingFailedException);
 Exception_Define(File_ReadingInterruptedException);
 Exception_Define(File_SeekingFailedException);
 Exception_Define(File_StatFailedException);
+Exception_Define(File_TruncatingFailedException);
 Exception_Define(File_WritingFailedException);
 Exception_Define(File_WritingInterruptedException);
 
@@ -82,6 +83,26 @@ void File_Open(File *this, String path, int mode) {
 
 void File_Close(File *this) {
 	close(this->fd);
+}
+
+void OVERLOAD File_Truncate(File *this, off64_t length) {
+	errno = 0;
+
+	if (ftruncate64(this->fd, length) == -1) {
+		if (errno == EBADF) {
+			throw(exc, &File_InvalidFileDescriptorException);
+		} else if (errno == EACCES) {
+			throw(exc, &File_NotWritableException);
+		} else if (errno == EINVAL) {
+			throw(exc, &File_InvalidParameterException);
+		} else {
+			throw(exc, &File_TruncatingFailedException);
+		}
+	}
+}
+
+void OVERLOAD File_Truncate(File *this) {
+	File_Truncate(this, 0);
 }
 
 struct stat64 File_GetStat(File *this) {
