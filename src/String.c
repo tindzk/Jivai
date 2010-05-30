@@ -612,20 +612,42 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-String String_Between(String *this, String left, String right) {
+ssize_t OVERLOAD String_Between(String *this, ssize_t offset, String left, String right, String *out) {
 	ssize_t posLeft, posRight;
 
-	if ((posLeft = String_Find(this, left)) == String_NotFound) {
-		return String("");
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	if ((posLeft = String_Find(this, offset, left)) == String_NotFound) {
+		return String_NotFound;
 	}
 
 	posLeft += left.len;
 
 	if ((posRight = String_Find(this, posLeft + 1, right)) == String_NotFound) {
-		return String("");
+		return String_NotFound;
 	}
 
-	return String_Slice(this, posLeft, posRight - posLeft);
+	String_Copy(out, *this, posLeft, posRight - posLeft);
+
+	return posRight + right.len;
+}
+
+ssize_t OVERLOAD String_Between(String *this, String left, String right, String *out) {
+	return String_Between(this, 0, left, right, out);
+}
+
+String OVERLOAD String_Between(String *this, ssize_t offset, String left, String right) {
+	String out = HeapString(0);
+	String_Between(this, offset, left, right, &out);
+	return out;
+}
+
+String OVERLOAD String_Between(String *this, String left, String right) {
+	String out = HeapString(0);
+	String_Between(this, 0, left, right, &out);
+	return out;
 }
 
 void String_Print(String s) {
