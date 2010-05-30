@@ -3,11 +3,11 @@
 String Hex_ToString(int hex) {
 	static char symbols[] = "0123456789abcdef";
 
-	String res = HeapString(7);
+	String res = HeapString(6);
 	String_Append(&res, String("000000"));
 
-	int i = res.len;
 	size_t digit;
+	ssize_t i = res.len - 1;
 
 	do {
 		digit = hex % 16;
