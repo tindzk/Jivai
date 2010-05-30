@@ -273,6 +273,38 @@ void OVERLOAD String_Append(String *this, String s) {
 	this->len = this->len + s.len;
 }
 
+void OVERLOAD String_Append(String *this, String s, ssize_t offset, ssize_t length) {
+	size_t right;
+
+	if (offset < 0) {
+		offset += s.len;
+	}
+
+	if (length < 0) {
+		right = length + s.len;
+	} else {
+		right = length + offset;
+	}
+
+	if ((size_t) offset > right
+	 || (size_t) offset > s.len
+	 || right           > s.len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
+	length = right - offset;
+
+	if (length > 0) {
+		String_Align(this, this->len + length);
+		Memory_Copy(this->buf + this->len, s.buf + offset, length);
+		this->len += length;
+	}
+}
+
+void OVERLOAD String_Append(String *this, String s, ssize_t offset) {
+	String_Append(this, s, offset, s.len - offset);
+}
+
 void OVERLOAD String_Append(String *this, char c) {
 	String_Align(this, this->len + 1);
 	this->buf[this->len] = c;
