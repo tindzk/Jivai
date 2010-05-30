@@ -482,6 +482,10 @@ ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, char 
 	return String_FindRange(this, offset, length, c);
 }
 
+bool String_Contains(String *this, String needle) {
+	return String_FindRange(this, 0, this->len, needle) != String_NotFound;
+}
+
 void String_TrimLeft(String *this) {
 	size_t pos = 0;
 

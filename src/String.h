@@ -55,6 +55,7 @@ ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, Strin
 ssize_t OVERLOAD String_Find(String *this, char c);
 ssize_t OVERLOAD String_Find(String *this, ssize_t offset, char c);
 ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, char c);
+bool String_Contains(String *this, String needle);
 void String_Trim(String *this);
 void String_TrimLeft(String *this);
 String String_Format(String fmt, ...);
