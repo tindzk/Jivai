@@ -155,6 +155,18 @@ char* String_CloneBuf(String s, char *buf) {
 	return buf;
 }
 
+char String_CharAt(String *this, ssize_t offset) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	if ((size_t) offset > this->len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
+	return this->buf[offset];
+}
+
 String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
 	String out;
 	size_t right;

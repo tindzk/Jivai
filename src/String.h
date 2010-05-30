@@ -34,6 +34,7 @@ void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset);
 void OVERLOAD String_Copy(String *this, String src);
 String String_Clone(String s);
 char* String_CloneBuf(String s, char *buf);
+char String_CharAt(String *this, ssize_t offset);
 String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length);
 String OVERLOAD String_Slice(String *this, ssize_t offset);
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length);
