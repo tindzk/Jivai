@@ -11,7 +11,7 @@
 	} while (0)
 
 #define LinkedList_DeclareRef(type) \
-	struct type *prev;
+	struct type *next;
 
 #define LinkedList_DeclareList(node, list) \
 	typedef struct {                       \
