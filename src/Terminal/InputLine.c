@@ -28,14 +28,20 @@ void Terminal_InputLine_Destroy(Terminal_InputLine *this) {
 	String_Destroy(&this->line);
 }
 
-void Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
-	size_t n = Unicode_CountRange(this->line, 0, this->pos);
+void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update) {
+	if (update) {
+		size_t n = Unicode_CountRange(this->line, 0, this->pos);
 
-	Terminal_InputLine_MoveLeft(this, n);
-	Terminal_DeleteUntilEol(this->term);
+		Terminal_InputLine_MoveLeft(this, n);
+		Terminal_DeleteUntilEol(this->term);
+	}
 
 	this->line.len = 0;
 	this->pos = 0;
+}
+
+void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
+	Terminal_InputLine_ClearLine(this, true);
 }
 
 void Terminal_InputLine_Print(Terminal_InputLine *this, String s) {
