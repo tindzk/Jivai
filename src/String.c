@@ -650,6 +650,36 @@ String OVERLOAD String_Between(String *this, String left, String right) {
 	return out;
 }
 
+bool String_Filter(String *this, String s1, String s2) {
+	ssize_t left, right;
+
+	if ((left = String_Find(this, s1)) == String_NotFound) {
+		return false;
+	}
+
+	String out = HeapString(0);
+
+	if (left > 0) {
+		out = String_Slice(this, 0, left - 1);
+	}
+
+	left += s1.len;
+
+	if ((right = String_Find(this, left + 1, s2)) == String_NotFound) {
+		String_Destroy(&out);
+		return false;
+	}
+
+	String_Append(&out, *this, left, right - left);
+	String_Append(&out, *this, right + s2.len);
+
+	String_Copy(this, out);
+
+	String_Destroy(&out);
+
+	return true;
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(1, s.buf, s.len);
