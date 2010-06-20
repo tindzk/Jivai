@@ -641,7 +641,7 @@ ssize_t OVERLOAD String_Between(String *this, ssize_t offset, String left, Strin
 
 	posLeft += left.len;
 
-	if ((posRight = String_Find(this, posLeft + 1, right)) == String_NotFound) {
+	if ((posRight = String_Find(this, posLeft, right)) == String_NotFound) {
 		return String_NotFound;
 	}
 
@@ -681,7 +681,7 @@ bool String_Filter(String *this, String s1, String s2) {
 
 	left += s1.len;
 
-	if ((right = String_Find(this, left + 1, s2)) == String_NotFound) {
+	if ((right = String_Find(this, left, s2)) == String_NotFound) {
 		String_Destroy(&out);
 		return false;
 	}
