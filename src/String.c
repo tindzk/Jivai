@@ -409,7 +409,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray String_SplitChar(String *this, size_t offset, char c) {
+StringArray OVERLOAD String_SplitChar(String *this, size_t offset, char c) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -435,6 +435,10 @@ StringArray String_SplitChar(String *this, size_t offset, char c) {
 	res.len++;
 
 	return res;
+}
+
+StringArray OVERLOAD String_SplitChar(String *this, char c) {
+	return String_SplitChar(this, 0, c);
 }
 
 static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, char c) {
