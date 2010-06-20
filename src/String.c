@@ -698,6 +698,6 @@ bool String_Filter(String *this, String s1, String s2) {
 
 void String_Print(String s) {
 	if (s.buf != NULL) {
-		write(1, s.buf, s.len);
+		write(STDOUT_FILENO, s.buf, s.len);
 	}
 }
