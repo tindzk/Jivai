@@ -696,6 +696,29 @@ bool String_Filter(String *this, String s1, String s2) {
 	return true;
 }
 
+bool String_Outside(String *this, String left, String right) {
+	ssize_t posLeft, posRight;
+
+	if ((posLeft = String_Find(this, left)) == String_NotFound) {
+		return false;
+	}
+
+	if ((posRight = String_Find(this, posLeft + left.len, right)) == String_NotFound) {
+		return false;
+	}
+
+	String out = HeapString(posLeft + this->len - posRight - right.len);
+
+	String_Append(&out, *this, 0, posLeft);
+	String_Append(&out, *this, posRight + right.len);
+
+	String_Copy(this, out);
+
+	String_Destroy(&out);
+
+	return true;
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(STDOUT_FILENO, s.buf, s.len);

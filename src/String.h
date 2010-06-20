@@ -68,6 +68,7 @@ ssize_t OVERLOAD String_Between(String *this, String left, String right, String 
 String OVERLOAD String_Between(String *this, ssize_t offset, String left, String right);
 String OVERLOAD String_Between(String *this, String left, String right);
 bool String_Filter(String *this, String s1, String s2);
+bool String_Outside(String *this, String left, String right);
 void String_Print(String s);
 
 #define String_NotFound -1
