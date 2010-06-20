@@ -14,8 +14,7 @@ void OnLogMessage(UNUSED void *ptr, String msg, Logger_Level level, String file,
 	String tmp;
 	String_Print(tmp = String_Format(
 		String("[%] % (%:%)\n"),
-		slevel, msg, file, sline
-	));
+		slevel, msg, file, sline));
 
 	String_Destroy(&tmp);
 }
@@ -52,6 +51,9 @@ int main(void) {
 
 	/* This will not be shown. */
 	Logger_Log(&logger, Logger_Level_Trace, String("Trace message 2."));
+
+	/* Logging formatted messages is possible, too. */
+	Logger_LogFmt(&logger, Logger_Level_Info, String("Stopping %..."), String("application"));
 
 	return EXIT_SUCCESS;
 }
