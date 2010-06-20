@@ -719,6 +719,22 @@ bool String_Outside(String *this, String left, String right) {
 	return true;
 }
 
+String String_Concat(String a, String b) {
+	String res = HeapString(a.len + b.len);
+
+	if (a.len > 0) {
+		Memory_Copy(res.buf, a.buf, a.len);
+		res.len = a.len;
+	}
+
+	if (b.len > 0) {
+		Memory_Copy(res.buf + res.len, b.buf, b.len);
+		res.len += b.len;
+	}
+
+	return res;
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(STDOUT_FILENO, s.buf, s.len);
