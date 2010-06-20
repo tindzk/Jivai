@@ -8,9 +8,6 @@
 #define Char_IsWhitespace(c) \
 	((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) == '\r' || (c) == '\0' || (c) == '\x0B')
 
-#define Char_IsAlpha(c) \
-	(((c) >= 'a') && ((c) <= 'Z'))
-
 #define Char_IsDigit(c) \
 	(((c) >= '0') && ((c) <= '9'))
 
@@ -26,6 +23,7 @@
 	((size_t) ((c) - 'A') < 26u)
 
 void Char_Print(char c);
+bool Char_IsAlpha(int ch);
 char Char_ToLower(char c);
 char Char_ToUpper(char c);
 int Char_IsPrintable(int x);

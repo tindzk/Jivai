@@ -4,6 +4,11 @@ void Char_Print(char c) {
 	write(1, &c, 1);
 }
 
+/* Taken from diet libc (dietlibc-0.32/lib/isalpha.c). */
+bool Char_IsAlpha(int ch) {
+	return (unsigned int) ((ch | 0x20) - 'a') < 26u;
+}
+
 /* Taken from diet libc (dietlibc-0.32/lib/tolower.c). */
 char Char_ToLower(char c) {
 	if (Char_IsUpper(c)) {
