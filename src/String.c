@@ -735,6 +735,26 @@ String String_Concat(String a, String b) {
 	return res;
 }
 
+bool String_Replace(String *this, String needle, String replacement) {
+	ssize_t pos = String_Find(this, needle);
+
+	if (pos == String_NotFound) {
+		return false;
+	}
+
+	String out = HeapString(this->len - needle.len + replacement.len);
+
+	String_Append(&out, *this, 0, pos);
+	String_Append(&out, replacement);
+	String_Append(&out, *this, pos + needle.len);
+
+	String_Copy(this, out);
+
+	String_Destroy(&out);
+
+	return true;
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(STDOUT_FILENO, s.buf, s.len);
