@@ -7,7 +7,7 @@
 #include "VarArg.h"
 #include "Compiler.h"
 
-typedef struct {
+typedef struct _String {
 	size_t len;
 	size_t size;
 	char *buf;
