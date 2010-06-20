@@ -71,6 +71,7 @@ bool String_Filter(String *this, String s1, String s2);
 bool String_Outside(String *this, String left, String right);
 String String_Concat(String a, String b);
 bool String_Replace(String *this, String needle, String replacement);
+String String_Consume(String *this, int n);
 void String_Print(String s);
 
 #define String_NotFound -1

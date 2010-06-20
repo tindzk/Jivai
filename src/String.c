@@ -755,6 +755,12 @@ bool String_Replace(String *this, String needle, String replacement) {
 	return true;
 }
 
+String String_Consume(String *this, int n) {
+	String res = String_Slice(this, 0, n);
+	String_Crop(this, n);
+	return res;
+}
+
 void String_Print(String s) {
 	if (s.buf != NULL) {
 		write(STDOUT_FILENO, s.buf, s.len);
