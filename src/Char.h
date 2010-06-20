@@ -26,7 +26,7 @@ void Char_Print(char c);
 bool Char_IsAlpha(int ch);
 char Char_ToLower(char c);
 char Char_ToUpper(char c);
-int Char_IsPrintable(int x);
+bool Char_IsPrintable(int x);
 bool Char_IsHexDigit(int ch);
 
 #endif

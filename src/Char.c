@@ -28,7 +28,7 @@ char Char_ToUpper(char c) {
 }
 
 /* Taken from diet libc (dietlibc-0.32/liblatin1/latin1-isprint.c). */
-int Char_IsPrintable(int x) {
+bool Char_IsPrintable(int x) {
 	unsigned char c = x & 0xff;
 	return (c >= 32 && c <= 126) || (c >= 160);
 }
