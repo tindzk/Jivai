@@ -6,8 +6,9 @@
  *
  * If you want to use this code in production systems, you
  * should consider including proper error checking (in
- * particular for `HTTP_Request' exceptions). Otherwise,
- * the server will most likely crash on malformed requests.
+ * particular for `HTTP_Request' and `HTTP_Header'
+ * exceptions). Otherwise, the server will most likely
+ * crash on malformed requests.
  */
 
 #include <Client.h>
@@ -15,7 +16,7 @@
 #include <Server.h>
 #include <Socket.h>
 #include <HTTP/Method.h>
-#include <HTTP/Request.h>
+#include <HTTP/Server.h>
 #include <SocketConnection.h>
 #include <ExceptionManager.h>
 #include <DoublyLinkedList.h>
@@ -27,9 +28,9 @@ ExceptionManager exc;
 // -------
 
 typedef struct {
+	HTTP_Server server;
 	HTTP_Method method;
 	HTTP_Version version;
-	HTTP_Request request;
 
 	SocketConnection *conn;
 
@@ -153,20 +154,21 @@ void Request_Init(Request *this, SocketConnection *conn) {
 	this->paramTest  = HeapString(256);
 	this->paramTest2 = HeapString(256);
 
-	this->request.context          = this;
-	this->request.onHeader         = NULL,
-	this->request.onHttpVersion    = (void *) &Request_OnHttpVersion;
-	this->request.onMethod         = (void *) &Request_OnMethod;
-	this->request.onPath           = (void *) &Request_OnPath;
-	this->request.onQueryParameter = (void *) &Request_OnQueryParameter;
-	this->request.onBodyParameter  = (void *) &Request_OnBodyParameter;
-	this->request.onRespond        = (void *) &Request_OnRespond;
+	HTTP_Server_Events events;
+	events.context          = this;
+	events.onHeader         = NULL;
+	events.onVersion        = (void *) &Request_OnHttpVersion;
+	events.onMethod         = (void *) &Request_OnMethod;
+	events.onPath           = (void *) &Request_OnPath;
+	events.onQueryParameter = (void *) &Request_OnQueryParameter;
+	events.onBodyParameter  = (void *) &Request_OnBodyParameter;
+	events.onRespond        = (void *) &Request_OnRespond;
 
-	HTTP_Request_Init(&this->request, 2048, 4096);
+	HTTP_Server_Init(&this->server, events, conn, 2048, 4096);
 }
 
 void Request_Destroy(Request *this) {
-	HTTP_Request_Destroy(&this->request);
+	HTTP_Server_Destroy(&this->server);
 
 	String_Destroy(&this->path);
 	String_Destroy(&this->paramTest);
@@ -176,7 +178,7 @@ void Request_Destroy(Request *this) {
 bool Request_Parse(Request *this) {
 	bool keepOpen = false;
 
-	keepOpen = HTTP_Request_Parse(&this->request, this->conn);
+	keepOpen = HTTP_Server_Process(&this->server);
 
 	return keepOpen;
 }
@@ -267,7 +269,8 @@ int main(void) {
 	Signal0(&exc);
 	Server0(&exc);
 	HTTP_Query0(&exc);
-	HTTP_Request0(&exc);
+	HTTP_Header0(&exc);
+	HTTP_Server0(&exc);
 	SocketConnection0(&exc);
 
 	Server server;
