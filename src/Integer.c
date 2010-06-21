@@ -90,3 +90,13 @@ String Integer_ToStringBuf(int num, String res) {
 String Integer64_ToStringBuf(int64_t num, String res) {
 	INTEGER_TO_STRING_BUF(num, res, Integer64_CountDigits(num), int64_t)
 }
+
+int Integer_Compare(int a, int b) {
+	return (a > b)
+		 - (a < b);
+}
+
+int Integer64_Compare(int64_t a, int64_t b) {
+	return (a > b)
+		 - (a < b);
+}

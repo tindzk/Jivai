@@ -20,6 +20,9 @@ size_t Integer64_CountDigits(int64_t num);
 String Integer_ToStringBuf(int num, String buf);
 String Integer64_ToStringBuf(int64_t num, String buf);
 
+int Integer_Compare(int a, int b);
+int Integer64_Compare(int64_t a, int64_t b);
+
 #define Integer_ToString(num) \
 	Integer_ToStringBuf(num, StackString(Integer_CountDigits(num) + (((num) < 0) ? 1 : 0)))
 
