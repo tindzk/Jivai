@@ -21,9 +21,9 @@ String Integer_ToStringBuf(int num, String buf);
 String Integer64_ToStringBuf(int64_t num, String buf);
 
 #define Integer_ToString(num) \
-	Integer_ToStringBuf(num, StackString(Integer_CountDigits(num)))
+	Integer_ToStringBuf(num, StackString(Integer_CountDigits(num) + (((num) < 0) ? 1 : 0)))
 
 #define Integer64_ToString(num) \
-	Integer64_ToStringBuf(num, StackString(Integer64_CountDigits(num)))
+	Integer64_ToStringBuf(num, StackString(Integer64_CountDigits(num) + (((num) < 0) ? 1 : 0)))
 
 #endif
