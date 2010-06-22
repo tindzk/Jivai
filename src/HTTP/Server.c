@@ -157,7 +157,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	while (this->header.len < this->header.size) {
 		/* Do this now because the buffer might already contain the next
 		 * request. */
-		requestOffset = HTTP_Header_GetLength(this->header.buf, this->header.len);
+		requestOffset = HTTP_Header_GetLength(this->header);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -197,7 +197,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 	/* This is the case when this->header.len >= this->header.size. */
 	if (requestOffset == 0) {
-		requestOffset = HTTP_Header_GetLength(this->header.buf, this->header.len);
+		requestOffset = HTTP_Header_GetLength(this->header);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */

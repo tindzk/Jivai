@@ -42,7 +42,7 @@ void HTTP_Header_ParseVersion(HTTP_Header *this, String s);
 void HTTP_Header_ParseStatus(HTTP_Header *this, String s);
 void HTTP_Header_ParseUri(HTTP_Header *this, String s);
 void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s);
-ssize_t HTTP_Header_GetLength(const char *buf, size_t buflen);
+ssize_t HTTP_Header_GetLength(String str);
 void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s);
 
 #endif

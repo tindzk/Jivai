@@ -129,19 +129,19 @@ void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s) {
  *   >0         actual request length, including last \r\n\r\n
  */
 
-ssize_t HTTP_Header_GetLength(const char *buf, size_t buflen) {
+ssize_t HTTP_Header_GetLength(String str) {
 	const char *s, *e;
 	ssize_t len = 0;
 
-	for (s = buf, e = s + buflen - 1; len <= 0 && s < e; s++) {
+	for (s = str.buf, e = s + str.len - 1; len <= 0 && s < e; s++) {
 		/* Control characters are not allowed but characters >= 128 are. */
 		if (!Char_IsPrintable(* (unsigned char *) s) && *s != '\r'
 			&& *s != '\n' && * (unsigned char *) s < 128) {
 			len = -1;
 		} else if (s[0] == '\n' && s[1] == '\n') {
-			len = (ssize_t) (s - buf) + 2;
+			len = (ssize_t) (s - str.buf) + 2;
 		} else if (s[0] == '\n' && &s[1] < e && s[1] == '\r' && s[2] == '\n') {
-			len = (ssize_t) (s - buf) + 3;
+			len = (ssize_t) (s - str.buf) + 3;
 		}
 	}
 
