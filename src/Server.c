@@ -6,7 +6,7 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Server_Init(Server *this, ServerEvents *events, int port) {
+void Server_Init(Server *this, Server_Events *events, int port) {
 	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
 	this->events = events;
 

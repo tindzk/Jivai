@@ -142,7 +142,7 @@ int main(void) {
 	SocketConnection0(&exc);
 
 	Server server;
-	ServerEvents events;
+	Server_Events events;
 	ClientListener listener;
 
 	events.context = &listener;
