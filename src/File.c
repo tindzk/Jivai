@@ -24,7 +24,9 @@ File *File_StdErr = &_File_StdErr;
 
 Exception_Define(File_AccessDeniedException);
 Exception_Define(File_AlreadyExistsException);
+Exception_Define(File_AttributeNonExistentException);
 Exception_Define(File_CannotOpenFileException);
+Exception_Define(File_GettingAttributeFailedException);
 Exception_Define(File_InvalidFileDescriptorException);
 Exception_Define(File_InvalidParameterException);
 Exception_Define(File_IsDirectoryException);
@@ -34,6 +36,7 @@ Exception_Define(File_NotWritableException);
 Exception_Define(File_ReadingFailedException);
 Exception_Define(File_ReadingInterruptedException);
 Exception_Define(File_SeekingFailedException);
+Exception_Define(File_SettingAttributeFailedException);
 Exception_Define(File_StatFailedException);
 Exception_Define(File_TruncatingFailedException);
 Exception_Define(File_WritingFailedException);
@@ -83,6 +86,38 @@ void File_Open(File *this, String path, int mode) {
 
 void File_Close(File *this) {
 	close(this->fd);
+}
+
+void File_SetXattr(File *this, String name, String value) {
+	if (fsetxattr(this->fd, String_ToNul(&name), value.buf, value.len, 0) < 0) {
+		throw(exc, &File_SettingAttributeFailedException);
+	}
+}
+
+String File_GetXattr(File *this, String name) {
+	char *nname = String_ToNul(&name);
+
+	errno = 0;
+
+	ssize_t size = fgetxattr(this->fd, nname, NULL, 0);
+
+	if (size < 0) {
+		if (errno == ENODATA) {
+			throw(exc, &File_AttributeNonExistentException);
+		} else {
+			throw(exc, &File_GettingAttributeFailedException);
+		}
+	}
+
+	String res = HeapString(size);
+
+	if (fgetxattr(this->fd, nname, res.buf, res.size) < 0) {
+		throw(exc, &File_GettingAttributeFailedException);
+	}
+
+	res.len = res.size;
+
+	return res;
 }
 
 void OVERLOAD File_Truncate(File *this, off64_t length) {
