@@ -9,6 +9,9 @@ void Integer0(ExceptionManager *e) {
 }
 
 #define INTEGER_PARSE_STRING(s, type, max)              \
+	if (s.len == 0) {                                   \
+		return 0;                                       \
+	}                                                   \
 	size_t i, j, c, digit;                              \
 	type res;                                           \
 	c = 0;                                              \
