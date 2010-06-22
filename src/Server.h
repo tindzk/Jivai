@@ -26,14 +26,14 @@ typedef struct {
 } Server_Events;
 
 typedef struct {
-	Poll poll;
-	Socket socket;
-	Server_Events *events;
+	Poll          poll;
+	Socket        socket;
+	Server_Events events;
 } Server;
 
 void Server0(ExceptionManager *e);
 
-void Server_Init(Server *this, Server_Events *events, int port);
+void Server_Init(Server *this, Server_Events events, int port);
 void Server_Destroy(Server *this);
 void Server_Process(Server *this);
 void Server_DestroyClient(Server *this, Client *client);

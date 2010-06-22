@@ -154,7 +154,7 @@ int main(void) {
 	events.onClientDisconnect = (void *) &ClientListener_OnDisconnect;
 
 	try(&exc) {
-		Server_Init(&server, &events, 1337);
+		Server_Init(&server, events, 1337);
 		String_Print(String("Server started.\n"));
 
 		while (true) {

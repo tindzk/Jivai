@@ -6,7 +6,7 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Server_Init(Server *this, Server_Events *events, int port) {
+void Server_Init(Server *this, Server_Events events, int port) {
 	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
 	this->events = events;
 
@@ -19,14 +19,14 @@ void Server_Init(Server *this, Server_Events *events, int port) {
 	/* Add the server socket to epoll. */
 	Poll_AddEvent(&this->poll, NULL, this->socket.fd, EPOLLIN | EPOLLHUP | EPOLLERR);
 
-	this->events->onInit(this->events->context);
+	this->events.onInit(this->events.context);
 }
 
 void Server_Destroy(Server *this) {
 	Socket_Destroy(&this->socket);
 	Poll_Destroy(&this->poll);
 
-	this->events->onDestroy(this->events->context);
+	this->events.onDestroy(this->events.context);
 }
 
 void Server_Process(Server *this) {
@@ -34,7 +34,7 @@ void Server_Process(Server *this) {
 }
 
 void Server_DestroyClient(Server *this, Client *client) {
-	this->events->onClientDisconnect(this->events->context, client);
+	this->events.onClientDisconnect(this->events.context, client);
 	Client_Destroy(client);
 }
 
@@ -43,7 +43,7 @@ void Server_AcceptClient(Server *this) {
 
 	Client_Accept(client, &this->socket);
 
-	this->events->onClientAccept(this->events->context, client);
+	this->events.onClientAccept(this->events.context, client);
 
 	Poll_AddEvent(
 		&this->poll,
@@ -56,7 +56,7 @@ void Server_OnEvent(Server *this, int events, Client *client) {
 	if (client == NULL && BitMask_Has(events, EPOLLIN)) {
 		/* Incoming connection. */
 
-		if (this->events->onClientConnect(this->events->context)) {
+		if (this->events.onClientConnect(this->events.context)) {
 			Server_AcceptClient(this);
 		} else {
 			/* This is necessary, else the same event will occur
@@ -73,7 +73,7 @@ void Server_OnEvent(Server *this, int events, Client *client) {
 		bool close = false;
 
 		try (exc) {
-			this->events->onClientData(this->events->context, client);
+			this->events.onClientData(this->events.context, client);
 		} catch(&SocketConnection_NotConnectedException, e) {
 			close = true;
 		} catch(&SocketConnection_ConnectionResetException, e) {
