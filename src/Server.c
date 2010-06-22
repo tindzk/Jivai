@@ -7,6 +7,9 @@ void Server0(ExceptionManager *e) {
 }
 
 void Server_Init(Server *this, ServerEvents *events, int port) {
+	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
+	this->events = events;
+
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 	Socket_SetReusableFlag(&this->socket);
 	Socket_SetCloexecFlag(&this->socket, true);
@@ -14,10 +17,8 @@ void Server_Init(Server *this, ServerEvents *events, int port) {
 	Socket_Listen(&this->socket, port, SERVER_MAX_CONN);
 
 	/* Add the server socket to epoll. */
-	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
 	Poll_AddEvent(&this->poll, NULL, this->socket.fd, EPOLLIN | EPOLLHUP | EPOLLERR);
 
-	this->events = events;
 	this->events->onInit(this->events->context);
 }
 
