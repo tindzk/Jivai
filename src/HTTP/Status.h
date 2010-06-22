@@ -7,13 +7,13 @@ typedef struct {
 	int code;
 	String msg;
 	String descr;
-} HTTP_Status;
+} HTTP_StatusItem;
 
-#define HTTP_Status(code, msg, descr) \
+#define HTTP_StatusItem(code, msg, descr) \
 	{ code, StaticString(msg), StaticString(descr) }
 
-extern HTTP_Status
-	HTTP_Status_Info_Continue,
+typedef enum {
+	HTTP_Status_Info_Continue = 0,
 	HTTP_Status_Info_SwitchingProtocol,
 	HTTP_Status_Info_Processing,
 
@@ -53,7 +53,7 @@ extern HTTP_Status
 	HTTP_Status_ClientError_RequestedRangeNotSatisfiable,
 	HTTP_Status_ClientError_ExpectationFailed,
 	HTTP_Status_ClientError_UnprocessableEntity,
-	HTTP_Status_ClientErrorLocked,
+	HTTP_Status_ClientError_Locked,
 	HTTP_Status_ClientError_FailedDependency,
 
 	HTTP_Status_ServerError_Internal,
@@ -62,6 +62,13 @@ extern HTTP_Status
 	HTTP_Status_ServerError_ServiceUnavailable,
 	HTTP_Status_ServerError_GatewayTimeout,
 	HTTP_Status_ServerError_VersionNotSupported,
-	HTTP_Status_ServerError_InsufficientStorage;
+	HTTP_Status_ServerError_InsufficientStorage,
+
+	HTTP_Status_Length,
+	HTTP_Status_Unset
+} HTTP_Status;
+
+HTTP_StatusItem HTTP_Status_GetItem(HTTP_Status status);
+HTTP_Status HTTP_Status_GetStatusByCode(int code);
 
 #endif
