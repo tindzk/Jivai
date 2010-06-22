@@ -5,6 +5,7 @@ static ExceptionManager *exc;
 Exception_Define(HTTP_Header_EmptyRequestUriException);
 Exception_Define(HTTP_Header_RequestMalformedException);
 Exception_Define(HTTP_Header_UnknownMethodException);
+Exception_Define(HTTP_Header_UnknownStatusException);
 Exception_Define(HTTP_Header_UnknownVersionException);
 
 void HTTP_Header0(ExceptionManager *e) {
@@ -40,6 +41,24 @@ void HTTP_Header_ParseVersion(HTTP_Header *this, String s) {
 
 	if (this->events.onVersion != NULL) {
 		this->events.onVersion(this->events.context, version);
+	}
+}
+
+void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
+	int code = Integer_ParseString(s);
+
+	if (code == 0) {
+		throw(exc, &HTTP_Header_UnknownStatusException);
+	}
+
+	HTTP_Status status = HTTP_Status_GetStatusByCode(code);
+
+	if (status == HTTP_Status_Unset) {
+		throw(exc, &HTTP_Header_UnknownStatusException);
+	}
+
+	if (this->events.onStatus != NULL) {
+		this->events.onStatus(this->events.context, status);
 	}
 }
 
@@ -129,8 +148,8 @@ ssize_t HTTP_Header_GetLength(const char *buf, size_t buflen) {
 	return len;
 }
 
-void HTTP_Header_Parse(HTTP_Header *this, String s) {
-	ssize_t pos1stLine = String_Find(&s, String("\n"));
+void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
+	ssize_t pos1stLine = String_Find(&s, '\n');
 
 	if (pos1stLine == String_NotFound) {
 		throw(exc, &HTTP_Header_RequestMalformedException);
@@ -142,35 +161,65 @@ void HTTP_Header_Parse(HTTP_Header *this, String s) {
 		pos1stLine--;
 	}
 
-	ssize_t posMethod = String_Find(&s, 0, 5, String(" "));
+	if (type == HTTP_Header_Type_Request) {
+		ssize_t posMethod = String_Find(&s, ' ');
 
-	if (posMethod == String_NotFound) {
-		throw(exc, &HTTP_Header_RequestMalformedException);
+		if (posMethod == String_NotFound) {
+			throw(exc, &HTTP_Header_RequestMalformedException);
+		}
+
+		String path    = HeapString(0);
+		String method  = HeapString(0);
+		String version = HeapString(0);
+
+		try(exc) {
+			method = String_Slice(&s, 0, posMethod);
+			HTTP_Header_ParseMethod(this, method);
+
+			version = String_Slice(&s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
+			HTTP_Header_ParseVersion(this, version);
+
+			path = String_Slice(&s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
+			HTTP_Header_ParseUri(this, path);
+		} finally {
+			String_Destroy(&version);
+			String_Destroy(&method);
+			String_Destroy(&path);
+		} tryEnd;
+	} else {
+		ssize_t posVersion = String_Find(&s, ' ');
+
+		if (posVersion == String_NotFound) {
+			throw(exc, &HTTP_Header_RequestMalformedException);
+		}
+
+		String code    = HeapString(0);
+		String version = HeapString(0);
+
+		try(exc) {
+			version = String_Slice(&s, 0, posVersion);
+			HTTP_Header_ParseVersion(this, version);
+
+			ssize_t posCode = String_Find(&s, posVersion + 1, ' ');
+
+			if (posCode == String_NotFound) {
+				throw(exc, &HTTP_Header_RequestMalformedException);
+			}
+
+			code = String_Slice(&s, posVersion + 1, posCode - posVersion - 1);
+			HTTP_Header_ParseStatus(this, code);
+		} finally {
+			String_Destroy(&version);
+			String_Destroy(&code);
+		} tryEnd;
 	}
-
-	String path    = HeapString(0);
-	String method  = HeapString(0);
-	String version = HeapString(0);
-
-	try(exc) {
-		method = String_Slice(&s, 0, posMethod);
-		HTTP_Header_ParseMethod(this, method);
-
-		version = String_Slice(&s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
-		HTTP_Header_ParseVersion(this, version);
-
-		path = String_Slice(&s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
-		HTTP_Header_ParseUri(this, path);
-	} finally {
-		String_Destroy(&version);
-		String_Destroy(&method);
-		String_Destroy(&path);
-	} tryEnd;
 
 	String res = HeapString(0);
 
-	size_t len, last;
-	for (size_t i = last = pos2ndLine; i < s.len; i++) {
+	size_t len;
+	size_t last = pos2ndLine;
+
+	for (size_t i = pos2ndLine + 1; i < s.len; i++) {
 		if (s.buf[i] == '\n') {
 			if (s.buf[i - 1] == '\r') {
 				len = i - last - 2;

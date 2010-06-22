@@ -228,7 +228,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
-	HTTP_Header_Parse(&header, s);
+	HTTP_Header_Parse(&header, HTTP_Header_Type_Request, s);
 
 	if (this->headers.contentLength > 0) {
 		/* The request has a body. */
