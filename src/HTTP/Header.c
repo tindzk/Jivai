@@ -74,7 +74,7 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 			this->events.onPath(this->events.context, s);
 		}
 	} else {
-		if (this->events.onParameter != NULL) {
+		if (this->events.onParameter == NULL) {
 			return;
 		}
 
