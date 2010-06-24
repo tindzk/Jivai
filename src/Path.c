@@ -236,13 +236,11 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	if (recursive) {
 		for (size_t i = 0; i < path.len; i++) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
-				String tmp = String_Slice(&path, 0, i + 1);
+				String tmp = String_FastSlice(&path, 0, i + 1);
 
 				errno = 0;
 
 				int res = mkdir(String_ToNul(&tmp), mode);
-
-				String_Destroy(&tmp);
 
 				if (res == -1) {
 					if (errno == EACCES) {
