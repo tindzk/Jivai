@@ -14,6 +14,7 @@
 Exception_Export(Path_AccessDeniedException);
 Exception_Export(Path_AlreadyExistsException);
 Exception_Export(Path_CreationFailedException);
+Exception_Export(Path_DeletingFailedException);
 Exception_Export(Path_EmptyPathException);
 Exception_Export(Path_InsufficientSpaceException);
 Exception_Export(Path_IsDirectoryException);
@@ -45,5 +46,6 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive);
 void OVERLOAD Path_Create(String path, bool recursive);
 void OVERLOAD Path_Create(String path, int mode);
 void OVERLOAD Path_Create(String path);
+void Path_Delete(String path);
 
 #endif

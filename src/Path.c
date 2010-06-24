@@ -3,6 +3,7 @@
 Exception_Define(Path_AccessDeniedException);
 Exception_Define(Path_AlreadyExistsException);
 Exception_Define(Path_CreationFailedException);
+Exception_Define(Path_DeletingFailedException);
 Exception_Define(Path_EmptyPathException);
 Exception_Define(Path_InsufficientSpaceException);
 Exception_Define(Path_IsDirectoryException);
@@ -288,4 +289,22 @@ void OVERLOAD Path_Create(String path, int mode) {
 
 void OVERLOAD Path_Create(String path) {
 	Path_Create(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH, false);
+}
+
+void Path_Delete(String path) {
+	errno = 0;
+
+	if (unlink(String_ToNul(&path)) == -1) {
+		if (errno == EACCES) {
+			throw(exc, &Path_AccessDeniedException);
+		} else if (errno == ENAMETOOLONG) {
+			throw(exc, &Path_NameTooLongException);
+		} else if (errno == ENOTDIR) {
+			throw(exc, &Path_NonExistentPathException);
+		} else if (errno == EISDIR) {
+			throw(exc, &Path_IsDirectoryException);
+		} else {
+			throw(exc, &Path_DeletingFailedException);
+		}
+	}
 }
