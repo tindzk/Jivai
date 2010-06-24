@@ -100,7 +100,7 @@ void String_Print(String s);
 	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), false }
 
 #define String_ToNul(this) \
-	String_ToNulBuf(this, alloca(((this)->len + 1)))
+	String_ToNulBuf(this, alloca((this)->len + 1))
 
 #define String_Equals(this, needle) \
 	((this)->len == (needle).len && Memory_Equals((this)->buf, (needle).buf, (this)->len))
