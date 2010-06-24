@@ -8,8 +8,10 @@ Exception_Define(Path_EmptyPathException);
 Exception_Define(Path_InsufficientSpaceException);
 Exception_Define(Path_IsDirectoryException);
 Exception_Define(Path_NameTooLongException);
+Exception_Define(Path_NonExistentFileException);
 Exception_Define(Path_NonExistentPathException);
 Exception_Define(Path_NotDirectoryException);
+Exception_Define(Path_ReadingLinkFailedException);
 Exception_Define(Path_ResolvingFailedException);
 Exception_Define(Path_StatFailedException);
 Exception_Define(Path_TruncatingFailedException);
@@ -307,4 +309,26 @@ void Path_Delete(String path) {
 			throw(exc, &Path_DeletingFailedException);
 		}
 	}
+}
+
+void Path_ReadLink(String path, String *out) {
+	errno = 0;
+
+	ssize_t len = readlink(String_ToNul(&path), out->buf, out->size);
+
+	if (len == -1) {
+		if (errno == EACCES) {
+			throw(exc, &Path_AccessDeniedException);
+		} else if (errno == ENAMETOOLONG) {
+			throw(exc, &Path_NameTooLongException);
+		} else if (errno == ENOTDIR) {
+			throw(exc, &Path_NonExistentPathException);
+		} else if (errno == ENOENT) {
+			throw(exc, &Path_NonExistentFileException);
+		} else {
+			throw(exc, &Path_ReadingLinkFailedException);
+		}
+	}
+
+	out->len = len;
 }

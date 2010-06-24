@@ -19,8 +19,10 @@ Exception_Export(Path_EmptyPathException);
 Exception_Export(Path_InsufficientSpaceException);
 Exception_Export(Path_IsDirectoryException);
 Exception_Export(Path_NameTooLongException);
+Exception_Export(Path_NonExistentFileException);
 Exception_Export(Path_NonExistentPathException);
 Exception_Export(Path_NotDirectoryException);
+Exception_Export(Path_ReadingLinkFailedException);
 Exception_Export(Path_ResolvingFailedException);
 Exception_Export(Path_StatFailedException);
 Exception_Export(Path_TruncatingFailedException);
@@ -47,5 +49,6 @@ void OVERLOAD Path_Create(String path, bool recursive);
 void OVERLOAD Path_Create(String path, int mode);
 void OVERLOAD Path_Create(String path);
 void Path_Delete(String path);
+void Path_ReadLink(String path, String *out);
 
 #endif
