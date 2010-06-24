@@ -84,7 +84,7 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 	if (String_Equals(&name, String("connection"))) {
 		String_ToLower(&value);
 
-		StringArray chunks = String_SplitChar(&value, 0, ',');
+		StringArray chunks = String_Split(&value, 0, ',');
 
 		for (size_t i = 0; i < chunks.len; i++) {
 			String_Trim(&chunks.buf[i]);

@@ -441,7 +441,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray OVERLOAD String_SplitChar(String *this, size_t offset, char c) {
+StringArray OVERLOAD String_Split(String *this, size_t offset, char c) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -469,8 +469,8 @@ StringArray OVERLOAD String_SplitChar(String *this, size_t offset, char c) {
 	return res;
 }
 
-StringArray OVERLOAD String_SplitChar(String *this, char c) {
-	return String_SplitChar(this, 0, c);
+StringArray OVERLOAD String_Split(String *this, char c) {
+	return String_Split(this, 0, c);
 }
 
 static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, char c) {
