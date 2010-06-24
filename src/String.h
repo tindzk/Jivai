@@ -99,6 +99,9 @@ void String_Print(String s);
 #define String_StackClone(s) \
 	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), false }
 
+#define String_FromNul(s) \
+	BufString(s, strlen(s))
+
 #define String_ToNul(this) \
 	String_ToNulBuf(this, alloca((this)->len + 1))
 
