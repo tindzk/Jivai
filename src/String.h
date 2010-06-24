@@ -102,6 +102,9 @@ void String_Print(String s);
 #define String_ToNul(this) \
 	String_ToNulBuf(this, alloca((this)->len + 1))
 
+#define String_ToNulHeap(this) \
+	String_ToNulBuf(this, Memory_Alloc((this)->len + 1))
+
 #define String_Equals(this, needle) \
 	((this)->len == (needle).len && Memory_Equals((this)->buf, (needle).buf, (this)->len))
 
