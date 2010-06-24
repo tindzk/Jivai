@@ -6,6 +6,14 @@
  * $ telnet localhost 1337
  *
  * Then type "info", "active" or "exit".
+ *
+ * This example shows the possibilities of using a custom client
+ * listener like reacting on incoming connections just as they
+ * arrive. However, this low-level approach is hardly ever needed
+ * and it's generally advisable to use the default client
+ * listener which also has the advantage of keeping track of all
+ * active connections and closing them automatically on shutdown.
+ * See also the httpd.c which makes use of it.
  */
 
 #include <Client.h>
@@ -25,28 +33,28 @@ typedef struct {
 	int id;
 } ClientData;
 
-// --------------
-// ClientListener
-// --------------
+// --------------------
+// CustomClientListener
+// --------------------
 
 typedef struct {
 	int activeConn;
-} ClientListener;
+} CustomClientListener;
 
-void ClientListener_OnInit(ClientListener *this) {
+void CustomClientListener_OnInit(CustomClientListener *this) {
 	this->activeConn = 0;
 }
 
-void ClientListener_OnDestroy(UNUSED ClientListener *this) {
+void CustomClientListener_OnDestroy(UNUSED CustomClientListener *this) {
 	/* ... */
 }
 
-bool ClientListener_OnConnect(ClientListener *this) {
+bool CustomClientListener_OnConnect(CustomClientListener *this) {
 	/* Don't allow more than five parallel connections. */
 	return this->activeConn < 5;
 }
 
-void ClientListener_OnAccept(ClientListener *this, Client *client) {
+void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 	ClientData *data = New(ClientData);
 	data->id = this->activeConn;
 
@@ -68,7 +76,7 @@ void ClientListener_OnAccept(ClientListener *this, Client *client) {
 	this->activeConn++;
 }
 
-void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
+void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *client) {
 	String tmp, tmp2;
 	String_Print(tmp = String_Format(
 		String("Client %:%, fd=% disconnected\n"),
@@ -84,7 +92,7 @@ void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
 	this->activeConn--;
 }
 
-void ClientListener_OnData(ClientListener *this, Client *client) {
+void CustomClientListener_OnData(CustomClientListener *this, Client *client) {
 	String s = StackString(1024);
 	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
 
@@ -122,7 +130,7 @@ void ClientListener_OnData(ClientListener *this, Client *client) {
 		 * does not emit an "OnDisconnect" event either.
 		 */
 
-		ClientListener_OnDisconnect(this, client);
+		CustomClientListener_OnDisconnect(this, client);
 		Client_Destroy(client);
 	}
 }
@@ -143,15 +151,16 @@ int main(void) {
 
 	Server server;
 	Server_Events events;
-	ClientListener listener;
+	CustomClientListener listener;
 
 	events.context = &listener;
 
-	events.onInit             = (void *) &ClientListener_OnInit;
-	events.onDestroy          = (void *) &ClientListener_OnDestroy;
-	events.onClientConnect    = (void *) &ClientListener_OnConnect; events.onClientAccept     = (void *) &ClientListener_OnAccept;
-	events.onClientData       = (void *) &ClientListener_OnData;
-	events.onClientDisconnect = (void *) &ClientListener_OnDisconnect;
+	events.onInit             = (void *) &CustomClientListener_OnInit;
+	events.onDestroy          = (void *) &CustomClientListener_OnDestroy;
+	events.onClientConnect    = (void *) &CustomClientListener_OnConnect;
+	events.onClientAccept     = (void *) &CustomClientListener_OnAccept;
+	events.onClientData       = (void *) &CustomClientListener_OnData;
+	events.onClientDisconnect = (void *) &CustomClientListener_OnDisconnect;
 
 	try(&exc) {
 		Server_Init(&server, events, 1337);

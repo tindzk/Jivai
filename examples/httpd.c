@@ -15,11 +15,14 @@
 #include <Signal.h>
 #include <Server.h>
 #include <Socket.h>
+#include <Connection.h>
 #include <HTTP/Method.h>
 #include <HTTP/Server.h>
+#include <ClientListener.h>
 #include <SocketConnection.h>
 #include <ExceptionManager.h>
 #include <DoublyLinkedList.h>
+#include <ConnectionInterface.h>
 
 ExceptionManager exc;
 
@@ -184,77 +187,36 @@ bool Request_Parse(Request *this) {
 }
 
 // --------------
-// ClientListener
+// HttpConnection
 // --------------
 
-/* Pointers to the Client structure are stored in a linked list
- * because the Server class will not close all opened connections
- * when the application exits.
- */
-
-typedef struct _Connection {
-	Client *client;
+typedef struct _HttpConnection {
+	Connection_Define(_HttpConnection);
 	Request request;
+} HttpConnection;
 
-	DoublyLinkedList_DeclareRef(_Connection);
-} Connection;
-
-DoublyLinkedList_DeclareList(Connection, ConnectionList);
-
-typedef struct {
-	ConnectionList connections;
-} ClientListener;
-
-void ClientListener_OnInit(ClientListener *this) {
-	DoublyLinkedList_Init(&this->connections);
+HttpConnection* HttpConnection_New(void) {
+	return New(HttpConnection);
 }
 
-void ClientListener_OnDestroy(ClientListener *this) {
-	void (^destroy)(Connection *) = ^ void (Connection *conn) {
-		Request_Destroy(&conn->request);
-		Client_Destroy(conn->client);
-		Memory_Free(conn);
-	};
-
-	DoublyLinkedList_Destroy(&this->connections, destroy);
+void HttpConnection_Init(HttpConnection *this, SocketConnection *conn) {
+	Request_Init(&this->request, conn);
 }
 
-bool ClientListener_OnConnect(UNUSED ClientListener *this) {
-	return true;
+void HttpConnection_Destroy(HttpConnection *this) {
+	Request_Destroy(&this->request);
 }
 
-void ClientListener_OnAccept(ClientListener *this, Client *client) {
-	/* You could also implement IP blacklisting here. */
-
-	Connection *conn = New(Connection);
-	DoublyLinkedList_InsertEnd(&this->connections, conn);
-
-	conn->client = client;
-	Request_Init(&conn->request, client->conn);
-
-	client->data = conn;
+bool HttpConnection_Process(HttpConnection *this) {
+	return !Request_Parse(&this->request);
 }
 
-void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
-	if (client->data != NULL) {
-		Connection *conn = client->data;
-
-		Request_Destroy(&conn->request);
-		DoublyLinkedList_Remove(&this->connections, conn);
-		Memory_Free(conn);
-	}
-}
-
-void ClientListener_OnData(ClientListener *this, Client *client) {
-	Connection *conn = client->data;
-
-	bool keepOpen = Request_Parse(&conn->request);
-
-	if (!keepOpen) {
-		ClientListener_OnDisconnect(this, client);
-		Client_Destroy(client);
-	}
-}
+ConnectionInterface HttpConnection_Methods = {
+	.new     = (void *) HttpConnection_New,
+	.init    = (void *) HttpConnection_Init,
+	.destroy = (void *) HttpConnection_Destroy,
+	.process = (void *) HttpConnection_Process
+};
 
 // ----
 // main
@@ -276,15 +238,7 @@ int main(void) {
 	Server server;
 	Server_Events events;
 	ClientListener listener;
-
-	events.context = &listener;
-
-	events.onInit             = (void *) &ClientListener_OnInit;
-	events.onDestroy          = (void *) &ClientListener_OnDestroy;
-	events.onClientConnect    = (void *) &ClientListener_OnConnect;
-	events.onClientAccept     = (void *) &ClientListener_OnAccept;
-	events.onClientData       = (void *) &ClientListener_OnData;
-	events.onClientDisconnect = (void *) &ClientListener_OnDisconnect;
+	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
 
 	int res = EXIT_SUCCESS;
 
