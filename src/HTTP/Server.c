@@ -214,10 +214,6 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	String_TrimLeft(&this->header);
 	requestOffset -= oldLength - this->header.len; /* ...and update requestOffset accordingly. */
 
-	String s = StackString(0);
-	s.buf = this->header.buf;
-	s.len = requestOffset;
-
 	HTTP_Header_Events events;
 	events.onMethod    = (void *) &HTTP_Server_OnMethod;
 	events.onVersion   = (void *) &HTTP_Server_OnVersion;
@@ -225,6 +221,8 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	events.onParameter = (void *) &HTTP_Server_OnQueryParameter;
 	events.onHeader    = (void *) &HTTP_Server_OnHeader;
 	events.context     = this;
+
+	String s = String_FastSlice(&this->header, 0, requestOffset);
 
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
