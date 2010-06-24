@@ -50,5 +50,6 @@ void OVERLOAD Path_Create(String path, int mode);
 void OVERLOAD Path_Create(String path);
 void Path_Delete(String path);
 void Path_ReadLink(String path, String *out);
+void Path_Symlink(String path1, String path2);
 
 #endif

@@ -332,3 +332,15 @@ void Path_ReadLink(String path, String *out) {
 
 	out->len = len;
 }
+
+void Path_Symlink(String path1, String path2) {
+	errno = 0;
+
+	if (symlink(String_ToNul(&path1), String_ToNul(&path2)) == -1) {
+		if (errno == EEXIST) {
+			throw(exc, &Path_AlreadyExistsException);
+		} else {
+			throw(exc, &Path_CreationFailedException);
+		}
+	}
+}
