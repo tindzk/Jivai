@@ -200,8 +200,12 @@ String Path_Resolve(String path) {
 		res = Path_GetCwd();
 
 		if (!isDir) {
+			String filename = Path_GetFilename(path, false);
+
 			String_Append(&res, '/');
-			String_Append(&res, Path_GetFilename(path, false));
+			String_Append(&res, filename);
+
+			String_Destroy(&filename);
 		}
 
 		fchdir(fd);
