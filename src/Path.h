@@ -27,9 +27,11 @@ Exception_Export(Path_NameTooLongException);
 Exception_Export(Path_NonExistentFileException);
 Exception_Export(Path_NonExistentPathException);
 Exception_Export(Path_NotDirectoryException);
+Exception_Export(Path_PermissionDeniedException);
 Exception_Export(Path_ReadingLinkFailedException);
 Exception_Export(Path_ResolvingFailedException);
 Exception_Export(Path_SettingAttributeFailedException);
+Exception_Export(Path_SettingTimeFailedException);
 Exception_Export(Path_StatFailedException);
 Exception_Export(Path_TruncatingFailedException);
 
@@ -59,5 +61,8 @@ void Path_ReadLink(String path, String *out);
 void Path_Symlink(String path1, String path2);
 void Path_SetXattr(String path, String name, String value);
 String Path_GetXattr(String path, String name);
+void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink);
+void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink);
+void OVERLOAD Path_SetTime(String path, time_t timestamp);
 
 #endif

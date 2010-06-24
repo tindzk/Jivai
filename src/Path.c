@@ -13,9 +13,11 @@ Exception_Define(Path_NameTooLongException);
 Exception_Define(Path_NonExistentFileException);
 Exception_Define(Path_NonExistentPathException);
 Exception_Define(Path_NotDirectoryException);
+Exception_Define(Path_PermissionDeniedException);
 Exception_Define(Path_ReadingLinkFailedException);
 Exception_Define(Path_ResolvingFailedException);
 Exception_Define(Path_SettingAttributeFailedException);
+Exception_Define(Path_SettingTimeFailedException);
 Exception_Define(Path_StatFailedException);
 Exception_Define(Path_TruncatingFailedException);
 
@@ -379,4 +381,43 @@ String Path_GetXattr(String path, String name) {
 	res.len = res.size;
 
 	return res;
+}
+
+void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
+	struct timespec t;
+
+	t.tv_sec  = timestamp;
+	t.tv_nsec = nano;
+
+	int flags = !followSymlink ? AT_SYMLINK_NOFOLLOW : 0;
+
+	errno = 0;
+
+	if (utimensat(AT_FDCWD,
+		String_ToNul(&path),
+		(const struct timespec[2]) {t, t},
+		flags) == -1)
+	{
+		if (errno == ENAMETOOLONG) {
+			throw(exc, &Path_NameTooLongException);
+		} else if (errno == ENOENT) {
+			throw(exc, &Path_NonExistentPathException);
+		} else if (errno == ENOTDIR) {
+			throw(exc, &Path_NotDirectoryException);
+		} else if (errno == EACCES) {
+			throw(exc, &Path_AccessDeniedException);
+		} else if (errno == EPERM) {
+			throw(exc, &Path_PermissionDeniedException);
+		} else {
+			throw(exc, &Path_SettingTimeFailedException);
+		}
+	}
+}
+
+void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink) {
+	Path_SetTime(path, timestamp, 0, followSymlink);
+}
+
+void OVERLOAD Path_SetTime(String path, time_t timestamp) {
+	Path_SetTime(path, timestamp, 0, false);
 }
