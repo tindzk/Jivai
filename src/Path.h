@@ -4,18 +4,23 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
+
+#include <attr/xattr.h>
 
 #include "String.h"
 #include "Exception.h"
 
 Exception_Export(Path_AccessDeniedException);
 Exception_Export(Path_AlreadyExistsException);
+Exception_Export(Path_AttributeNonExistentException);
 Exception_Export(Path_CreationFailedException);
 Exception_Export(Path_DeletingFailedException);
 Exception_Export(Path_EmptyPathException);
+Exception_Export(Path_GettingAttributeFailedException);
 Exception_Export(Path_InsufficientSpaceException);
 Exception_Export(Path_IsDirectoryException);
 Exception_Export(Path_NameTooLongException);
@@ -24,6 +29,7 @@ Exception_Export(Path_NonExistentPathException);
 Exception_Export(Path_NotDirectoryException);
 Exception_Export(Path_ReadingLinkFailedException);
 Exception_Export(Path_ResolvingFailedException);
+Exception_Export(Path_SettingAttributeFailedException);
 Exception_Export(Path_StatFailedException);
 Exception_Export(Path_TruncatingFailedException);
 
@@ -51,5 +57,7 @@ void OVERLOAD Path_Create(String path);
 void Path_Delete(String path);
 void Path_ReadLink(String path, String *out);
 void Path_Symlink(String path1, String path2);
+void Path_SetXattr(String path, String name, String value);
+String Path_GetXattr(String path, String name);
 
 #endif

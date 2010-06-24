@@ -2,9 +2,11 @@
 
 Exception_Define(Path_AccessDeniedException);
 Exception_Define(Path_AlreadyExistsException);
+Exception_Define(Path_AttributeNonExistentException);
 Exception_Define(Path_CreationFailedException);
 Exception_Define(Path_DeletingFailedException);
 Exception_Define(Path_EmptyPathException);
+Exception_Define(Path_GettingAttributeFailedException);
 Exception_Define(Path_InsufficientSpaceException);
 Exception_Define(Path_IsDirectoryException);
 Exception_Define(Path_NameTooLongException);
@@ -13,6 +15,7 @@ Exception_Define(Path_NonExistentPathException);
 Exception_Define(Path_NotDirectoryException);
 Exception_Define(Path_ReadingLinkFailedException);
 Exception_Define(Path_ResolvingFailedException);
+Exception_Define(Path_SettingAttributeFailedException);
 Exception_Define(Path_StatFailedException);
 Exception_Define(Path_TruncatingFailedException);
 
@@ -343,4 +346,37 @@ void Path_Symlink(String path1, String path2) {
 			throw(exc, &Path_CreationFailedException);
 		}
 	}
+}
+
+void Path_SetXattr(String path, String name, String value) {
+	if (setxattr(String_ToNul(&path), String_ToNul(&name), value.buf, value.len, 0) < 0) {
+		throw(exc, &Path_SettingAttributeFailedException);
+	}
+}
+
+String Path_GetXattr(String path, String name) {
+	char *npath = String_ToNul(&path);
+	char *nname = String_ToNul(&name);
+
+	errno = 0;
+
+	ssize_t size = getxattr(npath, nname, NULL, 0);
+
+	if (size < 0) {
+		if (errno == ENODATA) {
+			throw(exc, &Path_AttributeNonExistentException);
+		} else {
+			throw(exc, &Path_GettingAttributeFailedException);
+		}
+	}
+
+	String res = HeapString(size);
+
+	if (getxattr(npath, nname, res.buf, res.size) < 0) {
+		throw(exc, &Path_GettingAttributeFailedException);
+	}
+
+	res.len = res.size;
+
+	return res;
 }
