@@ -206,6 +206,38 @@ String OVERLOAD String_Slice(String *this, ssize_t offset) {
 	return String_Slice(this, offset, this->len - offset);
 }
 
+String OVERLOAD String_FastSlice(String *this, ssize_t offset, ssize_t length) {
+	String out;
+	size_t right;
+
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	if (length < 0) {
+		right = length + this->len;
+	} else {
+		right = length + offset;
+	}
+
+	if ((size_t) offset > right
+	 || (size_t) offset > this->len
+	 || right           > this->len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
+	out.len  = right - offset;
+	out.size = out.len;
+	out.buf  = this->buf + offset;
+	out.heap = false;
+
+	return out;
+}
+
+String OVERLOAD String_FastSlice(String *this, ssize_t offset) {
+	return String_FastSlice(this, offset, this->len - offset);
+}
+
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
 	size_t right;
 
