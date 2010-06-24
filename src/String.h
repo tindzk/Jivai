@@ -117,4 +117,12 @@ void String_Print(String s);
 #define String_EndsWith(this, needle) \
 	String_RangeEquals(this, (this)->len - (needle).len, needle, 0)
 
+#define String_FmtPrint(...)            \
+	do {                                \
+		String __tmp =                  \
+			String_Format(__VA_ARGS__); \
+		String_Print(__tmp);            \
+		String_Destroy(&__tmp);         \
+	} while(0)
+
 #endif
