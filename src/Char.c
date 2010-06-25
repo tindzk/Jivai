@@ -10,7 +10,7 @@ bool Char_IsAlpha(int ch) {
 }
 
 /* Taken from diet libc (dietlibc-0.32/lib/tolower.c). */
-char Char_ToLower(char c) {
+int Char_ToLower(int c) {
 	if (Char_IsUpper(c)) {
 		c += 'a' - 'A';
 	}
@@ -19,7 +19,7 @@ char Char_ToLower(char c) {
 }
 
 /* Taken from diet libc (dietlibc-0.32/lib/toupper.c). */
-char Char_ToUpper(char c) {
+int Char_ToUpper(int c) {
 	if (Char_IsLower(c)) {
 		c += 'A' - 'a';
 	}
