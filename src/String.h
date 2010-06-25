@@ -75,6 +75,8 @@ String String_Concat(String a, String b);
 bool String_Replace(String *this, String needle, String replacement);
 String String_Consume(String *this, int n);
 void String_Print(String s);
+int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
+int OVERLOAD String_NaturalCompare(String a, String b);
 
 #define String_NotFound -1
 
