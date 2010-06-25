@@ -5,7 +5,7 @@
 #include "UniStd.h" /* write() */
 
 /* See also: http://php.net/manual/en/function.trim.php */
-#define Char_IsWhitespace(c) \
+#define Char_IsSpace(c) \
 	((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) == '\r' || (c) == '\0' || (c) == '\x0B')
 
 #define Char_IsDigit(c) \

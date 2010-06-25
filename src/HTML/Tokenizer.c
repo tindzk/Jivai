@@ -111,7 +111,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 	}
 
 	/* Parse tokens, their attributes and options. */
-	if (Char_IsWhitespace(c) || c == '/' || c == '>') {
+	if (Char_IsSpace(c) || c == '/' || c == '>') {
 		if (BitMask_Has(this->state, HTML_Tokenizer_State_TagName)) {
 			if (this->buf.len > 0) {
 				if (!String_BeginsWith(&this->buf, String("/"))) {
@@ -137,7 +137,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 					}
 				}
 
-				if (Char_IsWhitespace(c)) {
+				if (Char_IsSpace(c)) {
 					/* The token's end is not reached yet,
 					 * hence we are expecting an attribute name. */
 					BitMask_Set(this->state, HTML_Tokenizer_State_AttrName);
@@ -173,7 +173,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 	if (c == '>') {
 		BitMask_Clear(this->state, HTML_Tokenizer_State_Tag);
 		this->buf.len = 0;
-	} else if (!Char_IsWhitespace(c)) {
+	} else if (!Char_IsSpace(c)) {
 		String_Append(&this->buf, c);
 	}
 }

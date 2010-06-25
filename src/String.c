@@ -570,7 +570,7 @@ void String_TrimLeft(String *this) {
 	size_t pos = 0;
 
 	for (size_t i = 0; i < this->len; i++) {
-		if (Char_IsWhitespace(this->buf[i])) {
+		if (Char_IsSpace(this->buf[i])) {
 			pos = i + 1;
 		} else {
 			break;
@@ -584,7 +584,7 @@ void String_Trim(String *this) {
 	size_t i, lpos = 0;
 
 	for (i = 0; i < this->len; i++) {
-		if (Char_IsWhitespace(this->buf[i])) {
+		if (Char_IsSpace(this->buf[i])) {
 			lpos = i + 1;
 		} else {
 			break;
@@ -597,7 +597,7 @@ void String_Trim(String *this) {
 		size_t rpos = this->len - 1;
 
 		for (i = rpos; i > 0; i--) {
-			if (Char_IsWhitespace(this->buf[i])) {
+			if (Char_IsSpace(this->buf[i])) {
 				rpos = i - 1;
 			} else {
 				break;
@@ -886,13 +886,13 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 
 	while (ai < a.len && bi < b.len) {
 		/* Skip over leading spaces (and zeros, if desired). */
-		while ((skipSpaces && Char_IsWhitespace(a.buf[ai]))
+		while ((skipSpaces && Char_IsSpace(a.buf[ai]))
 			|| (skipZeros && a.buf[ai] == '0'))
 		{
 			ai++;
 		}
 
-		while ((skipSpaces && Char_IsWhitespace(b.buf[bi]))
+		while ((skipSpaces && Char_IsSpace(b.buf[bi]))
 			|| (skipZeros && b.buf[bi] == '0'))
 		{
 			bi++;
