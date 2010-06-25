@@ -1,8 +1,8 @@
 #include "Hex.h"
 
-static char symbols[] = "0123456789abcdef";
-
 String Hex_ToString(long hex) {
+	static char symbols[] = "0123456789abcdef";
+
 	String res = HeapString(6);
 	String_Append(&res, String("000000"));
 
@@ -19,25 +19,34 @@ String Hex_ToString(long hex) {
 	return res;
 }
 
-long Hex_ToInteger(String s) {
+int OVERLOAD Hex_ToInteger(char c) {
+	if ('a' <= c && c <= 'f') {
+		return c - 'a' + 10;
+	} else if ('A' <= c && c <= 'F') {
+		return c - 'A' + 10;
+	} else if ('0' <= c && c <= '9') {
+		return c - '0';
+	} else { /* The character is malformed. */
+		return 0;
+	}
+}
+
+long OVERLOAD Hex_ToInteger(String s) {
 	int  total      = 0;
 	long multiplier = 1;
 
 	ssize_t i = s.len - 1;
-	size_t  j;
 
 	do {
-		for (j = 0; j < sizeof(symbols) - 1; j++) {
-			if (Char_ToLower(s.buf[i]) == symbols[j]) {
-				goto ok;
-			}
+		int digit = Hex_ToInteger(s.buf[i]);
+
+		if (digit == 0) {
+			return 0;
 		}
 
-		return 0;
-
-	ok:
-		total += j * multiplier;
+		total += digit * multiplier;
 		multiplier *= 16;
+
 		i--;
 	} while (i >= 0);
 

@@ -84,11 +84,9 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 		this->events.onPath(this->events.context, s);
 
 		try(exc) {
-			HTTP_Query_Decode(
-				params,
-				false,
-				this->events.onParameter,
-				this->events.context);
+			HTTP_Query qry;
+			HTTP_Query_Init(&qry, this->events.onParameter, this->events.context);
+			HTTP_Query_Decode(&qry, params, false);
 		} finally {
 			String_Destroy(&params);
 		} tryEnd;

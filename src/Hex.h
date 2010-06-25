@@ -4,6 +4,7 @@
 #include "String.h"
 
 String Hex_ToString(long hex);
-long Hex_ToInteger(String s);
+int OVERLOAD Hex_ToInteger(char c);
+long OVERLOAD Hex_ToInteger(String s);
 
 #endif

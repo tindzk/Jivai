@@ -8,7 +8,12 @@ void HTTP_Query0(ExceptionManager *e) {
 	exc = e;
 }
 
-static size_t absoluteLength(String s) {
+void HTTP_Query_Init(HTTP_Query *this, HTTP_OnParameter onParameter, void *context) {
+	this->onParameter = onParameter;
+	this->context     = context;
+}
+
+size_t HTTP_Query_GetAbsoluteLength(String s) {
 	size_t cnt = 0;
 
 	for (size_t i = 0; i < s.len; i++) {
@@ -42,19 +47,7 @@ static size_t absoluteLength(String s) {
  * http://ftp.ics.uci.edu/pub/ietf/html/rfc1866.txt
  */
 
-static int CharToHex(char c) {
-	if ('a' <= c && c <= 'f') {
-		return c - 'a' + 10;
-	} else if ('A' <= c && c <= 'F') {
-		return c - 'A' + 10;
-	} else if ('0' <= c && c <= '9') {
-		return c - '0';
-	} else { /* The character is malformed. */
-		return 0;
-	}
-}
-
-static void unescape(String src, char *dst, bool isFormUri) {
+void HTTP_Query_Unescape(String src, char *dst, bool isFormUri) {
 	int high, low;
 
 	for (size_t i = 0; i < src.len; i++) {
@@ -66,8 +59,8 @@ static void unescape(String src, char *dst, bool isFormUri) {
 				*dst++ = src.buf[i + 1];
 				*dst++ = src.buf[i + 2];
 			} else {
-				high = CharToHex(src.buf[i + 1]);
-				low  = CharToHex(src.buf[i + 2]);
+				high = Hex_ToInteger(src.buf[i + 1]);
+				low  = Hex_ToInteger(src.buf[i + 2]);
 
 				*dst++ = (char)((high << 4) + low);
 			}
@@ -79,7 +72,7 @@ static void unescape(String src, char *dst, bool isFormUri) {
 	}
 }
 
-void HTTP_Query_Decode(String s, bool isFormUri, HTTP_OnParameter onParameter, void *context) {
+void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 	size_t len;
 	size_t i = 0;
 	size_t abslen;
@@ -93,20 +86,20 @@ void HTTP_Query_Decode(String s, bool isFormUri, HTTP_OnParameter onParameter, v
 			tmp.buf = s.buf + start;
 			tmp.len = i - start;
 
-			abslen = absoluteLength(tmp);
+			abslen = HTTP_Query_GetAbsoluteLength(tmp);
 			String_Align(&name, abslen);
 
-			unescape(tmp, name.buf, isFormUri);
+			HTTP_Query_Unescape(tmp, name.buf, isFormUri);
 			name.len = abslen;
 
 			start = i;
-		} else if ((s.buf[i] == '&') || (s.len == i + 1)) {
+		} else if (s.buf[i] == '&' || s.len == i + 1) {
 			/* Handle malformed queries such as p1=v1&&&p2=v2. */
 			if ((i > 0) && (s.buf[i - 1] == '&')) {
 				goto next;
 			}
 
-			String *value = onParameter(context, name);
+			String *value = this->onParameter(this->context, name);
 
 			if (value == NULL) {
 				/* Ignore parameter. */
@@ -123,14 +116,14 @@ void HTTP_Query_Decode(String s, bool isFormUri, HTTP_OnParameter onParameter, v
 			val.buf = s.buf + start + 1;
 			val.len = len;
 
-			abslen = absoluteLength(val);
+			abslen = HTTP_Query_GetAbsoluteLength(val);
 
 			if (abslen > value->size) {
 				String_Destroy(&name);
 				throw(exc, &HTTP_Query_ExceedsPermittedLengthException);
 			}
 
-			unescape(val, value->buf, isFormUri);
+			HTTP_Query_Unescape(val, value->buf, isFormUri);
 			value->len = abslen;
 
 		next:

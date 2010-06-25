@@ -314,7 +314,9 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 		try(exc) {
 			/* Handle the form data. */
 			if (this->events.onBodyParameter != NULL) {
-				HTTP_Query_Decode(this->body, true, this->events.onBodyParameter, this->events.context);
+				HTTP_Query qry;
+				HTTP_Query_Init(&qry, this->events.onBodyParameter, this->events.context);
+				HTTP_Query_Decode(&qry, this->body, true);
 			}
 		} finally {
 			this->state = HTTP_Server_State_Header;
