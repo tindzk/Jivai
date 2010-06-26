@@ -370,11 +370,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 							 */
 							this->inChunk = false;
 
-							if (this->resp.len == 0) {
-								continue;
-							} else {
-								/* Fall through. */
-							}
+							continue;
 						}
 					}
 
