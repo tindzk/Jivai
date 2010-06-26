@@ -29,6 +29,8 @@ Exception_Export(Socket_SocketFailedException);
 
 typedef struct {
 	int fd;
+	bool unused;
+	Socket_Protocol protocol;
 } Socket;
 
 void Socket0(ExceptionManager *e);

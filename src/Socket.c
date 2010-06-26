@@ -16,7 +16,9 @@ void Socket0(ExceptionManager *e) {
 }
 
 void Socket_Init(Socket *this, Socket_Protocol protocol) {
-	this->fd = -1;
+	this->fd       = -1;
+	this->unused   = true;
+	this->protocol = protocol;
 
 	if (protocol == Socket_Protocol_TCP) {
 		this->fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -113,9 +115,16 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 	addr.sin_addr   = NetworkAddress_ResolveHost(hostname);
 	addr.sin_port   = htons(port);
 
+	if (!this->unused) {
+		Socket_Destroy(this);
+		Socket_Init(this, this->protocol);
+	}
+
 	if (connect(this->fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		throw(exc, &Socket_ConnectFailedException);
 	}
+
+	this->unused = false;
 
 	conn.fd = this->fd;
 

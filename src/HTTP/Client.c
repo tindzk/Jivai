@@ -122,9 +122,6 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 
 void HTTP_Client_Reopen(HTTP_Client *this) {
 	if (this->closed) {
-		Socket_Destroy(&this->socket);
-		Socket_Init(&this->socket, Socket_Protocol_TCP);
-
 		HTTP_Client_Open(this);
 	}
 }
