@@ -27,7 +27,7 @@ int OVERLOAD Hex_ToInteger(char c) {
 	} else if ('0' <= c && c <= '9') {
 		return c - '0';
 	} else { /* The character is malformed. */
-		return 0;
+		return -1;
 	}
 }
 
@@ -40,8 +40,8 @@ long OVERLOAD Hex_ToInteger(String s) {
 	do {
 		int digit = Hex_ToInteger(s.buf[i]);
 
-		if (digit == 0) {
-			return 0;
+		if (digit == -1) {
+			return -1;
 		}
 
 		total += digit * multiplier;

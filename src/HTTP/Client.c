@@ -201,7 +201,12 @@ size_t HTTP_Client_ParseChunk(String *s) {
 	String_Crop(s, pos + 2);
 
 	long len = Hex_ToInteger(part);
+
 	String_Destroy(&part);
+
+	if (len == -1) {
+		throw(exc, &HTTP_Client_MalformedChunkException);
+	}
 
 	return len;
 }

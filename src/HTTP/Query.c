@@ -62,7 +62,9 @@ void HTTP_Query_Unescape(String src, char *dst, bool isFormUri) {
 				high = Hex_ToInteger(src.buf[i + 1]);
 				low  = Hex_ToInteger(src.buf[i + 2]);
 
-				*dst++ = (char)((high << 4) + low);
+				if (high != -1 && low != -1) {
+					*dst++ = (char)((high << 4) + low);
+				}
 			}
 
 			i += 2;
