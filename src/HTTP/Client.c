@@ -224,7 +224,7 @@ void HTTP_Client_ProcessChunk(HTTP_Client *this) {
 
 HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 	/* Reset the values which were extracted from previous requests' headers. */
-	this->total     = 0;
+	this->total     = -1;
 	this->chunked   = false;
 	this->keepAlive = false;
 	this->resp.len  = 0;
@@ -242,7 +242,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			this->closed   = true;
 
 			throw(exc, &HTTP_Client_ResponseMalformedException);
-		} else if (requestOffset > 0) { /* The request is complete. */
+		} else if (requestOffset > 0) { /* The response is complete. */
 			HTTP_Header_Events events;
 			events.context   = this;
 			events.onVersion = (void *) &HTTP_Client_OnVersion;
@@ -256,13 +256,24 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			HTTP_Header_Parse(&header, HTTP_Header_Type_Response, s);
 
 			String_Crop(&this->resp, requestOffset);
-		} else { /* Request is incomplete. */
+
+			/* Some HTTP servers send header and body separately.
+			 * The first chunk is needed, though. Otherwise
+			 * HTTP_Client_Read() will fail right away.
+			 */
+			if (this->resp.len == 0) {
+				this->resp.len = SocketConnection_Read(&this->conn,
+					this->resp.buf,
+					this->resp.size);
+			}
+		} else { /* Response is incomplete. */
 			if (this->resp.len == this->resp.size) {
 				/* But buffer is already full, i.e. we cannot store
 				 * more in it. Increasing the buffer size might
 				 * help. If not, the HTTP server sends corrupt
 				 * responses.
 				 */
+
 				throw(exc, &HTTP_Client_BufferTooSmallException);
 			}
 		}
@@ -288,13 +299,22 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 	res->len = 0;
 
-	/* `total' is 0 for the final chunk. */
-	if (this->total == 0 || this->read >= this->total) {
-		if (!this->keepAlive) {
-			HTTP_Client_Close(this);
-		}
-
+	if (this->closed) {
 		return false;
+	}
+
+	/* Sometimes HTTP servers do not send a `Content-Length' header.
+	 * Then, `total' will be -1.
+	 */
+	if (this->total != -1) {
+		/* `total' is 0 for the final chunk. */
+		if (this->total == 0 || this->read >= this->total) {
+			if (!this->keepAlive) {
+				HTTP_Client_Close(this);
+			}
+
+			return false;
+		}
 	}
 
 	/* Process contents of the this->resp buffer first. Can read up to
@@ -320,7 +340,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 	}
 
 	while (true) {
-		if (this->read >= this->total) {
+		if (this->total != -1 && this->read >= this->total) {
 			if (this->chunked) {
 				/* Chunk is complete. */
 				if (this->resp.size > this->resp.len) {
@@ -354,11 +374,9 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 							this->inChunk = false;
 
 							if (this->resp.len == 0) {
-								String_Print(String("g2g more"));
 								continue;
 							} else {
 								/* Fall through. */
-								String_Print(String("got enough"));
 							}
 						}
 					}
@@ -405,7 +423,18 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 			this->read += read;
 		} catch(&SocketConnection_ConnectionResetException, e) {
 			this->closed = true;
-			throw(exc, &HTTP_Client_ConnectionResetException);
+
+			if (this->total == -1) {
+				/* When no `Content-Length' is set, the server
+				 * won't have other options to indicate the end
+				 * of a transfer than to close the connection.
+				 * That's why no exception will be thrown here.
+				 */
+
+				return true;
+			} else {
+				throw(exc, &HTTP_Client_ConnectionResetException);
+			}
 		} finally {
 
 		} tryEnd;

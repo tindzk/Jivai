@@ -76,10 +76,10 @@ typedef struct {
 	 * whereas for chunked responses, it's the length
 	 * of the current chunk solely.
 	 */
-	uint64_t total;
+	int64_t total;
 
 	/* How many bytes out of `total' have been read so far. */
-	uint64_t read;
+	int64_t read;
 
 	/* How many bytes of the contents were pre-buffered in `resp'. */
 	uint64_t canRead;
