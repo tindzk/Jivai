@@ -374,7 +374,18 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 				if (this->resp.len > 0) {
 					if (this->inChunk) {
-						if (!String_BeginsWith(&this->resp, String("\r\n"))) {
+						if (this->resp.len < 2) {
+							/* It might happen that this->resp only
+							 * contains one character (\r). In this
+							 * case checking whether it begins with
+							 * \r\n will raise an exception.
+							 *
+							 * Fetch at least one more byte and then
+							 * perform the check below.
+							 */
+
+							continue;
+						} else if (!String_BeginsWith(&this->resp, String("\r\n"))) {
 							/* Chunk does not end on CRLF. */
 							throw(exc, &HTTP_Client_MalformedChunkException);
 						} else {
