@@ -50,6 +50,7 @@ typedef struct {
 	short              port;
 	bool               closed;
 	HTTP_Client_Events events;
+	HTTP_Version       version;
 
 	/* The resolved response code. */
 	HTTP_Status status;
@@ -99,6 +100,7 @@ void OVERLOAD HTTP_Client_Init(HTTP_Client *this, String host, short port);
 void HTTP_Client_Destroy(HTTP_Client *this);
 void OVERLOAD HTTP_Client_SetBufferSize(HTTP_Client *this, size_t size);
 void HTTP_Client_SetEvents(HTTP_Client *this, HTTP_Client_Events events);
+void HTTP_Client_SetVersion(HTTP_Client *this, HTTP_Version version);
 void OVERLOAD HTTP_Client_Open(HTTP_Client *this);
 void OVERLOAD HTTP_Client_Open(HTTP_Client *this, String host);
 void OVERLOAD HTTP_Client_Open(HTTP_Client *this, String host, short port);
@@ -107,7 +109,7 @@ void HTTP_Client_OnStatus(HTTP_Client *this, HTTP_Status status);
 void HTTP_Client_OnVersion(HTTP_Client *this, HTTP_Version version);
 void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value);
 void HTTP_Client_Reopen(HTTP_Client *this);
-String HTTP_Client_GetRequest(String host, String path);
+String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths items);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String host, String path);

@@ -19,6 +19,8 @@ void OVERLOAD HTTP_Client_Init(HTTP_Client *this) {
 	this->host = HeapString(0);
 	this->port = 80;
 
+	this->version = HTTP_Version_1_1;
+
 	this->events.onVersion = NULL;
 	this->events.onHeader  = NULL;
 	this->events.context   = NULL;
@@ -56,6 +58,10 @@ void OVERLOAD HTTP_Client_SetBufferSize(HTTP_Client *this, size_t size) {
 
 void HTTP_Client_SetEvents(HTTP_Client *this, HTTP_Client_Events events) {
 	this->events = events;
+}
+
+void HTTP_Client_SetVersion(HTTP_Client *this, HTTP_Version version) {
+	this->version = version;
 }
 
 void OVERLOAD HTTP_Client_Open(HTTP_Client *this) {
@@ -126,14 +132,20 @@ void HTTP_Client_Reopen(HTTP_Client *this) {
 	}
 }
 
-String HTTP_Client_GetRequest(String host, String path) {
+String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path) {
 	String res = String_Format(String(
-		"GET % HTTP/1.1\r\n"
+		"GET % %\r\n"
 		"Host: %\r\n"
 		"Connection: Keep-Alive\r\n"
 		"\r\n"),
 
-		path, host);
+		path,
+
+		this->version == HTTP_Version_1_1
+			? String("HTTP/1.1")
+			: String("HTTP/1.0"),
+
+		host);
 
 	return res;
 }
@@ -144,7 +156,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths items
 	String s = HeapString(items.len * 50);
 
 	for (size_t i = 0; i < items.len; i++) {
-		String tmp = HTTP_Client_GetRequest(items.buf[i].host, items.buf[i].path);
+		String tmp = HTTP_Client_GetRequest(this, items.buf[i].host, items.buf[i].path);
 		String_Append(&s, tmp);
 		String_Destroy(&tmp);
 	}
@@ -162,7 +174,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 	String s = HeapString(paths.len * 50);
 
 	for (size_t i = 0; i < paths.len; i++) {
-		String tmp = HTTP_Client_GetRequest(this->host, paths.buf[i]);
+		String tmp = HTTP_Client_GetRequest(this, this->host, paths.buf[i]);
 		String_Append(&s, tmp);
 		String_Destroy(&tmp);
 	}
@@ -177,7 +189,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String host, String path) {
 	HTTP_Client_Reopen(this);
 
-	String request = HTTP_Client_GetRequest(host, path);
+	String request = HTTP_Client_GetRequest(this, host, path);
 
 	try (exc) {
 		SocketConnection_Write(&this->conn, request.buf, request.len);
