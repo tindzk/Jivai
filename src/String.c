@@ -203,6 +203,10 @@ String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
 }
 
 String OVERLOAD String_Slice(String *this, ssize_t offset) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	return String_Slice(this, offset, this->len - offset);
 }
 
@@ -235,6 +239,10 @@ String OVERLOAD String_FastSlice(String *this, ssize_t offset, ssize_t length) {
 }
 
 String OVERLOAD String_FastSlice(String *this, ssize_t offset) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	return String_FastSlice(this, offset, this->len - offset);
 }
 
@@ -275,6 +283,10 @@ void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
 }
 
 void OVERLOAD String_Crop(String *this, ssize_t offset) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	String_Crop(this, offset, this->len - offset);
 }
 
@@ -346,6 +358,10 @@ void OVERLOAD String_Append(String *this, String s, ssize_t offset, ssize_t leng
 }
 
 void OVERLOAD String_Append(String *this, String s, ssize_t offset) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	String_Append(this, s, offset, s.len - offset);
 }
 
@@ -543,6 +559,10 @@ ssize_t OVERLOAD String_Find(String *this, String needle) {
 }
 
 ssize_t OVERLOAD String_Find(String *this, ssize_t offset, String needle) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	return String_FindRange(this, offset, this->len - offset, needle);
 }
 
@@ -555,6 +575,10 @@ ssize_t OVERLOAD String_Find(String *this, char c) {
 }
 
 ssize_t OVERLOAD String_Find(String *this, ssize_t offset, char c) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
 	return String_FindRange(this, offset, this->len - offset, c);
 }
 
