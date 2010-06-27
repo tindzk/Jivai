@@ -1,7 +1,7 @@
 #include "Char.h"
 
 void Char_Print(char c) {
-	write(1, &c, 1);
+	write(STDOUT_FILENO, &c, 1);
 }
 
 /* Taken from diet libc (dietlibc-0.32/lib/isalpha.c). */
