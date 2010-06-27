@@ -400,16 +400,12 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 							/* Chunk does not end on CRLF. */
 							throw(exc, &HTTP_Client_MalformedChunkException);
 						} else {
-							String_Crop(&this->resp, 2);
-
 							/* Don't set this->total and this->read to 0 because
 							 * this will cause the next HTTP_Client_Read() call
 							 * to return true. Just stick with the current values
 							 * even though are not valid anymore.
-							 */
-							this->inChunk = false;
-
-							/* It is possible that `resp' includes only parts of
+							 *
+							 * It is possible that `resp' includes only parts of
 							 * the chunk identifier (which indicates the chunk's
 							 * length). Checking for this->resp.len > 0 will not
 							 * work in such cases.
@@ -446,6 +442,9 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 								/* We have enough data to deal with it.
 								 * Fall through.
 								 */
+
+								String_Crop(&this->resp, 2);
+								this->inChunk = false;
 							} else {
 								continue;
 							}
