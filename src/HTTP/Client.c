@@ -65,6 +65,10 @@ void HTTP_Client_SetVersion(HTTP_Client *this, HTTP_Version version) {
 }
 
 void OVERLOAD HTTP_Client_Open(HTTP_Client *this) {
+	if (!this->closed) {
+		HTTP_Client_Close(this);
+	}
+
 	this->conn = Socket_Connect(&this->socket, this->host, this->port);
 	this->closed = false;
 }
