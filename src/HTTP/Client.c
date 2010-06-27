@@ -126,6 +126,10 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 	}
 }
 
+bool HTTP_Client_IsConnected(HTTP_Client *this) {
+	return !this->closed;
+}
+
 void HTTP_Client_Reopen(HTTP_Client *this) {
 	if (this->closed) {
 		HTTP_Client_Open(this);
