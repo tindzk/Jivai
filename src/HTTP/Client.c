@@ -318,6 +318,21 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 	return this->status;
 }
 
+static void HTTP_Client_InternalRead(HTTP_Client *this) {
+	try (exc) {
+		size_t read = SocketConnection_Read(&this->conn,
+			this->resp.buf  + this->resp.len,
+			this->resp.size - this->resp.len);
+
+		this->resp.len += read;
+	} catch(&SocketConnection_ConnectionResetException, e) {
+		this->closed = true;
+		throw(exc, &HTTP_Client_ConnectionResetException);
+	} finally {
+
+	} tryEnd;
+}
+
 bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 	res->len = 0;
 
@@ -366,99 +381,91 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 	while (true) {
 		if (this->total != -1 && this->read >= this->total) {
-			if (this->chunked) {
-				/* Chunk is complete. */
-				if (this->resp.size > this->resp.len) {
-					try (exc) {
-						size_t read = SocketConnection_Read(&this->conn,
-							this->resp.buf  + this->resp.len,
-							this->resp.size - this->resp.len);
+			if (!this->chunked) {
+				/* We're done. */
+				return true;
+			}
 
-						this->resp.len += read;
-					} catch(&SocketConnection_ConnectionResetException, e) {
-						this->closed = true;
-						throw(exc, &HTTP_Client_ConnectionResetException);
-					} finally {
+			if (this->resp.len == 0) {
+				HTTP_Client_InternalRead(this);
+			}
 
-					} tryEnd;
-				}
+		retry:
+			if (this->inChunk) { /* Chunk is complete. */
+				if (this->resp.len < 2) {
+					/* It might happen that this->resp only
+					 * contains one character (\r). In this
+					 * case checking whether it begins with
+					 * \r\n will raise an exception.
+					 *
+					 * Fetch at least one more byte and then
+					 * perform the check below.
+					 */
 
-				if (this->resp.len > 0) {
-					if (this->inChunk) {
-						if (this->resp.len < 2) {
-							/* It might happen that this->resp only
-							 * contains one character (\r). In this
-							 * case checking whether it begins with
-							 * \r\n will raise an exception.
-							 *
-							 * Fetch at least one more byte and then
-							 * perform the check below.
-							 */
+					HTTP_Client_InternalRead(this);
+					goto retry;
+				} else if (!String_BeginsWith(&this->resp, String("\r\n"))) {
+					/* Chunk does not end on CRLF. */
+					throw(exc, &HTTP_Client_MalformedChunkException);
+				} else {
+					/* Don't set this->total and this->read to 0 because
+					 * this will cause the next HTTP_Client_Read() call
+					 * to return true. Just stick with the current values
+					 * even though are not valid anymore.
+					 *
+					 * It is possible that `resp' includes only parts of
+					 * the chunk identifier (which indicates the chunk's
+					 * length). Checking for this->resp.len > 0 will not
+					 * work in such cases.
+					 *
+					 * Checking for \r\n ensures that the chunk identifier
+					 * is complete.
+					 *
+					 * Without this check it can happen that that the final
+					 * chunk gets ignored easily. An example from strace
+					 * shows the culprit:
+					 *
+					 * recv(3, "\r\n0\r\n\r\n", 4096, 0)       = 7
+					 * recv(3, "", 4091, 0)                    = 0
+					 *
+					 * It's getting ignored due to the `continue' which tries
+					 * to get more data, but since the final tag was already
+					 * announced, this will never happen.
+					 *
+					 * Ultimately, this even leads to the raise of an
+					 * HTTP_Client_ConnectionResetException exception.
+					 *
+					 * Note that this would only happen to the final
+					 * chunk, because for the others there's always
+					 * enough data available.
+					 *
+					 * Checking for \r\n is slightly more efficient
+					 * because eventually, it reduces the number of
+					 * needed syscalls in order to be able to tell
+					 * the chunk size. It also requests more data
+					 * at once.
+					 */
 
-							continue;
-						} else if (!String_BeginsWith(&this->resp, String("\r\n"))) {
-							/* Chunk does not end on CRLF. */
-							throw(exc, &HTTP_Client_MalformedChunkException);
-						} else {
-							/* Don't set this->total and this->read to 0 because
-							 * this will cause the next HTTP_Client_Read() call
-							 * to return true. Just stick with the current values
-							 * even though are not valid anymore.
-							 *
-							 * It is possible that `resp' includes only parts of
-							 * the chunk identifier (which indicates the chunk's
-							 * length). Checking for this->resp.len > 0 will not
-							 * work in such cases.
-							 *
-							 * Checking for \r\n ensures that the chunk identifier
-							 * is complete.
-							 *
-							 * Without this check it can happen that that the final
-							 * chunk gets ignored easily. An example from strace
-							 * shows the culprit:
-							 *
-							 * recv(3, "\r\n0\r\n\r\n", 4096, 0)       = 7
-							 * recv(3, "", 4091, 0)                    = 0
-							 *
-							 * It's getting ignored due to the `continue' which tries
-							 * to get more data, but since the final tag was already
-							 * announced, this will never happen.
-							 *
-							 * Ultimately, this even leads to the raise of an
-							 * HTTP_Client_ConnectionResetException exception.
-							 *
-							 * Note that this would only happen to the final
-							 * chunk, because for the others there's always
-							 * enough data available.
-							 *
-							 * Checking for \r\n is slightly more efficient
-							 * because eventually, it reduces the number of
-							 * needed syscalls in order to be able to tell
-							 * the chunk size. It also requests more data
-							 * at once.
-							 */
+					if (String_Find(&this->resp, 3, String("\r\n")) != String_NotFound) {
+						/* We have enough data to deal with it.
+						 * Fall through.
+						 */
 
-							if (String_Find(&this->resp, 3, String("\r\n")) != String_NotFound) {
-								/* We have enough data to deal with it.
-								 * Fall through.
-								 */
-
-								String_Crop(&this->resp, 2);
-								this->inChunk = false;
-							} else {
-								continue;
-							}
-						}
-					}
-
-					/* Sic. Do not merge this with the above if-statement. */
-					if (!this->inChunk) {
-						HTTP_Client_ProcessChunk(this);
-
-						this->read    = 0;
-						this->inChunk = true;
+						String_Crop(&this->resp, 2);
+						this->inChunk = false;
+					} else {
+						HTTP_Client_InternalRead(this);
+						goto retry;
 					}
 				}
+			}
+
+			/* Sic. Do not merge this with the above if-statement. */
+			if (!this->inChunk) {
+				HTTP_Client_ProcessChunk(this);
+
+				this->read    = 0;
+				this->inChunk = true;
 			}
 
 			return true;
