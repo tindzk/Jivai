@@ -352,12 +352,15 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 			return true;
 		} else {
-			String_Copy(res, this->resp);
+			String_Copy(res, this->resp, 0, this->canRead);
 
-			this->read += this->resp.len;
+			/* Do not clear this->resp completely as it might
+			 * already contain the next chunk or even more.
+			 */
+			String_Crop(&this->resp, this->canRead);
 
-			this->canRead  = 0;
-			this->resp.len = 0;
+			this->read    += res->len;
+			this->canRead -= res->len; /* Should be 0 now. */
 		}
 	}
 
