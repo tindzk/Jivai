@@ -819,6 +819,51 @@ bool OVERLOAD String_Replace(String *this, String needle, String replacement) {
 	return String_Replace(this, 0, needle, replacement);
 }
 
+bool OVERLOAD String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	/* Approximation for one occurence. */
+	String out = HeapString(this->len - needle.len + replacement.len);
+
+	size_t cnt     = 0;
+	size_t lastPos = 0;
+
+	for (size_t i = offset; i < this->len; i++) {
+		if (this->buf[i] == needle.buf[cnt]) {
+			cnt++;
+
+			if (cnt == needle.len) {
+				size_t cur = i - needle.len + 1;
+
+				String_Append(&out, *this, lastPos, cur - lastPos);
+				String_Append(&out, replacement);
+
+				lastPos = i + 1;
+				cnt = 0;
+			}
+		} else {
+			if (cnt > 0) {
+				cnt = 0;
+				i--;
+			}
+		}
+	}
+
+	String_Append(&out, *this, lastPos);
+
+	String_Copy(this, out);
+
+	String_Destroy(&out);
+
+	return lastPos != 0;
+}
+
+bool OVERLOAD String_ReplaceAll(String *this, String needle, String replacement) {
+	return String_ReplaceAll(this, 0, needle, replacement);
+}
+
 String String_Consume(String *this, int n) {
 	String res = String_Slice(this, 0, n);
 	String_Crop(this, n);
