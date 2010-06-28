@@ -791,8 +791,12 @@ String String_Concat(String a, String b) {
 	return res;
 }
 
-bool String_Replace(String *this, String needle, String replacement) {
-	ssize_t pos = String_Find(this, needle);
+bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String replacement) {
+	if (offset < 0) {
+		offset += this->len;
+	}
+
+	ssize_t pos = String_Find(this, offset, needle);
 
 	if (pos == String_NotFound) {
 		return false;
@@ -809,6 +813,10 @@ bool String_Replace(String *this, String needle, String replacement) {
 	String_Destroy(&out);
 
 	return true;
+}
+
+bool OVERLOAD String_Replace(String *this, String needle, String replacement) {
+	return String_Replace(this, 0, needle, replacement);
 }
 
 String String_Consume(String *this, int n) {
