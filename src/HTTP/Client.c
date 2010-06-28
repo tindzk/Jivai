@@ -446,7 +446,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 					 * at once.
 					 */
 
-					if (String_Find(&this->resp, 3, String("\r\n")) != String_NotFound) {
+					if (String_Find(&this->resp, 2, String("\r\n")) != String_NotFound) {
 						/* We have enough data to deal with it.
 						 * Fall through.
 						 */
