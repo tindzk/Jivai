@@ -511,14 +511,30 @@ static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ss
 	return String_NotFound;
 }
 
-ssize_t String_ReverseFindChar(String *this, char c) {
-	for (ssize_t i = this->len - 1; i >= 0; i--) {
+ssize_t OVERLOAD String_ReverseFindChar(String *this, ssize_t offset, char c) {
+	if (this->len == 0) {
+		return String_NotFound;
+	}
+
+	if (offset < 0) {
+		offset += this->len - 1;
+	}
+
+	if ((size_t) offset > this->len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
+	for (ssize_t i = offset; i >= 0; i--) {
 		if (this->buf[i] == c) {
 			return i;
 		}
 	}
 
 	return String_NotFound;
+}
+
+ssize_t OVERLOAD String_ReverseFindChar(String *this, char c) {
+	return String_ReverseFindChar(this, this->len - 1, c);
 }
 
 static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, String needle) {
