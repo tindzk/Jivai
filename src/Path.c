@@ -27,8 +27,18 @@ void Path0(ExceptionManager *e) {
 	exc = e;
 }
 
-bool Path_Exists(String path) {
-	return access(String_ToNul(&path), F_OK) == 0;
+bool OVERLOAD Path_Exists(String path, bool follow) {
+	struct stat attr;
+
+	if (follow) {
+		return stat(String_ToNul(&path), &attr) == 0;
+	}
+
+	return lstat(String_ToNul(&path), &attr) == 0;
+}
+
+bool OVERLOAD Path_Exists(String path) {
+	return Path_Exists(path, false);
 }
 
 String Path_GetCwd(void) {

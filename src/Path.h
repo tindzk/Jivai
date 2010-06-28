@@ -37,7 +37,8 @@ Exception_Export(Path_TruncatingFailedException);
 
 void Path0(ExceptionManager *e);
 
-bool Path_Exists(String path);
+bool OVERLOAD Path_Exists(String path, bool follow);
+bool OVERLOAD Path_Exists(String path);
 String Path_GetCwd(void);
 struct stat64 Path_GetStat(String path);
 off64_t Path_GetSize(String path);
