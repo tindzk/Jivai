@@ -4,6 +4,7 @@
 #include "Poll.h"
 #include "Socket.h"
 #include "Client.h"
+#include "BitMask.h"
 
 #define SERVER_MAX_CONN SOMAXCONN
 
