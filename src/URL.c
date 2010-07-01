@@ -3,10 +3,11 @@
 URL_Parts URL_Parse(String url) {
 	URL_Parts res;
 
-	res.scheme = HeapString(0);
-	res.host   = HeapString(0);
-	res.port   = 0;
-	res.path   = HeapString(128);
+	res.scheme   = HeapString(0);
+	res.host     = HeapString(0);
+	res.port     = 0;
+	res.path     = HeapString(128);
+	res.fragment = HeapString(32);
 
 	String_Append(&res.path, '/');
 
@@ -51,14 +52,27 @@ URL_Parts URL_Parse(String url) {
 				break;
 
 			case URL_State_Path:
+				if (String_EndsWith(&buf, String("#"))) {
+					String_Copy(&res.path, buf, 0, -1);
+					state = URL_State_Fragment;
+					buf.len = 0;
+				}
+
+				break;
+
+			case URL_State_Fragment:
 				break;
 		}
 
 		String_Append(&buf, url.buf[i]);
 	}
 
-	if (state == URL_State_Path) {
-		String_Append(&res.path, buf);
+	if (buf.len > 0) {
+		if (state == URL_State_Path) {
+			String_Append(&res.path, buf);
+		} else if (state == URL_State_Fragment) {
+			String_Append(&res.fragment, buf);
+		}
 	}
 
 	return res;
