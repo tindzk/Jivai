@@ -57,11 +57,9 @@ void OVERLOAD File_Truncate(File *this);
 struct stat64 File_GetStat(File *this);
 off64_t File_GetSize(File *this);
 size_t File_Read(File *this, void *buf, size_t len);
-size_t File_Write(File *this, void *buf, size_t len);
+size_t OVERLOAD File_Write(File *this, void *buf, size_t len);
+size_t OVERLOAD File_Write(File *this, String s);
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence);
 off64_t File_Tell(File *this);
-
-#define File_WriteString(out, s) \
-	File_Write(out, (s).buf, (s).len)
 
 #endif

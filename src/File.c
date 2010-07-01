@@ -184,7 +184,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 	return res;
 }
 
-size_t File_Write(File *this, void *buf, size_t len) {
+size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
 	if (!this->writable) {
 		throw(exc, &File_NotWritableException);
 	}
@@ -204,6 +204,10 @@ size_t File_Write(File *this, void *buf, size_t len) {
 	}
 
 	return res;
+}
+
+size_t OVERLOAD File_Write(File *this, String s) {
+	return File_Write(this, s.buf, s.size);
 }
 
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {

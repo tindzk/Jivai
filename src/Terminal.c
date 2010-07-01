@@ -35,98 +35,98 @@ void Terminal_Destroy(Terminal *this) {
 /* Write VT100 escape sequences to the stream for the given color. */
 void Terminal_SetVT100Color(Terminal *this, int color) {
 	if (color == Terminal_Color_Normal) {
-		File_WriteString(this->out, Terminal_VT100_Normal);
+		File_Write(this->out, Terminal_VT100_Normal);
 		return;
 	}
 
 	switch (color & Terminal_Color_ForegroundMask) {
 		case Terminal_Color_Normal:
-			File_WriteString(this->out, Terminal_VT100_Normal);
+			File_Write(this->out, Terminal_VT100_Normal);
 			break;
 
 		case Terminal_Color_ForegroundBlack:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Black);
+			File_Write(this->out, Terminal_VT100_Foreground_Black);
 			break;
 
 		case Terminal_Color_ForegroundRed:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Red);
+			File_Write(this->out, Terminal_VT100_Foreground_Red);
 			break;
 
 		case Terminal_Color_ForegroundGreen:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Green);
+			File_Write(this->out, Terminal_VT100_Foreground_Green);
 			break;
 
 		case Terminal_Color_ForegroundYellow:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Yellow);
+			File_Write(this->out, Terminal_VT100_Foreground_Yellow);
 			break;
 
 		case Terminal_Color_ForegroundBlue:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Blue);
+			File_Write(this->out, Terminal_VT100_Foreground_Blue);
 			break;
 
 		case Terminal_Color_ForegroundMagenta:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Magenta);
+			File_Write(this->out, Terminal_VT100_Foreground_Magenta);
 			break;
 
 		case Terminal_Color_ForegroundCyan:
-			File_WriteString(this->out, Terminal_VT100_Foreground_Cyan);
+			File_Write(this->out, Terminal_VT100_Foreground_Cyan);
 			break;
 
 		case Terminal_Color_ForegroundWhite:
-			File_WriteString(this->out, Terminal_VT100_Foreground_White);
+			File_Write(this->out, Terminal_VT100_Foreground_White);
 			break;
 	}
 
 	switch (color & Terminal_Color_BackgroundMask) {
 		case Terminal_Color_BackgroundBlack:
-			File_WriteString(this->out, Terminal_VT100_Background_Black);
+			File_Write(this->out, Terminal_VT100_Background_Black);
 			break;
 
 		case Terminal_Color_BackgroundRed:
-			File_WriteString(this->out, Terminal_VT100_Background_Red);
+			File_Write(this->out, Terminal_VT100_Background_Red);
 			break;
 
 		case Terminal_Color_BackgroundGreen:
-			File_WriteString(this->out, Terminal_VT100_Background_Green);
+			File_Write(this->out, Terminal_VT100_Background_Green);
 			break;
 
 		case Terminal_Color_BackgroundYellow:
-			File_WriteString(this->out, Terminal_VT100_Background_Yellow);
+			File_Write(this->out, Terminal_VT100_Background_Yellow);
 			break;
 
 		case Terminal_Color_BackgroundBlue:
-			File_WriteString(this->out, Terminal_VT100_Background_Blue);
+			File_Write(this->out, Terminal_VT100_Background_Blue);
 			break;
 
 		case Terminal_Color_BackgroundMagenta:
-			File_WriteString(this->out, Terminal_VT100_Background_Magenta);
+			File_Write(this->out, Terminal_VT100_Background_Magenta);
 			break;
 
 		case Terminal_Color_BackgroundCyan:
-			File_WriteString(this->out, Terminal_VT100_Background_Cyan);
+			File_Write(this->out, Terminal_VT100_Background_Cyan);
 			break;
 
 		case Terminal_Color_BackgroundWhite:
-			File_WriteString(this->out, Terminal_VT100_Background_White);
+			File_Write(this->out, Terminal_VT100_Background_White);
 			break;
 	}
 }
 
 void Terminal_SetVT100Font(Terminal *this, int font) {
 	if (BitMask_Has(font, Terminal_Font_Bold)) {
-		File_WriteString(this->out, Terminal_VT100_Bold);
+		File_Write(this->out, Terminal_VT100_Bold);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Italics)) {
-		File_WriteString(this->out, Terminal_VT100_Italics);
+		File_Write(this->out, Terminal_VT100_Italics);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Underline)) {
-		File_WriteString(this->out, Terminal_VT100_Underline);
+		File_Write(this->out, Terminal_VT100_Underline);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Blink)) {
-		File_WriteString(this->out, Terminal_VT100_Blink);
+		File_Write(this->out, Terminal_VT100_Blink);
 	}
 }
 
@@ -146,7 +146,7 @@ Terminal_Size Terminal_GetSize(void) {
 }
 
 void Terminal_Write(Terminal *this, String s) {
-	File_WriteString(this->out, s);
+	File_Write(this->out, s);
 }
 
 void Terminal_Print(Terminal *this, int color, int font, String s) {
@@ -157,7 +157,7 @@ void Terminal_Print(Terminal *this, int color, int font, String s) {
 	}
 
 	/* Write the text into the stream. */
-	File_WriteString(this->out, s);
+	File_Write(this->out, s);
 
 	/* Restore the normal color state for the stream. */
 	if (this->isVT100) {
@@ -166,41 +166,41 @@ void Terminal_Print(Terminal *this, int color, int font, String s) {
 }
 
 void Terminal_DeleteLine(Terminal *this) {
-	File_WriteString(this->out, Terminal_VT100_Delete_Line);
+	File_Write(this->out, Terminal_VT100_Delete_Line);
 }
 
 void Terminal_DeleteUntilEol(Terminal *this) {
-	File_WriteString(this->out, Terminal_VT100_Delete_UntilEol);
+	File_Write(this->out, Terminal_VT100_Delete_UntilEol);
 }
 
 void Terminal_MoveLeft(Terminal *this, size_t n) {
 	if (n == 1) {
-		File_WriteString(this->out, Terminal_VT100_Cursor_Left);
+		File_Write(this->out, Terminal_VT100_Cursor_Left);
 	} else {
-		File_WriteString(this->out, String("\33["));
-		File_WriteString(this->out, Integer_ToString(n));
-		File_WriteString(this->out, String("D"));
+		File_Write(this->out, String("\33["));
+		File_Write(this->out, Integer_ToString(n));
+		File_Write(this->out, String("D"));
 	}
 }
 
 void Terminal_MoveRight(Terminal *this, size_t n) {
 	if (n > 0) {
 		if (n == 1) {
-			File_WriteString(this->out, Terminal_VT100_Cursor_Right);
+			File_Write(this->out, Terminal_VT100_Cursor_Right);
 		} else {
-			File_WriteString(this->out, String("\33["));
-			File_WriteString(this->out, Integer_ToString(n));
-			File_WriteString(this->out, String("C"));
+			File_Write(this->out, String("\33["));
+			File_Write(this->out, Integer_ToString(n));
+			File_Write(this->out, String("C"));
 		}
 	}
 }
 
 void Terminal_HideCursor(Terminal *this) {
-	File_WriteString(this->out, Terminal_VT100_Cursor_Hide);
+	File_Write(this->out, Terminal_VT100_Cursor_Hide);
 }
 
 void Terminal_ShowCursor(Terminal *this) {
-	File_WriteString(this->out, Terminal_VT100_Cursor_Show);
+	File_Write(this->out, Terminal_VT100_Cursor_Show);
 }
 
 char Terminal_ReadChar(Terminal *this) {
