@@ -3,6 +3,7 @@
 Exception_Define(Path_AccessDeniedException);
 Exception_Define(Path_AlreadyExistsException);
 Exception_Define(Path_AttributeNonExistentException);
+Exception_Define(Path_BufferTooSmallException);
 Exception_Define(Path_CreationFailedException);
 Exception_Define(Path_DeletingFailedException);
 Exception_Define(Path_EmptyPathException);
@@ -366,7 +367,7 @@ void Path_SetXattr(String path, String name, String value) {
 	}
 }
 
-String Path_GetXattr(String path, String name) {
+String OVERLOAD Path_GetXattr(String path, String name) {
 	char *npath = String_ToNul(&path);
 	char *nname = String_ToNul(&name);
 
@@ -391,6 +392,27 @@ String Path_GetXattr(String path, String name) {
 	res.len = res.size;
 
 	return res;
+}
+
+void OVERLOAD Path_GetXattr(String path, String name, String *value) {
+	char *npath = String_ToNul(&path);
+	char *nname = String_ToNul(&name);
+
+	errno = 0;
+
+	ssize_t size = getxattr(npath, nname, value->buf, value->size);
+
+	if (size < 0) {
+		if (errno == ENODATA) {
+			throw(exc, &Path_AttributeNonExistentException);
+		} else if (errno == ERANGE) {
+			throw(exc, &Path_BufferTooSmallException);
+		} else {
+			throw(exc, &Path_GettingAttributeFailedException);
+		}
+	}
+
+	value->len = size;
 }
 
 void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {

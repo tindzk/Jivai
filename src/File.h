@@ -13,6 +13,7 @@
 Exception_Export(File_AccessDeniedException);
 Exception_Export(File_AlreadyExistsException);
 Exception_Export(File_AttributeNonExistentException);
+Exception_Export(File_BufferTooSmallException);
 Exception_Export(File_CannotOpenFileException);
 Exception_Export(File_GettingAttributeFailedException);
 Exception_Export(File_InvalidFileDescriptorException);
@@ -51,7 +52,8 @@ void File0(ExceptionManager *e);
 void File_Open(File *this, String path, int mode);
 void File_Close(File *this);
 void File_SetXattr(File *this, String name, String value);
-String File_GetXattr(File *this, String name);
+String OVERLOAD File_GetXattr(File *this, String name);
+void OVERLOAD File_GetXattr(File *this, String name, String *value);
 void OVERLOAD File_Truncate(File *this, off64_t length);
 void OVERLOAD File_Truncate(File *this);
 struct stat64 File_GetStat(File *this);

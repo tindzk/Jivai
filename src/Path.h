@@ -17,6 +17,7 @@
 Exception_Export(Path_AccessDeniedException);
 Exception_Export(Path_AlreadyExistsException);
 Exception_Export(Path_AttributeNonExistentException);
+Exception_Export(Path_BufferTooSmallException);
 Exception_Export(Path_CreationFailedException);
 Exception_Export(Path_DeletingFailedException);
 Exception_Export(Path_EmptyPathException);
@@ -61,7 +62,8 @@ void Path_Delete(String path);
 void Path_ReadLink(String path, String *out);
 void Path_Symlink(String path1, String path2);
 void Path_SetXattr(String path, String name, String value);
-String Path_GetXattr(String path, String name);
+String OVERLOAD Path_GetXattr(String path, String name);
+void OVERLOAD Path_GetXattr(String path, String name, String *value);
 void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink);
 void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink);
 void OVERLOAD Path_SetTime(String path, time_t timestamp);

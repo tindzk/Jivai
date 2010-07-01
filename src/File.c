@@ -25,6 +25,7 @@ File *File_StdErr = &_File_StdErr;
 Exception_Define(File_AccessDeniedException);
 Exception_Define(File_AlreadyExistsException);
 Exception_Define(File_AttributeNonExistentException);
+Exception_Define(File_BufferTooSmallException);
 Exception_Define(File_CannotOpenFileException);
 Exception_Define(File_GettingAttributeFailedException);
 Exception_Define(File_InvalidFileDescriptorException);
@@ -94,7 +95,7 @@ void File_SetXattr(File *this, String name, String value) {
 	}
 }
 
-String File_GetXattr(File *this, String name) {
+String OVERLOAD File_GetXattr(File *this, String name) {
 	char *nname = String_ToNul(&name);
 
 	errno = 0;
@@ -118,6 +119,26 @@ String File_GetXattr(File *this, String name) {
 	res.len = res.size;
 
 	return res;
+}
+
+void OVERLOAD File_GetXattr(File *this, String name, String *value) {
+	char *nname = String_ToNul(&name);
+
+	errno = 0;
+
+	ssize_t size = fgetxattr(this->fd, nname, value->buf, value->size);
+
+	if (size < 0) {
+		if (errno == ENODATA) {
+			throw(exc, &File_AttributeNonExistentException);
+		} else if (errno == ERANGE) {
+			throw(exc, &File_BufferTooSmallException);
+		} else {
+			throw(exc, &File_GettingAttributeFailedException);
+		}
+	}
+
+	value->len = size;
 }
 
 void OVERLOAD File_Truncate(File *this, off64_t length) {
