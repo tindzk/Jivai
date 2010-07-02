@@ -457,7 +457,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray OVERLOAD String_Split(String *this, size_t offset, char c) {
+StringArray OVERLOAD String_Split(String *this, size_t offset, char c, bool fast) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -472,21 +472,43 @@ StringArray OVERLOAD String_Split(String *this, size_t offset, char c) {
 
 	for (left = right = offset; right < this->len; right++) {
 		if (this->buf[right] == c) {
-			res.buf[res.len] = String_Slice(this, left, right - left);
+			if (fast) {
+				res.buf[res.len] = String_FastSlice(this, left, right - left);
+			} else {
+				res.buf[res.len] = String_Slice(this, left, right - left);
+			}
+
 			res.len++;
 
 			left = right + 1;
 		}
 	}
 
-	res.buf[res.len] = String_Slice(this, left, right - left);
+	if (fast) {
+		res.buf[res.len] = String_FastSlice(this, left, right - left);
+	} else {
+		res.buf[res.len] = String_Slice(this, left, right - left);
+	}
+
 	res.len++;
 
 	return res;
 }
 
+StringArray OVERLOAD String_FastSplit(String *this, size_t offset, char c) {
+	return String_Split(this, offset, c, true);
+}
+
+StringArray OVERLOAD String_FastSplit(String *this, char c) {
+	return String_Split(this, 0, c, true);
+}
+
+StringArray OVERLOAD String_Split(String *this, size_t offset, char c) {
+	return String_Split(this, offset, c, false);
+}
+
 StringArray OVERLOAD String_Split(String *this, char c) {
-	return String_Split(this, 0, c);
+	return String_Split(this, 0, c, false);
 }
 
 static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, char c) {
