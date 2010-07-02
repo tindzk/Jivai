@@ -23,7 +23,12 @@ void PrintTree(YAML_Node *node, int depth) {
 			YAML_Item *item = node->p;
 
 			String_Print(String("key: "));
-			String_Print(item->key);
+
+			if (item->key.len == 0) {
+				String_Print(String("(empty)"));
+			} else {
+				String_Print(item->key);
+			}
 
 			String_Print(String(" value: "));
 			String_Print(item->value);
