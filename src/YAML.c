@@ -37,6 +37,10 @@ void YAML_DestroyNode(YAML_Node *node) {
 	}
 }
 
+YAML_Node* YAML_GetRoot(YAML *this) {
+	return (YAML_Node *) &this->tree.root;
+}
+
 void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
 	bool storeInSubNode = false;
 

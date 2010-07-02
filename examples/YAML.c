@@ -74,7 +74,7 @@ int main(void) {
 	YAML_Parse(&yml);
 
 	/* Print the final tree. */
-	PrintTree((YAML_Node *) &yml.tree.root, 0);
+	PrintTree(YAML_GetRoot(&yml), 0);
 
 	YAML_Destroy(&yml);
 
