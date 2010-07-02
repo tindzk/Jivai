@@ -37,57 +37,71 @@ void YAML_DestroyNode(YAML_Node *node) {
 	}
 }
 
-void YAML_AddSection(YAML *this, size_t depth, String s) {
+void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
+	bool storeInSubNode = false;
+
 	if (depth > this->depth) {
-		this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
+		if (this->node->len == 0) {
+			this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
+		} else {
+			this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node->nodes[this->node->len - 1]);
+		}
+
 		this->node->p    = NULL;
 		this->node->type = YAML_NodeType_Node;
 
 		this->depth++;
-	} else {
+
+		storeInSubNode = true;
+	} else if (depth < this->depth) {
 		while (this->depth - depth > 0) {
 			if (this->node->parent == NULL) {
 				throw(exc, &YAML_IllegalNestingException);
 			}
 
 			this->node = this->node->parent;
+
+			/* Go up the YAML_NodeType_Node nodes, too. */
+			if (this->depth - depth > 0) {
+				if (this->node->parent == NULL) {
+					throw(exc, &YAML_IllegalNestingException);
+				}
+
+				this->node = this->node->parent;
+			}
+
 			this->depth--;
+		}
+	} else {
+		if (this->node->parent != NULL) {
+			if (this->node->parent->type == YAML_NodeType_Node) {
+				this->node = this->node->parent;
+			}
 		}
 	}
 
+	YAML_Node *node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
+	node->type = type;
+	node->p    = p;
+
+	if (storeInSubNode) {
+		this->node = node;
+	}
+}
+
+void YAML_AddSection(YAML *this, size_t depth, String s) {
 	YAML_Section *section = New(YAML_Section);
 	section->name = String_Clone(s);
 
-	YAML_Node *node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
-	node->type = YAML_NodeType_Section;
-	node->p    = section;
+	YAML_Store(this, depth, YAML_NodeType_Section, section);
 }
 
 void YAML_AddItem(YAML *this, size_t depth, String key, String value) {
-	if (depth > this->depth) {
-		this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
-		this->node->p    = NULL;
-		this->node->type = YAML_NodeType_Node;
-
-		this->depth++;
-	} else {
-		while (this->depth - depth > 0) {
-			if (this->node->parent == NULL) {
-				throw(exc, &YAML_IllegalNestingException);
-			}
-
-			this->node = this->node->parent;
-			this->depth--;
-		}
-	}
-
 	YAML_Item *item = New(YAML_Item);
 	item->key   = String_Clone(key);
 	item->value = String_Clone(value);
 
-	YAML_Node *node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
-	node->type = YAML_NodeType_Item;
-	node->p    = item;
+	YAML_Store(this, depth, YAML_NodeType_Item, item);
 }
 
 void YAML_Parse(YAML *this) {

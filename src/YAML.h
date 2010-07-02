@@ -46,6 +46,7 @@ void YAML0(ExceptionManager *e);
 void YAML_Init(YAML *this, size_t depthWidth, StreamInterface *stream, void *context);
 void YAML_Destroy(YAML *this);
 void YAML_DestroyNode(YAML_Node *node);
+void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p);
 void YAML_AddSection(YAML *this, size_t depth, String s);
 void YAML_AddItem(YAML *this, size_t depth, String key, String value);
 void YAML_Parse(YAML *this);
