@@ -639,7 +639,9 @@ void String_TrimLeft(String *this) {
 		}
 	}
 
-	String_Crop(this, pos, this->len);
+	if (pos > 0) {
+		String_Crop(this, pos, this->len - pos);
+	}
 }
 
 void String_Trim(String *this) {
