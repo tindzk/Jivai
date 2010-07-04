@@ -283,7 +283,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			 * The first chunk is needed, though. Otherwise
 			 * HTTP_Client_Read() will fail right away.
 			 */
-			if (this->resp.len == 0) {
+			if (this->resp.len == 0 && this->total != 0) {
 				this->resp.len = SocketConnection_Read(&this->conn,
 					this->resp.buf,
 					this->resp.size);
