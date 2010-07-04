@@ -32,7 +32,7 @@ typedef struct {
 } ExceptionManager;
 
 #define Exception_Define(name) \
-	String name = StaticString(#name)
+	String name = String(#name)
 
 #define Exception_Export(name) \
 	extern String name

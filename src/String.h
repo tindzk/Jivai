@@ -93,9 +93,6 @@ int OVERLOAD String_NaturalCompare(String a, String b);
 #define PtrString(s) \
 	&String(s)
 
-#define StaticString(s) \
-	{ sizeof(s) - 1, sizeof(s) - 1, s, false }
-
 #define HeapString(len) \
 	(String) { 0, len, (len > 0) ? Memory_Alloc(len) : NULL, true }
 

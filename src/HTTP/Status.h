@@ -10,7 +10,7 @@ typedef struct {
 } HTTP_StatusItem;
 
 #define HTTP_StatusItem(code, msg, descr) \
-	{ code, StaticString(msg), StaticString(descr) }
+	{ code, String(msg), String(descr) }
 
 typedef enum {
 	HTTP_Status_Info_Continue = 0,
