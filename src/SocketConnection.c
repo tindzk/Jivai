@@ -59,19 +59,15 @@ size_t SocketConnection_SendFile(SocketConnection *this, File *file, off64_t off
 	}
 
 	while (len > 0) {
-		size_t curlen;
-
-		if (len >= SocketConnection_ChunkSize) {
-			curlen = SocketConnection_ChunkSize;
-		} else {
-			curlen = (size_t) len;
-		}
+		size_t write = (len > SocketConnection_ChunkSize)
+			? SocketConnection_ChunkSize
+			: len;
 
 		ssize_t res;
 
 		do {
 			errno = 0;
-			res = sendfile64(this->fd, file->fd, &offset, curlen);
+			res = sendfile64(this->fd, file->fd, &offset, write);
 		} while (res == -1 && errno == EINTR);
 
 		if (res == -1) {
