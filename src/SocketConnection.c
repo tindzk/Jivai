@@ -72,16 +72,20 @@ size_t SocketConnection_SendFile(SocketConnection *this, File *file, off64_t off
 		do {
 			errno = 0;
 			res = sendfile64(this->fd, file->fd, &offset, curlen);
-		} while (res < 0 && errno == EINTR);
+		} while (res == -1 && errno == EINTR);
 
-		if (errno == EBADF) {
-			throw(exc, &SocketConnection_InvalidFileDescriptorException);
-		} else if (errno == EINVAL) {
-			throw(exc, &SocketConnection_FileDescriptorUnusableException);
-		} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
-			throw(exc, &SocketConnection_EmptyQueueException);
-		} else if (res <= 0) {
-			throw(exc, &SocketConnection_UnknownErrorException);
+		if (res == -1) {
+			if (errno == EBADF) {
+				throw(exc, &SocketConnection_InvalidFileDescriptorException);
+			} else if (errno == EINVAL) {
+				throw(exc, &SocketConnection_FileDescriptorUnusableException);
+			} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
+				throw(exc, &SocketConnection_EmptyQueueException);
+			} else {
+				throw(exc, &SocketConnection_UnknownErrorException);
+			}
+		} else if (res == 0) {
+			break;
 		}
 
 		len -= res;
