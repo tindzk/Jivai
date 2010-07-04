@@ -125,12 +125,16 @@ size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 		return res;
 	}
 
-	if (errno == EPIPE || errno == ENOTCONN) {
-		throw(exc, &SocketConnection_NotConnectedException);
-	} else if (errno == ECONNRESET) {
-		throw(exc, &SocketConnection_ConnectionResetException);
-	} else if (res < 0) {
-		throw(exc, &SocketConnection_UnknownErrorException);
+	if (res == -1) {
+		if (errno == EPIPE || errno == ENOTCONN) {
+			throw(exc, &SocketConnection_NotConnectedException);
+		} else if (errno == ECONNRESET) {
+			throw(exc, &SocketConnection_ConnectionResetException);
+		} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
+			throw(exc, &SocketConnection_EmptyQueueException);
+		} else {
+			throw(exc, &SocketConnection_UnknownErrorException);
+		}
 	} else if ((size_t) res != len) {
 		throw(exc, &SocketConnection_LengthMismatchException);
 	}
