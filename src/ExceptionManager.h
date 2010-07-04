@@ -66,6 +66,7 @@ void Exception_Print(Exception *e);
 	} while(0)
 
 #define try(this)                                 \
+{                                                 \
 	ExceptionManager_Check(this);                 \
 	ExceptionManager *__exc_mgr = this;           \
 	ExceptionManager_Push(__exc_mgr,              \
@@ -91,7 +92,8 @@ void Exception_Print(Exception *e);
 	ExceptionManager_Pop(__exc_mgr);       \
 	if (__exc_rethrow) {                   \
 		ExceptionManager_Raise(__exc_mgr); \
-	} do { } while(0)
+	}                                      \
+} do { } while(0)
 
 #define excBreak                     \
 	ExceptionManager_Pop(__exc_mgr); \
