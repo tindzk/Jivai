@@ -89,7 +89,6 @@ size_t SocketConnection_SendFile(SocketConnection *this, File *file, off64_t off
 		}
 
 		len -= res;
-		offset += res;
 	}
 
 	if (len != 0) {
