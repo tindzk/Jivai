@@ -842,7 +842,13 @@ bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String
 		return false;
 	}
 
-	String out = HeapString(this->len - needle.len + replacement.len);
+	ssize_t len = this->len - needle.len + replacement.len;
+
+	if (len < 0) {
+		len = replacement.len;
+	}
+
+	String out = HeapString(len);
 
 	String_Append(&out, *this, 0, pos);
 	String_Append(&out, replacement);
@@ -864,8 +870,14 @@ bool OVERLOAD String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 		offset += this->len;
 	}
 
+	ssize_t len = this->len - needle.len + replacement.len;
+
+	if (len < 0) {
+		len = replacement.len;
+	}
+
 	/* Approximation for one occurence. */
-	String out = HeapString(this->len - needle.len + replacement.len);
+	String out = HeapString(len);
 
 	size_t cnt     = 0;
 	size_t lastPos = 0;
