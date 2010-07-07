@@ -53,7 +53,7 @@ URL_Parts URL_Parse(String url) {
 
 			case URL_State_Path:
 				if (String_EndsWith(&buf, String("#"))) {
-					String_Copy(&res.path, buf, 0, -1);
+					String_Append(&res.path, buf, 0, -1);
 					state = URL_State_Fragment;
 					buf.len = 0;
 				}
