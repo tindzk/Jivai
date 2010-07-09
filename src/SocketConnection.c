@@ -123,6 +123,8 @@ size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 			throw(exc, &SocketConnection_ConnectionResetException);
 		} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			throw(exc, &SocketConnection_EmptyQueueException);
+		} else if (errno == EBADF) {
+			throw(exc, &SocketConnection_InvalidFileDescriptorException);
 		} else {
 			throw(exc, &SocketConnection_UnknownErrorException);
 		}
