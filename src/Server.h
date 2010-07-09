@@ -12,7 +12,7 @@ typedef void (* Server_OnInit)(void *);
 typedef void (* Server_OnDestroy)(void *);
 typedef bool (* Server_OnClientConnect)(void *);
 typedef void (* Server_OnClientAccept)(void *, Client *);
-typedef void (* Server_OnClientData)(void *, Client *);
+typedef bool (* Server_OnClientData)(void *, Client *);
 typedef void (* Server_OnClientDisconnect)(void *, Client *);
 
 typedef struct {
@@ -22,7 +22,8 @@ typedef struct {
 	Server_OnInit onDestroy;
 	Server_OnClientConnect onClientConnect;
 	Server_OnClientAccept onClientAccept;
-	Server_OnClientData onClientData;
+	Server_OnClientData onPull;
+	Server_OnClientData onPush;
 	Server_OnClientDisconnect onClientDisconnect;
 } Server_Events;
 

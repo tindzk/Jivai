@@ -159,8 +159,9 @@ int main(void) {
 	events.onDestroy          = (void *) &CustomClientListener_OnDestroy;
 	events.onClientConnect    = (void *) &CustomClientListener_OnConnect;
 	events.onClientAccept     = (void *) &CustomClientListener_OnAccept;
-	events.onClientData       = (void *) &CustomClientListener_OnData;
 	events.onClientDisconnect = (void *) &CustomClientListener_OnDisconnect;
+	events.onPush             = (void *) &CustomClientListener_OnData;
+	events.onPull             = NULL;
 
 	try(&exc) {
 		Server_Init(&server, events, false, 1337);

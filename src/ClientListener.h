@@ -10,12 +10,15 @@ typedef struct {
 	ConnectionInterface *connection;
 } ClientListener;
 
+void ClientListener0(ExceptionManager *e);
 void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_Events *events);
 void ClientListener_OnInit(ClientListener *this);
 void ClientListener_OnDestroy(ClientListener *this);
 bool ClientListener_OnConnect(UNUSED ClientListener *this);
 void ClientListener_OnAccept(ClientListener *this, Client *client);
 void ClientListener_OnDisconnect(ClientListener *this, Client *client);
-void ClientListener_OnData(ClientListener *this, Client *client);
+static bool ClientListener_OnData(ClientListener *this, Client *client, bool pull);
+bool ClientListener_OnPull(ClientListener *this, Client *client);
+bool ClientListener_OnPush(ClientListener *this, Client *client);
 
 #endif

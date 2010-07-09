@@ -228,7 +228,8 @@ ConnectionInterface HttpConnection_Methods = {
 	.new     = (void *) HttpConnection_New,
 	.init    = (void *) HttpConnection_Init,
 	.destroy = (void *) HttpConnection_Destroy,
-	.process = (void *) HttpConnection_Process
+	.push    = (void *) HttpConnection_Process,
+	.pull    = NULL
 };
 
 // ----
@@ -246,6 +247,7 @@ int main(void) {
 	HTTP_Query0(&exc);
 	HTTP_Header0(&exc);
 	HTTP_Server0(&exc);
+	ClientListener0(&exc);
 	SocketConnection0(&exc);
 
 	Server server;

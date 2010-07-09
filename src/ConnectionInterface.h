@@ -7,7 +7,8 @@ typedef struct {
 	void* (*new)();
 	void (*init)(void *, SocketConnection *);
 	void (*destroy)(void *);
-	bool (*process)(void *);
+	bool (*pull)(void *);
+	bool (*push)(void *);
 } ConnectionInterface;
 
 #endif

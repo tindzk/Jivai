@@ -47,10 +47,18 @@ void Server_AcceptClient(Server *this) {
 
 	this->events.onClientAccept(this->events.context, client);
 
-	int flags = EPOLLIN | EPOLLRDHUP | EPOLLHUP | EPOLLERR;
+	int flags = EPOLLRDHUP | EPOLLHUP | EPOLLERR;
 
 	if (this->edgeTriggered) {
 		BitMask_Set(flags, EPOLLET);
+	}
+
+	if (this->events.onPush != NULL) {
+		BitMask_Set(flags, EPOLLIN);
+	}
+
+	if (this->events.onPull != NULL) {
+		BitMask_Set(flags, EPOLLOUT);
 	}
 
 	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
@@ -74,22 +82,16 @@ void Server_OnEvent(Server *this, int events, Client *client) {
 
 	if (client != NULL && BitMask_Has(events, EPOLLIN)) {
 		/* Receiving data from client. */
-		bool close = false;
+		if (!this->events.onPush(this->events.context, client)) {
+			client = NULL;
+		}
+	}
 
-		try (exc) {
-			this->events.onClientData(this->events.context, client);
-		} catch(&SocketConnection_NotConnectedException, e) {
-			close = true;
-		} catch(&SocketConnection_ConnectionResetException, e) {
-			close = true;
-		} catch(&SocketConnection_LengthMismatchException, e) {
-			close = true;
-		} finally {
-			if (close) {
-				Server_DestroyClient(this, client);
-				client = NULL;
-			}
-		} tryEnd;
+	if (client != NULL && BitMask_Has(events, EPOLLOUT)) {
+		/* Client requests data. */
+		if (!this->events.onPull(this->events.context, client)) {
+			client = NULL;
+		}
 	}
 
 	if (client != NULL && BitMask_Has(events, EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {

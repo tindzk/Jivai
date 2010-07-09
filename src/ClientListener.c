@@ -1,5 +1,11 @@
 #include "ClientListener.h"
 
+static ExceptionManager *exc;
+
+void ClientListener0(ExceptionManager *e) {
+	exc = e;
+}
+
 void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_Events *events) {
 	this->connection           = itf;
 	events->context            = this;
@@ -7,7 +13,8 @@ void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_
 	events->onDestroy          = (void *) &ClientListener_OnDestroy;
 	events->onClientConnect    = (void *) &ClientListener_OnConnect;
 	events->onClientAccept     = (void *) &ClientListener_OnAccept;
-	events->onClientData       = (void *) &ClientListener_OnData;
+	events->onPull             = (void *) &ClientListener_OnPull;
+	events->onPush             = (void *) &ClientListener_OnPush;
 	events->onClientDisconnect = (void *) &ClientListener_OnDisconnect;
 }
 
@@ -57,12 +64,25 @@ void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
 	}
 }
 
-void ClientListener_OnData(ClientListener *this, Client *client) {
+static bool ClientListener_OnData(ClientListener *this, Client *client, bool pull) {
+	bool close = false;
+
 	if (client->data != NULL) {
 		Connection *conn = client->data;
 
-		/* Keep the connection open? */
-		bool close = this->connection->process(conn);
+		try (exc) {
+			close = pull
+				? this->connection->pull(conn)
+				: this->connection->push(conn);
+		} catch(&SocketConnection_NotConnectedException, e) {
+			close = true;
+		} catch(&SocketConnection_ConnectionResetException, e) {
+			close = true;
+		} catch(&SocketConnection_LengthMismatchException, e) {
+			close = true;
+		} finally {
+
+		} tryEnd;
 
 		if (close) {
 			/* Destroy all data associated with the client. */
@@ -72,4 +92,22 @@ void ClientListener_OnData(ClientListener *this, Client *client) {
 			Client_Destroy(client);
 		}
 	}
+
+	return !close;
+}
+
+bool ClientListener_OnPull(ClientListener *this, Client *client) {
+	if (this->connection->pull == NULL) {
+		return true;
+	}
+
+	return ClientListener_OnData(this, client, true);
+}
+
+bool ClientListener_OnPush(ClientListener *this, Client *client) {
+	if (this->connection->push == NULL) {
+		return true;
+	}
+
+	return ClientListener_OnData(this, client, false);
 }
