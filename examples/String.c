@@ -36,8 +36,7 @@ int main(void) {
 			c,
 
 			/* The last character has the position s.len-1. */
-			(i == s.len - 1) ? String("\n") : String("")
-		);
+			(i == s.len - 1) ? String("\n") : String(""));
 
 		/* String_Print() and String_Format() do not demand a
 		 * pointer because the `String()' macro expands to
@@ -50,7 +49,7 @@ int main(void) {
 	}
 
 	/* Find the needle in the string. */
-	ssize_t pos = String_Find(&s, String(" world!"));
+	ssize_t pos = String_Find(s, String(" world!"));
 
 	/* Always check for String_NotFound (-1), otherwise String_Slice()
 	 * will interpret it as the penultimate character of the string!
@@ -65,12 +64,12 @@ int main(void) {
 	/* Extract and print both parts: */
 
 	/* 0..pos-1 */
-	String_Print(tmp = String_Slice(&s, 0, pos));
+	String_Print(tmp = String_Slice(s, 0, pos));
 	String_Print(String("\n"));
 	String_Destroy(&tmp);
 
 	/* pos..end */
-	String_Print(tmp = String_Slice(&s, pos));
+	String_Print(tmp = String_Slice(s, pos));
 	String_Print(String("\n"));
 	String_Destroy(&tmp);
 

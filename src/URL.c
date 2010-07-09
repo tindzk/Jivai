@@ -18,7 +18,7 @@ URL_Parts URL_Parse(String url) {
 	for (size_t i = 0; i < url.len; i++) {
 		switch (state) {
 			case URL_State_Scheme:
-				if (String_EndsWith(&buf, String("://"))) {
+				if (String_EndsWith(buf, String("://"))) {
 					String_Copy(&res.scheme, buf, 0, -3);
 					buf.len = 0;
 
@@ -28,9 +28,9 @@ URL_Parts URL_Parse(String url) {
 				break;
 
 			case URL_State_Host:
-				if (String_EndsWith(&buf, String(":"))) {
+				if (String_EndsWith(buf, String(":"))) {
 					state = URL_State_Port;
-				} else if (String_EndsWith(&buf, String("/"))) {
+				} else if (String_EndsWith(buf, String("/"))) {
 					state = URL_State_Path;
 				}
 
@@ -42,7 +42,7 @@ URL_Parts URL_Parse(String url) {
 				break;
 
 			case URL_State_Port:
-				if (String_EndsWith(&buf, String("/"))) {
+				if (String_EndsWith(buf, String("/"))) {
 					res.port = Integer_ParseString(buf);
 					buf.len = 0;
 
@@ -52,7 +52,7 @@ URL_Parts URL_Parse(String url) {
 				break;
 
 			case URL_State_Path:
-				if (String_EndsWith(&buf, String("#"))) {
+				if (String_EndsWith(buf, String("#"))) {
 					String_Append(&res.path, buf, 0, -1);
 					state = URL_State_Fragment;
 					buf.len = 0;

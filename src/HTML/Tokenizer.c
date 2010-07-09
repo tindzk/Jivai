@@ -67,7 +67,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 	}
 
 	/* Start of a comment. */
-	if (String_Equals(&this->buf, String("!--"))) {
+	if (String_Equals(this->buf, String("!--"))) {
 		BitMask_Set(this->state, HTML_Tokenizer_State_Comment);
 
 		this->buf.len = 0;
@@ -114,7 +114,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 	if (Char_IsSpace(c) || c == '/' || c == '>') {
 		if (BitMask_Has(this->state, HTML_Tokenizer_State_TagName)) {
 			if (this->buf.len > 0) {
-				if (!String_BeginsWith(&this->buf, String("/"))) {
+				if (!String_BeginsWith(this->buf, String("/"))) {
 					/* Start of token. */
 					this->onToken(this->context, HTML_Tokenizer_TokenType_TagStart, this->buf);
 
@@ -127,7 +127,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 				/* Expecting a tag name (true by default when a tag is
 				 * introduced with `<'. */
 
-				if (String_BeginsWith(&this->buf, String("/"))) {
+				if (String_BeginsWith(this->buf, String("/"))) {
 					/* End of token. */
 					if (this->buf.len > 1) {
 						String_Crop(&this->buf, 1);
@@ -153,7 +153,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 
 			BitMask_Set(this->state, HTML_Tokenizer_State_AttrName);
 			BitMask_Clear(this->state, HTML_Tokenizer_State_AttrValue);
-		} else if (String_Equals(&this->buf, String("/"))) {
+		} else if (String_Equals(this->buf, String("/"))) {
 			/* Create a fake `end'-token for XHTML tags such as `<br />'. */
 			this->onToken(this->context, HTML_Tokenizer_TokenType_TagEnd, this->curToken);
 		} else {

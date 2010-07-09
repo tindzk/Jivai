@@ -146,7 +146,7 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 		return String("");
 	}
 
-	ssize_t pos = String_ReverseFindChar(&path, '/');
+	ssize_t pos = String_ReverseFindChar(path, '/');
 
 	if (pos == String_NotFound) {
 		return String_Clone(path);
@@ -156,7 +156,7 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 		return String_Clone(path);
 	}
 
-	return String_Slice(&path, pos + 1);
+	return String_Slice(path, pos + 1);
 }
 
 String OVERLOAD Path_GetFilename(String path) {
@@ -168,25 +168,25 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 		throw(exc, &Path_EmptyPathException);
 	}
 
-	if (String_Equals(&path, String("/"))) {
+	if (String_Equals(path, String("/"))) {
 		return String_Clone(String("/"));
 	}
 
-	if (String_EndsWith(&path, String("/"))) {
-		return String_Slice(&path, 0, -1);
+	if (String_EndsWith(path, String("/"))) {
+		return String_Slice(path, 0, -1);
 	}
 
 	if (verify && Path_IsDirectory(path)) {
 		return String_Clone(path);
 	}
 
-	ssize_t pos = String_ReverseFindChar(&path, '/');
+	ssize_t pos = String_ReverseFindChar(path, '/');
 
 	if (pos == String_NotFound) {
 		return String_Clone(String("."));
 	}
 
-	return String_Slice(&path, 0, pos);
+	return String_Slice(path, 0, pos);
 }
 
 String OVERLOAD Path_GetDirectory(String path) {
@@ -244,7 +244,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 		throw(exc, &Path_EmptyPathException);
 	}
 
-	if (String_Equals(&path, String("."))) {
+	if (String_Equals(path, String("."))) {
 		return;
 	}
 
@@ -255,7 +255,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	if (recursive) {
 		for (size_t i = 0; i < path.len; i++) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
-				String tmp = String_FastSlice(&path, 0, i + 1);
+				String tmp = String_FastSlice(path, 0, i + 1);
 
 				errno = 0;
 

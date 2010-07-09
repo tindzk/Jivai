@@ -81,17 +81,17 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 
 	String_ToLower(&name);
 
-	if (String_Equals(&name, String("connection"))) {
+	if (String_Equals(name, String("connection"))) {
 		String_ToLower(&value);
 
-		StringArray chunks = String_Split(&value, 0, ',');
+		StringArray chunks = String_Split(value, 0, ',');
 
 		for (size_t i = 0; i < chunks.len; i++) {
 			String_Trim(&chunks.buf[i]);
 
-			if (String_Equals(&chunks.buf[i], String("close"))) {
+			if (String_Equals(chunks.buf[i], String("close"))) {
 				this->headers.persistentConnection = false;
-			} else if (String_Equals(&chunks.buf[i], String("keep-alive"))) {
+			} else if (String_Equals(chunks.buf[i], String("keep-alive"))) {
 				this->headers.persistentConnection = true;
 			}
 		}
@@ -101,14 +101,14 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);
 
-			if (String_Equals(&name, String("content-type"))) {
-				if (String_BeginsWith(&value, String("application/x-www-form-urlencoded"))) {
+			if (String_Equals(name, String("content-type"))) {
+				if (String_BeginsWith(value, String("application/x-www-form-urlencoded"))) {
 					this->headers.contentType = HTTP_ContentType_SinglePart;
-				} else if (String_BeginsWith(&value, String("multipart/form-data"))) {
+				} else if (String_BeginsWith(value, String("multipart/form-data"))) {
 					this->headers.contentType = HTTP_ContentType_MultiPart;
 
 					ssize_t posBoundary = String_Find(
-						&value,
+						value,
 						sizeof("multipart/form-data") - 1,
 						String("boundary="));
 
@@ -120,7 +120,7 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 				} else {
 					throw(exc, &HTTP_Server_UnknownContentTypeException);
 				}
-			} else if (String_Equals(&name, String("content-length"))) {
+			} else if (String_Equals(name, String("content-length"))) {
 				if (this->method != HTTP_Method_Post) {
 					throw(exc, &HTTP_Server_BodyUnexpectedException);
 				}
@@ -222,7 +222,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	events.onHeader    = (void *) &HTTP_Server_OnHeader;
 	events.context     = this;
 
-	String s = String_FastSlice(&this->header, 0, requestOffset);
+	String s = String_FastSlice(this->header, 0, requestOffset);
 
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);

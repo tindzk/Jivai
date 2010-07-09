@@ -78,7 +78,7 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 HTML_Tree_Attr* HTML_Tree_GetAttr(HTML_Tree_Node *node, String name) {
 	if (node->type == HTML_Tree_NodeType_Tag) {
 		for (size_t i = 0; i < node->attrs->len; i++) {
-			if (String_Equals(&node->attrs->buf[i].name, name)) {
+			if (String_Equals(node->attrs->buf[i].name, name)) {
 				return &node->attrs->buf[i];
 			}
 		}
@@ -105,7 +105,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
 
 		for (size_t i = 0; i < node->len; i++) {
 			if (node->nodes[i]->type == HTML_Tree_NodeType_Tag) {
-				if (String_Equals(s, node->nodes[i]->value)) {
+				if (String_Equals(*s, node->nodes[i]->value)) {
 					node = node->nodes[i];
 					found = true;
 					break;

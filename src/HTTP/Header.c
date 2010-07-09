@@ -67,7 +67,7 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 		throw(exc, &HTTP_Header_EmptyRequestUriException);
 	}
 
-	ssize_t pos = String_Find(&s, '?');
+	ssize_t pos = String_Find(s, '?');
 
 	if (pos == String_NotFound) {
 		if (this->events.onPath != NULL) {
@@ -78,7 +78,7 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 			return;
 		}
 
-		String params = String_Slice(&s, pos + 1);
+		String params = String_Slice(s, pos + 1);
 
 		s.len = pos;
 		this->events.onPath(this->events.context, s);
@@ -97,9 +97,9 @@ void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s) {
 	if (this->events.onHeader != NULL) {
 		ssize_t pos;
 
-		if ((pos = String_Find(&s, String(": "))) != String_NotFound) {
-			String name  = String_Slice(&s, 0, pos);
-			String value = String_Slice(&s, pos + 2);
+		if ((pos = String_Find(s, String(": "))) != String_NotFound) {
+			String name  = String_Slice(s, 0, pos);
+			String value = String_Slice(s, pos + 2);
 
 			this->events.onHeader(this->events.context, name, value);
 
@@ -147,7 +147,7 @@ ssize_t HTTP_Header_GetLength(String str) {
 }
 
 void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
-	ssize_t pos1stLine = String_Find(&s, '\n');
+	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
 		throw(exc, &HTTP_Header_RequestMalformedException);
@@ -160,7 +160,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 	}
 
 	if (type == HTTP_Header_Type_Request) {
-		ssize_t posMethod = String_Find(&s, ' ');
+		ssize_t posMethod = String_Find(s, ' ');
 
 		if (posMethod == String_NotFound) {
 			throw(exc, &HTTP_Header_RequestMalformedException);
@@ -171,13 +171,13 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		String version = HeapString(0);
 
 		try(exc) {
-			method = String_Slice(&s, 0, posMethod);
+			method = String_Slice(s, 0, posMethod);
 			HTTP_Header_ParseMethod(this, method);
 
-			version = String_Slice(&s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
+			version = String_Slice(s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
 			HTTP_Header_ParseVersion(this, version);
 
-			path = String_Slice(&s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
+			path = String_Slice(s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
 			HTTP_Header_ParseUri(this, path);
 		} finally {
 			String_Destroy(&version);
@@ -185,7 +185,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 			String_Destroy(&path);
 		} tryEnd;
 	} else {
-		ssize_t posVersion = String_Find(&s, ' ');
+		ssize_t posVersion = String_Find(s, ' ');
 
 		if (posVersion == String_NotFound) {
 			throw(exc, &HTTP_Header_RequestMalformedException);
@@ -195,16 +195,16 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		String version = HeapString(0);
 
 		try(exc) {
-			version = String_Slice(&s, 0, posVersion);
+			version = String_Slice(s, 0, posVersion);
 			HTTP_Header_ParseVersion(this, version);
 
-			ssize_t posCode = String_Find(&s, posVersion + 1, ' ');
+			ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
 			if (posCode == String_NotFound) {
 				throw(exc, &HTTP_Header_RequestMalformedException);
 			}
 
-			code = String_Slice(&s, posVersion + 1, posCode - posVersion - 1);
+			code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
 			HTTP_Header_ParseStatus(this, code);
 		} finally {
 			String_Destroy(&version);

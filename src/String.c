@@ -167,23 +167,23 @@ char String_CharAt(String *this, ssize_t offset) {
 	return this->buf[offset];
 }
 
-String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
+String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
 	String out;
 	size_t right;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
 	if (length < 0) {
-		right = length + this->len;
+		right = length + s.len;
 	} else {
 		right = length + offset;
 	}
 
 	if ((size_t) offset > right
-	 || (size_t) offset > this->len
-	 || right           > this->len) {
+	 || (size_t) offset > s.len
+	 || right           > s.len) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
@@ -194,7 +194,7 @@ String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
 		out.buf = NULL;
 	} else {
 		out.buf = Memory_Alloc(out.size);
-		Memory_Copy(out.buf, this->buf + offset, out.len);
+		Memory_Copy(out.buf, s.buf + offset, out.len);
 	}
 
 	out.heap = true;
@@ -202,48 +202,48 @@ String OVERLOAD String_Slice(String *this, ssize_t offset, ssize_t length) {
 	return out;
 }
 
-String OVERLOAD String_Slice(String *this, ssize_t offset) {
+String OVERLOAD String_Slice(String s, ssize_t offset) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	return String_Slice(this, offset, this->len - offset);
+	return String_Slice(s, offset, s.len - offset);
 }
 
-String OVERLOAD String_FastSlice(String *this, ssize_t offset, ssize_t length) {
+String OVERLOAD String_FastSlice(String s, ssize_t offset, ssize_t length) {
 	String out;
 	size_t right;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
 	if (length < 0) {
-		right = length + this->len;
+		right = length + s.len;
 	} else {
 		right = length + offset;
 	}
 
 	if ((size_t) offset > right
-	 || (size_t) offset > this->len
-	 || right           > this->len) {
+	 || (size_t) offset > s.len
+	 || right           > s.len) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
 	out.len  = right - offset;
 	out.size = out.len;
-	out.buf  = this->buf + offset;
+	out.buf  = s.buf + offset;
 	out.heap = false;
 
 	return out;
 }
 
-String OVERLOAD String_FastSlice(String *this, ssize_t offset) {
+String OVERLOAD String_FastSlice(String s, ssize_t offset) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	return String_FastSlice(this, offset, this->len - offset);
+	return String_FastSlice(s, offset, s.len - offset);
 }
 
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
@@ -414,24 +414,24 @@ String String_Join(String *first, ...) {
 	return res;
 }
 
-bool String_RangeEquals(String *this, ssize_t offset, String needle, ssize_t needleOffset) {
-	if (this->len == 0 || needle.len == 0) {
+bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset) {
+	if (s.len == 0 || needle.len == 0) {
 		return false;
 	}
 
-	if (needle.len > this->len) {
+	if (needle.len > s.len) {
 		return false;
 	}
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
 	if (needleOffset < 0) {
 		needleOffset += needle.len;
 	}
 
-	if ((size_t) offset > this->len) {
+	if ((size_t) offset > s.len) {
 		return false;
 	}
 
@@ -440,7 +440,7 @@ bool String_RangeEquals(String *this, ssize_t offset, String needle, ssize_t nee
 	}
 
 	return Memory_Equals(
-		this->buf  + offset,
+		s.buf + offset,
 		needle.buf + needleOffset,
 		needle.len - needleOffset);
 }
@@ -457,12 +457,12 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray OVERLOAD String_Split(String *this, size_t offset, char c, bool fast) {
+StringArray OVERLOAD String_Split(String s, size_t offset, char c, bool fast) {
 	size_t chunks = 1;
 	size_t left, right;
 
-	for (size_t i = offset; i < this->len; i++) {
-		if (this->buf[i] == c) {
+	for (size_t i = offset; i < s.len; i++) {
+		if (s.buf[i] == c) {
 			chunks++;
 		}
 	}
@@ -470,12 +470,12 @@ StringArray OVERLOAD String_Split(String *this, size_t offset, char c, bool fast
 	StringArray res;
 	Array_Init(&res, chunks);
 
-	for (left = right = offset; right < this->len; right++) {
-		if (this->buf[right] == c) {
+	for (left = right = offset; right < s.len; right++) {
+		if (s.buf[right] == c) {
 			if (fast) {
-				res.buf[res.len] = String_FastSlice(this, left, right - left);
+				res.buf[res.len] = String_FastSlice(s, left, right - left);
 			} else {
-				res.buf[res.len] = String_Slice(this, left, right - left);
+				res.buf[res.len] = String_Slice(s, left, right - left);
 			}
 
 			res.len++;
@@ -485,9 +485,9 @@ StringArray OVERLOAD String_Split(String *this, size_t offset, char c, bool fast
 	}
 
 	if (fast) {
-		res.buf[res.len] = String_FastSlice(this, left, right - left);
+		res.buf[res.len] = String_FastSlice(s, left, right - left);
 	} else {
-		res.buf[res.len] = String_Slice(this, left, right - left);
+		res.buf[res.len] = String_Slice(s, left, right - left);
 	}
 
 	res.len++;
@@ -495,37 +495,37 @@ StringArray OVERLOAD String_Split(String *this, size_t offset, char c, bool fast
 	return res;
 }
 
-StringArray OVERLOAD String_FastSplit(String *this, size_t offset, char c) {
-	return String_Split(this, offset, c, true);
+StringArray OVERLOAD String_FastSplit(String s, size_t offset, char c) {
+	return String_Split(s, offset, c, true);
 }
 
-StringArray OVERLOAD String_FastSplit(String *this, char c) {
-	return String_Split(this, 0, c, true);
+StringArray OVERLOAD String_FastSplit(String s, char c) {
+	return String_Split(s, 0, c, true);
 }
 
-StringArray OVERLOAD String_Split(String *this, size_t offset, char c) {
-	return String_Split(this, offset, c, false);
+StringArray OVERLOAD String_Split(String s, size_t offset, char c) {
+	return String_Split(s, offset, c, false);
 }
 
-StringArray OVERLOAD String_Split(String *this, char c) {
-	return String_Split(this, 0, c, false);
+StringArray OVERLOAD String_Split(String s, char c) {
+	return String_Split(s, 0, c, false);
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, char c) {
+static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
 	if (length < 0) {
-		right = length + this->len;
+		right = length + s.len;
 	} else {
 		right = length + offset;
 	}
 
 	for (size_t i = offset; i < right; i++) {
-		if (this->buf[i] == c) {
+		if (s.buf[i] == c) {
 			return i;
 		}
 	}
@@ -533,21 +533,21 @@ static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ss
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_ReverseFindChar(String *this, ssize_t offset, char c) {
-	if (this->len == 0) {
+ssize_t OVERLOAD String_ReverseFindChar(String s, ssize_t offset, char c) {
+	if (s.len == 0) {
 		return String_NotFound;
 	}
 
 	if (offset < 0) {
-		offset += this->len - 1;
+		offset += s.len - 1;
 	}
 
-	if ((size_t) offset > this->len) {
+	if ((size_t) offset > s.len) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
 	for (ssize_t i = offset; i >= 0; i--) {
-		if (this->buf[i] == c) {
+		if (s.buf[i] == c) {
 			return i;
 		}
 	}
@@ -555,19 +555,19 @@ ssize_t OVERLOAD String_ReverseFindChar(String *this, ssize_t offset, char c) {
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_ReverseFindChar(String *this, char c) {
-	return String_ReverseFindChar(this, this->len - 1, c);
+ssize_t OVERLOAD String_ReverseFindChar(String s, char c) {
+	return String_ReverseFindChar(s, s.len - 1, c);
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ssize_t length, String needle) {
+static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, String needle) {
 	size_t right;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
 	if (length < 0) {
-		right = length + this->len;
+		right = length + s.len;
 	} else {
 		right = length + offset;
 	}
@@ -575,7 +575,7 @@ static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ss
 	size_t cnt = 0;
 
 	for (size_t i = offset; i < right; i++) {
-		if (this->buf[i] == needle.buf[cnt]) {
+		if (s.buf[i] == needle.buf[cnt]) {
 			cnt++;
 
 			if (cnt == needle.len) {
@@ -592,40 +592,40 @@ static inline OVERLOAD ssize_t String_FindRange(String *this, ssize_t offset, ss
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_Find(String *this, String needle) {
-	return String_FindRange(this, 0, this->len, needle);
+ssize_t OVERLOAD String_Find(String s, String needle) {
+	return String_FindRange(s, 0, s.len, needle);
 }
 
-ssize_t OVERLOAD String_Find(String *this, ssize_t offset, String needle) {
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, String needle) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	return String_FindRange(this, offset, this->len - offset, needle);
+	return String_FindRange(s, offset, s.len - offset, needle);
 }
 
-ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, String needle) {
-	return String_FindRange(this, offset, length, needle);
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, String needle) {
+	return String_FindRange(s, offset, length, needle);
 }
 
-ssize_t OVERLOAD String_Find(String *this, char c) {
-	return String_FindRange(this, 0, this->len, c);
+ssize_t OVERLOAD String_Find(String s, char c) {
+	return String_FindRange(s, 0, s.len, c);
 }
 
-ssize_t OVERLOAD String_Find(String *this, ssize_t offset, char c) {
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	return String_FindRange(this, offset, this->len - offset, c);
+	return String_FindRange(s, offset, s.len - offset, c);
 }
 
-ssize_t OVERLOAD String_Find(String *this, ssize_t offset, ssize_t length, char c) {
-	return String_FindRange(this, offset, length, c);
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, char c) {
+	return String_FindRange(s, offset, length, c);
 }
 
-bool String_Contains(String *this, String needle) {
-	return String_FindRange(this, 0, this->len, needle) != String_NotFound;
+bool String_Contains(String s, String needle) {
+	return String_FindRange(s, 0, s.len, needle) != String_NotFound;
 }
 
 void String_TrimLeft(String *this) {
@@ -724,60 +724,60 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-ssize_t OVERLOAD String_Between(String *this, ssize_t offset, String left, String right, String *out) {
+ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	if ((posLeft = String_Find(this, offset, left)) == String_NotFound) {
+	if ((posLeft = String_Find(s, offset, left)) == String_NotFound) {
 		return String_NotFound;
 	}
 
 	posLeft += left.len;
 
-	if ((posRight = String_Find(this, posLeft, right)) == String_NotFound) {
+	if ((posRight = String_Find(s, posLeft, right)) == String_NotFound) {
 		return String_NotFound;
 	}
 
-	String_Copy(out, *this, posLeft, posRight - posLeft);
+	String_Copy(out, s, posLeft, posRight - posLeft);
 
 	return posRight + right.len;
 }
 
-ssize_t OVERLOAD String_Between(String *this, String left, String right, String *out) {
-	return String_Between(this, 0, left, right, out);
+ssize_t OVERLOAD String_Between(String s, String left, String right, String *out) {
+	return String_Between(s, 0, left, right, out);
 }
 
-String OVERLOAD String_Between(String *this, ssize_t offset, String left, String right) {
+String OVERLOAD String_Between(String s, ssize_t offset, String left, String right) {
 	String out = HeapString(0);
-	String_Between(this, offset, left, right, &out);
+	String_Between(s, offset, left, right, &out);
 	return out;
 }
 
-String OVERLOAD String_Between(String *this, String left, String right) {
+String OVERLOAD String_Between(String s, String left, String right) {
 	String out = HeapString(0);
-	String_Between(this, 0, left, right, &out);
+	String_Between(s, 0, left, right, &out);
 	return out;
 }
 
 bool String_Filter(String *this, String s1, String s2) {
 	ssize_t left, right;
 
-	if ((left = String_Find(this, s1)) == String_NotFound) {
+	if ((left = String_Find(*this, s1)) == String_NotFound) {
 		return false;
 	}
 
 	String out = HeapString(0);
 
 	if (left > 0) {
-		out = String_Slice(this, 0, left - 1);
+		out = String_Slice(*this, 0, left - 1);
 	}
 
 	left += s1.len;
 
-	if ((right = String_Find(this, left, s2)) == String_NotFound) {
+	if ((right = String_Find(*this, left, s2)) == String_NotFound) {
 		String_Destroy(&out);
 		return false;
 	}
@@ -795,11 +795,11 @@ bool String_Filter(String *this, String s1, String s2) {
 bool String_Outside(String *this, String left, String right) {
 	ssize_t posLeft, posRight;
 
-	if ((posLeft = String_Find(this, left)) == String_NotFound) {
+	if ((posLeft = String_Find(*this, left)) == String_NotFound) {
 		return false;
 	}
 
-	if ((posRight = String_Find(this, posLeft + left.len, right)) == String_NotFound) {
+	if ((posRight = String_Find(*this, posLeft + left.len, right)) == String_NotFound) {
 		return false;
 	}
 
@@ -836,7 +836,7 @@ bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String
 		offset += this->len;
 	}
 
-	ssize_t pos = String_Find(this, offset, needle);
+	ssize_t pos = String_Find(*this, offset, needle);
 
 	if (pos == String_NotFound) {
 		return false;
@@ -917,7 +917,7 @@ bool OVERLOAD String_ReplaceAll(String *this, String needle, String replacement)
 }
 
 String String_Consume(String *this, int n) {
-	String res = String_Slice(this, 0, n);
+	String res = String_Slice(*this, 0, n);
 	String_Crop(this, n);
 	return res;
 }
@@ -1031,8 +1031,8 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
 			int result;
 
-			String __a = String_FastSlice(&a, ai);
-			String __b = String_FastSlice(&b, bi);
+			String __a = String_FastSlice(a, ai);
+			String __b = String_FastSlice(b, bi);
 
 			if (!skipZeros) {
 				/* Is fractional? */

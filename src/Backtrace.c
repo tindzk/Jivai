@@ -20,7 +20,7 @@ void Backtrace_PrintTrace(UNUSED void **dest, UNUSED size_t size) {
 			String_Print(String("("));
 
 			if (items[i].filename.len > 0) {
-				ssize_t pos = String_ReverseFindChar(&items[i].filename, '/');
+				ssize_t pos = String_ReverseFindChar(items[i].filename, '/');
 
 				if (pos != -1) {
 					String_Crop(&items[i].filename, pos + 1);

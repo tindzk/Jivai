@@ -113,19 +113,19 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 
 	String_ToLower(&name);
 
-	if (String_Equals(&name, String("connection"))) {
+	if (String_Equals(name, String("connection"))) {
 		String_ToLower(&value);
 
-		if (String_Equals(&value, String("close"))) {
+		if (String_Equals(value, String("close"))) {
 			this->keepAlive = false;
-		} else if (String_Equals(&value, String("keep-alive"))) {
+		} else if (String_Equals(value, String("keep-alive"))) {
 			this->keepAlive = true;
 		}
-	} else if (String_Equals(&name, String("transfer-encoding"))) {
-		if (String_Equals(&value, String("chunked"))) {
+	} else if (String_Equals(name, String("transfer-encoding"))) {
+		if (String_Equals(value, String("chunked"))) {
 			this->chunked = true;
 		}
-	} else if (String_Equals(&name, String("content-length"))) {
+	} else if (String_Equals(name, String("content-length"))) {
 		this->total = Integer64_ParseString(value);
 	}
 }
@@ -211,13 +211,13 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String path) {
 }
 
 size_t HTTP_Client_ParseChunk(String *s) {
-	ssize_t pos = String_Find(s, String("\r\n"));
+	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
 		throw(exc, &HTTP_Client_MalformedChunkException);
 	}
 
-	String part = String_Slice(s, 0, pos);
+	String part = String_Slice(*s, 0, pos);
 	String_Crop(s, pos + 2);
 
 	long len = Hex_ToInteger(part);
@@ -271,7 +271,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			events.onStatus  = (void *) &HTTP_Client_OnStatus;
 			events.onHeader  = (void *) &HTTP_Client_OnHeader;
 
-			String s = String_FastSlice(&this->resp, 0, requestOffset);
+			String s = String_FastSlice(this->resp, 0, requestOffset);
 
 			HTTP_Header header;
 			HTTP_Header_Init(&header, events);
@@ -404,7 +404,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 					HTTP_Client_InternalRead(this);
 					goto retry;
-				} else if (!String_BeginsWith(&this->resp, String("\r\n"))) {
+				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
 					/* Chunk does not end on CRLF. */
 					throw(exc, &HTTP_Client_MalformedChunkException);
 				} else {
@@ -446,7 +446,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 					 * at once.
 					 */
 
-					if (String_Find(&this->resp, 2, String("\r\n")) != String_NotFound) {
+					if (String_Find(this->resp, 2, String("\r\n")) != String_NotFound) {
 						/* We have enough data to deal with it.
 						 * Fall through.
 						 */
