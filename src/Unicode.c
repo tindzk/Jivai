@@ -62,7 +62,7 @@ size_t Unicode_Prev(String s, size_t offset) {
 	return width;
 }
 
-size_t Unicode_CountRange(String s, size_t offset, size_t len) {
+size_t OVERLOAD Unicode_Count(String s, size_t offset, size_t len) {
 	size_t cnt = 0;
 
 	while (offset < len) {
@@ -77,4 +77,8 @@ size_t Unicode_CountRange(String s, size_t offset, size_t len) {
 	}
 
 	return cnt;
+}
+
+size_t OVERLOAD Unicode_Count(String s) {
+	return Unicode_Count(s, 0, s.len);
 }
