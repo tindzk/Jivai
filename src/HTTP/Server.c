@@ -107,9 +107,8 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 				} else if (String_BeginsWith(value, String("multipart/form-data"))) {
 					this->headers.contentType = HTTP_ContentType_MultiPart;
 
-					ssize_t posBoundary = String_Find(
-						value,
-						sizeof("multipart/form-data") - 1,
+					ssize_t posBoundary = String_Find(value,
+						String("multipart/form-data").len,
 						String("boundary="));
 
 					if (posBoundary == String_NotFound) {
