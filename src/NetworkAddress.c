@@ -10,9 +10,8 @@ void NetworkAddress0(ExceptionManager *e) {
 
 struct in_addr NetworkAddress_ResolveHost(String hostname) {
 	struct addrinfo *host;
-	int res;
 
-	if ((res = getaddrinfo(String_ToNul(&hostname), NULL, NULL, &host)) != 0) {
+	if (getaddrinfo(String_ToNul(&hostname), NULL, NULL, &host)) {
 		throw(exc, &NetworkAddress_GetAddrInfoFailedException);
 	}
 
