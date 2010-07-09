@@ -31,6 +31,8 @@ ExceptionManager exc;
 // -------
 
 typedef struct {
+	bool persistent;
+
 	HTTP_Server server;
 	HTTP_Method method;
 	HTTP_Version version;
@@ -80,7 +82,7 @@ String* Request_OnBodyParameter(Request *this, String name) {
 	return Request_OnQueryParameter(this, name);
 }
 
-bool Request_OnRespond(Request *this, bool persistent) {
+void Request_OnRespond(Request *this, bool persistent) {
 	String msg = HeapString(2048);
 
 	if (this->method == HTTP_Method_Get) {
@@ -125,8 +127,7 @@ bool Request_OnRespond(Request *this, bool persistent) {
 			? String("Connection: Keep-Alive")
 			: String("Connection: Close"),
 
-		Integer_ToString(msg.len)
-	);
+		Integer_ToString(msg.len));
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
 	SocketConnection_Write(this->conn, msg.buf, msg.len);
@@ -138,14 +139,20 @@ bool Request_OnRespond(Request *this, bool persistent) {
 	this->paramTest.len  = 0;
 	this->paramTest2.len = 0;
 
-	return persistent;
+	/* You may want to change the value of this variable when the
+	 * content length is unknown. If that's the case, you won't have
+	 * no choice to indicate the end of the response but to close
+	 * the connection.
+	 */
+	this->persistent = persistent;
 }
 
 void Request_Init(Request *this, SocketConnection *conn) {
 	this->conn = conn;
 
-	this->method  = HTTP_Method_Get;
-	this->version = HTTP_Version_1_0;
+	this->method     = HTTP_Method_Get;
+	this->version    = HTTP_Version_1_0;
+	this->persistent = false;
 
 	this->path = HeapString(0);
 
@@ -179,11 +186,17 @@ void Request_Destroy(Request *this) {
 }
 
 bool Request_Parse(Request *this) {
-	bool keepOpen = false;
+	bool incomplete = HTTP_Server_Process(&this->server);
 
-	keepOpen = HTTP_Server_Process(&this->server);
+	/* Whilst the request is incomplete, keep the connection alive.  */
+	if (incomplete) {
+		return true;
+	}
 
-	return keepOpen;
+	/* There is enough data but does the current request actually
+	 * support persistent connections?
+	 */
+	return this->persistent;
 }
 
 // --------------

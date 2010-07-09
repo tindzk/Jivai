@@ -328,18 +328,6 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 	return HTTP_Server_Result_Complete;
 }
 
-HTTP_Server_Result HTTP_Server_Dispatch(HTTP_Server *this) {
-	bool keepOpen = this->events.onRespond(this->events.context, this->headers.persistentConnection);
-
-	this->state = HTTP_Server_State_Header;
-
-	if (keepOpen) {
-		return HTTP_Server_Result_Complete;
-	}
-
-	return HTTP_Server_Result_Error;
-}
-
 bool HTTP_Server_Process(HTTP_Server *this) {
 	HTTP_Server_Result res = HTTP_Server_Result_Error;
 
@@ -348,7 +336,9 @@ bool HTTP_Server_Process(HTTP_Server *this) {
 	} else if (this->state == HTTP_Server_State_Body) {
 		res = HTTP_Server_ReadBody(this);
 	} else if (this->state == HTTP_Server_State_Dispatch) {
-		res = HTTP_Server_Dispatch(this);
+		this->events.onRespond(this->events.context, this->headers.persistentConnection);
+		this->state = HTTP_Server_State_Header;
+		return false;
 	}
 
 	if (res == HTTP_Server_Result_Complete) {

@@ -17,7 +17,7 @@ Exception_Export(HTTP_Server_BodyUnexpectedException);
 Exception_Export(HTTP_Server_HeaderTooLargeException);
 Exception_Export(HTTP_Server_UnknownContentTypeException);
 
-typedef bool (* HTTP_Server_OnRespond)(void *, bool);
+typedef void (* HTTP_Server_OnRespond)(void *, bool);
 
 typedef enum {
 	HTTP_Server_State_Header,
@@ -71,7 +71,6 @@ String* HTTP_Server_OnQueryParameter(HTTP_Server *this, String name);
 void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value);
 HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this);
 HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this);
-HTTP_Server_Result HTTP_Server_Dispatch(HTTP_Server *this);
 bool HTTP_Server_Process(HTTP_Server *this);
 
 #endif
