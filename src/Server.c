@@ -6,9 +6,11 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Server_Init(Server *this, Server_Events events, int port) {
+void Server_Init(Server *this, Server_Events events, bool edgeTriggered, int port) {
 	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
 	this->events = events;
+
+	this->edgeTriggered = edgeTriggered;
 
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 	Socket_SetReusableFlag(&this->socket);
@@ -45,11 +47,13 @@ void Server_AcceptClient(Server *this) {
 
 	this->events.onClientAccept(this->events.context, client);
 
-	Poll_AddEvent(
-		&this->poll,
-		client,
-		client->conn->fd,
-		EPOLLIN | EPOLLRDHUP | EPOLLHUP | EPOLLERR);
+	int flags = EPOLLIN | EPOLLRDHUP | EPOLLHUP | EPOLLERR;
+
+	if (this->edgeTriggered) {
+		BitMask_Set(flags, EPOLLET);
+	}
+
+	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
 }
 
 void Server_OnEvent(Server *this, int events, Client *client) {

@@ -256,7 +256,7 @@ int main(void) {
 	int res = EXIT_SUCCESS;
 
 	try(&exc) {
-		Server_Init(&server, events, 8080);
+		Server_Init(&server, events, false, 8080);
 		String_Print(String("Server started.\n"));
 
 		while (true) {
