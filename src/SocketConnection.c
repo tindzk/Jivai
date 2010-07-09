@@ -116,10 +116,6 @@ size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 
 	ssize_t res = send(this->fd, buf, len, flags);
 
-	if (res >= 0) {
-		return res;
-	}
-
 	if (res == -1) {
 		if (errno == EPIPE || errno == ENOTCONN) {
 			throw(exc, &SocketConnection_NotConnectedException);
@@ -130,8 +126,6 @@ size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 		} else {
 			throw(exc, &SocketConnection_UnknownErrorException);
 		}
-	} else if ((size_t) res != len) {
-		throw(exc, &SocketConnection_LengthMismatchException);
 	}
 
 	return res;
