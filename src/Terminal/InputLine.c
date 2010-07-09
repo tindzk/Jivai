@@ -52,7 +52,7 @@ void Terminal_InputLine_Print(Terminal_InputLine *this, String s) {
 }
 
 void Terminal_InputLine_SetValue(Terminal_InputLine *this, String s) {
-	if (!String_Equals(&this->line, s)) {
+	if (!String_Equals(this->line, s)) {
 		Terminal_InputLine_ClearLine(this);
 		Terminal_InputLine_Print(this, s);
 	}

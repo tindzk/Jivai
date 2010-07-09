@@ -46,7 +46,7 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c) {
 
 	/* End of a comment */
 	if (BitMask_Has(this->state, HTML_Tokenizer_State_Comment)
-			&& String_EndsWith(&this->buf, String("--"))
+			&& String_EndsWith(this->buf, String("--"))
 			&& c == '>') {
 		String_Crop(&this->buf, 0, -2);
 		this->onToken(this->context, HTML_Tokenizer_TokenType_Comment, this->buf);
