@@ -51,7 +51,7 @@ size_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 	return 0;
 }
 
-size_t SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len) {
+void SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len) {
 	if (this->nonblocking) {
 		if (fcntl(this->fd, F_SETFL, O_RDWR | O_NONBLOCK) == -1) {
 			throw(exc, &SocketConnection_FcntlFailedException);
@@ -97,8 +97,6 @@ size_t SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *of
 			throw(exc, &SocketConnection_FcntlFailedException);
 		}
 	}
-
-	return 0;
 }
 
 size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
