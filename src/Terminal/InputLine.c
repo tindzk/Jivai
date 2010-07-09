@@ -79,13 +79,11 @@ void Terminal_InputLine_DeletePreceding(Terminal_InputLine *this) {
 				return;
 			}
 
-			String rest = String_Slice(this->line, this->pos);
+			String rest = String_FastSlice(this->line, this->pos);
 			this->line.len = this->pos - width;
 
 			Terminal_InputLine_Print(this, rest);
 			Terminal_InputLine_MoveLeft(this, rest.len);
-
-			String_Destroy(&rest);
 
 			this->pos -= width;
 		}
@@ -96,13 +94,11 @@ void Terminal_InputLine_DeleteSucceeding(Terminal_InputLine *this) {
 	if (this->pos < this->line.len) {
 		Terminal_DeleteUntilEol(this->term);
 
-		String rest = String_Slice(this->line, this->pos + 1);
+		String rest = String_FastSlice(this->line, this->pos + 1);
 		this->line.len = this->pos;
 
 		Terminal_InputLine_Print(this, rest);
 		Terminal_InputLine_MoveLeft(this, rest.len);
-
-		String_Destroy(&rest);
 	}
 }
 
@@ -232,15 +228,13 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 			if (this->pos == this->line.len) { /* EOL */
 				Terminal_InputLine_Print(this, ch);
 			} else {
-				String rest = String_Slice(this->line, this->pos);
+				String rest = String_FastSlice(this->line, this->pos);
 				this->line.len = this->pos;
 
 				Terminal_InputLine_Print(this, ch);
 				Terminal_InputLine_Print(this, rest);
 
 				Terminal_InputLine_MoveLeft(this, rest.len);
-
-				String_Destroy(&rest);
 			}
 
 			if (this->line.len == this->line.size) {
