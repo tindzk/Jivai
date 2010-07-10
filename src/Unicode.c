@@ -82,3 +82,27 @@ size_t OVERLOAD Unicode_Count(String s, size_t offset, size_t len) {
 size_t OVERLOAD Unicode_Count(String s) {
 	return Unicode_Count(s, 0, s.len);
 }
+
+void Unicode_ToMultiByte(int c, String *res) {
+    if (c <= 0x7F) {
+		res->buf[0] = c;
+		res->len = 1;
+    } else if (c <= 0x7FF) {
+        res->buf[0] = 0xC0 | c >> 6;
+		res->buf[1] = 0x80 | c & 0x3F;
+		res->len = 2;
+    } else if (c <= 0xFFFF) {
+        res->buf[0] = 0xE0 | c >> 12;
+		res->buf[1] = 0x80 | c >> 6 & 0x3F;
+		res->buf[2] = 0x80 | c      & 0x3F;
+		res->len = 3;
+    } else if (c <= 0x10FFFF) {
+        res->buf[0] = 0xF0 | c >> 18;
+		res->buf[1] = 0x80 | c >> 12 & 0x3F;
+		res->buf[2] = 0x80 | c >>  6 & 0x3F;
+        res->buf[3] = 0x80 | c       & 0x3F;
+		res->len = 4;
+    } else {
+		res->len = 0;
+	}
+}
