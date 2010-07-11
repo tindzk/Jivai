@@ -75,13 +75,13 @@ void Exception_Print(Exception *e);
 	bool __exc_rethrow = false;                   \
 	if (setjmp(__exc_mgr->cur->jmpBuffer) == 0) {
 
-#define catch(c, e)                          \
+#define catch(c, _e)                         \
 	} else if (__exc_mgr->e.p == c) {        \
-		UNUSED Exception *e = &__exc_mgr->e;
+		UNUSED Exception *_e = &__exc_mgr->e;
 
-#define catchAny(e)                          \
+#define catchAny(_e)                         \
 	} else if (true) {                       \
-		UNUSED Exception *e = &__exc_mgr->e;
+		UNUSED Exception *_e = &__exc_mgr->e;
 
 #define finally               \
 	} else {                  \
