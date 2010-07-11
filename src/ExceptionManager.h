@@ -114,6 +114,10 @@ void Exception_Print(Exception *e);
 #define excRethrow \
 	__exc_rethrow = true
 
+#define excThrow(...)                \
+	ExceptionManager_Pop(__exc_mgr); \
+	throw(__VA_ARGS__)
+
 #define throw(...) \
 	ExceptionManager_Throw(__VA_ARGS__)
 
