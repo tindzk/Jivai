@@ -301,6 +301,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 		}
 	} catch(&SocketConnection_ConnectionResetException, e) {
 		this->closed = true;
+		excThrow(exc, &HTTP_Client_ConnectionResetException);
 	} finally {
 
 	} tryEnd;
@@ -327,7 +328,7 @@ static void HTTP_Client_InternalRead(HTTP_Client *this) {
 		this->resp.len += read;
 	} catch(&SocketConnection_ConnectionResetException, e) {
 		this->closed = true;
-		throw(exc, &HTTP_Client_ConnectionResetException);
+		excThrow(exc, &HTTP_Client_ConnectionResetException);
 	} finally {
 
 	} tryEnd;
@@ -510,7 +511,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 				return true;
 			} else {
-				throw(exc, &HTTP_Client_ConnectionResetException);
+				excThrow(exc, &HTTP_Client_ConnectionResetException);
 			}
 		} finally {
 
