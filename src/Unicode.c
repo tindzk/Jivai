@@ -18,7 +18,7 @@ size_t Unicode_CalcWidth(const char *src) {
 	do {
 		c <<= 1;
 		bytes++;
-	} while ((c & 0x80) && bytes < 6);
+	} while (Charset_IsHighBitSet(c) && bytes < 6);
 
 	return bytes;
 }

@@ -2,6 +2,7 @@
 #define UNICODE_H
 
 #include "String.h"
+#include "Charset.h"
 
 size_t Unicode_CalcWidth(const char *src);
 size_t Unicode_Next(String s, size_t offset);
