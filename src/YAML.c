@@ -181,10 +181,15 @@ void YAML_Parse(YAML *this) {
 
 						popChar = true;
 					}
-				} else if (c == '\n' && buf.len > 0) {
-					YAML_AddItem(this, whitespaces / this->depthWidth, String(""), buf);
-					buf.len = 0;
-				} else if (c != ' ' && c != '\t' && c != '\n') {
+				} else if (c == '\n') {
+					if (buf.len > 0) {
+						YAML_AddItem(this, whitespaces / this->depthWidth, String(""), buf);
+						buf.len = 0;
+					}
+
+					whitespaces = 0;
+					state = DEPTH;
+				} else if (c != ' ' && c != '\t') {
 					String_Append(&buf, c);
 				}
 
