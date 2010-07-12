@@ -49,10 +49,14 @@ void String_Resize(String *this, size_t length) {
 		throw(exc, &String_NotHeapAllocatedException);
 	}
 
-	if (this->buf == NULL) {
-		this->buf = Memory_Alloc(length);
+	if (length > 0) {
+		if (this->buf == NULL) {
+			this->buf = Memory_Alloc(length);
+		} else {
+			this->buf = Memory_Realloc(this->buf, length);
+		}
 	} else {
-		this->buf = Memory_Realloc(this->buf, length);
+		Memory_Free(this->buf);
 	}
 
 	this->size = length;
