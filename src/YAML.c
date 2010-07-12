@@ -145,6 +145,8 @@ void YAML_Parse(YAML *this) {
 				} else if (c != '\n') {
 					String_Append(&buf, c);
 					state = KEY;
+				} else {
+					whitespaces = 0;
 				}
 
 				break;
