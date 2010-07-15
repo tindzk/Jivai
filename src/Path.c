@@ -146,7 +146,7 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 		return String("");
 	}
 
-	ssize_t pos = String_ReverseFindChar(path, '/');
+	ssize_t pos = String_ReverseFind(path, '/');
 
 	if (pos == String_NotFound) {
 		return String_Clone(path);
@@ -180,7 +180,7 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 		return String_Clone(path);
 	}
 
-	ssize_t pos = String_ReverseFindChar(path, '/');
+	ssize_t pos = String_ReverseFind(path, '/');
 
 	if (pos == String_NotFound) {
 		return String_Clone(String("."));

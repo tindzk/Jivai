@@ -537,7 +537,7 @@ static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_ReverseFindChar(String s, ssize_t offset, char c) {
+ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, char c) {
 	if (s.len == 0) {
 		return String_NotFound;
 	}
@@ -559,8 +559,8 @@ ssize_t OVERLOAD String_ReverseFindChar(String s, ssize_t offset, char c) {
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_ReverseFindChar(String s, char c) {
-	return String_ReverseFindChar(s, s.len - 1, c);
+ssize_t OVERLOAD String_ReverseFind(String s, char c) {
+	return String_ReverseFind(s, s.len - 1, c);
 }
 
 ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle) {
