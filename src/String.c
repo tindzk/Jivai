@@ -613,6 +613,11 @@ static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_
 		right = length + offset;
 	}
 
+	if ((size_t) offset > s.len
+	 || (size_t) right  > s.len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
 	size_t cnt = 0;
 
 	for (size_t i = offset; i < right; i++) {
