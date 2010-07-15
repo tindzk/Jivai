@@ -770,7 +770,7 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out, bool fast) {
+ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
@@ -787,52 +787,24 @@ ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String ri
 		return String_NotFound;
 	}
 
-	if (fast) {
-		*out = BufString(s.buf + posLeft, posRight - posLeft);
-	} else {
-		String_Copy(out, s, posLeft, posRight - posLeft);
-	}
+	*out = BufString(s.buf + posLeft, posRight - posLeft);
 
 	return posRight + right.len;
 }
 
-ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
-	return String_Between(s, offset, left, right, out, false);
-}
-
 ssize_t OVERLOAD String_Between(String s, String left, String right, String *out) {
-	return String_Between(s, 0, left, right, out, false);
+	return String_Between(s, 0, left, right, out);
 }
 
 String OVERLOAD String_Between(String s, ssize_t offset, String left, String right) {
-	String out = HeapString(0);
-	String_Between(s, offset, left, right, &out, false);
+	String out = StackString(0);
+	String_Between(s, offset, left, right, &out);
 	return out;
 }
 
 String OVERLOAD String_Between(String s, String left, String right) {
-	String out = HeapString(0);
-	String_Between(s, 0, left, right, &out, false);
-	return out;
-}
-
-ssize_t OVERLOAD String_FastBetween(String s, ssize_t offset, String left, String right, String *out) {
-	return String_Between(s, offset, left, right, out, true);
-}
-
-ssize_t OVERLOAD String_FastBetween(String s, String left, String right, String *out) {
-	return String_Between(s, 0, left, right, out, true);
-}
-
-String OVERLOAD String_FastBetween(String s, ssize_t offset, String left, String right) {
-	String out = HeapString(0);
-	String_Between(s, offset, left, right, &out, true);
-	return out;
-}
-
-String OVERLOAD String_FastBetween(String s, String left, String right) {
-	String out = HeapString(0);
-	String_Between(s, 0, left, right, &out, true);
+	String out = StackString(0);
+	String_Between(s, 0, left, right, &out);
 	return out;
 }
 
