@@ -57,6 +57,8 @@ StringArray OVERLOAD String_Split(String s, size_t offset, char c);
 StringArray OVERLOAD String_Split(String s, char c);
 ssize_t OVERLOAD String_ReverseFindChar(String s, ssize_t offset, char c);
 ssize_t OVERLOAD String_ReverseFindChar(String s, char c);
+ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle);
+ssize_t OVERLOAD String_ReverseFind(String s, String needle);
 static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, char c);
 static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, String needle);
 ssize_t OVERLOAD String_Find(String s, String needle);

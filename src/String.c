@@ -563,6 +563,43 @@ ssize_t OVERLOAD String_ReverseFindChar(String s, char c) {
 	return String_ReverseFindChar(s, s.len - 1, c);
 }
 
+ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle) {
+	if (s.len == 0) {
+		return String_NotFound;
+	}
+
+	if (offset < 0) {
+		offset += s.len - 1;
+	}
+
+	if ((size_t) offset > s.len) {
+		throw(exc, &String_BufferOverflowException);
+	}
+
+	size_t cnt = 0;
+
+	for (ssize_t i = offset; i >= 0; i--) {
+		if (s.buf[i] == needle.buf[needle.len - cnt - 1]) {
+			cnt++;
+
+			if (cnt == needle.len) {
+				return i + 1;
+			}
+		} else {
+			if (cnt > 0) {
+				cnt = 0;
+				i++;
+			}
+		}
+	}
+
+	return String_NotFound;
+}
+
+ssize_t OVERLOAD String_ReverseFind(String s, String needle) {
+	return String_ReverseFind(s, s.len - 1, needle);
+}
+
 static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, String needle) {
 	size_t right;
 
