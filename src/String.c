@@ -515,7 +515,7 @@ StringArray OVERLOAD String_Split(String s, char c) {
 	return String_Split(s, 0, c, false);
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, char c) {
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
 	if (offset < 0) {
@@ -600,7 +600,7 @@ ssize_t OVERLOAD String_ReverseFind(String s, String needle) {
 	return String_ReverseFind(s, s.len - 1, needle);
 }
 
-static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_t length, String needle) {
+ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, String needle) {
 	size_t right;
 
 	if (offset < 0) {
@@ -639,7 +639,7 @@ static inline OVERLOAD ssize_t String_FindRange(String s, ssize_t offset, ssize_
 }
 
 ssize_t OVERLOAD String_Find(String s, String needle) {
-	return String_FindRange(s, 0, s.len, needle);
+	return String_Find(s, 0, s.len, needle);
 }
 
 ssize_t OVERLOAD String_Find(String s, ssize_t offset, String needle) {
@@ -647,15 +647,11 @@ ssize_t OVERLOAD String_Find(String s, ssize_t offset, String needle) {
 		offset += s.len;
 	}
 
-	return String_FindRange(s, offset, s.len - offset, needle);
-}
-
-ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, String needle) {
-	return String_FindRange(s, offset, length, needle);
+	return String_Find(s, offset, s.len - offset, needle);
 }
 
 ssize_t OVERLOAD String_Find(String s, char c) {
-	return String_FindRange(s, 0, s.len, c);
+	return String_Find(s, 0, s.len, c);
 }
 
 ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
@@ -663,15 +659,11 @@ ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
 		offset += s.len;
 	}
 
-	return String_FindRange(s, offset, s.len - offset, c);
-}
-
-ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, char c) {
-	return String_FindRange(s, offset, length, c);
+	return String_Find(s, offset, s.len - offset, c);
 }
 
 bool String_Contains(String s, String needle) {
-	return String_FindRange(s, 0, s.len, needle) != String_NotFound;
+	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
 void String_TrimLeft(String *this) {
