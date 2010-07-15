@@ -770,21 +770,37 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
+ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
 		offset += s.len;
 	}
 
-	if ((posLeft = String_Find(s, offset, left)) == String_NotFound) {
-		return String_NotFound;
-	}
+	if (leftAligned) {
+		if ((posLeft = String_Find(s, offset, left)) == String_NotFound) {
+			return String_NotFound;
+		}
 
-	posLeft += left.len;
+		posLeft += left.len;
 
-	if ((posRight = String_Find(s, posLeft, right)) == String_NotFound) {
-		return String_NotFound;
+		if ((posRight = String_Find(s, posLeft, right)) == String_NotFound) {
+			return String_NotFound;
+		}
+	} else {
+		if ((posRight = String_Find(s, offset, right)) == String_NotFound) {
+			return String_NotFound;
+		}
+
+		if (posRight > 0) {
+			if ((posLeft = String_ReverseFind(s, posRight - 1, left)) == String_NotFound) {
+				return String_NotFound;
+			}
+
+			posLeft += left.len;
+		} else {
+			return String_NotFound;
+		}
 	}
 
 	*out = BufString(s.buf + posLeft, posRight - posLeft);
@@ -793,7 +809,17 @@ ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String ri
 }
 
 ssize_t OVERLOAD String_Between(String s, String left, String right, String *out) {
-	return String_Between(s, 0, left, right, out);
+	return String_Between(s, 0, left, right, true, out);
+}
+
+ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
+	return String_Between(s, offset, left, right, true, out);
+}
+
+String OVERLOAD String_Between(String s, ssize_t offset, String left, String right, bool leftAligned) {
+	String out = StackString(0);
+	String_Between(s, offset, left, right, leftAligned, &out);
+	return out;
 }
 
 String OVERLOAD String_Between(String s, ssize_t offset, String left, String right) {
@@ -802,9 +828,15 @@ String OVERLOAD String_Between(String s, ssize_t offset, String left, String rig
 	return out;
 }
 
+String OVERLOAD String_Between(String s, String left, String right, bool leftAligned) {
+	String out = StackString(0);
+	String_Between(s, 0, left, right, leftAligned, &out);
+	return out;
+}
+
 String OVERLOAD String_Between(String s, String left, String right) {
 	String out = StackString(0);
-	String_Between(s, 0, left, right, &out);
+	String_Between(s, 0, left, right, true, &out);
 	return out;
 }
 
