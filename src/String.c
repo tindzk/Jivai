@@ -418,6 +418,10 @@ String String_Join(String *first, ...) {
 	return res;
 }
 
+inline bool String_Equals(String s, String needle) {
+	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
+}
+
 bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset) {
 	if (s.len == 0 || needle.len == 0) {
 		return false;
@@ -447,6 +451,14 @@ bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleO
 		s.buf + offset,
 		needle.buf + needleOffset,
 		needle.len - needleOffset);
+}
+
+inline bool String_BeginsWith(String s, String needle) {
+	return String_RangeEquals(s, 0, needle, 0);
+}
+
+inline bool String_EndsWith(String s, String needle) {
+	return String_RangeEquals(s, s.len - needle.len, needle, 0);
 }
 
 void String_ToLower(String *this) {

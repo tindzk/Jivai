@@ -47,7 +47,10 @@ void OVERLOAD String_Append(String *this, char c);
 void OVERLOAD String_Append(String *this, String s, ssize_t offset, ssize_t length);
 void OVERLOAD String_Append(String *this, String s, ssize_t offset);
 String String_Join(String *first, ...);
+bool String_Equals(String s, String needle);
 bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset);
+bool String_BeginsWith(String s, String needle);
+bool String_EndsWith(String s, String needle);
 void String_ToLower(String *this);
 void String_ToUpper(String *this);
 StringArray OVERLOAD String_Split(String s, size_t offset, char c, bool fast);
@@ -113,15 +116,6 @@ int OVERLOAD String_NaturalCompare(String a, String b);
 
 #define String_ToNulHeap(this) \
 	String_ToNulBuf(this, Memory_Alloc((this)->len + 1))
-
-#define String_Equals(s, needle) \
-	((s).len == (needle).len && Memory_Equals((s).buf, (needle).buf, (s).len))
-
-#define String_BeginsWith(s, needle) \
-	String_RangeEquals(s, 0, needle, 0)
-
-#define String_EndsWith(s, needle) \
-	String_RangeEquals(s, (s).len - (needle).len, needle, 0)
 
 #define String_FmtPrint(...)            \
 	do {                                \
