@@ -595,7 +595,7 @@ ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle) {
 			cnt++;
 
 			if (cnt == needle.len) {
-				return i + 1;
+				return i;
 			}
 		} else {
 			if (cnt > 0) {
