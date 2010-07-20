@@ -110,7 +110,8 @@ typedef struct {
 
 	bool isVT100;
 
-	struct termios termios;
+	struct termios oldTermios;
+	struct termios curTermios;
 } Terminal;
 
 #define CTRLKEY(x) \
@@ -119,8 +120,8 @@ typedef struct {
 void Terminal0(ExceptionManager *e);
 
 void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100);
+void Terminal_Configure(Terminal *this, bool echo, bool signal);
 void Terminal_Destroy(Terminal *this);
-bool Terminal_IsStreamVT100(File *file, bool assumeVT100);
 void Terminal_SetVT100Color(Terminal *this, int color);
 void Terminal_SetVT100Font(Terminal *this, int font);
 Terminal_Size Terminal_GetSize(void);

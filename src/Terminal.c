@@ -14,22 +14,32 @@ void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100) {
 
 	this->isVT100 = assumeVT100 && isatty(out->fd);
 
-	struct termios newtermios;
+	tcgetattr(STDIN_FILENO, &this->oldTermios);
 
-	tcgetattr(STDIN_FILENO, &this->termios);
+	this->curTermios = this->oldTermios;
+}
 
-	newtermios = this->termios;
+void Terminal_Configure(Terminal *this, bool echo, bool signal) {
+	if (echo) {
+		BitMask_Set(this->curTermios.c_lflag, ECHO);
+	} else {
+		BitMask_Clear(this->curTermios.c_lflag, ECHO);
+	}
 
-	newtermios.c_iflag &= ~IXON;
-	newtermios.c_lflag &= ~ECHO;
-	newtermios.c_lflag &= ~ICANON;
-	newtermios.c_lflag &= ~ISIG;
+	if (signal) {
+		BitMask_Set(this->curTermios.c_lflag, ISIG);
+	} else {
+		BitMask_Clear(this->curTermios.c_lflag, ISIG);
+	}
 
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &newtermios);
+	this->curTermios.c_iflag &= ~IXON;
+	this->curTermios.c_lflag &= ~ICANON;
+
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &this->curTermios);
 }
 
 void Terminal_Destroy(Terminal *this) {
-	tcsetattr(STDIN_FILENO, 0, &this->termios);
+	tcsetattr(STDIN_FILENO, 0, &this->oldTermios);
 }
 
 /* Write VT100 escape sequences to the stream for the given color. */

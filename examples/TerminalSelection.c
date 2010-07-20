@@ -10,6 +10,7 @@ int main(void) {
 
 	Terminal term;
 	Terminal_Init(&term, File_StdIn, File_StdOut, true);
+	Terminal_Configure(&term, false, false);
 
 	Terminal_Selection termsel;
 	Terminal_Selection_Init(&termsel, &term);
