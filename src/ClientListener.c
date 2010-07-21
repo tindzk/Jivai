@@ -97,17 +97,9 @@ static bool ClientListener_OnData(ClientListener *this, Client *client, bool pul
 }
 
 bool ClientListener_OnPull(ClientListener *this, Client *client) {
-	if (this->connection->pull == NULL) {
-		return true;
-	}
-
 	return ClientListener_OnData(this, client, true);
 }
 
 bool ClientListener_OnPush(ClientListener *this, Client *client) {
-	if (this->connection->push == NULL) {
-		return true;
-	}
-
 	return ClientListener_OnData(this, client, false);
 }
