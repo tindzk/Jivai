@@ -92,7 +92,7 @@ void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *clien
 	this->activeConn--;
 }
 
-void CustomClientListener_OnData(CustomClientListener *this, Client *client) {
+Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client *client) {
 	String s = StackString(1024);
 	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
 
@@ -132,7 +132,11 @@ void CustomClientListener_OnData(CustomClientListener *this, Client *client) {
 
 		CustomClientListener_OnDisconnect(this, client);
 		Client_Destroy(client);
+
+		return Connection_Status_Close;
 	}
+
+	return Connection_Status_Open;
 }
 
 // ----
