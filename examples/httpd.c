@@ -31,14 +31,16 @@ ExceptionManager exc;
 // -------
 
 typedef struct {
+	bool gotData;
 	bool persistent;
 
-	HTTP_Server server;
-	HTTP_Method method;
+	HTTP_Server  server;
+	HTTP_Method  method;
 	HTTP_Version version;
 
 	SocketConnection *conn;
 
+	String resp;
 	String path;
 
 	String paramTest;
@@ -83,19 +85,19 @@ String* Request_OnBodyParameter(Request *this, String name) {
 }
 
 void Request_OnRespond(Request *this, bool persistent) {
-	String msg = HeapString(2048);
+	this->resp.len = 0;
 
 	if (this->method == HTTP_Method_Get) {
-		String_Append(&msg, String("Page requested via GET."));
+		String_Append(&this->resp, String("Page requested via GET."));
 	} else if (this->method == HTTP_Method_Post) {
-		String_Append(&msg, String("Page requested via POST."));
+		String_Append(&this->resp, String("Page requested via POST."));
 	} else if (this->method == HTTP_Method_Head) {
-		String_Append(&msg, String("Page requested via HEAD."));
+		String_Append(&this->resp, String("Page requested via HEAD."));
 	}
 
 	if (this->method != HTTP_Method_Head) {
 		String tmp;
-		String_Append(&msg, tmp = String_Format(
+		String_Append(&this->resp, tmp = String_Format(
 			String(
 				"<form action=\"/\" method=\"post\">"
 				"<input type=\"text\" name=\"test\" /><br />"
@@ -127,14 +129,16 @@ void Request_OnRespond(Request *this, bool persistent) {
 			? String("Connection: Keep-Alive")
 			: String("Connection: Close"),
 
-		Integer_ToString(msg.len));
+		Integer_ToString(this->resp.len));
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
-	SocketConnection_Write(this->conn, msg.buf, msg.len);
+
+	size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
+	String_Crop(&this->resp, written);
+
 	SocketConnection_Flush(this->conn);
 
 	String_Destroy(&envelope);
-	String_Destroy(&msg);
 
 	this->paramTest.len  = 0;
 	this->paramTest2.len = 0;
@@ -148,13 +152,13 @@ void Request_OnRespond(Request *this, bool persistent) {
 }
 
 void Request_Init(Request *this, SocketConnection *conn) {
-	this->conn = conn;
-
+	this->conn       = conn;
+	this->resp       = HeapString(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
+	this->gotData    = false;
 	this->persistent = false;
-
-	this->path = HeapString(0);
+	this->path       = HeapString(0);
 
 	/* paramTest and paramTest2 must not be longer than 256 bytes,
 	 * otherwise an `HTTP_Query_ExceedsPermittedLengthException'
@@ -180,15 +184,18 @@ void Request_Init(Request *this, SocketConnection *conn) {
 void Request_Destroy(Request *this) {
 	HTTP_Server_Destroy(&this->server);
 
+	String_Destroy(&this->resp);
 	String_Destroy(&this->path);
 	String_Destroy(&this->paramTest);
 	String_Destroy(&this->paramTest2);
 }
 
 bool Request_Parse(Request *this) {
+	this->gotData = true;
+
 	bool incomplete = HTTP_Server_Process(&this->server);
 
-	/* Whilst the request is incomplete, keep the connection alive.  */
+	/* Whilst the request is incomplete, keep the connection alive. */
 	if (incomplete) {
 		return true;
 	}
@@ -196,6 +203,30 @@ bool Request_Parse(Request *this) {
 	/* There is enough data but does the current request actually
 	 * support persistent connections?
 	 */
+	return this->persistent;
+}
+
+bool Request_Respond(Request *this) {
+	/* In edge-triggered mode a new connection may start with a
+	 * `pull' request.
+	 *
+	 * However, as this->persistent is false, the connection would
+	 * be closed right away without even receiving any data.
+	 * This is prevented by ignoring the event.
+	 */
+	if (!this->gotData) {
+		return true;
+	}
+
+	size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
+	String_Crop(&this->resp, written);
+
+	bool incomplete = (this->resp.len > 0);
+
+	if (incomplete) {
+		return true;
+	}
+
 	return this->persistent;
 }
 
@@ -220,16 +251,20 @@ void HttpConnection_Destroy(HttpConnection *this) {
 	Request_Destroy(&this->request);
 }
 
-bool HttpConnection_Process(HttpConnection *this) {
+bool HttpConnection_Push(HttpConnection *this) {
 	return !Request_Parse(&this->request);
+}
+
+bool HttpConnection_Pull(HttpConnection *this) {
+	return !Request_Respond(&this->request);
 }
 
 ConnectionInterface HttpConnection_Methods = {
 	.new     = (void *) HttpConnection_New,
 	.init    = (void *) HttpConnection_Init,
 	.destroy = (void *) HttpConnection_Destroy,
-	.push    = (void *) HttpConnection_Process,
-	.pull    = NULL
+	.push    = (void *) HttpConnection_Push,
+	.pull    = (void *) HttpConnection_Pull
 };
 
 // ----
@@ -258,7 +293,7 @@ int main(void) {
 	int res = EXIT_SUCCESS;
 
 	try(&exc) {
-		Server_Init(&server, events, false, 8080);
+		Server_Init(&server, events, true, 8080);
 		String_Print(String("Server started.\n"));
 
 		while (true) {
