@@ -64,27 +64,27 @@ void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
 	}
 }
 
-static bool ClientListener_OnData(ClientListener *this, Client *client, bool pull) {
-	bool close = false;
+static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull) {
+	Connection_Status status = Connection_Status_Open;
 
 	if (client->data != NULL) {
 		Connection *conn = client->data;
 
 		try (exc) {
-			close = pull
+			status = pull
 				? this->connection->pull(conn)
 				: this->connection->push(conn);
 		} catch(&SocketConnection_NotConnectedException, e) {
-			close = true;
+			status = Connection_Status_Close;
 		} catch(&SocketConnection_ConnectionResetException, e) {
-			close = true;
+			status = Connection_Status_Close;
 		} catch(&SocketConnection_LengthMismatchException, e) {
-			close = true;
+			status = Connection_Status_Close;
 		} finally {
 
 		} tryEnd;
 
-		if (close) {
+		if (status == Connection_Status_Close) {
 			/* Destroy all data associated with the client. */
 			ClientListener_OnDisconnect(this, client);
 
@@ -93,13 +93,13 @@ static bool ClientListener_OnData(ClientListener *this, Client *client, bool pul
 		}
 	}
 
-	return !close;
+	return status;
 }
 
-bool ClientListener_OnPull(ClientListener *this, Client *client) {
+Connection_Status ClientListener_OnPull(ClientListener *this, Client *client) {
 	return ClientListener_OnData(this, client, true);
 }
 
-bool ClientListener_OnPush(ClientListener *this, Client *client) {
+Connection_Status ClientListener_OnPush(ClientListener *this, Client *client) {
 	return ClientListener_OnData(this, client, false);
 }

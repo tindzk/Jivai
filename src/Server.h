@@ -5,6 +5,7 @@
 #include "Socket.h"
 #include "Client.h"
 #include "BitMask.h"
+#include "Connection.h"
 
 #define SERVER_MAX_CONN SOMAXCONN
 
@@ -12,18 +13,18 @@ typedef void (* Server_OnInit)(void *);
 typedef void (* Server_OnDestroy)(void *);
 typedef bool (* Server_OnClientConnect)(void *);
 typedef void (* Server_OnClientAccept)(void *, Client *);
-typedef bool (* Server_OnClientData)(void *, Client *);
+typedef Connection_Status (* Server_OnClientData)(void *, Client *);
 typedef void (* Server_OnClientDisconnect)(void *, Client *);
 
 typedef struct {
 	void *context;
 
-	Server_OnInit onInit;
-	Server_OnInit onDestroy;
-	Server_OnClientConnect onClientConnect;
-	Server_OnClientAccept onClientAccept;
-	Server_OnClientData onPull;
-	Server_OnClientData onPush;
+	Server_OnInit             onInit;
+	Server_OnInit             onDestroy;
+	Server_OnClientConnect    onClientConnect;
+	Server_OnClientAccept     onClientAccept;
+	Server_OnClientData       onPull;
+	Server_OnClientData       onPush;
 	Server_OnClientDisconnect onClientDisconnect;
 } Server_Events;
 

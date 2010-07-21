@@ -17,8 +17,8 @@ void ClientListener_OnDestroy(ClientListener *this);
 bool ClientListener_OnConnect(UNUSED ClientListener *this);
 void ClientListener_OnAccept(ClientListener *this, Client *client);
 void ClientListener_OnDisconnect(ClientListener *this, Client *client);
-static bool ClientListener_OnData(ClientListener *this, Client *client, bool pull);
-bool ClientListener_OnPull(ClientListener *this, Client *client);
-bool ClientListener_OnPush(ClientListener *this, Client *client);
+static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull);
+Connection_Status ClientListener_OnPull(ClientListener *this, Client *client);
+Connection_Status ClientListener_OnPush(ClientListener *this, Client *client);
 
 #endif

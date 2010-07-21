@@ -190,23 +190,25 @@ void Request_Destroy(Request *this) {
 	String_Destroy(&this->paramTest2);
 }
 
-bool Request_Parse(Request *this) {
+Connection_Status Request_Parse(Request *this) {
 	this->gotData = true;
 
 	bool incomplete = HTTP_Server_Process(&this->server);
 
 	/* Whilst the request is incomplete, keep the connection alive. */
 	if (incomplete) {
-		return true;
+		return Connection_Status_Open;
 	}
 
 	/* There is enough data but does the current request actually
 	 * support persistent connections?
 	 */
-	return this->persistent;
+	return this->persistent
+		? Connection_Status_Open
+		: Connection_Status_Close;
 }
 
-bool Request_Respond(Request *this) {
+Connection_Status Request_Respond(Request *this) {
 	/* In edge-triggered mode a new connection may start with a
 	 * `pull' request.
 	 *
@@ -215,7 +217,7 @@ bool Request_Respond(Request *this) {
 	 * This is prevented by ignoring the event.
 	 */
 	if (!this->gotData) {
-		return true;
+		return Connection_Status_Open;
 	}
 
 	size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
@@ -224,10 +226,12 @@ bool Request_Respond(Request *this) {
 	bool incomplete = (this->resp.len > 0);
 
 	if (incomplete) {
-		return true;
+		return Connection_Status_Open;
 	}
 
-	return this->persistent;
+	return this->persistent
+		? Connection_Status_Open
+		: Connection_Status_Close;
 }
 
 // --------------
@@ -251,12 +255,12 @@ void HttpConnection_Destroy(HttpConnection *this) {
 	Request_Destroy(&this->request);
 }
 
-bool HttpConnection_Push(HttpConnection *this) {
-	return !Request_Parse(&this->request);
+Connection_Status HttpConnection_Push(HttpConnection *this) {
+	return Request_Parse(&this->request);
 }
 
-bool HttpConnection_Pull(HttpConnection *this) {
-	return !Request_Respond(&this->request);
+Connection_Status HttpConnection_Pull(HttpConnection *this) {
+	return Request_Respond(&this->request);
 }
 
 ConnectionInterface HttpConnection_Methods = {
