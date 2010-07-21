@@ -319,7 +319,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 	return this->status;
 }
 
-static void HTTP_Client_InternalRead(HTTP_Client *this) {
+static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 	try (exc) {
 		this->resp.len += SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
