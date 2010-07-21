@@ -321,11 +321,9 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 
 static void HTTP_Client_InternalRead(HTTP_Client *this) {
 	try (exc) {
-		size_t read = SocketConnection_Read(&this->conn,
+		this->resp.len += SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
 			this->resp.size - this->resp.len);
-
-		this->resp.len += read;
 	} catch(&SocketConnection_ConnectionResetException, e) {
 		this->closed = true;
 		excThrow(exc, &HTTP_Client_ConnectionResetException);
@@ -477,9 +475,9 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 			return true;
 		}
 
-		try (exc) {
-			size_t read;
+		size_t read = 0;
 
+		try (exc) {
 			if (this->chunked) {
 				/* Use the full available space. */
 				size_t length = res->size - res->len;
@@ -516,6 +514,10 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 		} finally {
 
 		} tryEnd;
+
+		if (read == 0) {
+			return true;
+		}
 	}
 
 	return true;

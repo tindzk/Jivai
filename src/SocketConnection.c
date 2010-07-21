@@ -30,11 +30,11 @@ size_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 
 	int res = recv(this->fd, buf, len, flags);
 
-	if (res > 0) {
+	if (res >= 0) {
 		return res;
 	}
 
-	if (res == 0 || errno == ECONNRESET) {
+	if (errno == ECONNRESET) {
 		throw(exc, &SocketConnection_ConnectionResetException);
 	} else if (errno == ENOTCONN) {
 		throw(exc, &SocketConnection_NotConnectedException);
