@@ -178,8 +178,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 		try (exc) {
 			len = SocketConnection_Read(this->conn,
 				this->header.buf  + this->header.len,
-				this->header.size - this->header.len
-			);
+				this->header.size - this->header.len);
 		} catch(&SocketConnection_EmptyQueueException, e) {
 			incomplete = true;
 		} finally {
