@@ -507,7 +507,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 				 * That's why no exception will be thrown here.
 				 */
 
-				return true;
+				excReturn true;
 			} else {
 				excThrow(exc, &HTTP_Client_ConnectionResetException);
 			}
