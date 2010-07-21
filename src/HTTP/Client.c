@@ -382,7 +382,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 		if (this->total != -1 && this->read >= this->total) {
 			if (!this->chunked) {
 				/* We're done. */
-				return true;
+				break;
 			}
 
 			if (this->resp.len == 0) {
@@ -467,12 +467,12 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 				this->inChunk = true;
 			}
 
-			return true;
+			break;
 		}
 
 		if (res->len >= res->size) {
 			/* Buffer is full. */
-			return true;
+			break;
 		}
 
 		size_t read = 0;
@@ -507,7 +507,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 				 * That's why no exception will be thrown here.
 				 */
 
-				excReturn true;
+				excBreak;
 			} else {
 				excThrow(exc, &HTTP_Client_ConnectionResetException);
 			}
@@ -516,7 +516,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 		} tryEnd;
 
 		if (read == 0) {
-			return true;
+			break;
 		}
 	}
 
