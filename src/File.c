@@ -228,7 +228,7 @@ size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
 }
 
 size_t OVERLOAD File_Write(File *this, String s) {
-	return File_Write(this, s.buf, s.size);
+	return File_Write(this, s.buf, s.len);
 }
 
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
