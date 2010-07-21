@@ -190,6 +190,10 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 			return HTTP_Server_Result_Incomplete;
 		}
 
+		if (len == 0) {
+			break;
+		}
+
 		this->header.len += len;
 	}
 
