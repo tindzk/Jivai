@@ -70,6 +70,7 @@ bool Date_IsLeap(int year);
 uint64_t Date_ToUnixEpoch(Date *this);
 Date Date_FromUnixEpoch(uint64_t time);
 int Date_Compare(Date a, Date b);
+bool Date_Equals(Date a, Date b);
 Date_UnixTime Date_GetCurrentUnixTime(void);
 Date Date_GetCurrent(void);
 

@@ -150,6 +150,10 @@ int Date_Compare(Date a, Date b) {
 	return Integer_Compare(a.second, b.second);
 }
 
+inline bool Date_Equals(Date a, Date b) {
+	return Date_Compare(a, b) == 0;
+}
+
 Date_UnixTime Date_GetCurrentUnixTime(void) {
 	struct timeval tv;
 
