@@ -104,7 +104,7 @@ void CustomClientListener_OnData(CustomClientListener *this, Client *client) {
 		Integer_ToString(client->conn->fd), s));
 	String_Destroy(&tmp);
 
-	if (String_BeginsWith(&s, String("info"))) {
+	if (String_BeginsWith(s, String("info"))) {
 		ClientData *data = client->data;
 
 		String resp = String_Format(
@@ -114,14 +114,14 @@ void CustomClientListener_OnData(CustomClientListener *this, Client *client) {
 		SocketConnection_Write(client->conn, resp.buf, resp.len);
 
 		String_Destroy(&resp);
-	} else if (String_BeginsWith(&s, String("active"))) {
+	} else if (String_BeginsWith(s, String("active"))) {
 		String tmp = String_Format(
 			String("% active connection(s).\n"),
 			Integer_ToString(this->activeConn - 1));
 
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 		String_Destroy(&tmp);
-	} else if (String_BeginsWith(&s, String("exit"))) {
+	} else if (String_BeginsWith(s, String("exit"))) {
 		String tmp = String("Bye.\n");
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 
