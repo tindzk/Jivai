@@ -63,10 +63,10 @@ void Request_OnPath(Request *this, String path) {
  */
 
 String* Request_OnQueryParameter(Request *this, String name) {
-	if (String_Equals(&name, String("test"))) {
+	if (String_Equals(name, String("test"))) {
 		/* test's value will be put into this variable. */
 		return &this->paramTest;
-	} else if (String_Equals(&name, String("test2"))) {
+	} else if (String_Equals(name, String("test2"))) {
 		return &this->paramTest2;
 	}
 
