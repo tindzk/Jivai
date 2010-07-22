@@ -36,16 +36,16 @@ void Process0(ExceptionManager *e) {
 
 void Process_Init(Process *this, String cmd) {
 	this->cmd = String_Clone(cmd);
-	StringArray_Init(&this->params, 0);
+	StringArray_Init(this->params, 0);
 }
 
 void Process_Destroy(Process *this) {
 	String_Destroy(&this->cmd);
-	StringArray_Destroy(&this->params);
+	StringArray_Destroy(this->params);
 }
 
 void Process_AddParameter(Process *this, String param) {
-	StringArray_Push(&this->params, param);
+	StringArray_Push(this->params, param);
 }
 
 String Process_GetCommandLine(Process *this) {
@@ -54,8 +54,8 @@ String Process_GetCommandLine(Process *this) {
 	String_Append(&out, this->cmd);
 	String_Append(&out, ' ');
 
-	for (size_t i = 0; i < this->params.len; i++) {
-		String_Append(&out, this->params.buf[i]);
+	for (size_t i = 0; i < this->params->len; i++) {
+		String_Append(&out, this->params->buf[i]);
 		String_Append(&out, ' ');
 	}
 
@@ -63,14 +63,14 @@ String Process_GetCommandLine(Process *this) {
 }
 
 int OVERLOAD Process_Spawn(Process *this, float *time) {
-	char *argv[this->params.len + 1];
+	char *argv[this->params->len + 1];
 
 	argv[0] = String_ToNulHeap(&this->cmd);
 
 	size_t i;
 
-	for (i = 0; i < this->params.len; i++) {
-		argv[i + 1] = String_ToNulHeap(&this->params.buf[i]);
+	for (i = 0; i < this->params->len; i++) {
+		argv[i + 1] = String_ToNulHeap(&this->params->buf[i]);
 	}
 
 	argv[i + 1] = NULL;

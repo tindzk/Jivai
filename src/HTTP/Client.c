@@ -158,13 +158,14 @@ String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path) {
 	return res;
 }
 
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths items) {
+void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *items) {
 	HTTP_Client_Reopen(this);
 
-	String s = HeapString(items.len * 50);
+	String s = HeapString(items->len * 50);
 
-	for (size_t i = 0; i < items.len; i++) {
-		String tmp = HTTP_Client_GetRequest(this, items.buf[i].host, items.buf[i].path);
+	for (size_t i = 0; i < items->len; i++) {
+		String tmp = HTTP_Client_GetRequest(this,
+			items->buf[i].host, items->buf[i].path);
 		String_Append(&s, tmp);
 		String_Destroy(&tmp);
 	}

@@ -473,7 +473,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray OVERLOAD String_Split(String s, size_t offset, char c, bool fast) {
+StringArray* OVERLOAD String_Split(String s, size_t offset, char c, bool fast) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -483,47 +483,47 @@ StringArray OVERLOAD String_Split(String s, size_t offset, char c, bool fast) {
 		}
 	}
 
-	StringArray res;
-	Array_Init(&res, chunks);
+	StringArray *res;
+	StringArray_Init(res, chunks);
 
 	for (left = right = offset; right < s.len; right++) {
 		if (s.buf[right] == c) {
 			if (fast) {
-				res.buf[res.len] = String_FastSlice(s, left, right - left);
+				res->buf[res->len] = String_FastSlice(s, left, right - left);
 			} else {
-				res.buf[res.len] = String_Slice(s, left, right - left);
+				res->buf[res->len] = String_Slice(s, left, right - left);
 			}
 
-			res.len++;
+			res->len++;
 
 			left = right + 1;
 		}
 	}
 
 	if (fast) {
-		res.buf[res.len] = String_FastSlice(s, left, right - left);
+		res->buf[res->len] = String_FastSlice(s, left, right - left);
 	} else {
-		res.buf[res.len] = String_Slice(s, left, right - left);
+		res->buf[res->len] = String_Slice(s, left, right - left);
 	}
 
-	res.len++;
+	res->len++;
 
 	return res;
 }
 
-inline StringArray OVERLOAD String_FastSplit(String s, size_t offset, char c) {
+inline StringArray* OVERLOAD String_FastSplit(String s, size_t offset, char c) {
 	return String_Split(s, offset, c, true);
 }
 
-inline StringArray OVERLOAD String_FastSplit(String s, char c) {
+inline StringArray* OVERLOAD String_FastSplit(String s, char c) {
 	return String_Split(s, 0, c, true);
 }
 
-inline StringArray OVERLOAD String_Split(String s, size_t offset, char c) {
+inline StringArray* OVERLOAD String_Split(String s, size_t offset, char c) {
 	return String_Split(s, offset, c, false);
 }
 
-inline StringArray OVERLOAD String_Split(String s, char c) {
+inline StringArray* OVERLOAD String_Split(String s, char c) {
 	return String_Split(s, 0, c, false);
 }
 

@@ -16,7 +16,7 @@ extern char **environ;
 
 typedef struct {
 	String cmd;
-	StringArray params;
+	StringArray *params;
 } Process;
 
 void Process_Init(Process *this, String cmd);

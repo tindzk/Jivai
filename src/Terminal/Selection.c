@@ -62,27 +62,28 @@ ssize_t Terminal_Selection_GetSel(Terminal_Selection *this) {
 		if (key.t == Terminal_KeyType_Left) {
 			ssize_t new = this->cur - 1;
 
-			if (new >= 0 && (size_t) new < this->termbuf.chunks.len) {
+			if (new >= 0 && (size_t) new < this->termbuf.chunks->len) {
 				Terminal_Selection_OnSelect(this, new);
 			}
 		} else if (key.t == Terminal_KeyType_Right) {
 			size_t new = this->cur + 1;
 
-			if (new < this->termbuf.chunks.len) {
+			if (new < this->termbuf.chunks->len) {
 				Terminal_Selection_OnSelect(this, new);
 			}
 		} else if (key.t == Terminal_KeyType_Home) {
-			if (this->termbuf.chunks.len > 0) {
+			if (this->termbuf.chunks->len > 0) {
 				Terminal_Selection_OnSelect(this, 0);
 			}
 		} else if (key.t == Terminal_KeyType_End) {
-			if (this->termbuf.chunks.len > 0) {
-				Terminal_Selection_OnSelect(this, this->termbuf.chunks.len - 1);
+			if (this->termbuf.chunks->len > 0) {
+				Terminal_Selection_OnSelect(this,
+					this->termbuf.chunks->len - 1);
 			}
 		} else if (Char_IsDigit(key.c)) {
 			size_t new = Char_ParseDigit(key.c);
 
-			if (new < this->termbuf.chunks.len) {
+			if (new < this->termbuf.chunks->len) {
 				Terminal_Selection_OnSelect(this, new);
 			}
 		} else if (key.c == CTRLKEY('c')) {

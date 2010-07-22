@@ -6,19 +6,19 @@
 typedef struct {
 	size_t len;
 	size_t size;
-	String *buf;
+	String buf[0];
 } StringArray;
 
-#define StringArray_Init(...) \
-	Array_Init(__VA_ARGS__)
+#define StringArray_Init(this, len) \
+	Array_Init(this, len)
 
 #define StringArray_Push(this, s) \
-	Array_Push(this, String_Clone(s))
+	Array_Push(this, String_Clone(s));
 
-#define StringArray_Reset(this, cnt) \
-	Array_Reset(this, cnt, String_Destroy)
-
-#define StringArray_Destroy(this) \
-	Array_Destroy(this, String_Destroy)
+#define StringArray_Destroy(this)            \
+	do {                                     \
+		Array_Foreach(this, String_Destroy); \
+		Array_Destroy(this);                 \
+	} while(0)
 
 #endif

@@ -23,12 +23,12 @@ void HTML_Tree_DestroyNode(HTML_Tree_Node *node) {
 	String_Destroy(&node->value);
 
 	if (node->type == HTML_Tree_NodeType_Tag) {
-		Array_Destroy(node->attrs, ^(HTML_Tree_Attr *item) {
+		Array_Foreach(node->attrs, ^(HTML_Tree_Attr *item) {
 			String_Destroy(&item->name);
 			String_Destroy(&item->value);
 		});
 
-		Memory_Free(node->attrs);
+		Array_Destroy(node->attrs);
 	}
 }
 
@@ -49,8 +49,7 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 		this->node = Tree_AddNode(HTML_Tree_Node, (Tree_Node *) this->node);
 
 		this->node->value = String_Clone(value);
-		this->node->type = HTML_Tree_NodeType_Tag;
-		this->node->attrs = Memory_Alloc(sizeof(*this->node->attrs));
+		this->node->type  = HTML_Tree_NodeType_Tag;
 
 		Array_Init(this->node->attrs, 0);
 
@@ -58,14 +57,14 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
 		HTML_Tree_Node *node = Tree_AddNode(HTML_Tree_Node, (Tree_Node *) this->node);
 
-		node->type = HTML_Tree_NodeType_Value;
+		node->type  = HTML_Tree_NodeType_Value;
 		node->value = String_Clone(value);
 		node->attrs = NULL;
 	} else if (type == HTML_Tokenizer_TokenType_AttrName
 			|| type == HTML_Tokenizer_TokenType_Option) {
 		HTML_Tree_Attr item;
 
-		item.name = String_Clone(value);
+		item.name  = String_Clone(value);
 		item.value = HeapString(0);
 
 		Array_Push(this->node->attrs, item);

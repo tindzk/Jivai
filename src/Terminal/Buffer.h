@@ -11,7 +11,7 @@ typedef struct {
 } Terminal_Buffer_Chunk;
 
 typedef struct {
-	Array(Terminal_Buffer_Chunk, chunks);
+	Array(Terminal_Buffer_Chunk, *chunks);
 	Terminal *term;
 	size_t spacing;
 } Terminal_Buffer;

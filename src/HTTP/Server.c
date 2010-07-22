@@ -84,19 +84,19 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 	if (String_Equals(name, String("connection"))) {
 		String_ToLower(&value);
 
-		StringArray chunks = String_Split(value, 0, ',');
+		StringArray* chunks = String_Split(value, 0, ',');
 
-		for (size_t i = 0; i < chunks.len; i++) {
-			String_Trim(&chunks.buf[i]);
+		for (size_t i = 0; i < chunks->len; i++) {
+			String_Trim(&chunks->buf[i]);
 
-			if (String_Equals(chunks.buf[i], String("close"))) {
+			if (String_Equals(chunks->buf[i], String("close"))) {
 				this->headers.persistentConnection = false;
-			} else if (String_Equals(chunks.buf[i], String("keep-alive"))) {
+			} else if (String_Equals(chunks->buf[i], String("keep-alive"))) {
 				this->headers.persistentConnection = true;
 			}
 		}
 
-		StringArray_Destroy(&chunks);
+		StringArray_Destroy(chunks);
 	} else {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);

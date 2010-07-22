@@ -111,7 +111,7 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value);
 bool HTTP_Client_IsConnected(HTTP_Client *this);
 void HTTP_Client_Reopen(HTTP_Client *this);
 String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path);
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths items);
+void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *items);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String host, String path);
 void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String path);
