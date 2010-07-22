@@ -86,11 +86,8 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 
 		StringArray *chunks = String_Split(value, ',');
 
-		String tmp = HeapString(0);
-
 		for (size_t i = 0; i < chunks->len; i++) {
-			String_Copy(&tmp, chunks->buf[i]);
-			String_Trim(&tmp);
+			String tmp = String_Trim(chunks->buf[i]);
 
 			if (String_Equals(tmp, String("close"))) {
 				this->headers.persistentConnection = false;
@@ -100,7 +97,6 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 		}
 
 		Array_Destroy(chunks);
-		String_Destroy(&tmp);
 	} else {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);

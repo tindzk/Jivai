@@ -671,7 +671,7 @@ void String_TrimLeft(String *this) {
 	}
 }
 
-void String_Trim(String *this) {
+void OVERLOAD String_Trim(String *this) {
 	size_t i, lpos = 0;
 
 	for (i = 0; i < this->len; i++) {
@@ -697,6 +697,36 @@ void String_Trim(String *this) {
 
 		String_Crop(this, lpos, rpos - lpos + 1);
 	}
+}
+
+String OVERLOAD String_Trim(String s) {
+	size_t i, lpos = 0;
+
+	for (i = 0; i < s.len; i++) {
+		if (Char_IsSpace(s.buf[i])) {
+			lpos = i + 1;
+		} else {
+			break;
+		}
+	}
+
+	if (lpos == s.len) {
+		s.len = 0;
+	} else {
+		size_t rpos = s.len - 1;
+
+		for (i = rpos; i > 0; i--) {
+			if (Char_IsSpace(s.buf[i])) {
+				rpos = i - 1;
+			} else {
+				break;
+			}
+		}
+
+		return String_FastSlice(s, lpos, rpos - lpos + 1);
+	}
+
+	return s;
 }
 
 String String_Format(String fmt, ...) {
