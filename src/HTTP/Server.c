@@ -99,7 +99,7 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 			}
 		}
 
-		StringArray_Destroy(chunks);
+		Array_Destroy(chunks);
 		String_Destroy(&tmp);
 	} else {
 		if (this->method == HTTP_Method_Post) {

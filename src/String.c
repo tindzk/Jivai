@@ -484,7 +484,7 @@ StringArray* OVERLOAD String_Split(String s, size_t offset, char c) {
 	}
 
 	StringArray *res;
-	StringArray_Init(res, chunks);
+	Array_Init(res, chunks);
 
 	for (left = right = offset; right < s.len; right++) {
 		if (s.buf[right] == c) {

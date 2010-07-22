@@ -36,16 +36,18 @@ void Process0(ExceptionManager *e) {
 
 void Process_Init(Process *this, String cmd) {
 	this->cmd = String_Clone(cmd);
-	StringArray_Init(this->params, 0);
+	Array_Init(this->params, 0);
 }
 
 void Process_Destroy(Process *this) {
 	String_Destroy(&this->cmd);
-	StringArray_Destroy(this->params);
+
+	Array_Foreach(this->params, String_Destroy);
+	Array_Destroy(this->params);
 }
 
 void Process_AddParameter(Process *this, String param) {
-	StringArray_Push(this->params, param);
+	Array_Push(this->params, String_Clone(param));
 }
 
 String Process_GetCommandLine(Process *this) {
