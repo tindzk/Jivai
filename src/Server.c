@@ -7,7 +7,7 @@ void Server0(ExceptionManager *e) {
 }
 
 void Server_Init(Server *this, Server_Events events, bool edgeTriggered, int port) {
-	Poll_Init(&this->poll, SERVER_MAX_CONN, (void *) &Server_OnEvent, this);
+	Poll_Init(&this->poll, Server_ConnectionLimit, (void *) &Server_OnEvent, this);
 	this->events = events;
 
 	this->edgeTriggered = edgeTriggered;
@@ -16,7 +16,7 @@ void Server_Init(Server *this, Server_Events events, bool edgeTriggered, int por
 	Socket_SetReusableFlag(&this->socket);
 	Socket_SetCloexecFlag(&this->socket, true);
 	Socket_SetNonBlockingFlag(&this->socket, true);
-	Socket_Listen(&this->socket, port, SERVER_MAX_CONN);
+	Socket_Listen(&this->socket, port, Server_ConnectionLimit);
 
 	/* Add the server socket to epoll. */
 	Poll_AddEvent(&this->poll, NULL, this->socket.fd, EPOLLIN | EPOLLHUP | EPOLLERR);

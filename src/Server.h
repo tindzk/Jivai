@@ -7,7 +7,9 @@
 #include "BitMask.h"
 #include "Connection.h"
 
-#define SERVER_MAX_CONN SOMAXCONN
+#ifndef Server_ConnectionLimit
+#define Server_ConnectionLimit SOMAXCONN
+#endif
 
 typedef void (* Server_OnInit)(void *);
 typedef void (* Server_OnDestroy)(void *);
