@@ -38,7 +38,7 @@ bool OVERLOAD Path_Exists(String path, bool follow) {
 	return lstat(String_ToNul(&path), &attr) == 0;
 }
 
-bool OVERLOAD Path_Exists(String path) {
+inline bool OVERLOAD Path_Exists(String path) {
 	return Path_Exists(path, false);
 }
 
@@ -83,11 +83,11 @@ off64_t Path_GetSize(String path) {
 	return Path_GetStat(path).st_size;
 }
 
-bool OVERLOAD Path_IsFile(String path) {
+inline bool OVERLOAD Path_IsFile(String path) {
 	return Path_GetStat(path).st_mode & S_IFREG;
 }
 
-bool OVERLOAD Path_IsFile(struct stat64 attr) {
+inline bool OVERLOAD Path_IsFile(struct stat64 attr) {
 	return attr.st_mode & S_IFREG;
 }
 
@@ -107,7 +107,7 @@ bool OVERLOAD Path_IsDirectory(String path) {
 	return res;
 }
 
-bool OVERLOAD Path_IsDirectory(struct stat64 attr) {
+inline bool OVERLOAD Path_IsDirectory(struct stat64 attr) {
 	return attr.st_mode & S_IFDIR;
 }
 
@@ -133,7 +133,7 @@ void OVERLOAD Path_Truncate(String path, off64_t length) {
 	}
 }
 
-void OVERLOAD Path_Truncate(String path) {
+inline void OVERLOAD Path_Truncate(String path) {
 	Path_Truncate(path, 0);
 }
 
@@ -161,7 +161,7 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 	return String_Slice(path, pos + 1);
 }
 
-String OVERLOAD Path_GetFilename(String path) {
+inline String OVERLOAD Path_GetFilename(String path) {
 	return Path_GetFilename(path, true);
 }
 
@@ -192,7 +192,7 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 	return String_Slice(path, 0, pos);
 }
 
-String OVERLOAD Path_GetDirectory(String path) {
+inline String OVERLOAD Path_GetDirectory(String path) {
 	return Path_GetDirectory(path, true);
 }
 
@@ -290,15 +290,15 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	}
 }
 
-void OVERLOAD Path_Create(String path, bool recursive) {
+inline void OVERLOAD Path_Create(String path, bool recursive) {
 	Path_Create(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH, recursive);
 }
 
-void OVERLOAD Path_Create(String path, int mode) {
+inline void OVERLOAD Path_Create(String path, int mode) {
 	Path_Create(path, mode, false);
 }
 
-void OVERLOAD Path_Create(String path) {
+inline void OVERLOAD Path_Create(String path) {
 	Path_Create(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH, false);
 }
 
@@ -439,10 +439,10 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 	}
 }
 
-void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink) {
+inline void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink) {
 	Path_SetTime(path, timestamp, 0, followSymlink);
 }
 
-void OVERLOAD Path_SetTime(String path, time_t timestamp) {
+inline void OVERLOAD Path_SetTime(String path, time_t timestamp) {
 	Path_SetTime(path, timestamp, 0, false);
 }
