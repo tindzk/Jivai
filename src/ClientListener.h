@@ -1,6 +1,7 @@
 #ifndef CLIENT_LISTENER_H
 #define CLIENT_LISTENER_H
 
+#include "Block.h"
 #include "Server.h"
 #include "Connection.h"
 #include "ConnectionInterface.h"

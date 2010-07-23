@@ -14,13 +14,13 @@ CFLAGS += -O0
 
 # The library uses a special C variant. Therefore these parameters
 # are necessary.
-CFLAGS += -std=gnu99 -fblocks -lBlocksRuntime
+CFLAGS += -std=gnu99 -fblocks
 
 # Define the library path.
 LIBPATH = ../src
 
 # Only build these modules.
-LIBFILES += $(LIBPATH)/{HTML,HTML/{Tokenizer,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,ExceptionManager,YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
+LIBFILES += $(LIBPATH)/{Block,HTML,HTML/{Tokenizer,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,ExceptionManager,YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
 
 # Enable human-readable backtraces (requires BFD).
 LIBFILES += $(LIBPATH)/BFD.c -lbfd

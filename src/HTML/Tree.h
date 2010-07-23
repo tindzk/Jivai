@@ -4,6 +4,7 @@
 #include "Tokenizer.h"
 
 #include "../Tree.h"
+#include "../Block.h"
 #include "../Array.h"
 #include "../String.h"
 #include "../Exception.h"

@@ -1,8 +1,9 @@
 #ifndef TERMINAL_BUFFER_H
 #define TERMINAL_BUFFER_H
 
-#include "../Terminal.h"
+#include "../Block.h"
 #include "../Unicode.h"
+#include "../Terminal.h"
 
 typedef struct {
 	String value;
