@@ -23,11 +23,11 @@
 		(this)->size = items;                                 \
 	} while(0)
 
-#define Array_Foreach(this, cb)                  \
-	do {                                         \
-		for (size_t i = 0; i < this->len; i++) { \
-			cb(&(this)->buf[i]);                 \
-		}                                        \
+#define Array_Foreach(this, cb)                    \
+	do {                                           \
+		for (size_t i = 0; i < (this)->len; i++) { \
+			cb(&(this)->buf[i]);                   \
+		}                                          \
 	} while(0)
 
 #define Array_Destroy(this) \
