@@ -83,6 +83,9 @@ File:
 Array:
 	$(CC) -o build/Array.bin $(CFLAGS) Array.c $(LIBFILES)
 
+StackArray:
+	$(CC) -o build/StackArray.bin $(CFLAGS) StackArray.c $(LIBFILES)
+
 Exception:
 	$(CC) -o build/Exception.bin $(CFLAGS) Exception.c $(LIBFILES)
 
