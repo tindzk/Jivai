@@ -19,17 +19,13 @@ void String_Destroy(String *this) {
 }
 
 void String_ToHeap(String *this) {
-	char *buf;
+	if (!this->heap) {
+		char *buf = Memory_Alloc(this->size);
+		Memory_Copy(buf, this->buf, this->len);
 
-	if (this->heap) {
-		return;
+		this->buf  = buf;
+		this->heap = true;
 	}
-
-	buf = Memory_Alloc(this->size);
-	Memory_Copy(buf, this->buf, this->len);
-
-	this->buf  = buf;
-	this->heap = true;
 }
 
 inline char* String_ToNulBuf(String s, char *buf) {
