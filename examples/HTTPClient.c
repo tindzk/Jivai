@@ -38,10 +38,16 @@ void HTTP_Client_GetResponse(String hostname, String path, short port, String *r
 
 	while (true) {
 		try (&exc) {
-			resp->len += SocketConnection_Read(&conn,
+			size_t len = SocketConnection_Read(&conn,
 				resp->buf  + resp->len,
 				resp->size - resp->len
 			);
+
+			if (len == 0) {
+				break;
+			}
+
+			resp->len += len;
 		} catch(&SocketConnection_ConnectionResetException, e) {
 			excBreak;
 		} finally {
