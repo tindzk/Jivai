@@ -67,12 +67,12 @@ String Process_GetCommandLine(Process *this) {
 int OVERLOAD Process_Spawn(Process *this, float *time) {
 	char *argv[this->params->len + 1];
 
-	argv[0] = String_ToNulHeap(&this->cmd);
+	argv[0] = String_ToNulHeap(this->cmd);
 
 	size_t i;
 
 	for (i = 0; i < this->params->len; i++) {
-		argv[i + 1] = String_ToNulHeap(&this->params->buf[i]);
+		argv[i + 1] = String_ToNulHeap(this->params->buf[i]);
 	}
 
 	argv[i + 1] = NULL;

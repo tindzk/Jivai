@@ -32,10 +32,10 @@ bool OVERLOAD Path_Exists(String path, bool follow) {
 	struct stat attr;
 
 	if (follow) {
-		return stat(String_ToNul(&path), &attr) == 0;
+		return stat(String_ToNul(path), &attr) == 0;
 	}
 
-	return lstat(String_ToNul(&path), &attr) == 0;
+	return lstat(String_ToNul(path), &attr) == 0;
 }
 
 inline bool OVERLOAD Path_Exists(String path) {
@@ -62,7 +62,7 @@ struct stat64 Path_GetStat(String path) {
 
 	struct stat64 attr;
 
-	if (stat64(String_ToNul(&path), &attr) == -1) {
+	if (stat64(String_ToNul(path), &attr) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -118,7 +118,7 @@ void OVERLOAD Path_Truncate(String path, off64_t length) {
 
 	errno = 0;
 
-	if (truncate64(String_ToNul(&path), length) == -1) {
+	if (truncate64(String_ToNul(path), length) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -216,7 +216,7 @@ String Path_Resolve(String path) {
 
 	String res = HeapString(0);
 
-	if (chdir(String_ToNul(&dirpath)) == 0) {
+	if (chdir(String_ToNul(dirpath)) == 0) {
 		res = Path_GetCwd();
 
 		if (!isDir) {
@@ -252,7 +252,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 
 				errno = 0;
 
-				int res = mkdir(String_ToNul(&tmp), mode);
+				int res = mkdir(String_ToNul(tmp), mode);
 
 				if (res == -1) {
 					if (errno == EACCES) {
@@ -272,7 +272,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	} else {
 		errno = 0;
 
-		if (mkdir(String_ToNul(&path), mode) == -1) {
+		if (mkdir(String_ToNul(path), mode) == -1) {
 			if (errno == EACCES) {
 				throw(exc, &Path_AccessDeniedException);
 			} else if (errno == EEXIST) {
@@ -305,7 +305,7 @@ inline void OVERLOAD Path_Create(String path) {
 void Path_Delete(String path) {
 	errno = 0;
 
-	if (unlink(String_ToNul(&path)) == -1) {
+	if (unlink(String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -323,7 +323,7 @@ void Path_Delete(String path) {
 void Path_ReadLink(String path, String *out) {
 	errno = 0;
 
-	ssize_t len = readlink(String_ToNul(&path), out->buf, out->size);
+	ssize_t len = readlink(String_ToNul(path), out->buf, out->size);
 
 	if (len == -1) {
 		if (errno == EACCES) {
@@ -345,7 +345,7 @@ void Path_ReadLink(String path, String *out) {
 void Path_Symlink(String path1, String path2) {
 	errno = 0;
 
-	if (symlink(String_ToNul(&path1), String_ToNul(&path2)) == -1) {
+	if (symlink(String_ToNul(path1), String_ToNul(path2)) == -1) {
 		if (errno == EEXIST) {
 			throw(exc, &Path_AlreadyExistsException);
 		} else {
@@ -355,14 +355,14 @@ void Path_Symlink(String path1, String path2) {
 }
 
 void Path_SetXattr(String path, String name, String value) {
-	if (setxattr(String_ToNul(&path), String_ToNul(&name), value.buf, value.len, 0) < 0) {
+	if (setxattr(String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &Path_SettingAttributeFailedException);
 	}
 }
 
 String OVERLOAD Path_GetXattr(String path, String name) {
-	char *npath = String_ToNul(&path);
-	char *nname = String_ToNul(&name);
+	char *npath = String_ToNul(path);
+	char *nname = String_ToNul(name);
 
 	errno = 0;
 
@@ -388,8 +388,8 @@ String OVERLOAD Path_GetXattr(String path, String name) {
 }
 
 void OVERLOAD Path_GetXattr(String path, String name, String *value) {
-	char *npath = String_ToNul(&path);
-	char *nname = String_ToNul(&name);
+	char *npath = String_ToNul(path);
+	char *nname = String_ToNul(name);
 
 	errno = 0;
 
@@ -419,7 +419,7 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 	errno = 0;
 
 	if (utimensat(AT_FDCWD,
-		String_ToNul(&path),
+		String_ToNul(path),
 		(const struct timespec[2]) {t, t},
 		flags) == -1)
 	{

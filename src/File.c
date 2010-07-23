@@ -52,7 +52,7 @@ void File0(ExceptionManager *e) {
 void File_Open(File *this, String path, int mode) {
 	errno = 0;
 
-	if ((this->fd = open(String_ToNul(&path), mode, 0666)) == -1) {
+	if ((this->fd = open(String_ToNul(path), mode, 0666)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == ENOENT) {
@@ -90,13 +90,13 @@ void File_Close(File *this) {
 }
 
 void File_SetXattr(File *this, String name, String value) {
-	if (fsetxattr(this->fd, String_ToNul(&name), value.buf, value.len, 0) < 0) {
+	if (fsetxattr(this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &File_SettingAttributeFailedException);
 	}
 }
 
 String OVERLOAD File_GetXattr(File *this, String name) {
-	char *nname = String_ToNul(&name);
+	char *nname = String_ToNul(name);
 
 	errno = 0;
 
@@ -122,7 +122,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 }
 
 void OVERLOAD File_GetXattr(File *this, String name, String *value) {
-	char *nname = String_ToNul(&name);
+	char *nname = String_ToNul(name);
 
 	errno = 0;
 

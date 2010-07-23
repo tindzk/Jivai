@@ -11,7 +11,7 @@ void NetworkAddress0(ExceptionManager *e) {
 struct in_addr NetworkAddress_ResolveHost(String hostname) {
 	struct addrinfo *host;
 
-	if (getaddrinfo(String_ToNul(&hostname), NULL, NULL, &host)) {
+	if (getaddrinfo(String_ToNul(hostname), NULL, NULL, &host)) {
 		throw(exc, &NetworkAddress_GetAddrInfoFailedException);
 	}
 

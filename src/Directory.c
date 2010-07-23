@@ -10,7 +10,7 @@ void Directory0(ExceptionManager *e) {
 }
 
 void Directory_Init(Directory *this, String path) {
-	this->fd = open(String_ToNul(&path), O_RDONLY | O_DIRECTORY);
+	this->fd = open(String_ToNul(path), O_RDONLY | O_DIRECTORY);
 
 	if (this->fd == -1) {
 		throw(exc, &Directory_CannotOpenDirectoryException);

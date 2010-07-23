@@ -26,7 +26,7 @@ void String0(ExceptionManager *e);
 
 void String_Destroy(String *this);
 void String_ToHeap(String *this);
-char* String_ToNulBuf(String *this, char *buf);
+char* String_ToNulBuf(String s, char *buf);
 void String_Resize(String *this, size_t length);
 void String_Align(String *this, size_t length);
 void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength);
@@ -107,11 +107,11 @@ int OVERLOAD String_NaturalCompare(String a, String b);
 #define String_FromNul(s) \
 	BufString(s, strlen(s))
 
-#define String_ToNul(this) \
-	String_ToNulBuf(this, alloca((this)->len + 1))
+#define String_ToNul(s) \
+	String_ToNulBuf(s, alloca((s).len + 1))
 
-#define String_ToNulHeap(this) \
-	String_ToNulBuf(this, Memory_Alloc((this)->len + 1))
+#define String_ToNulHeap(s) \
+	String_ToNulBuf(s, Memory_Alloc((s).len + 1))
 
 #define String_FmtPrint(...)            \
 	do {                                \

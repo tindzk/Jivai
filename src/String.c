@@ -32,15 +32,9 @@ void String_ToHeap(String *this) {
 	this->heap = true;
 }
 
-char* String_ToNulBuf(String *this, char *buf) {
-	size_t i;
-
-	for (i = 0; i < this->len; i++) {
-		buf[i] = this->buf[i];
-	}
-
-	buf[i] = '\0';
-
+inline char* String_ToNulBuf(String s, char *buf) {
+	Memory_Copy(buf, s.buf, s.len);
+	buf[s.len] = '\0';
 	return buf;
 }
 
