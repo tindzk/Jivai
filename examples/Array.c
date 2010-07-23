@@ -35,10 +35,10 @@ int main(void) {
 	 * more memory is requested from the kernel.
 	 */
 	for (size_t i = 0; i < 50; i++) {
-		Item item;
-
-		item.field1 = String_Clone(Integer_ToString(i));
-		item.field2 = String_Clone(Integer_ToString(i + 5));
+		Item item = {
+			String_Clone(Integer_ToString(i)),
+			String_Clone(Integer_ToString(i + 5))
+		};
 
 		Array_Push(arr, item);
 	}
