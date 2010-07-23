@@ -59,19 +59,15 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 
-	String tmp;
-
 	/* Extract and print both parts: */
 
 	/* 0..pos-1 */
-	String_Print(tmp = String_Slice(s, 0, pos));
+	String_Print(String_Slice(s, 0, pos));
 	String_Print(String("\n"));
-	String_Destroy(&tmp);
 
 	/* pos..end */
-	String_Print(tmp = String_Slice(s, pos));
+	String_Print(String_Slice(s, pos));
 	String_Print(String("\n"));
-	String_Destroy(&tmp);
 
 	return EXIT_SUCCESS;
 }

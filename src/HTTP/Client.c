@@ -218,16 +218,13 @@ size_t HTTP_Client_ParseChunk(String *s) {
 		throw(exc, &HTTP_Client_MalformedChunkException);
 	}
 
-	String part = String_Slice(*s, 0, pos);
-	String_Crop(s, pos + 2);
-
-	long len = Hex_ToInteger(part);
-
-	String_Destroy(&part);
+	long len = Hex_ToInteger(String_Slice(*s, 0, pos));
 
 	if (len == -1) {
 		throw(exc, &HTTP_Client_MalformedChunkException);
 	}
+
+	String_Crop(s, pos + 2);
 
 	return len;
 }
@@ -272,7 +269,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			events.onStatus  = (void *) &HTTP_Client_OnStatus;
 			events.onHeader  = (void *) &HTTP_Client_OnHeader;
 
-			String s = String_FastSlice(this->resp, 0, requestOffset);
+			String s = String_Slice(this->resp, 0, requestOffset);
 
 			HTTP_Header header;
 			HTTP_Header_Init(&header, events);

@@ -275,7 +275,7 @@ String HTML_Entities_Decode(String s) {
 			}
 		} else {
 			if (s.buf[i] == ';') {
-				String entity = String_FastSlice(s, pos, i - pos);
+				String entity = String_Slice(s, pos, i - pos);
 
 				if (entity.buf[0] == '#') {
 					if (entity.len < 3) {
@@ -284,9 +284,9 @@ String HTML_Entities_Decode(String s) {
 
 					int c;
 					if (entity.buf[1] == 'x') {
-						c = Hex_ToInteger(String_FastSlice(entity, 2));
+						c = Hex_ToInteger(String_Slice(entity, 2));
 					} else {
-						c = Integer_ParseString(String_FastSlice(entity, 1));
+						c = Integer_ParseString(String_Slice(entity, 1));
 					}
 
 					String s = StackString(4);
@@ -321,7 +321,7 @@ String HTML_Entities_Decode(String s) {
 
 			if (0) {
 			error:
-				String_Append(&res, String_FastSlice(s, pos - 1, i - pos + 2));
+				String_Append(&res, String_Slice(s, pos - 1, i - pos + 2));
 				ampersand = false;
 			}
 		}

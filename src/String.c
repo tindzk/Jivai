@@ -193,15 +193,8 @@ String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
 
 	out.len  = right - offset;
 	out.size = out.len;
-
-	if (out.len == 0) {
-		out.buf = NULL;
-	} else {
-		out.buf = Memory_Alloc(out.size);
-		Memory_Copy(out.buf, s.buf + offset, out.len);
-	}
-
-	out.heap = true;
+	out.buf  = s.buf + offset;
+	out.heap = false;
 
 	return out;
 }
@@ -212,42 +205,6 @@ inline String OVERLOAD String_Slice(String s, ssize_t offset) {
 	}
 
 	return String_Slice(s, offset, s.len - offset);
-}
-
-String OVERLOAD String_FastSlice(String s, ssize_t offset, ssize_t length) {
-	String out;
-	size_t right;
-
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	if (length < 0) {
-		right = length + s.len;
-	} else {
-		right = length + offset;
-	}
-
-	if ((size_t) offset > right
-	 || (size_t) offset > s.len
-	 || right           > s.len) {
-		throw(exc, &String_BufferOverflowException);
-	}
-
-	out.len  = right - offset;
-	out.size = out.len;
-	out.buf  = s.buf + offset;
-	out.heap = false;
-
-	return out;
-}
-
-inline String OVERLOAD String_FastSlice(String s, ssize_t offset) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return String_FastSlice(s, offset, s.len - offset);
 }
 
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
@@ -488,13 +445,13 @@ StringArray* OVERLOAD String_Split(String s, size_t offset, char c) {
 
 	for (left = right = offset; right < s.len; right++) {
 		if (s.buf[right] == c) {
-			res->buf[res->len] = String_FastSlice(s, left, right - left);
+			res->buf[res->len] = String_Slice(s, left, right - left);
 			res->len++;
 			left = right + 1;
 		}
 	}
 
-	res->buf[res->len] = String_FastSlice(s, left, right - left);
+	res->buf[res->len] = String_Slice(s, left, right - left);
 	res->len++;
 
 	return res;
@@ -723,7 +680,7 @@ String OVERLOAD String_Trim(String s) {
 			}
 		}
 
-		return String_FastSlice(s, lpos, rpos - lpos + 1);
+		return String_Slice(s, lpos, rpos - lpos + 1);
 	}
 
 	return s;
@@ -861,7 +818,7 @@ bool String_Filter(String *this, String s1, String s2) {
 	String out = HeapString(0);
 
 	if (left > 0) {
-		out = String_Slice(*this, 0, left - 1);
+		out = String_Clone(String_Slice(*this, 0, left - 1));
 	}
 
 	left += s1.len;
@@ -1006,7 +963,7 @@ inline bool OVERLOAD String_ReplaceAll(String *this, String needle, String repla
 }
 
 String String_Consume(String *this, int n) {
-	String res = String_Slice(*this, 0, n);
+	String res = String_Clone(String_Slice(*this, 0, n));
 	String_Crop(this, n);
 	return res;
 }
@@ -1120,8 +1077,8 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
 			int result;
 
-			String __a = String_FastSlice(a, ai);
-			String __b = String_FastSlice(b, bi);
+			String __a = String_Slice(a, ai);
+			String __b = String_Slice(b, bi);
 
 			if (!skipZeros) {
 				/* Is fractional? */

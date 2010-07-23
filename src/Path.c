@@ -148,12 +148,14 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 
 	ssize_t pos = String_ReverseFind(path, '/');
 
+	path.heap = false;
+
 	if (pos == String_NotFound) {
-		return String_Clone(path);
+		return path;
 	}
 
 	if ((size_t) pos + 1 >= path.len) {
-		return String_Clone(path);
+		return path;
 	}
 
 	return String_Slice(path, pos + 1);
@@ -169,7 +171,7 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 	}
 
 	if (String_Equals(path, String("/"))) {
-		return String_Clone(String("/"));
+		return String("/");
 	}
 
 	if (String_EndsWith(path, String("/"))) {
@@ -177,13 +179,14 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 	}
 
 	if (verify && Path_IsDirectory(path)) {
-		return String_Clone(path);
+		path.heap = false;
+		return path;
 	}
 
 	ssize_t pos = String_ReverseFind(path, '/');
 
 	if (pos == String_NotFound) {
-		return String_Clone(String("."));
+		return String(".");
 	}
 
 	return String_Slice(path, 0, pos);
@@ -207,11 +210,9 @@ String Path_Resolve(String path) {
 
 	bool isDir = Path_IsDirectory(path);
 
-	String dirpath = path;
-
-	if (!isDir) {
-		dirpath = Path_GetDirectory(path, false);
-	}
+	String dirpath = !isDir
+		? Path_GetDirectory(path, false)
+		: path;
 
 	String res = HeapString(0);
 
@@ -219,19 +220,11 @@ String Path_Resolve(String path) {
 		res = Path_GetCwd();
 
 		if (!isDir) {
-			String filename = Path_GetFilename(path, false);
-
 			String_Append(&res, '/');
-			String_Append(&res, filename);
-
-			String_Destroy(&filename);
+			String_Append(&res, Path_GetFilename(path, false));
 		}
 
 		fchdir(fd);
-	}
-
-	if (!isDir) {
-		String_Destroy(&dirpath);
 	}
 
 	close(fd);
@@ -255,7 +248,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	if (recursive) {
 		for (size_t i = 0; i < path.len; i++) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
-				String tmp = String_FastSlice(path, 0, i + 1);
+				String tmp = String_Slice(path, 0, i + 1);
 
 				errno = 0;
 

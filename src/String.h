@@ -37,8 +37,6 @@ char* String_CloneBuf(String s, char *buf);
 char String_CharAt(String *this, ssize_t offset);
 String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length);
 String OVERLOAD String_Slice(String s, ssize_t offset);
-String OVERLOAD String_FastSlice(String s, ssize_t offset, ssize_t length);
-String OVERLOAD String_FastSlice(String s, ssize_t offset);
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length);
 void OVERLOAD String_Crop(String *this, ssize_t offset);
 void String_Delete(String *this, ssize_t offset, ssize_t length);

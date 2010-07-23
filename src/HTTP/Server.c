@@ -224,7 +224,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	events.onHeader    = (void *) &HTTP_Server_OnHeader;
 	events.context     = this;
 
-	String s = String_FastSlice(this->header, 0, requestOffset);
+	String s = String_Slice(this->header, 0, requestOffset);
 
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
