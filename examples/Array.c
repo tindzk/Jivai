@@ -44,10 +44,9 @@ int main(void) {
 	}
 
 	for (size_t i = 0; i < arr->len; i++) {
-		String_FmtPrint(String_Format(
-			String("%:%\n"),
+		String_FmtPrint(String("%:%\n"),
 			arr->buf[i].field1,
-			arr->buf[i].field2));
+			arr->buf[i].field2);
 	}
 
 	Array_Foreach(arr, DestroyItem);
