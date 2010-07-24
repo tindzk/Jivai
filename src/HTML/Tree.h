@@ -1,5 +1,5 @@
-#ifndef HTML_Tree_H
-#define HTML_Tree_H
+#ifndef HTML_TREE_H
+#define HTML_TREE_H
 
 #include "Tokenizer.h"
 
