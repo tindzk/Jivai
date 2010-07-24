@@ -121,4 +121,12 @@ int OVERLOAD String_NaturalCompare(String a, String b);
 		String_Destroy(&__tmp);         \
 	} while(0)
 
+#define String_FmtAppend(this, ...)     \
+	do {                                \
+		String __tmp =                  \
+			String_Format(__VA_ARGS__); \
+		String_Append(this, __tmp);     \
+		String_Destroy(&__tmp);         \
+	} while(0)
+
 #endif
