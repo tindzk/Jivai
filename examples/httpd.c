@@ -220,13 +220,15 @@ Connection_Status Request_Respond(Request *this) {
 		return Connection_Status_Open;
 	}
 
-	size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
-	String_Crop(&this->resp, written);
+	if (this->resp.len > 0) {
+		size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
+		String_Crop(&this->resp, written);
 
-	bool incomplete = (this->resp.len > 0);
+		bool incomplete = (this->resp.len > 0);
 
-	if (incomplete) {
-		return Connection_Status_Open;
+		if (incomplete) {
+			return Connection_Status_Open;
+		}
 	}
 
 	return this->persistent
