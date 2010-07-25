@@ -291,17 +291,28 @@ int main(void) {
 	ClientListener0(&exc);
 	SocketConnection0(&exc);
 
+	bool error = false;
+
 	Server server;
+
 	Server_Events events;
+
 	ClientListener listener;
 	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
-
-	int res = EXIT_SUCCESS;
 
 	try(&exc) {
 		Server_Init(&server, events, true, 8080);
 		String_Print(String("Server started.\n"));
+	} catch(&Socket_AddressInUseException, e) {
+		String_Print(String("The address is already in use!\n"));
+		error = true;
+	} finally {
+		if (error) {
+			excReturn EXIT_FAILURE;
+		}
+	} tryEnd;
 
+	try(&exc) {
 		while (true) {
 			Server_Process(&server);
 		}
@@ -314,10 +325,14 @@ int main(void) {
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 
-		res = EXIT_FAILURE;
+		error = true;
 	} finally {
 		Server_Destroy(&server);
+
+		if (error) {
+			excReturn EXIT_FAILURE;
+		}
 	} tryEnd;
 
-	return res;
+	return EXIT_SUCCESS;
 }
