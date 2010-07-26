@@ -11,15 +11,13 @@ void Memory0(ExceptionManager *e) {
 }
 
 void* Memory_Alloc(size_t size) {
-	void *pMem;
-
 #ifdef Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-	pMem = malloc(size);
+	void *pMem = malloc(size);
 
 	if (pMem == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
@@ -51,9 +49,7 @@ void* Memory_Realloc(void *pMem, size_t size) {
 	}
 #endif
 
-	void *res = NULL;
-
-	res = realloc(pMem, size);
+	void *res = realloc(pMem, size);
 
 	if (res == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
