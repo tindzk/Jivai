@@ -70,11 +70,29 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 	ssize_t pos = String_Find(s, '?');
 
 	if (this->events.onPath != NULL) {
-		this->events.onPath(
-			this->events.context,
+		String path =
 			(pos != String_NotFound)
 				? String_Slice(s, 0, pos)
-				: s);
+				: s;
+
+		size_t len = HTTP_Query_GetAbsoluteLength(path);
+
+		if (len <= path.len) {
+			HTTP_Query_Unescape(path, path.buf, true);
+			path.len = len;
+		} else {
+			String decoded = HeapString(len);
+			HTTP_Query_Unescape(path, decoded.buf, true);
+			decoded.len = len;
+
+			path = decoded;
+		}
+
+		this->events.onPath(
+			this->events.context,
+			path);
+
+		String_Destroy(&path);
 	}
 
 	if (this->events.onParameter != NULL) {
