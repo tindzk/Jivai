@@ -6,6 +6,7 @@ Exception_Define(Path_AttributeNonExistentException);
 Exception_Define(Path_BufferTooSmallException);
 Exception_Define(Path_CreationFailedException);
 Exception_Define(Path_DeletingFailedException);
+Exception_Define(Path_DirectoryNotEmptyException);
 Exception_Define(Path_EmptyPathException);
 Exception_Define(Path_GettingAttributeFailedException);
 Exception_Define(Path_InsufficientSpaceException);
@@ -314,6 +315,26 @@ void Path_Delete(String path) {
 			throw(exc, &Path_NonExistentPathException);
 		} else if (errno == EISDIR) {
 			throw(exc, &Path_IsDirectoryException);
+		} else {
+			throw(exc, &Path_DeletingFailedException);
+		}
+	}
+}
+
+void Path_DeleteDirectory(String path) {
+	errno = 0;
+
+	if (rmdir(String_ToNul(path)) == -1) {
+		if (errno == EACCES) {
+			throw(exc, &Path_AccessDeniedException);
+		} else if (errno == ENAMETOOLONG) {
+			throw(exc, &Path_NameTooLongException);
+		} else if (errno == ENOTDIR) {
+			throw(exc, &Path_NotDirectoryException);
+		} else if (errno == ENOENT) {
+			throw(exc, &Path_NonExistentPathException);
+		} else if (errno == ENOTEMPTY) {
+			throw(exc, &Path_DirectoryNotEmptyException);
 		} else {
 			throw(exc, &Path_DeletingFailedException);
 		}
