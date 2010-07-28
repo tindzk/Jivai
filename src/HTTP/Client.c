@@ -112,6 +112,10 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 		this->events.onHeader(this->events.context, name, value);
 	}
 
+	/* See HTTP/Server.c for a justification of this hack. */
+	name.mutable  = true;
+	value.mutable = true;
+
 	String_ToLower(&name);
 
 	if (String_Equals(name, String("connection"))) {
