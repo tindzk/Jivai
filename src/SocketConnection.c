@@ -70,7 +70,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 		} while (res == -1 && errno == EINTR);
 
 		if (res == -1) {
-			if (errno == EWOULDBLOCK || errno == EAGAIN) {
+			if (errno == EAGAIN) {
 				return false;
 			} else if (errno == EBADF) {
 				throw(exc, &SocketConnection_InvalidFileDescriptorException);
