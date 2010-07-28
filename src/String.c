@@ -18,16 +18,6 @@ void String_Destroy(String *this) {
 	}
 }
 
-void String_ToHeap(String *this) {
-	if (!this->heap) {
-		char *buf = Memory_Alloc(this->size);
-		Memory_Copy(buf, this->buf, this->len);
-
-		this->buf  = buf;
-		this->heap = true;
-	}
-}
-
 inline char* String_ToNulBuf(String s, char *buf) {
 	Memory_Copy(buf, s.buf, s.len);
 	buf[s.len] = '\0';

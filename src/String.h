@@ -25,7 +25,6 @@ Exception_Export(String_NotHeapAllocatedException);
 void String0(ExceptionManager *e);
 
 void String_Destroy(String *this);
-void String_ToHeap(String *this);
 char* String_ToNulBuf(String s, char *buf);
 void String_Resize(String *this, size_t length);
 void String_Align(String *this, size_t length);
