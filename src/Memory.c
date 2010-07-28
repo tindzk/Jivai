@@ -11,7 +11,7 @@ void Memory0(ExceptionManager *e) {
 }
 
 void* Memory_Alloc(size_t size) {
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
@@ -27,7 +27,7 @@ void* Memory_Alloc(size_t size) {
 }
 
 void Memory_FreePtr(void *pMem) {
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (pMem == NULL) {
 		throw(exc, &Memory_NullPointerException);
 	}
@@ -37,13 +37,13 @@ void Memory_FreePtr(void *pMem) {
 }
 
 void* Memory_Realloc(void *pMem, size_t size) {
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (pMem == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
@@ -59,13 +59,13 @@ void* Memory_Realloc(void *pMem, size_t size) {
 }
 
 void Memory_Copy(void *pDest, void *pSource, size_t len) {
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (len == 0 || len > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (pDest == NULL || pSource == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
@@ -75,13 +75,13 @@ void Memory_Copy(void *pDest, void *pSource, size_t len) {
 }
 
 void* Memory_Clone(void *pSource, size_t size) {
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (pSource == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
@@ -99,13 +99,13 @@ bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
 		return true;
 	}
 
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (len > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (ptr1 == NULL || ptr2 == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
@@ -115,13 +115,13 @@ bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
 }
 
 void* Memory_Move(void *pDest, void *pSource, size_t len) {
-#ifdef Memory_BoundaryChecks
+#if Memory_BoundaryChecks
 	if (len == 0 || len > SIZE_MAX) {
 		throw(exc, &Memory_OutOfBoundsException);
 	}
 #endif
 
-#ifdef Memory_PointerChecks
+#if Memory_PointerChecks
 	if (pDest == NULL || pSource == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}

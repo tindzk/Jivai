@@ -12,6 +12,14 @@ Exception_Export(Memory_NullPointerException);
 Exception_Export(Memory_OutOfBoundsException);
 Exception_Export(Memory_OutOfMemoryException);
 
+#ifndef Memory_BoundaryChecks
+#define Memory_BoundaryChecks 1
+#endif
+
+#ifndef Memory_PointerChecks
+#define Memory_PointerChecks 0
+#endif
+
 void Memory0(ExceptionManager *e);
 
 void* Memory_Alloc(size_t size);
