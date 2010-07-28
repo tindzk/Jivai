@@ -48,6 +48,10 @@ void String_Resize(String *this, size_t length) {
 }
 
 void String_Align(String *this, size_t length) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	if (length > 0) {
 		if (this->size == 0 || length > this->size) {
 			String_Resize(this, length);
@@ -56,6 +60,10 @@ void String_Align(String *this, size_t length) {
 }
 
 void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	size_t srcRight;
 
 	if (srcOffset < 0) {
@@ -178,6 +186,10 @@ inline String OVERLOAD String_Slice(String s, ssize_t offset) {
 }
 
 void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	size_t right;
 
 	if (offset < 0) {
@@ -222,6 +234,10 @@ inline void OVERLOAD String_Crop(String *this, ssize_t offset) {
 }
 
 void String_Delete(String *this, ssize_t offset, ssize_t length) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	size_t from;
 
 	if (offset < 0) {
@@ -234,10 +250,6 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	 || (size_t) offset > this->len
 	 || from            > this->len) {
 		throw(exc, &String_BufferOverflowException);
-	}
-
-	if (!this->mutable) {
-		throw(exc, &String_NotMutableException);
 	}
 
 	Memory_Move(
@@ -389,12 +401,20 @@ inline bool String_EndsWith(String s, String needle) {
 }
 
 void String_ToLower(String *this) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	for (size_t i = 0; i < this->len; i++) {
 		this->buf[i] = Char_ToLower(this->buf[i]);
 	}
 }
 
 void String_ToUpper(String *this) {
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
+
 	for (size_t i = 0; i < this->len; i++) {
 		this->buf[i] = Char_ToUpper(this->buf[i]);
 	}
