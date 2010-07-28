@@ -78,8 +78,6 @@ static Connection_Status ClientListener_OnData(ClientListener *this, Client *cli
 			status = Connection_Status_Close;
 		} catch(&SocketConnection_ConnectionResetException, e) {
 			status = Connection_Status_Close;
-		} catch(&SocketConnection_LengthMismatchException, e) {
-			status = Connection_Status_Close;
 		} finally {
 
 		} tryEnd;

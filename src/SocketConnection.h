@@ -21,7 +21,6 @@ Exception_Export(SocketConnection_ConnectionResetException);
 Exception_Export(SocketConnection_FcntlFailedException);
 Exception_Export(SocketConnection_FileDescriptorUnusableException);
 Exception_Export(SocketConnection_InvalidFileDescriptorException);
-Exception_Export(SocketConnection_LengthMismatchException);
 Exception_Export(SocketConnection_NotConnectedException);
 Exception_Export(SocketConnection_UnknownErrorException);
 

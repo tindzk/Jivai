@@ -7,7 +7,6 @@ Exception_Define(SocketConnection_ConnectionResetException);
 Exception_Define(SocketConnection_FcntlFailedException);
 Exception_Define(SocketConnection_FileDescriptorUnusableException);
 Exception_Define(SocketConnection_InvalidFileDescriptorException);
-Exception_Define(SocketConnection_LengthMismatchException);
 Exception_Define(SocketConnection_NotConnectedException);
 Exception_Define(SocketConnection_UnknownErrorException);
 
@@ -84,11 +83,6 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 		}
 
 		len -= res;
-	}
-
-	if (len != 0) {
-		/* Unsent data is left */
-		throw(exc, &SocketConnection_LengthMismatchException);
 	}
 
 	if (this->nonblocking) {
