@@ -137,16 +137,16 @@ char* String_CloneBuf(String s, char *buf) {
 	return buf;
 }
 
-char String_CharAt(String *this, ssize_t offset) {
+char String_CharAt(String s, ssize_t offset) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += s.len;
 	}
 
-	if ((size_t) offset > this->len) {
+	if ((size_t) offset > s.len) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
-	return this->buf[offset];
+	return s.buf[offset];
 }
 
 String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
