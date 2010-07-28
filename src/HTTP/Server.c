@@ -79,6 +79,13 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 		this->events.onHeader(this->events.context, name, value);
 	}
 
+	/* Generally, manipulating the `mutable' property is not
+	 * advisable but in this case both strings are known to be
+	 * heap-allocated and also keep their lengths.
+	 */
+	name.mutable  = true;
+	value.mutable = true;
+
 	String_ToLower(&name);
 
 	if (String_Equals(name, String("connection"))) {
