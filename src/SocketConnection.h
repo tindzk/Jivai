@@ -14,7 +14,9 @@
 #include "Exception.h"
 #include "NetworkAddress.h"
 
+#ifndef SocketConnection_ChunkSize
 #define SocketConnection_ChunkSize 65536
+#endif
 
 Exception_Export(SocketConnection_ConnectionRefusedException);
 Exception_Export(SocketConnection_ConnectionResetException);
