@@ -18,7 +18,6 @@
 
 Exception_Export(SocketConnection_ConnectionRefusedException);
 Exception_Export(SocketConnection_ConnectionResetException);
-Exception_Export(SocketConnection_EmptyQueueException);
 Exception_Export(SocketConnection_FcntlFailedException);
 Exception_Export(SocketConnection_FileDescriptorUnusableException);
 Exception_Export(SocketConnection_InvalidFileDescriptorException);
@@ -39,9 +38,9 @@ typedef struct {
 void SocketConnection0(ExceptionManager *e);
 
 void SocketConnection_Flush(SocketConnection *this);
-size_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len);
-size_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len);
-void SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len);
+ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len);
+ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len);
+bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len);
 void SocketConnection_Close(SocketConnection *this);
 
 #endif

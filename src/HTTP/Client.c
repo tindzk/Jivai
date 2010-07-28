@@ -3,6 +3,7 @@
 static ExceptionManager *exc;
 
 Exception_Define(HTTP_Client_BufferTooSmallException);
+Exception_Define(HTTP_Client_ConnectionErrorException);
 Exception_Define(HTTP_Client_ConnectionResetException);
 Exception_Define(HTTP_Client_MalformedChunkException);
 Exception_Define(HTTP_Client_ResponseMalformedException);
@@ -250,9 +251,19 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 	this->resp.len  = 0;
 
 	try (exc) {
-		this->resp.len += SocketConnection_Read(&this->conn,
+		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
 			this->resp.size - this->resp.len);
+
+		/* SocketConnection_Read() only returns -1 for non-blocking
+		 * connections.
+		 * For now this module only supports blocking connections.
+		 */
+		if (len == -1) {
+			throw(exc, &HTTP_Client_ConnectionErrorException);
+		}
+
+		this->resp.len += len;
 
 		/* See HTTP/Server.c for a complete explanation how all this works. */
 		ssize_t requestOffset = HTTP_Header_GetLength(this->resp);
@@ -282,9 +293,15 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			 * HTTP_Client_Read() will fail right away.
 			 */
 			if (this->resp.len == 0 && this->total != 0) {
-				this->resp.len = SocketConnection_Read(&this->conn,
+				len = SocketConnection_Read(&this->conn,
 					this->resp.buf,
 					this->resp.size);
+
+				if (len == -1) {
+					throw(exc, &HTTP_Client_ConnectionErrorException);
+				}
+
+				this->resp.len = len;
 			}
 		} else { /* Response is incomplete. */
 			if (this->resp.len == this->resp.size) {
@@ -319,9 +336,15 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 
 static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 	try (exc) {
-		this->resp.len += SocketConnection_Read(&this->conn,
+		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
 			this->resp.size - this->resp.len);
+
+		if (len == -1) {
+			throw(exc, &HTTP_Client_ConnectionErrorException);
+		}
+
+		this->resp.len += len;
 	} catch(&SocketConnection_ConnectionResetException, e) {
 		this->closed = true;
 		excThrow(exc, &HTTP_Client_ConnectionResetException);
@@ -473,7 +496,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 			break;
 		}
 
-		size_t read = 0;
+		ssize_t read = 0;
 
 		try (exc) {
 			if (this->chunked) {
@@ -491,6 +514,10 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 				read = SocketConnection_Read(&this->conn,
 					res->buf  + res->len,
 					res->size - res->len);
+			}
+
+			if (read == -1) {
+				throw(exc, &HTTP_Client_ConnectionErrorException);
 			}
 
 			res->len   += read;

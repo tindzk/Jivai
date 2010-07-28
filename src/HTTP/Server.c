@@ -179,20 +179,11 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 			throw(exc, &HTTP_Server_HeaderTooLargeException);
 		}
 
-		size_t len = 0;
-		bool incomplete = false;
+		ssize_t len = SocketConnection_Read(this->conn,
+			this->header.buf  + this->header.len,
+			this->header.size - this->header.len);
 
-		try (exc) {
-			len = SocketConnection_Read(this->conn,
-				this->header.buf  + this->header.len,
-				this->header.size - this->header.len);
-		} catch(&SocketConnection_EmptyQueueException, e) {
-			incomplete = true;
-		} finally {
-
-		} tryEnd;
-
-		if (incomplete) {
+		if (len == -1) {
 			/* This function will be called again when more data is available. */
 			return HTTP_Server_Result_Incomplete;
 		}
@@ -300,20 +291,11 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 	} else {
 		/* Get the remaining chunks (if any). */
 		while (this->body.len < this->body.size) {
-			size_t len = 0;
-			bool incomplete = false;
+			ssize_t len = SocketConnection_Read(this->conn,
+				this->body.buf  + this->body.len,
+				this->body.size - this->body.len);
 
-			try (exc) {
-				len = SocketConnection_Read(this->conn,
-					this->body.buf  + this->body.len,
-					this->body.size - this->body.len);
-			} catch(&SocketConnection_EmptyQueueException, e) {
-				incomplete = true;
-			} finally {
-
-			} tryEnd;
-
-			if (incomplete) {
+			if (len == -1) {
 				return HTTP_Server_Result_Incomplete;
 			}
 
