@@ -33,16 +33,16 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 		return res;
 	}
 
-	if (errno == ECONNRESET) {
+	if (errno == EWOULDBLOCK || errno == EAGAIN) {
+		return -1;
+	} else if (errno == ECONNRESET) {
 		throw(exc, &SocketConnection_ConnectionResetException);
+	} else if (errno == ECONNREFUSED) {
+		throw(exc, &SocketConnection_ConnectionRefusedException);
 	} else if (errno == ENOTCONN) {
 		throw(exc, &SocketConnection_NotConnectedException);
 	} else if (errno == EBADF) {
 		throw(exc, &SocketConnection_InvalidFileDescriptorException);
-	} else if (errno == ECONNREFUSED) {
-		throw(exc, &SocketConnection_ConnectionRefusedException);
-	} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
-		return -1;
 	} else {
 		throw(exc, &SocketConnection_UnknownErrorException);
 	}
@@ -70,12 +70,12 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 		} while (res == -1 && errno == EINTR);
 
 		if (res == -1) {
-			if (errno == EBADF) {
+			if (errno == EWOULDBLOCK || errno == EAGAIN) {
+				return false;
+			} else if (errno == EBADF) {
 				throw(exc, &SocketConnection_InvalidFileDescriptorException);
 			} else if (errno == EINVAL) {
 				throw(exc, &SocketConnection_FileDescriptorUnusableException);
-			} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
-				return false;
 			} else {
 				throw(exc, &SocketConnection_UnknownErrorException);
 			}
@@ -116,12 +116,12 @@ ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 	ssize_t res = send(this->fd, buf, len, flags);
 
 	if (res == -1) {
-		if (errno == EPIPE || errno == ENOTCONN) {
-			throw(exc, &SocketConnection_NotConnectedException);
+		if (errno == EWOULDBLOCK || errno == EAGAIN) {
+			return -1;
 		} else if (errno == ECONNRESET) {
 			throw(exc, &SocketConnection_ConnectionResetException);
-		} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
-			return -1;
+		} else if (errno == EPIPE || errno == ENOTCONN) {
+			throw(exc, &SocketConnection_NotConnectedException);
 		} else if (errno == EBADF) {
 			throw(exc, &SocketConnection_InvalidFileDescriptorException);
 		} else {
