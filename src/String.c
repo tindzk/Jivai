@@ -1,7 +1,7 @@
 #include "String.h"
 
+Exception_Define(String_NotMutableException);
 Exception_Define(String_BufferOverflowException);
-Exception_Define(String_NotHeapAllocatedException);
 
 static ExceptionManager *exc;
 
@@ -13,7 +13,7 @@ void String_Destroy(String *this) {
 	this->len  = 0;
 	this->size = 0;
 
-	if (this->heap && this->buf != NULL) {
+	if (this->mutable && this->buf != NULL) {
 		Memory_Free(this->buf);
 	}
 }
@@ -25,8 +25,8 @@ inline char* String_ToNulBuf(String s, char *buf) {
 }
 
 void String_Resize(String *this, size_t length) {
-	if (!this->heap) {
-		throw(exc, &String_NotHeapAllocatedException);
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
 	}
 
 	if (length > 0) {
@@ -91,8 +91,8 @@ inline void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset) {
 
 void OVERLOAD String_Copy(String *this, String src) {
 	if (src.len > 0) {
-		if (!this->heap) {
-			throw(exc, &String_NotHeapAllocatedException);
+		if (!this->mutable) {
+			throw(exc, &String_NotMutableException);
 		}
 
 		if (this->buf == NULL) {
@@ -104,15 +104,15 @@ void OVERLOAD String_Copy(String *this, String src) {
 
 		Memory_Copy(this->buf, src.buf, src.len);
 	} else if (this->buf != NULL) {
-		if (this->heap) {
+		if (this->mutable) {
 			Memory_Free(this->buf);
 		} else {
 			this->buf = NULL;
 		}
 	}
 
-	this->len  = src.len;
-	this->heap = true;
+	this->len     = src.len;
+	this->mutable = true;
 }
 
 String String_Clone(String s) {
@@ -126,7 +126,7 @@ String String_Clone(String s) {
 	out.size = s.len;
 	out.buf = Memory_Alloc(out.size);
 	Memory_Copy(out.buf, s.buf, s.len);
-	out.heap = true;
+	out.mutable = true;
 
 	return out;
 }
@@ -171,10 +171,10 @@ String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
-	out.len  = right - offset;
-	out.size = out.len;
-	out.buf  = s.buf + offset;
-	out.heap = false;
+	out.len     = right - offset;
+	out.size    = out.len;
+	out.buf     = s.buf + offset;
+	out.mutable = false;
 
 	return out;
 }
@@ -246,8 +246,8 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 		throw(exc, &String_BufferOverflowException);
 	}
 
-	if (!this->heap) {
-		throw(exc, &String_NotHeapAllocatedException);
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
 	}
 
 	Memory_Move(

@@ -149,7 +149,7 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 
 	ssize_t pos = String_ReverseFind(path, '/');
 
-	path.heap = false;
+	path.mutable = false;
 
 	if (pos == String_NotFound) {
 		return path;
@@ -180,7 +180,7 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 	}
 
 	if (verify && Path_IsDirectory(path)) {
-		path.heap = false;
+		path.mutable = false;
 		return path;
 	}
 

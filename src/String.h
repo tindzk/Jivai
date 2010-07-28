@@ -11,7 +11,7 @@ typedef struct _String {
 	size_t len;
 	size_t size;
 	char *buf;
-	bool heap;
+	bool mutable;
 } String;
 
 #include "Memory.h"
@@ -19,8 +19,8 @@ typedef struct _String {
 #include "StringArray.h"
 #include "ExceptionManager.h"
 
+Exception_Export(String_NotMutableException);
 Exception_Export(String_BufferOverflowException);
-Exception_Export(String_NotHeapAllocatedException);
 
 void String0(ExceptionManager *e);
 
