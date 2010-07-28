@@ -111,17 +111,12 @@ void OVERLOAD String_Copy(String *this, String src) {
 }
 
 String String_Clone(String s) {
-	if (s.len == 0) {
-		return HeapString(0);
+	String out = HeapString(s.len);
+
+	if (s.len > 0) {
+		Memory_Copy(out.buf, s.buf, s.len);
+		out.len = s.len;
 	}
-
-	String out;
-
-	out.len = s.len;
-	out.size = s.len;
-	out.buf = Memory_Alloc(out.size);
-	Memory_Copy(out.buf, s.buf, s.len);
-	out.mutable = true;
 
 	return out;
 }
