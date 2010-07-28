@@ -12,7 +12,19 @@ void ExceptionManager_Raise(ExceptionManager *this);
 void ExceptionManager_Push(ExceptionManager *this, ExceptionManager_Record *record);
 void Exception_Print(Exception *e);
 
-#ifdef Exception_Safety
+#ifndef Exception_SaveOrigin
+#define Exception_SaveOrigin 1
+#endif
+
+#ifndef Exception_SaveTrace
+#define Exception_SaveTrace 0
+#endif
+
+#ifndef Exception_Safety
+#define Exception_Safety 0
+#endif
+
+#if Exception_Safety
 #define ExceptionManager_Check(this)                        \
 	do {                                                    \
 		if ((this) == NULL) {                               \
@@ -28,7 +40,7 @@ void Exception_Print(Exception *e);
 	do { } while (0)
 #endif
 
-#ifdef Exception_SaveOrigin
+#if Exception_SaveOrigin
 #define ExceptionManager_SetOrigin(this)   \
 	do {                                   \
 		(this)->e.file = String(__FILE__); \
@@ -39,7 +51,7 @@ void Exception_Print(Exception *e);
 	do { } while(0)
 #endif
 
-#ifdef Exception_SaveTrace
+#if Exception_SaveTrace
 #define ExceptionManager_SetTrace(this)        \
 	(this)->e.traceItems = Backtrace_GetTrace( \
 		(this)->e.trace,                       \
