@@ -90,11 +90,11 @@ inline void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset) {
 }
 
 void OVERLOAD String_Copy(String *this, String src) {
-	if (src.len > 0) {
-		if (!this->mutable) {
-			throw(exc, &String_NotMutableException);
-		}
+	if (!this->mutable) {
+		throw(exc, &String_NotMutableException);
+	}
 
+	if (src.len > 0) {
 		if (this->buf == NULL) {
 			this->buf = Memory_Alloc(src.len);
 		} else if (this->size < src.len) {
@@ -104,15 +104,10 @@ void OVERLOAD String_Copy(String *this, String src) {
 
 		Memory_Copy(this->buf, src.buf, src.len);
 	} else if (this->buf != NULL) {
-		if (this->mutable) {
-			Memory_Free(this->buf);
-		} else {
-			this->buf = NULL;
-		}
+		Memory_Free(this->buf);
 	}
 
-	this->len     = src.len;
-	this->mutable = true;
+	this->len = src.len;
 }
 
 String String_Clone(String s) {
