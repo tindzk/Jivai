@@ -93,6 +93,12 @@ void* Memory_Clone(void *pSource, size_t size) {
 
 	void *pDest = malloc(size);
 
+#if Memory_OutOfMemoryChecks
+	if (pDest == NULL) {
+		throw(exc, &Memory_OutOfMemoryException);
+	}
+#endif
+
 	memcpy(pDest, pSource, size);
 
 	return pDest;
