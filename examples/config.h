@@ -4,8 +4,9 @@
 /* These checks will cause exceptions if certain parameters do not
  * make sense.
  */
-#define Memory_BoundaryChecks 1
-#define Memory_PointerChecks  1
+#define Memory_BoundaryChecks    1
+#define Memory_PointerChecks     1
+#define Memory_OutOfMemoryChecks 0
 
 /* Show an error in case you forgot to initialize a module's
  * exception manager.

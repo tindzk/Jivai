@@ -20,6 +20,10 @@ Exception_Export(Memory_OutOfMemoryException);
 #define Memory_PointerChecks 0
 #endif
 
+#ifndef Memory_OutOfMemoryChecks
+#define Memory_OutOfMemoryChecks 0
+#endif
+
 void Memory0(ExceptionManager *e);
 
 void* Memory_Alloc(size_t size);

@@ -19,9 +19,11 @@ void* Memory_Alloc(size_t size) {
 
 	void *pMem = malloc(size);
 
+#if Memory_OutOfMemoryChecks
 	if (pMem == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
+#endif
 
 	return pMem;
 }
@@ -51,9 +53,11 @@ void* Memory_Realloc(void *pMem, size_t size) {
 
 	void *res = realloc(pMem, size);
 
+#if Memory_OutOfMemoryChecks
 	if (res == NULL) {
 		throw(exc, &Memory_OutOfMemoryException);
 	}
+#endif
 
 	return res;
 }
