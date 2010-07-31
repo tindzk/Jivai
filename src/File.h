@@ -3,10 +3,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <attr/xattr.h>
+#include <sys/syscall.h>
 
+#include "Stat.h"
 #include "String.h"
 #include "Exception.h"
 
@@ -56,7 +56,7 @@ String OVERLOAD File_GetXattr(File *this, String name);
 void OVERLOAD File_GetXattr(File *this, String name, String *value);
 void OVERLOAD File_Truncate(File *this, off64_t length);
 void OVERLOAD File_Truncate(File *this);
-struct stat64 File_GetStat(File *this);
+Stat64 File_GetStat(File *this);
 off64_t File_GetSize(File *this);
 size_t File_Read(File *this, void *buf, size_t len);
 size_t OVERLOAD File_Write(File *this, void *buf, size_t len);

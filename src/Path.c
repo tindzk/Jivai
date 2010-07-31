@@ -30,13 +30,13 @@ void Path0(ExceptionManager *e) {
 }
 
 bool OVERLOAD Path_Exists(String path, bool follow) {
-	struct stat attr;
+	Stat attr;
 
 	if (follow) {
-		return stat(String_ToNul(path), &attr) == 0;
+		return syscall(SYS_stat, String_ToNul(path), &attr) == 0;
 	}
 
-	return lstat(String_ToNul(path), &attr) == 0;
+	return syscall(SYS_lstat, String_ToNul(path), &attr) == 0;
 }
 
 inline bool OVERLOAD Path_Exists(String path) {
@@ -54,16 +54,16 @@ String Path_GetCwd(void) {
 	return s;
 }
 
-struct stat64 Path_GetStat(String path) {
+Stat64 Path_GetStat(String path) {
 	if (path.len == 0) {
 		throw(exc, &Path_EmptyPathException);
 	}
 
 	errno = 0;
 
-	struct stat64 attr;
+	Stat64 attr;
 
-	if (stat64(String_ToNul(path), &attr) == -1) {
+	if (syscall(SYS_stat64, String_ToNul(path), &attr) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -81,22 +81,22 @@ struct stat64 Path_GetStat(String path) {
 }
 
 off64_t Path_GetSize(String path) {
-	return Path_GetStat(path).st_size;
+	return Path_GetStat(path).size;
 }
 
 inline bool OVERLOAD Path_IsFile(String path) {
-	return Path_GetStat(path).st_mode & S_IFREG;
+	return Path_GetStat(path).mode & S_IFREG;
 }
 
-inline bool OVERLOAD Path_IsFile(struct stat64 attr) {
-	return attr.st_mode & S_IFREG;
+inline bool OVERLOAD Path_IsFile(Stat64 attr) {
+	return attr.mode & S_IFREG;
 }
 
 bool OVERLOAD Path_IsDirectory(String path) {
 	bool res = false;
 
 	try (exc) {
-		res = Path_GetStat(path).st_mode & S_IFDIR;
+		res = Path_GetStat(path).mode & S_IFDIR;
 	} catch (&Path_NonExistentPathException, e) {
 		res = false;
 	} catch (&Path_NotDirectoryException, e) {
@@ -108,8 +108,8 @@ bool OVERLOAD Path_IsDirectory(String path) {
 	return res;
 }
 
-inline bool OVERLOAD Path_IsDirectory(struct stat64 attr) {
-	return attr.st_mode & S_IFDIR;
+inline bool OVERLOAD Path_IsDirectory(Stat64 attr) {
+	return attr.mode & S_IFDIR;
 }
 
 void OVERLOAD Path_Truncate(String path, off64_t length) {
@@ -119,7 +119,7 @@ void OVERLOAD Path_Truncate(String path, off64_t length) {
 
 	errno = 0;
 
-	if (truncate64(String_ToNul(path), length) == -1) {
+	if (syscall(SYS_truncate64, String_ToNul(path), length) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -253,7 +253,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 
 				errno = 0;
 
-				int res = mkdir(String_ToNul(tmp), mode);
+				int res = syscall(SYS_mkdir, String_ToNul(tmp), mode);
 
 				if (res == -1) {
 					if (errno == EACCES) {
@@ -273,7 +273,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	} else {
 		errno = 0;
 
-		if (mkdir(String_ToNul(path), mode) == -1) {
+		if (syscall(SYS_mkdir, String_ToNul(path), mode) == -1) {
 			if (errno == EACCES) {
 				throw(exc, &Path_AccessDeniedException);
 			} else if (errno == EEXIST) {
@@ -439,7 +439,7 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 
 	errno = 0;
 
-	if (utimensat(AT_FDCWD,
+	if (syscall(SYS_utimensat, AT_FDCWD,
 		String_ToNul(path),
 		(const struct timespec[2]) {t, t},
 		flags) == -1)

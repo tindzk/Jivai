@@ -144,7 +144,7 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 void OVERLOAD File_Truncate(File *this, off64_t length) {
 	errno = 0;
 
-	if (ftruncate64(this->fd, length) == -1) {
+	if (syscall(SYS_ftruncate64, this->fd, length) == -1) {
 		if (errno == EBADF) {
 			throw(exc, &File_InvalidFileDescriptorException);
 		} else if (errno == EACCES) {
@@ -161,12 +161,12 @@ void OVERLOAD File_Truncate(File *this) {
 	File_Truncate(this, 0);
 }
 
-struct stat64 File_GetStat(File *this) {
+Stat64 File_GetStat(File *this) {
 	errno = 0;
 
-	struct stat64 attr;
+	Stat64 attr;
 
-	if (fstat64(this->fd, &attr) == -1) {
+	if (syscall(SYS_fstat64, this->fd, &attr) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == EBADF) {
@@ -180,7 +180,7 @@ struct stat64 File_GetStat(File *this) {
 }
 
 off64_t File_GetSize(File *this) {
-	return File_GetStat(this).st_size;
+	return File_GetStat(this).size;
 }
 
 size_t File_Read(File *this, void *buf, size_t len) {
@@ -240,7 +240,13 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 
 	off64_t pos;
 
-	if ((pos = lseek64(this->fd, offset, whence)) == -1) {
+	/* Conversion taken from dietlibc-0.32/lib/lseek64.c */
+	if (syscall(SYS__llseek,
+		this->fd,
+		(unsigned long) (offset >> 32),
+		(unsigned long) offset & 0xffffffff,
+		&pos, whence) == -1)
+	{
 		if (errno == EBADF) {
 			throw(exc, &File_InvalidFileDescriptorException);
 		} else if (errno == EINVAL) {

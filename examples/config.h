@@ -1,6 +1,3 @@
-/* Required when using Glibc. */
-#define _LARGEFILE64_SOURCE
-
 /* These checks will cause exceptions if certain parameters do not
  * make sense.
  */

@@ -3,14 +3,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
-
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <attr/xattr.h>
 #include <sys/syscall.h>
 
-#include <attr/xattr.h>
-
+#include "Stat.h"
 #include "String.h"
 #include "Exception.h"
 
@@ -42,12 +38,12 @@ void Path0(ExceptionManager *e);
 bool OVERLOAD Path_Exists(String path, bool follow);
 bool OVERLOAD Path_Exists(String path);
 String Path_GetCwd(void);
-struct stat64 Path_GetStat(String path);
+Stat64 Path_GetStat(String path);
 off64_t Path_GetSize(String path);
 bool OVERLOAD Path_IsFile(String path);
-bool OVERLOAD Path_IsFile(struct stat64 attr);
+bool OVERLOAD Path_IsFile(Stat64 attr);
 bool OVERLOAD Path_IsDirectory(String path);
-bool OVERLOAD Path_IsDirectory(struct stat64 attr);
+bool OVERLOAD Path_IsDirectory(Stat64 attr);
 void OVERLOAD Path_Truncate(String path, off64_t length);
 void OVERLOAD Path_Truncate(String path);
 String OVERLOAD Path_GetFilename(String path, bool verify);
