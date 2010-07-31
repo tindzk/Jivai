@@ -52,7 +52,7 @@ void File0(ExceptionManager *e) {
 void File_Open(File *this, String path, int mode) {
 	errno = 0;
 
-	if ((this->fd = open(String_ToNul(path), mode, 0666)) == -1) {
+	if ((this->fd = syscall(SYS_open, String_ToNul(path), mode, 0666)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == ENOENT) {
@@ -70,16 +70,16 @@ void File_Open(File *this, String path, int mode) {
 	this->writable = false;
 
 	switch (mode & 3) {
-		case O_RDWR:
+		case FileStatus_ReadWrite:
 			this->readable = true;
 			this->writable = true;
 			break;
 
-		case O_RDONLY:
+		case FileStatus_ReadOnly:
 			this->readable = true;
 			break;
 
-		case O_WRONLY:
+		case FileStatus_WriteOnly:
 			this->writable = true;
 			break;
 	}

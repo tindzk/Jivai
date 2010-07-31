@@ -11,7 +11,7 @@ int main(void) {
 	File file;
 
 	try (&exc) {
-		File_Open(&file, String("File.txt"), O_RDONLY);
+		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
 	} catch(&File_NotFoundException, e) {
 		String_Print(String("File not found.\n"));
 		return EXIT_FAILURE;

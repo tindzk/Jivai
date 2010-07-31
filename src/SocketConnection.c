@@ -51,7 +51,10 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 
 bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len) {
 	if (this->nonblocking) {
-		if (fcntl(this->fd, F_SETFL, O_RDWR | O_NONBLOCK) == -1) {
+		if (syscall(SYS_fcntl, this->fd,
+			FcntlMode_SetStatus,
+			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)
+		{
 			throw(exc, &SocketConnection_FcntlFailedException);
 		}
 	}
@@ -65,7 +68,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 
 		do {
 			errno = 0;
-			res = sendfile64(this->fd, file->fd, offset, write);
+			res = syscall(SYS_sendfile64, this->fd, file->fd, offset, write);
 		} while (res == -1 && errno == EINTR);
 
 		if (res == -1) {
@@ -86,7 +89,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 	}
 
 	if (this->nonblocking) {
-		if (fcntl(this->fd, F_SETFL, O_RDWR) == -1) {
+		if (syscall(SYS_fcntl, this->fd, FcntlMode_SetStatus, FileStatus_ReadWrite) == -1) {
 			throw(exc, &SocketConnection_FcntlFailedException);
 		}
 	}

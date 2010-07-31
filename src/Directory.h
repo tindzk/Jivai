@@ -1,10 +1,10 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
-#include <fcntl.h>
 #include <dirent.h> /* Defines DT_* constants. */
 #include <sys/syscall.h>
 
+#include "Stat.h"
 #include "String.h"
 #include "Exception.h"
 

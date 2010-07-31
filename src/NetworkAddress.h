@@ -2,11 +2,7 @@
 #define NETWORK_ADDRESS_H
 
 #include <errno.h>
-#include <fcntl.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 #include "ExceptionManager.h"
 

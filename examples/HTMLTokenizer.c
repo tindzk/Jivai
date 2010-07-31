@@ -53,7 +53,7 @@ int main(void) {
 	BufferedStream stream;
 
 	try (&exc) {
-		FileStream_Open(&file, String("HTMLTokenizer.html"), O_RDONLY);
+		FileStream_Open(&file, String("HTMLTokenizer.html"), FileStatus_ReadOnly);
 	} catch(&File_NotFoundException, e) {
 		String_Print(String("File not found.\n"));
 		return EXIT_FAILURE;

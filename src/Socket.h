@@ -2,12 +2,13 @@
 #define SOCKET_H
 
 #include <errno.h>
-#include <fcntl.h>
 #include <netdb.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <sys/types.h>
+#include <sys/syscall.h>
 
+#include "Fcntl.h"
 #include "String.h"
 #include "NetworkAddress.h"
 #include "SocketConnection.h"

@@ -64,7 +64,7 @@ int main(void) {
 	BufferedStream stream;
 
 	try (&exc) {
-		FileStream_Open(&file, String("HTMLTree.html"), O_RDONLY);
+		FileStream_Open(&file, String("HTMLTree.html"), FileStatus_ReadOnly);
 	} catch(&File_NotFoundException, e) {
 		String_Print(String("File not found.\n"));
 		return EXIT_FAILURE;

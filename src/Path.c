@@ -80,18 +80,18 @@ off64_t Path_GetSize(String path) {
 }
 
 inline bool OVERLOAD Path_IsFile(String path) {
-	return Path_GetStat(path).mode & S_IFREG;
+	return Path_GetStat(path).mode & FileMode_Regular;
 }
 
 inline bool OVERLOAD Path_IsFile(Stat64 attr) {
-	return attr.mode & S_IFREG;
+	return attr.mode & FileMode_Regular;
 }
 
 bool OVERLOAD Path_IsDirectory(String path) {
 	bool res = false;
 
 	try (exc) {
-		res = Path_GetStat(path).mode & S_IFDIR;
+		res = Path_GetStat(path).mode & FileMode_Directory;
 	} catch (&Path_NonExistentPathException, e) {
 		res = false;
 	} catch (&Path_NotDirectoryException, e) {
@@ -104,7 +104,7 @@ bool OVERLOAD Path_IsDirectory(String path) {
 }
 
 inline bool OVERLOAD Path_IsDirectory(Stat64 attr) {
-	return attr.mode & S_IFDIR;
+	return attr.mode & FileMode_Directory;
 }
 
 void OVERLOAD Path_Truncate(String path, off64_t length) {
@@ -200,7 +200,7 @@ String Path_Resolve(String path) {
 
 	int fd;
 
-	if ((fd = open(".", O_RDONLY)) == -1) {
+	if ((fd = syscall(SYS_open, ".", FileStatus_ReadOnly)) == -1) {
 		throw(exc, &Path_ResolvingFailedException);
 	}
 
@@ -287,7 +287,15 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 }
 
 inline void OVERLOAD Path_Create(String path, bool recursive) {
-	Path_Create(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH, recursive);
+	Path_Create(path,
+		Permission_OwnerRead    |
+		Permission_OwnerWrite   |
+		Permission_OwnerExecute |
+		Permission_GroupRead    |
+		Permission_GroupWrite   |
+		Permission_GroupExecute |
+		Permission_OthersRead   |
+		Permission_OthersExecute, recursive);
 }
 
 inline void OVERLOAD Path_Create(String path, int mode) {
@@ -295,7 +303,7 @@ inline void OVERLOAD Path_Create(String path, int mode) {
 }
 
 inline void OVERLOAD Path_Create(String path) {
-	Path_Create(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH, false);
+	Path_Create(path, false);
 }
 
 void Path_Delete(String path) {

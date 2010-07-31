@@ -52,7 +52,7 @@ int main(void) {
 	File file;
 	BufferedStream stream;
 
-	FileStream_Open(&file, String("YAML.yml"), O_RDONLY);
+	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream_Init(&stream, &FileStream_Methods, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);

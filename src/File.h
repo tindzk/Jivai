@@ -2,7 +2,7 @@
 #define FILE_H
 
 #include <errno.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <attr/xattr.h>
 #include <sys/syscall.h>
 

@@ -32,37 +32,37 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 }
 
 void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
-	int flags = fcntl(this->fd, F_GETFL, 0);
+	int flags = syscall(SYS_fcntl, this->fd, FcntlMode_GetStatus, 0);
 
 	if (flags < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 
 	if (enable) {
-		flags |= O_NONBLOCK;
+		flags |= FileStatus_NonBlock;
 	} else {
-		flags &= ~O_NONBLOCK;
+		flags &= ~FileStatus_NonBlock;
 	}
 
-	if (fcntl(this->fd, F_SETFL, flags) < 0) {
+	if (syscall(SYS_fcntl, this->fd, FcntlMode_SetStatus, flags) < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 }
 
 void Socket_SetCloexecFlag(Socket *this, bool enable) {
-	int flags = fcntl(this->fd, F_GETFD, 0);
+	int flags = syscall(SYS_fcntl, this->fd, FcntlMode_GetDescriptorFlags, 0);
 
 	if (flags < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 
 	if (enable) {
-		flags |= FD_CLOEXEC;
+		flags |= FileDescriptorFlags_CloseOnExec;
 	} else {
-		flags &= ~FD_CLOEXEC;
+		flags &= ~FileDescriptorFlags_CloseOnExec;
 	}
 
-	if (fcntl(this->fd, F_SETFD, flags) < 0) {
+	if (syscall(SYS_fcntl, this->fd, FcntlMode_SetDescriptorFlags, flags) < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 }

@@ -2,13 +2,21 @@
 #define PATH_H
 
 #include <errno.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <attr/xattr.h>
 #include <sys/syscall.h>
 
 #include "Stat.h"
 #include "String.h"
 #include "Exception.h"
+
+#ifndef AT_FDCWD
+#define AT_FDCWD -100
+#endif
+
+#ifndef AT_SYMLINK_NOFOLLOW
+#define AT_SYMLINK_NOFOLLOW 0x100
+#endif
 
 Exception_Export(Path_AccessDeniedException);
 Exception_Export(Path_AlreadyExistsException);

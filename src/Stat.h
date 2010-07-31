@@ -1,9 +1,53 @@
 #ifndef STAT_H
 #define STAT_H
 
-#include <fcntl.h>
-
 #include "Date.h"
+
+typedef enum {
+	FileStatus_ReadOnly  = 00,
+	FileStatus_WriteOnly = 01,
+	FileStatus_ReadWrite = 02,
+	FileStatus_Directory = 0200000,
+	FileStatus_NoFollow  = 0400000,
+	FileStatus_Append    = 02000,
+	FileStatus_Create    = 0100,
+	FileStatus_NonBlock  = 04000,
+	FileStatus_Truncate  = 01000
+} FileStatus;
+
+typedef enum {
+	FileMode_Mask        = 0170000,
+	FileMode_Directory   = 0040000,
+	FileMode_CharDevice  = 0020000,
+	FileMode_BlockDevice = 0060000,
+	FileMode_Regular     = 0100000,
+	FileMode_FIFO        = 0010000,
+	FileMode_Symlink     = 0120000,
+	FileMode_Socket      = 0140000
+} FileModes;
+
+typedef enum {
+	FileAttribute_Sticky         = 01000,
+	FileAttribute_ExecuteAsUser  = 04000,
+	FileAttribute_ExecuteAsGroup = 02000
+} FileAttributes;
+
+typedef enum {
+	Permission_OwnerMask    = 00700,
+	Permission_OwnerRead    = 0400,
+	Permission_OwnerWrite   = 0200,
+	Permission_OwnerExecute = 0100,
+
+	Permission_GroupMask    = 00070,
+	Permission_GroupRead    = 00040,
+	Permission_GroupWrite   = 00020,
+	Permission_GroupExecute = 00010,
+
+	Permission_OthersMask    = 00007,
+	Permission_OthersRead    = 00004,
+	Permission_OthersWrite   = 00002,
+	Permission_OthersExecute = 00001
+} Permissions;
 
 typedef struct {
 	__dev_t device;

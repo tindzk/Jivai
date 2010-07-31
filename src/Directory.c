@@ -10,7 +10,9 @@ void Directory0(ExceptionManager *e) {
 }
 
 void Directory_Init(Directory *this, String path) {
-	this->fd = open(String_ToNul(path), O_RDONLY | O_DIRECTORY);
+	this->fd = syscall(SYS_open, String_ToNul(path),
+		FileStatus_ReadOnly |
+		FileStatus_Directory);
 
 	if (this->fd == -1) {
 		throw(exc, &Directory_CannotOpenDirectoryException);
@@ -20,7 +22,7 @@ void Directory_Init(Directory *this, String path) {
 }
 
 void Directory_Destroy(Directory *this) {
-	close(this->fd);
+	syscall(SYS_close, this->fd);
 }
 
 bool Directory_Read(Directory *this, Directory_Entry *res) {

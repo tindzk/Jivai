@@ -18,7 +18,10 @@ void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
 		throw(exc, &Poll_UnknownErrorException);
 	}
 
-	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0) {
+	if (syscall(SYS_fcntl, this->fd,
+		FcntlMode_GetDescriptorFlags,
+		FileDescriptorFlags_CloseOnExec) < 0)
+	{
 		throw(exc, &Poll_SettingCloexecFailedException);
 	}
 

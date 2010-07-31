@@ -6,10 +6,10 @@
 #include <sys/socket.h>
 #include <sys/sendfile.h>
 #include <sys/types.h>
-#include <fcntl.h>
 #include <errno.h>
 
 #include "File.h"
+#include "Fcntl.h"
 #include "String.h"
 #include "Exception.h"
 #include "NetworkAddress.h"

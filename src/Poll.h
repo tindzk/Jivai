@@ -1,11 +1,12 @@
 #ifndef POLL_H
 #define POLL_H
 
-#include <sys/epoll.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <sys/epoll.h>
+#include <sys/syscall.h>
 
 #include "NULL.h"
+#include "Fcntl.h"
 #include "Memory.h"
 
 /* Needed for compatibility with diet libc. */
