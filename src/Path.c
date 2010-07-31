@@ -430,10 +430,10 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value) {
 }
 
 void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
-	struct timespec t;
+	Date_UnixTime t;
 
-	t.tv_sec  = timestamp;
-	t.tv_nsec = nano;
+	t.sec  = timestamp;
+	t.usec = nano;
 
 	int flags = !followSymlink ? AT_SYMLINK_NOFOLLOW : 0;
 
@@ -441,7 +441,7 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 
 	if (syscall(SYS_utimensat, AT_FDCWD,
 		String_ToNul(path),
-		(const struct timespec[2]) {t, t},
+		(const Date_UnixTime[2]) {t, t},
 		flags) == -1)
 	{
 		if (errno == ENAMETOOLONG) {
