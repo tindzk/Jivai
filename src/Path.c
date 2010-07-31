@@ -31,12 +31,7 @@ void Path0(ExceptionManager *e) {
 
 bool OVERLOAD Path_Exists(String path, bool follow) {
 	Stat attr;
-
-	if (follow) {
-		return syscall(SYS_stat, String_ToNul(path), &attr) == 0;
-	}
-
-	return syscall(SYS_lstat, String_ToNul(path), &attr) == 0;
+	return syscall(follow ? SYS_stat : SYS_lstat, String_ToNul(path), &attr) == 0;
 }
 
 inline bool OVERLOAD Path_Exists(String path) {
