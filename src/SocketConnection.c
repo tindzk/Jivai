@@ -17,7 +17,10 @@ void SocketConnection0(ExceptionManager *e) {
 void SocketConnection_Flush(SocketConnection *this) {
 	if (this->corking) {
 		int state = 0;
-		setsockopt(this->fd, IPPROTO_TCP, TCP_CORK, &state, sizeof(state));
+
+		long args[] = { this->fd, IPPROTO_TCP, TCP_CORK, (long) &state, sizeof(state) };
+
+		syscall(__NR_socketcall, SYS_SETSOCKOPT, args);
 	}
 }
 
@@ -26,7 +29,9 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 
 	errno = 0;
 
-	int res = recv(this->fd, buf, len, flags);
+	long args[] = { this->fd, (long) buf, len, flags };
+
+	int res = syscall(__NR_socketcall, SYS_RECV, args);
 
 	if (res >= 0) {
 		return res;
@@ -110,7 +115,10 @@ ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 
 	errno = 0;
 
-	ssize_t res = send(this->fd, buf, len, flags);
+
+	long args[] = { this->fd, (long) buf, len, flags };
+
+	ssize_t res = syscall(__NR_socketcall, SYS_SEND, args);
 
 	if (res == -1) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
@@ -131,7 +139,9 @@ ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 
 void SocketConnection_Close(SocketConnection *this) {
 	if (this->closable) {
-		shutdown(this->fd, SHUT_RDWR);
-		close(this->fd);
+		long args[] = { this->fd, SHUT_RDWR };
+		syscall(__NR_socketcall, SYS_SHUTDOWN, args);
+
+		syscall(__NR_close, this->fd);
 	}
 }

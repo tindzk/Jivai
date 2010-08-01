@@ -2,10 +2,7 @@
 #define SOCKET_H
 
 #include <errno.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#include <linux/net.h>
 #include <sys/syscall.h>
 
 #include "Fcntl.h"

@@ -1,12 +1,9 @@
 #ifndef SOCKET_CONNECTION_H
 #define SOCKET_CONNECTION_H
 
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <sys/sendfile.h>
-#include <sys/types.h>
 #include <errno.h>
+#include <linux/net.h>
+#include <netinet/tcp.h>
 
 #include "File.h"
 #include "Fcntl.h"

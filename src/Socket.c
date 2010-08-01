@@ -20,13 +20,19 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 	this->unused   = true;
 	this->protocol = protocol;
 
-	if (protocol == Socket_Protocol_TCP) {
-		this->fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	} else if (protocol == Socket_Protocol_UDP) {
-		this->fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	}
+	long args[] = {
+		PF_INET,
 
-	if (this->fd < 0) {
+		(protocol == Socket_Protocol_TCP)
+			? SOCK_STREAM
+			: SOCK_DGRAM,
+
+		(protocol == Socket_Protocol_TCP)
+			? IPPROTO_TCP
+			: IPPROTO_UDP
+	};
+
+	if ((this->fd = syscall(__NR_socketcall, SYS_SOCKET, args)) < 0) {
 		throw(exc, &Socket_SocketFailedException);
 	}
 }
@@ -69,7 +75,10 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 
 void Socket_SetReusableFlag(Socket *this) {
 	int opt = 1;
-	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+
+	long args[] = { this->fd, SOL_SOCKET, SO_REUSEADDR, (long) &opt, sizeof(opt) };
+
+	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
 		throw(exc, &Socket_SetSocketOptionException);
 	}
 }
@@ -83,7 +92,9 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 
 	errno = 0;
 
-	if (bind(this->fd, (struct sockaddr *) &addr, (socklen_t) sizeof(addr)) < 0) {
+	long args[] = { this->fd, (long) &addr, sizeof(addr) };
+
+	if (syscall(__NR_socketcall, SYS_BIND, args) < 0) {
 		if (errno == EADDRINUSE) {
 			throw(exc, &Socket_AddressInUseException);
 		} else {
@@ -91,7 +102,9 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 		}
 	}
 
-	if (listen(this->fd, maxconns) < 0) {
+	long args2[] = { this->fd, maxconns };
+
+	if (syscall(__NR_socketcall, SYS_LISTEN, args2) < 0) {
 		throw(exc, &Socket_ListenFailedException);
 	}
 }
@@ -102,13 +115,14 @@ void Socket_SetLinger(Socket *this) {
 	ling.l_onoff  = 1;
 	ling.l_linger = 30;
 
-	if (setsockopt(this->fd, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling)) < 0) {
+	long args[] = { this->fd, SOL_SOCKET, SO_LINGER, (long) &ling, sizeof(ling) };
+
+	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
 		throw(exc, &Socket_SetSocketOptionException);
 	}
 }
 
 SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short port) {
-	SocketConnection conn;
 	struct sockaddr_in addr;
 
 	addr.sin_family = PF_INET;
@@ -120,11 +134,15 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 		Socket_Init(this, this->protocol);
 	}
 
-	if (connect(this->fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+	long args[] = { this->fd, (long) &addr, sizeof(addr) };
+
+	if (syscall(__NR_socketcall, SYS_CONNECT, args) < 0) {
 		throw(exc, &Socket_ConnectFailedException);
 	}
 
 	this->unused = false;
+
+	SocketConnection conn;
 
 	conn.fd = this->fd;
 
@@ -139,11 +157,14 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 }
 
 SocketConnection Socket_Accept(Socket *this) {
-	SocketConnection conn;
 	struct sockaddr_in remote;
 	socklen_t socklen = sizeof(remote);
 
-	if ((conn.fd = accept(this->fd, (struct sockaddr *) &remote, &socklen)) < 0) {
+	long args[] = { this->fd, (long) &remote, (long) &socklen };
+
+	SocketConnection conn;
+
+	if ((conn.fd = syscall(__NR_socketcall, SYS_ACCEPT, args)) < 0) {
 		throw(exc, &Socket_AcceptFailedException);
 	}
 
