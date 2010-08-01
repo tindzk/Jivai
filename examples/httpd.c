@@ -280,6 +280,7 @@ ConnectionInterface HttpConnection_Methods = {
 int main(void) {
 	ExceptionManager_Init(&exc);
 
+	Poll0(&exc);
 	String0(&exc);
 	Socket0(&exc);
 	Memory0(&exc);
