@@ -598,7 +598,11 @@ inline ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
 	return String_Find(s, offset, s.len - offset, c);
 }
 
-bool String_Contains(String s, String needle) {
+bool OVERLOAD String_Contains(String s, String needle) {
+	return String_Find(s, 0, s.len, needle) != String_NotFound;
+}
+
+bool OVERLOAD String_Contains(String s, char needle) {
 	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
