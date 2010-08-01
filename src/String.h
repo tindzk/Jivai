@@ -99,10 +99,10 @@ int OVERLOAD String_NaturalCompare(String a, String b);
 	(String) { len, 0, buf, false }
 
 #define StackString(len) \
-	(String) { 0, len, (len > 0) ? alloca(len) : NULL, false }
+	(String) { 0, len, (len > 0) ? alloca(len) : NULL, true }
 
 #define String_StackClone(s) \
-	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), false }
+	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), true }
 
 #define String_FromNul(s) \
 	BufString(s, strlen(s))
