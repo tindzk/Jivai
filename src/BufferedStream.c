@@ -40,6 +40,16 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 		return 0;
 	}
 
+	if (this->inbuf.len == 0) {
+		this->inbuf.len = this->stream->read(this->data,
+			this->inbuf.buf,
+			this->inbuf.size);
+
+		if (this->inbuf.len == 0) {
+			this->eof = true;
+		}
+	}
+
 	size_t copied = 0;
 
 	if (this->inbuf.len >= len) {
@@ -50,22 +60,6 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 		Memory_Copy(buf, this->inbuf.buf, this->inbuf.len);
 		copied = this->inbuf.len;
 		this->inbuf.len = 0;
-
-		if (!this->eof) {
-			return copied;
-		}
-
-		copied += this->stream->read(this->data,
-			buf + copied,
-			len - copied);
-
-		if (copied < len) {
-			this->eof = true;
-		}
-	} else if (!this->eof) {
-		if ((copied = this->stream->read(this->data, buf, len)) < len) {
-			this->eof = true;
-		}
 	}
 
 	if (!this->eof) {
@@ -74,7 +68,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 				this->inbuf.buf  + this->inbuf.len,
 				this->inbuf.size - this->inbuf.len);
 
-			if (read < this->inbuf.size - this->inbuf.len) {
+			if (read == 0) {
 				this->eof = true;
 			}
 
