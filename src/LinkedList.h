@@ -20,15 +20,15 @@
 	} list
 
 #define LinkedList_InsertEnd(this, node) \
-	do {                               \
-		(node)->next = NULL;           \
-		if ((this)->first == NULL) {   \
-			(this)->first = node;      \
-			(this)->last  = node;      \
-		} else {                       \
-			(this)->last->next = node; \
-			(this)->last = node;       \
-		}                              \
+	do {                                 \
+		(node)->next = NULL;             \
+		if ((this)->first == NULL) {     \
+			(this)->first = node;        \
+			(this)->last  = node;        \
+		} else {                         \
+			(this)->last->next = node;   \
+			(this)->last = node;         \
+		}                                \
 	} while (0)
 
 #define LinkedList_Destroy(this, freeNode)          \
@@ -42,7 +42,7 @@
 		}                                           \
 		(this)->first = NULL;                       \
 		(this)->last  = NULL;                       \
-	} while(0)
+	} while (0)
 
 #define LinkedList_Foreach(this, node) \
 	for (typeof((this)->first) node = (this)->first; node != NULL; node = node->next)
