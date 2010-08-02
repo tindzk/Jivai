@@ -18,12 +18,21 @@ void BufferedStream_Destroy(BufferedStream *this) {
 }
 
 void BufferedStream_SetInputBuffer(BufferedStream *this, size_t size, size_t threshold) {
-	this->inbuf = HeapString(size);
+	if (this->inbuf.size == 0) {
+		this->inbuf = HeapString(size);
+	} else {
+		String_Align(&this->inbuf, size);
+	}
+
 	this->inbufThreshold = threshold;
 }
 
 void BufferedStream_SetOutputBuffer(BufferedStream *this, size_t size) {
-	this->outbuf = HeapString(size);
+	if (this->outbuf.size == 0) {
+		this->outbuf = HeapString(size);
+	} else {
+		String_Align(&this->outbuf, size);
+	}
 }
 
 size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
