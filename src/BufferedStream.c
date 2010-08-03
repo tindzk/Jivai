@@ -35,6 +35,10 @@ void BufferedStream_SetOutputBuffer(BufferedStream *this, size_t size) {
 	}
 }
 
+bool BufferedStream_IsEof(BufferedStream *this) {
+	return this->inbuf.len == 0 && this->eof;
+}
+
 size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 	if (len == 0) {
 		return 0;
