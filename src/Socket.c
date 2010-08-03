@@ -179,6 +179,8 @@ SocketConnection Socket_Accept(Socket *this) {
 }
 
 void Socket_Destroy(Socket *this) {
-	shutdown(this->fd, SHUT_RDWR);
-	close(this->fd);
+	long args[] = { this->fd, SHUT_RDWR };
+	syscall(__NR_socketcall, SYS_SHUTDOWN, args);
+
+	syscall(SYS_close, this->fd);
 }

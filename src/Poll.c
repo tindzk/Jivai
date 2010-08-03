@@ -14,7 +14,7 @@ void Poll0(ExceptionManager *e) {
 }
 
 void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
-	if ((this->fd = epoll_create(maxfds)) < 0) {
+	if ((this->fd = syscall(SYS_epoll_create, maxfds)) < 0) {
 		throw(exc, &Poll_UnknownErrorException);
 	}
 
@@ -32,7 +32,7 @@ void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
 }
 
 void Poll_Destroy(Poll *this) {
-	close(this->fd);
+	syscall(SYS_close, this->fd);
 	Memory_Free(this->events);
 }
 
@@ -44,7 +44,7 @@ void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
 
 	errno = 0;
 
-	if (epoll_ctl(this->fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
+	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
 		if (errno == EPERM) {
 			throw(exc, &Poll_FileDescriptorNotSupportedException);
 		} else if (errno == EEXIST) {
@@ -65,7 +65,7 @@ void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
 
 	errno = 0;
 
-	if (epoll_ctl(this->fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
+	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
 		if (errno == ENOENT) {
 			throw(exc, &Poll_UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
@@ -81,7 +81,7 @@ void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
 void Poll_DeleteEvent(Poll *this, int fd) {
 	errno = 0;
 
-	if (epoll_ctl(this->fd, EPOLL_CTL_DEL, fd, NULL) < 0) {
+	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_DEL, fd, NULL) < 0) {
 		if (errno == ENOENT) {
 			throw(exc, &Poll_UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
@@ -99,7 +99,7 @@ size_t Poll_Process(Poll *this, int timeout) {
 
 	ssize_t nfds;
 
-	if ((nfds = epoll_wait(this->fd, this->events, this->maxfds, timeout)) < 0) {
+	if ((nfds = syscall(SYS_epoll_wait, this->fd, this->events, this->maxfds, timeout)) < 0) {
 		if (errno == EBADF) {
 			throw(exc, &Poll_InvalidFileDescriptorException);
 		} else {

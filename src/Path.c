@@ -212,7 +212,7 @@ String Path_Resolve(String path) {
 
 	String res = HeapString(0);
 
-	if (chdir(String_ToNul(dirpath)) == 0) {
+	if (syscall(SYS_chdir, String_ToNul(dirpath)) == 0) {
 		res = Path_GetCwd();
 
 		if (!isDir) {
@@ -220,10 +220,10 @@ String Path_Resolve(String path) {
 			String_Append(&res, Path_GetFilename(path, false));
 		}
 
-		fchdir(fd);
+		syscall(SYS_fchdir, fd);
 	}
 
-	close(fd);
+	syscall(SYS_close, fd);
 
 	return res;
 }
@@ -309,7 +309,7 @@ inline void OVERLOAD Path_Create(String path) {
 void Path_Delete(String path) {
 	errno = 0;
 
-	if (unlink(String_ToNul(path)) == -1) {
+	if (syscall(SYS_unlink, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -327,7 +327,7 @@ void Path_Delete(String path) {
 void Path_DeleteDirectory(String path) {
 	errno = 0;
 
-	if (rmdir(String_ToNul(path)) == -1) {
+	if (syscall(SYS_rmdir, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -347,7 +347,7 @@ void Path_DeleteDirectory(String path) {
 void Path_ReadLink(String path, String *out) {
 	errno = 0;
 
-	ssize_t len = readlink(String_ToNul(path), out->buf, out->size);
+	ssize_t len = syscall(SYS_readlink, String_ToNul(path), out->buf, out->size);
 
 	if (len == -1) {
 		if (errno == EACCES) {
@@ -369,7 +369,7 @@ void Path_ReadLink(String path, String *out) {
 void Path_Symlink(String path1, String path2) {
 	errno = 0;
 
-	if (symlink(String_ToNul(path1), String_ToNul(path2)) == -1) {
+	if (syscall(SYS_symlink, String_ToNul(path1), String_ToNul(path2)) == -1) {
 		if (errno == EEXIST) {
 			throw(exc, &Path_AlreadyExistsException);
 		} else {
@@ -379,7 +379,7 @@ void Path_Symlink(String path1, String path2) {
 }
 
 void Path_SetXattr(String path, String name, String value) {
-	if (setxattr(String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
+	if (syscall(SYS_setxattr, String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &Path_SettingAttributeFailedException);
 	}
 }
@@ -390,7 +390,7 @@ String OVERLOAD Path_GetXattr(String path, String name) {
 
 	errno = 0;
 
-	ssize_t size = getxattr(npath, nname, NULL, 0);
+	ssize_t size = syscall(SYS_getxattr, npath, nname, NULL, 0);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -417,7 +417,7 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value) {
 
 	errno = 0;
 
-	ssize_t size = getxattr(npath, nname, value->buf, value->size);
+	ssize_t size = syscall(SYS_getxattr, npath, nname, value->buf, value->size);
 
 	if (size < 0) {
 		if (errno == ENODATA) {

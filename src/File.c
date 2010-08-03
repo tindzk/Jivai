@@ -86,11 +86,11 @@ void File_Open(File *this, String path, int mode) {
 }
 
 void File_Close(File *this) {
-	close(this->fd);
+	syscall(SYS_close, this->fd);
 }
 
 void File_SetXattr(File *this, String name, String value) {
-	if (fsetxattr(this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
+	if (syscall(SYS_fsetxattr, this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &File_SettingAttributeFailedException);
 	}
 }
@@ -100,7 +100,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 
 	errno = 0;
 
-	ssize_t size = fgetxattr(this->fd, nname, NULL, 0);
+	ssize_t size = syscall(SYS_fgetxattr, this->fd, nname, NULL, 0);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -112,7 +112,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 
 	String res = HeapString(size);
 
-	if (fgetxattr(this->fd, nname, res.buf, res.size) < 0) {
+	if (syscall(SYS_fgetxattr, this->fd, nname, res.buf, res.size) < 0) {
 		throw(exc, &File_GettingAttributeFailedException);
 	}
 
@@ -126,7 +126,7 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 
 	errno = 0;
 
-	ssize_t size = fgetxattr(this->fd, nname, value->buf, value->size);
+	ssize_t size = syscall(SYS_fgetxattr, this->fd, nname, value->buf, value->size);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -192,7 +192,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 	ssize_t res;
 
-	if ((res = read(this->fd, buf, len)) == -1) {
+	if ((res = syscall(SYS_read, this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
 			throw(exc, &File_ReadingInterruptedException);
 		} else if (errno == EISDIR) {
