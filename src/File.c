@@ -52,7 +52,7 @@ void File0(ExceptionManager *e) {
 void File_Open(File *this, String path, int mode) {
 	errno = 0;
 
-	if ((this->fd = syscall(SYS_open, String_ToNul(path), mode, 0666)) == -1) {
+	if ((this->fd = syscall(__NR_open, String_ToNul(path), mode, 0666)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == ENOENT) {
@@ -86,11 +86,11 @@ void File_Open(File *this, String path, int mode) {
 }
 
 void File_Close(File *this) {
-	syscall(SYS_close, this->fd);
+	syscall(__NR_close, this->fd);
 }
 
 void File_SetXattr(File *this, String name, String value) {
-	if (syscall(SYS_fsetxattr, this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
+	if (syscall(__NR_fsetxattr, this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &File_SettingAttributeFailedException);
 	}
 }
@@ -100,7 +100,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 
 	errno = 0;
 
-	ssize_t size = syscall(SYS_fgetxattr, this->fd, nname, NULL, 0);
+	ssize_t size = syscall(__NR_fgetxattr, this->fd, nname, NULL, 0);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -112,7 +112,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 
 	String res = HeapString(size);
 
-	if (syscall(SYS_fgetxattr, this->fd, nname, res.buf, res.size) < 0) {
+	if (syscall(__NR_fgetxattr, this->fd, nname, res.buf, res.size) < 0) {
 		throw(exc, &File_GettingAttributeFailedException);
 	}
 
@@ -126,7 +126,7 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 
 	errno = 0;
 
-	ssize_t size = syscall(SYS_fgetxattr, this->fd, nname, value->buf, value->size);
+	ssize_t size = syscall(__NR_fgetxattr, this->fd, nname, value->buf, value->size);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -144,7 +144,7 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 void OVERLOAD File_Truncate(File *this, off64_t length) {
 	errno = 0;
 
-	if (syscall(SYS_ftruncate64, this->fd, length) == -1) {
+	if (syscall(__NR_ftruncate64, this->fd, length) == -1) {
 		if (errno == EBADF) {
 			throw(exc, &File_InvalidFileDescriptorException);
 		} else if (errno == EACCES) {
@@ -166,7 +166,7 @@ Stat64 File_GetStat(File *this) {
 
 	Stat64 attr;
 
-	if (syscall(SYS_fstat64, this->fd, &attr) == -1) {
+	if (syscall(__NR_fstat64, this->fd, &attr) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &File_AccessDeniedException);
 		} else if (errno == EBADF) {
@@ -192,7 +192,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 	ssize_t res;
 
-	if ((res = syscall(SYS_read, this->fd, buf, len)) == -1) {
+	if ((res = syscall(__NR_read, this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
 			throw(exc, &File_ReadingInterruptedException);
 		} else if (errno == EISDIR) {
@@ -241,7 +241,7 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 	off64_t pos;
 
 	/* Conversion taken from dietlibc-0.32/lib/lseek64.c */
-	if (syscall(SYS__llseek,
+	if (syscall(__NR__llseek,
 		this->fd,
 		(unsigned long) (offset >> 32),
 		(unsigned long) offset & 0xffffffff,

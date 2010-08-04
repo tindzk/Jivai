@@ -38,7 +38,7 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 }
 
 void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
-	int flags = syscall(SYS_fcntl, this->fd, FcntlMode_GetStatus, 0);
+	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetStatus, 0);
 
 	if (flags < 0) {
 		throw(exc, &Socket_FcntlFailedException);
@@ -50,13 +50,13 @@ void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
 		flags &= ~FileStatus_NonBlock;
 	}
 
-	if (syscall(SYS_fcntl, this->fd, FcntlMode_SetStatus, flags) < 0) {
+	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetStatus, flags) < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 }
 
 void Socket_SetCloexecFlag(Socket *this, bool enable) {
-	int flags = syscall(SYS_fcntl, this->fd, FcntlMode_GetDescriptorFlags, 0);
+	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetDescriptorFlags, 0);
 
 	if (flags < 0) {
 		throw(exc, &Socket_FcntlFailedException);
@@ -68,7 +68,7 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 		flags &= ~FileDescriptorFlags_CloseOnExec;
 	}
 
-	if (syscall(SYS_fcntl, this->fd, FcntlMode_SetDescriptorFlags, flags) < 0) {
+	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetDescriptorFlags, flags) < 0) {
 		throw(exc, &Socket_FcntlFailedException);
 	}
 }
@@ -182,5 +182,5 @@ void Socket_Destroy(Socket *this) {
 	long args[] = { this->fd, SHUT_RDWR };
 	syscall(__NR_socketcall, SYS_SHUTDOWN, args);
 
-	syscall(SYS_close, this->fd);
+	syscall(__NR_close, this->fd);
 }

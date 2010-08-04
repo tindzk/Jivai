@@ -14,11 +14,11 @@ void Poll0(ExceptionManager *e) {
 }
 
 void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
-	if ((this->fd = syscall(SYS_epoll_create, maxfds)) < 0) {
+	if ((this->fd = syscall(__NR_epoll_create, maxfds)) < 0) {
 		throw(exc, &Poll_UnknownErrorException);
 	}
 
-	if (syscall(SYS_fcntl, this->fd,
+	if (syscall(__NR_fcntl, this->fd,
 		FcntlMode_GetDescriptorFlags,
 		FileDescriptorFlags_CloseOnExec) < 0)
 	{
@@ -32,7 +32,7 @@ void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
 }
 
 void Poll_Destroy(Poll *this) {
-	syscall(SYS_close, this->fd);
+	syscall(__NR_close, this->fd);
 	Memory_Free(this->events);
 }
 
@@ -44,7 +44,7 @@ void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
 
 	errno = 0;
 
-	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
+	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
 		if (errno == EPERM) {
 			throw(exc, &Poll_FileDescriptorNotSupportedException);
 		} else if (errno == EEXIST) {
@@ -65,7 +65,7 @@ void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
 
 	errno = 0;
 
-	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
+	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
 		if (errno == ENOENT) {
 			throw(exc, &Poll_UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
@@ -81,7 +81,7 @@ void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
 void Poll_DeleteEvent(Poll *this, int fd) {
 	errno = 0;
 
-	if (syscall(SYS_epoll_ctl, this->fd, EPOLL_CTL_DEL, fd, NULL) < 0) {
+	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_DEL, fd, NULL) < 0) {
 		if (errno == ENOENT) {
 			throw(exc, &Poll_UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
@@ -99,7 +99,7 @@ size_t Poll_Process(Poll *this, int timeout) {
 
 	ssize_t nfds;
 
-	if ((nfds = syscall(SYS_epoll_wait, this->fd, this->events, this->maxfds, timeout)) < 0) {
+	if ((nfds = syscall(__NR_epoll_wait, this->fd, this->events, this->maxfds, timeout)) < 0) {
 		if (errno == EBADF) {
 			throw(exc, &Poll_InvalidFileDescriptorException);
 		} else {

@@ -31,7 +31,7 @@ void Path0(ExceptionManager *e) {
 
 bool OVERLOAD Path_Exists(String path, bool follow) {
 	Stat attr;
-	return syscall(follow ? SYS_stat : SYS_lstat, String_ToNul(path), &attr) == 0;
+	return syscall(follow ? __NR_stat : __NR_lstat, String_ToNul(path), &attr) == 0;
 }
 
 inline bool OVERLOAD Path_Exists(String path) {
@@ -42,7 +42,7 @@ String Path_GetCwd(void) {
 	String s = HeapString(512);
 	ssize_t len;
 
-	if ((len = syscall(SYS_getcwd, s.buf, s.size)) > 0) {
+	if ((len = syscall(__NR_getcwd, s.buf, s.size)) > 0) {
 		s.len = len - 1;
 	}
 
@@ -58,7 +58,7 @@ Stat64 Path_GetStat(String path) {
 
 	Stat64 attr;
 
-	if (syscall(SYS_stat64, String_ToNul(path), &attr) == -1) {
+	if (syscall(__NR_stat64, String_ToNul(path), &attr) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -114,7 +114,7 @@ void OVERLOAD Path_Truncate(String path, off64_t length) {
 
 	errno = 0;
 
-	if (syscall(SYS_truncate64, String_ToNul(path), length) == -1) {
+	if (syscall(__NR_truncate64, String_ToNul(path), length) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -200,7 +200,7 @@ String Path_Resolve(String path) {
 
 	int fd;
 
-	if ((fd = syscall(SYS_open, ".", FileStatus_ReadOnly)) == -1) {
+	if ((fd = syscall(__NR_open, ".", FileStatus_ReadOnly)) == -1) {
 		throw(exc, &Path_ResolvingFailedException);
 	}
 
@@ -212,7 +212,7 @@ String Path_Resolve(String path) {
 
 	String res = HeapString(0);
 
-	if (syscall(SYS_chdir, String_ToNul(dirpath)) == 0) {
+	if (syscall(__NR_chdir, String_ToNul(dirpath)) == 0) {
 		res = Path_GetCwd();
 
 		if (!isDir) {
@@ -220,10 +220,10 @@ String Path_Resolve(String path) {
 			String_Append(&res, Path_GetFilename(path, false));
 		}
 
-		syscall(SYS_fchdir, fd);
+		syscall(__NR_fchdir, fd);
 	}
 
-	syscall(SYS_close, fd);
+	syscall(__NR_close, fd);
 
 	return res;
 }
@@ -248,7 +248,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 
 				errno = 0;
 
-				int res = syscall(SYS_mkdir, String_ToNul(tmp), mode);
+				int res = syscall(__NR_mkdir, String_ToNul(tmp), mode);
 
 				if (res == -1) {
 					if (errno == EACCES) {
@@ -268,7 +268,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	} else {
 		errno = 0;
 
-		if (syscall(SYS_mkdir, String_ToNul(path), mode) == -1) {
+		if (syscall(__NR_mkdir, String_ToNul(path), mode) == -1) {
 			if (errno == EACCES) {
 				throw(exc, &Path_AccessDeniedException);
 			} else if (errno == EEXIST) {
@@ -309,7 +309,7 @@ inline void OVERLOAD Path_Create(String path) {
 void Path_Delete(String path) {
 	errno = 0;
 
-	if (syscall(SYS_unlink, String_ToNul(path)) == -1) {
+	if (syscall(__NR_unlink, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -327,7 +327,7 @@ void Path_Delete(String path) {
 void Path_DeleteDirectory(String path) {
 	errno = 0;
 
-	if (syscall(SYS_rmdir, String_ToNul(path)) == -1) {
+	if (syscall(__NR_rmdir, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, &Path_AccessDeniedException);
 		} else if (errno == ENAMETOOLONG) {
@@ -347,7 +347,7 @@ void Path_DeleteDirectory(String path) {
 void Path_ReadLink(String path, String *out) {
 	errno = 0;
 
-	ssize_t len = syscall(SYS_readlink, String_ToNul(path), out->buf, out->size);
+	ssize_t len = syscall(__NR_readlink, String_ToNul(path), out->buf, out->size);
 
 	if (len == -1) {
 		if (errno == EACCES) {
@@ -369,7 +369,7 @@ void Path_ReadLink(String path, String *out) {
 void Path_Symlink(String path1, String path2) {
 	errno = 0;
 
-	if (syscall(SYS_symlink, String_ToNul(path1), String_ToNul(path2)) == -1) {
+	if (syscall(__NR_symlink, String_ToNul(path1), String_ToNul(path2)) == -1) {
 		if (errno == EEXIST) {
 			throw(exc, &Path_AlreadyExistsException);
 		} else {
@@ -379,7 +379,7 @@ void Path_Symlink(String path1, String path2) {
 }
 
 void Path_SetXattr(String path, String name, String value) {
-	if (syscall(SYS_setxattr, String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
+	if (syscall(__NR_setxattr, String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
 		throw(exc, &Path_SettingAttributeFailedException);
 	}
 }
@@ -390,7 +390,7 @@ String OVERLOAD Path_GetXattr(String path, String name) {
 
 	errno = 0;
 
-	ssize_t size = syscall(SYS_getxattr, npath, nname, NULL, 0);
+	ssize_t size = syscall(__NR_getxattr, npath, nname, NULL, 0);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -417,7 +417,7 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value) {
 
 	errno = 0;
 
-	ssize_t size = syscall(SYS_getxattr, npath, nname, value->buf, value->size);
+	ssize_t size = syscall(__NR_getxattr, npath, nname, value->buf, value->size);
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -436,13 +436,13 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 	Date_UnixTime t;
 
 	t.sec  = timestamp;
-	t.usec = nano;
+	t.nsec = nano;
 
 	int flags = !followSymlink ? AT_SYMLINK_NOFOLLOW : 0;
 
 	errno = 0;
 
-	if (syscall(SYS_utimensat, AT_FDCWD,
+	if (syscall(__NR_utimensat, AT_FDCWD,
 		String_ToNul(path),
 		(const Date_UnixTime[2]) {t, t},
 		flags) == -1)
