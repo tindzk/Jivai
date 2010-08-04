@@ -8,7 +8,9 @@
 #define FileStream_Open  File_Open
 #define FileStream_Close File_Close
 #define FileStream_Read  File_Read
-#define FileStream_Write File_Write
+
+size_t FileStream_Write(FileStream *this, void *buf, size_t len);
+bool FileStream_IsEof(UNUSED FileStream *this);
 
 extern StreamInterface FileStream_Methods;
 

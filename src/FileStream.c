@@ -1,12 +1,17 @@
 #include "FileStream.h"
 
-/* Clang does not support pointers to overloaded C functions.  */
-static void __write(File *this, void *buf, size_t len) {
-	File_Write(this, buf, len);
+/* Clang does not support pointers to overloaded C functions. */
+size_t FileStream_Write(FileStream *this, void *buf, size_t len) {
+	return File_Write(this, buf, len);
+}
+
+bool FileStream_IsEof(UNUSED FileStream *this) {
+	return false;
 }
 
 StreamInterface FileStream_Methods = {
 	.read  = (void *) FileStream_Read,
-	.write = (void *) __write,
-	.close = (void *) FileStream_Close
+	.write = (void *) FileStream_Write,
+	.close = (void *) FileStream_Close,
+	.isEof = (void *) FileStream_IsEof
 };

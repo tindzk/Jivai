@@ -9,6 +9,8 @@
 #define SocketConnectionStream_Write SocketConnection_Write
 #define SocketConnectionStream_Close SocketConnection_Close
 
+bool SocketConnectionStream_IsEof(SocketConnectionStream *this);
+
 extern StreamInterface SocketConnectionStream_Methods;
 
 #endif

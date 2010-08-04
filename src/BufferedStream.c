@@ -147,5 +147,6 @@ void BufferedStream_Close(BufferedStream *this) {
 StreamInterface BufferedStream_Methods = {
 	.read  = (void *) BufferedStream_Read,
 	.write = (void *) BufferedStream_Write,
-	.close = (void *) BufferedStream_Close
+	.close = (void *) BufferedStream_Close,
+	.isEof = (void *) BufferedStream_IsEof
 };

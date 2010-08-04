@@ -125,11 +125,9 @@ void YAML_Parse(YAML *this) {
 
 	size_t whitespaces = 0;
 
-	if (this->stream->read(this->context, &c, 1) == 0) {
-		goto out;
-	}
+	goto next;
 
-	while (true) {
+	while (!this->stream->isEof(this->context)) {
 		bool popChar = false;
 
 		switch (state) {
@@ -225,12 +223,10 @@ void YAML_Parse(YAML *this) {
 			continue;
 		}
 
-		if (this->stream->read(this->context, &c, 1) == 0) {
-			break;
-		}
+	next:
+		this->stream->read(this->context, &c, 1);
 	}
 
-out:
 	String_Destroy(&buf);
 	String_Destroy(&key);
 }
