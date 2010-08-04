@@ -155,13 +155,13 @@ inline bool Date_Equals(Date a, Date b) {
 }
 
 Date_UnixTime Date_GetCurrentUnixTime(void) {
-	struct timeval tv;
+	Date_UnixTime time;
 
-	if (gettimeofday(&tv, NULL) < 0) {
+	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &time) < 0) {
 		throw(exc, &Date_GetTimeOfDayFailedException);
 	}
 
-	return *((Date_UnixTime *) &tv);
+	return time;
 }
 
 Date Date_GetCurrent(void) {

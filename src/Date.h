@@ -1,8 +1,8 @@
 #ifndef DATE_H
 #define DATE_H
 
-#include <stdint.h>
-#include <sys/time.h>
+#include <time.h>
+#include <sys/syscall.h>
 
 #include "Integer.h"
 #include "Exception.h"
@@ -20,8 +20,8 @@ typedef struct {
 } Date;
 
 typedef struct {
-	time_t      sec;  /* seconds */
-	suseconds_t usec; /* microseconds */
+	time_t sec;
+	long   nsec;
 } Date_UnixTime;
 
 #define Date_UnixEpoch \
