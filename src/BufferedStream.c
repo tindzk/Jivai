@@ -44,7 +44,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 		return 0;
 	}
 
-	if (this->inbuf.len == 0) {
+	if (this->inbuf.len == 0 && !this->eof) {
 		this->inbuf.len = this->stream->read(this->data,
 			this->inbuf.buf,
 			this->inbuf.size);
