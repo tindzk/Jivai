@@ -19,8 +19,12 @@ void String_Destroy(String *this) {
 }
 
 inline char* String_ToNulBuf(String s, char *buf) {
-	Memory_Copy(buf, s.buf, s.len);
+	if (s.len > 0) {
+		Memory_Copy(buf, s.buf, s.len);
+	}
+
 	buf[s.len] = '\0';
+
 	return buf;
 }
 
