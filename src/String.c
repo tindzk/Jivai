@@ -410,7 +410,7 @@ void String_ToLower(String *this) {
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
-		this->buf[i] = Char_ToLower(this->buf[i]);
+		this->buf[i] = (char) Char_ToLower(this->buf[i]);
 	}
 }
 
@@ -420,7 +420,7 @@ void String_ToUpper(String *this) {
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
-		this->buf[i] = Char_ToUpper(this->buf[i]);
+		this->buf[i] = (char) Char_ToUpper(this->buf[i]);
 	}
 }
 
@@ -1100,8 +1100,8 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 		char cb = b.buf[bi];
 
 		if (foldcase) {
-			ca = Char_ToLower(ca);
-			cb = Char_ToLower(cb);
+			ca = (char) Char_ToLower(ca);
+			cb = (char) Char_ToLower(cb);
 		}
 
 		if (ca < cb) {
