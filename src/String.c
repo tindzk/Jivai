@@ -685,24 +685,20 @@ String OVERLOAD String_Trim(String s) {
 }
 
 String String_Format(String fmt, ...) {
+	size_t length = 0;
 	VarArg argptr;
 	String param;
-	size_t i = 0, length = 0;
 
 	VarArg_Start(argptr, fmt);
 
-	while (i < fmt.len) {
-		if (
-			fmt.buf[i] == '%' &&
-			(i == 0 || (i > 0 && fmt.buf[i - 1] != '!'))
-		) {
-			param = VarArg_Get(argptr, String);
-			length += param.len;
+	for (size_t i = 0; i < fmt.len; i++) {
+		if (fmt.buf[i] == '%') {
+			if (i == 0 || fmt.buf[i - 1] != '!') {
+				length += VarArg_Get(argptr, String).len;
+			}
 		} else {
 			length++;
 		}
-
-		i++;
 	}
 
 	VarArg_End(argptr);
@@ -711,24 +707,22 @@ String String_Format(String fmt, ...) {
 
 	VarArg_Start(argptr, fmt);
 
-	i = 0;
-	while (i < fmt.len) {
-		if (
-			fmt.buf[i] == '%' &&
-			(i == 0 || (i > 0 && fmt.buf[i - 1] != '!'))
-		) {
-			param = VarArg_Get(argptr, String);
+	for (size_t i = 0; i < fmt.len; i++) {
+		if (fmt.buf[i] == '%') {
+			if (i > 0 && fmt.buf[i - 1] == '!') {
+				res.buf[res.len - 1] = '%';
+			} else {
+				param = VarArg_Get(argptr, String);
 
-			if (param.len > 0) {
-				Memory_Copy(res.buf + res.len, param.buf, param.len);
-				res.len += param.len;
+				if (param.len > 0) {
+					Memory_Copy(res.buf + res.len, param.buf, param.len);
+					res.len += param.len;
+				}
 			}
 		} else {
 			res.buf[res.len] = fmt.buf[i];
 			res.len++;
 		}
-
-		i++;
 	}
 
 	VarArg_End(argptr);
