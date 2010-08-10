@@ -41,6 +41,10 @@ YAML_Node* YAML_GetRoot(YAML *this) {
 	return (YAML_Node *) &this->tree.root;
 }
 
+size_t YAML_GetLine(YAML *this) {
+	return this->line;
+}
+
 void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
 	bool storeInSubNode = false;
 
@@ -119,6 +123,7 @@ void YAML_Parse(YAML *this) {
 
 	this->node = (YAML_Node *) &this->tree.root;
 	this->depth = 0;
+	this->line  = 0;
 
 	String buf = HeapString(512);
 	String key = HeapString(0);
@@ -225,6 +230,10 @@ void YAML_Parse(YAML *this) {
 
 	next:
 		this->stream->read(this->context, &c, 1);
+
+		if (c == '\n') {
+			this->line++;
+		}
 	}
 
 	String_Destroy(&buf);

@@ -34,6 +34,8 @@ typedef struct {
 	StreamInterface *stream;
 	void *context;
 
+	size_t line;
+
 	Tree tree;
 	YAML_Node *node;
 
@@ -47,6 +49,7 @@ void YAML_Init(YAML *this, size_t depthWidth, StreamInterface *stream, void *con
 void YAML_Destroy(YAML *this);
 void YAML_DestroyNode(YAML_Node *node);
 YAML_Node* YAML_GetRoot(YAML *this);
+size_t YAML_GetLine(YAML *this);
 void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p);
 void YAML_AddSection(YAML *this, size_t depth, String s);
 void YAML_AddItem(YAML *this, size_t depth, String key, String value);
