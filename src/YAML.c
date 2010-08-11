@@ -67,18 +67,19 @@ void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
 				throw(exc, &YAML_IllegalNestingException);
 			}
 
-			this->node = this->node->parent;
-
-			/* Go up the YAML_NodeType_Node nodes, too. */
-			if (this->depth - depth > 0) {
-				if (this->node->parent == NULL) {
-					throw(exc, &YAML_IllegalNestingException);
-				}
-
-				this->node = this->node->parent;
+			if (this->node->type == YAML_NodeType_Node) {
+				this->depth--;
 			}
 
-			this->depth--;
+			this->node = this->node->parent;
+		}
+
+		if (this->node->parent == NULL) {
+			throw(exc, &YAML_IllegalNestingException);
+		}
+
+		if (this->node->parent != NULL) {
+			this->node = this->node->parent;
 		}
 	} else {
 		if (this->node->parent != NULL) {
@@ -145,11 +146,11 @@ void YAML_Parse(YAML *this) {
 					whitespaces++;
 				} else if (c == '\t') {
 					whitespaces += this->depthWidth;
-				} else if (c != '\n') {
+				} else if (c == '\n') {
+					whitespaces = 0;
+				} else {
 					String_Append(&buf, c);
 					state = KEY;
-				} else {
-					whitespaces = 0;
 				}
 
 				break;
@@ -159,11 +160,6 @@ void YAML_Parse(YAML *this) {
 					state = COMMENT;
 					prevstate = KEY;
 				} else if (buf.len > 0 && buf.buf[buf.len - 1] == ':') {
-					/* Skip all whitespaces. */
-					if (c == ' ' || c == '\t') {
-						break;
-					}
-
 					if (c == '\n') {
 						buf.len--; /* Remove the colon. */
 						YAML_AddSection(this, whitespaces / this->depthWidth, buf);
@@ -175,7 +171,7 @@ void YAML_Parse(YAML *this) {
 					} else if (c == '#') {
 						state = COMMENT;
 						prevstate = KEY;
-					} else {
+					} else if (c != ' ' && c != '\t') {
 						buf.len--; /* Remove the colon. */
 						String_Copy(&key, buf);
 
