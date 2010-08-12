@@ -27,8 +27,14 @@ typedef struct _YAML_Node {
 	Tree_Define(_YAML_Node);
 
 	YAML_NodeType type;
-	void *p;
+	char data[0];
 } YAML_Node;
+
+#define YAML_Section(node) \
+	((YAML_Section *) &(node)->data)
+
+#define YAML_Item(node) \
+	((YAML_Item *) &(node)->data)
 
 typedef struct {
 	StreamInterface *stream;
@@ -50,7 +56,7 @@ void YAML_Destroy(YAML *this);
 void YAML_DestroyNode(YAML_Node *node);
 YAML_Node* YAML_GetRoot(YAML *this);
 size_t YAML_GetLine(YAML *this);
-void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p);
+void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size);
 void YAML_AddSection(YAML *this, size_t depth, String s);
 void YAML_AddItem(YAML *this, size_t depth, String key, String value);
 void YAML_Parse(YAML *this);

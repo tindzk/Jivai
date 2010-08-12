@@ -31,7 +31,7 @@ void Tree_FreeNodes(Tree *this, Tree_Node *node);
 void* Tree_AddCustomNode(Tree_Node *node, size_t size);
 Tree_Node* Tree_AddNode(Tree_Node *node);
 
-#define Tree_AddNode(type, node) \
-	Tree_AddCustomNode(node, sizeof(type))
+#define Tree_AddNode(node, size) \
+	Tree_AddCustomNode((Tree_Node *) (node), size)
 
 #endif

@@ -23,17 +23,14 @@ void YAML_Destroy(YAML *this) {
 
 void YAML_DestroyNode(YAML_Node *node) {
 	if (node->type == YAML_NodeType_Section) {
-		YAML_Section *section = node->p;
+		YAML_Section *section = (YAML_Section *) &node->data;
 
 		String_Destroy(&section->name);
-		Memory_Free(section);
 	} else if (node->type == YAML_NodeType_Item) {
-		YAML_Item *item = node->p;
+		YAML_Item *item = (YAML_Item *) &node->data;
 
 		String_Destroy(&item->key);
 		String_Destroy(&item->value);
-
-		Memory_Free(item);
 	}
 }
 
@@ -45,17 +42,18 @@ size_t YAML_GetLine(YAML *this) {
 	return this->line;
 }
 
-void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
+void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size) {
 	bool storeInSubNode = false;
 
 	if (depth > this->depth) {
 		if (this->node->len == 0) {
-			this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
+			this->node = Tree_AddNode(this->node,
+				sizeof(YAML_Node) + size);
 		} else {
-			this->node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node->nodes[this->node->len - 1]);
+			this->node = Tree_AddNode(this->node->nodes[this->node->len - 1],
+				sizeof(YAML_Node) + size);
 		}
 
-		this->node->p    = NULL;
 		this->node->type = YAML_NodeType_Node;
 
 		this->depth++;
@@ -89,28 +87,28 @@ void YAML_Store(YAML *this, size_t depth, YAML_NodeType type, void *p) {
 		}
 	}
 
-	YAML_Node *node = Tree_AddNode(YAML_Node, (Tree_Node *) this->node);
+	YAML_Node *node = Tree_AddNode((Tree_Node *) this->node,
+		sizeof(YAML_Node) + size);
+
 	node->type = type;
-	node->p    = p;
 
 	if (storeInSubNode) {
 		this->node = node;
 	}
+
+	return &node->data;
 }
 
 void YAML_AddSection(YAML *this, size_t depth, String s) {
-	YAML_Section *section = New(YAML_Section);
+	YAML_Section *section = YAML_Store(this, depth, YAML_NodeType_Section, sizeof(YAML_Section));
 	section->name = String_Clone(s);
-
-	YAML_Store(this, depth, YAML_NodeType_Section, section);
 }
 
 void YAML_AddItem(YAML *this, size_t depth, String key, String value) {
-	YAML_Item *item = New(YAML_Item);
+	YAML_Item *item = YAML_Store(this, depth, YAML_NodeType_Item, sizeof(YAML_Item));
+
 	item->key   = String_Clone(key);
 	item->value = String_Clone(value);
-
-	YAML_Store(this, depth, YAML_NodeType_Item, item);
 }
 
 void YAML_Parse(YAML *this) {

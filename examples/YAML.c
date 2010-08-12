@@ -5,34 +5,29 @@
 ExceptionManager exc;
 
 void PrintTree(YAML_Node *node, int depth) {
-	if (node->p != NULL) {
+	if (node->type == YAML_NodeType_Section
+	 || node->type == YAML_NodeType_Item) {
 		String_Print(String("\n"));
 
-		int i = depth;
+		for (ssize_t i = depth - 1; i > 0; i--) {
+			String_Print(String("  "));
+		}
+	}
 
-		while (i--) {
-			String_Print(String("    "));
+	if (node->type == YAML_NodeType_Section) {
+		String_Print(String("section: "));
+		String_Print(YAML_Section(node)->name);
+	} else if (node->type == YAML_NodeType_Item) {
+		String_Print(String("key: "));
+
+		if (YAML_Item(node)->key.len == 0) {
+			String_Print(String("(empty)"));
+		} else {
+			String_Print(YAML_Item(node)->key);
 		}
 
-		if (node->type == YAML_NodeType_Section) {
-			YAML_Section *section = node->p;
-
-			String_Print(String("section: "));
-			String_Print(section->name);
-		} else if (node->type == YAML_NodeType_Item) {
-			YAML_Item *item = node->p;
-
-			String_Print(String("key: "));
-
-			if (item->key.len == 0) {
-				String_Print(String("(empty)"));
-			} else {
-				String_Print(item->key);
-			}
-
-			String_Print(String(" value: "));
-			String_Print(item->value);
-		}
+		String_Print(String(" value: "));
+		String_Print(YAML_Item(node)->value);
 	}
 
 	for (size_t i = 0; i < node->len; i++) {

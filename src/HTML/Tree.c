@@ -46,7 +46,8 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 
 		this->depth--;
 	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
-		this->node = Tree_AddNode(HTML_Tree_Node, (Tree_Node *) this->node);
+		this->node = Tree_AddNode(this->node,
+			sizeof(HTML_Tree_Node));
 
 		this->node->value = String_Clone(value);
 		this->node->type  = HTML_Tree_NodeType_Tag;
@@ -55,7 +56,8 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 
 		this->depth++;
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
-		HTML_Tree_Node *node = Tree_AddNode(HTML_Tree_Node, (Tree_Node *) this->node);
+		HTML_Tree_Node *node = Tree_AddNode(this->node,
+			sizeof(HTML_Tree_Node));
 
 		node->type  = HTML_Tree_NodeType_Value;
 		node->value = String_Clone(value);
