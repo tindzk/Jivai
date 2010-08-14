@@ -954,7 +954,7 @@ inline bool OVERLOAD String_ReplaceAll(String *this, String needle, String repla
 	return String_ReplaceAll(this, 0, needle, replacement);
 }
 
-String String_Consume(String *this, int n) {
+String String_Consume(String *this, size_t n) {
 	String res = String_Clone(String_Slice(*this, 0, n));
 	String_Crop(this, n);
 	return res;
@@ -990,8 +990,8 @@ void String_Print(String s) {
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-int String_CompareRight(String a, String b) {
-	int bias = 0;
+short String_CompareRight(String a, String b) {
+	short bias = 0;
 
 	/* The longest run of digits wins.  That aside, the greatest
 	 * value wins, but we can't know that it will until we've scanned
@@ -1024,7 +1024,7 @@ int String_CompareRight(String a, String b) {
 	return bias;
 }
 
-int String_CompareLeft(String a, String b) {
+short String_CompareLeft(String a, String b) {
 	/* Compare two left-aligned numbers: the first to have a
 	 * different value wins.
 	 */
@@ -1047,7 +1047,7 @@ int String_CompareLeft(String a, String b) {
 	return 0;
 }
 
-int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros) {
+short OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros) {
 	size_t ai = 0;
 	size_t bi = 0;
 
@@ -1067,7 +1067,7 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 
 		/* Process run of digits. */
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
-			int result;
+			short result;
 
 			String __a = String_Slice(a, ai);
 			String __b = String_Slice(b, bi);
@@ -1117,6 +1117,6 @@ int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipS
 	}
 }
 
-inline int OVERLOAD String_NaturalCompare(String a, String b) {
+inline short OVERLOAD String_NaturalCompare(String a, String b) {
 	return String_NaturalCompare(a, b, true, true, true);
 }

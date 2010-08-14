@@ -82,10 +82,10 @@ bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String
 bool OVERLOAD String_Replace(String *this, String needle, String replacement);
 bool OVERLOAD String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement);
 bool OVERLOAD String_ReplaceAll(String *this, String needle, String replacement);
-String String_Consume(String *this, int n);
+String String_Consume(String *this, size_t n);
 void String_Print(String s);
-int OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
-int OVERLOAD String_NaturalCompare(String a, String b);
+short OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
+short OVERLOAD String_NaturalCompare(String a, String b);
 
 #define String_NotFound -1
 

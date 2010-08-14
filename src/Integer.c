@@ -94,12 +94,12 @@ String Integer64_ToStringBuf(int64_t num, String res) {
 	INTEGER_TO_STRING_BUF(num, res, Integer64_CountDigits(num), int64_t)
 }
 
-inline int Integer_Compare(int a, int b) {
+inline short Integer_Compare(int a, int b) {
 	return (a > b)
 		 - (a < b);
 }
 
-inline int Integer64_Compare(int64_t a, int64_t b) {
+inline short Integer64_Compare(int64_t a, int64_t b) {
 	return (a > b)
 		 - (a < b);
 }
