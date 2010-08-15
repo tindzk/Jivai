@@ -6,6 +6,7 @@
 #include <attr/xattr.h>
 #include <sys/syscall.h>
 
+#include "Time.h"
 #include "Stat.h"
 #include "String.h"
 #include "Exception.h"

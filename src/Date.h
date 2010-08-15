@@ -1,31 +1,13 @@
 #ifndef DATE_H
 #define DATE_H
 
-#include <time.h>
-#include <sys/syscall.h>
-
 #include "Integer.h"
-#include "Exception.h"
-
-#define Date_Define() \
-	uint16_t year;    \
-	uint8_t  month;   \
-	uint8_t  day;     \
-	uint8_t  hour;    \
-	uint8_t  minute;  \
-	uint8_t  second
 
 typedef struct {
-	Date_Define();
+	uint16_t year;
+	uint8_t  month;
+	uint8_t  day;
 } Date;
-
-typedef struct {
-	time_t sec;
-	long   nsec;
-} Date_UnixTime;
-
-#define Date_UnixEpoch \
-	{1970, 1, 1, 0, 0, 0}
 
 typedef enum {
 	Date_Month_Unset = 0,
@@ -59,19 +41,11 @@ typedef enum {
 #define Date_SecondsDay    (Date_SecondsHour   *  24)
 #define Date_SecondsYear   (Date_SecondsDay    * 365)
 
-Exception_Export(Date_GetTimeOfDayFailedException);
-Exception_Export(Date_YearLower1970Exception);
-
 const short Date_DaysPerMonth[13];
 
-void Date0(ExceptionManager *e);
 void Date_Init(Date *this);
-bool Date_IsLeap(int year);
-uint64_t Date_ToUnixEpoch(Date *this);
-Date Date_FromUnixEpoch(uint64_t time);
-int Date_Compare(Date a, Date b);
+bool Date_IsLeapYear(int year);
+short Date_Compare(Date a, Date b);
 bool Date_Equals(Date a, Date b);
-Date_UnixTime Date_GetCurrentUnixTime(void);
-Date Date_GetCurrent(void);
 
 #endif

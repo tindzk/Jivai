@@ -433,7 +433,7 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value) {
 }
 
 void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
-	Date_UnixTime t;
+	Time_UnixEpoch t;
 
 	t.sec  = timestamp;
 	t.nsec = nano;
@@ -444,7 +444,7 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 
 	if (syscall(__NR_utimensat, AT_FDCWD,
 		String_ToNul(path),
-		(const Date_UnixTime[2]) {t, t},
+		(const Time_UnixEpoch[2]) {t, t},
 		flags) == -1)
 	{
 		if (errno == ENAMETOOLONG) {

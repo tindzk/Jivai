@@ -1,7 +1,7 @@
 #ifndef STAT_H
 #define STAT_H
 
-#include "Date.h"
+#include "Time.h"
 
 typedef enum {
 	FileStatus_ReadOnly  = 00,
@@ -62,9 +62,9 @@ typedef struct {
 	__off_t size;
 	__blksize_t blksize;
 	__blkcnt_t blocks;
-	Date_UnixTime atime;
-	Date_UnixTime mtime;
-	Date_UnixTime ctime;
+	Time_UnixEpoch atime;
+	Time_UnixEpoch mtime;
+	Time_UnixEpoch ctime;
 } Stat;
 
 typedef struct {
@@ -80,9 +80,9 @@ typedef struct {
 	__off64_t size;
 	__blksize_t blksize;
 	__blkcnt64_t blocks;
-	Date_UnixTime atime;
-	Date_UnixTime mtime;
-	Date_UnixTime ctime;
+	Time_UnixEpoch atime;
+	Time_UnixEpoch mtime;
+	Time_UnixEpoch ctime;
 	__ino64_t inode;
 } Stat64;
 
