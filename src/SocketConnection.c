@@ -2,13 +2,13 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(SocketConnection_ConnectionRefusedException);
-Exception_Define(SocketConnection_ConnectionResetException);
-Exception_Define(SocketConnection_FcntlFailedException);
-Exception_Define(SocketConnection_FileDescriptorUnusableException);
-Exception_Define(SocketConnection_InvalidFileDescriptorException);
-Exception_Define(SocketConnection_NotConnectedException);
-Exception_Define(SocketConnection_UnknownErrorException);
+Exception_Define(ConnectionRefusedException);
+Exception_Define(ConnectionResetException);
+Exception_Define(FcntlFailedException);
+Exception_Define(FileDescriptorUnusableException);
+Exception_Define(InvalidFileDescriptorException);
+Exception_Define(NotConnectedException);
+Exception_Define(UnknownErrorException);
 
 void SocketConnection0(ExceptionManager *e) {
 	exc = e;
@@ -40,15 +40,15 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 	if (errno == EWOULDBLOCK || errno == EAGAIN) {
 		return -1;
 	} else if (errno == ECONNRESET) {
-		throw(exc, &SocketConnection_ConnectionResetException);
+		throw(exc, &ConnectionResetException);
 	} else if (errno == ECONNREFUSED) {
-		throw(exc, &SocketConnection_ConnectionRefusedException);
+		throw(exc, &ConnectionRefusedException);
 	} else if (errno == ENOTCONN) {
-		throw(exc, &SocketConnection_NotConnectedException);
+		throw(exc, &NotConnectedException);
 	} else if (errno == EBADF) {
-		throw(exc, &SocketConnection_InvalidFileDescriptorException);
+		throw(exc, &InvalidFileDescriptorException);
 	} else {
-		throw(exc, &SocketConnection_UnknownErrorException);
+		throw(exc, &UnknownErrorException);
 	}
 
 	return 0;
@@ -60,7 +60,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 			FcntlMode_SetStatus,
 			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)
 		{
-			throw(exc, &SocketConnection_FcntlFailedException);
+			throw(exc, &FcntlFailedException);
 		}
 	}
 
@@ -80,11 +80,11 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 			if (errno == EAGAIN) {
 				return false;
 			} else if (errno == EBADF) {
-				throw(exc, &SocketConnection_InvalidFileDescriptorException);
+				throw(exc, &InvalidFileDescriptorException);
 			} else if (errno == EINVAL) {
-				throw(exc, &SocketConnection_FileDescriptorUnusableException);
+				throw(exc, &FileDescriptorUnusableException);
 			} else {
-				throw(exc, &SocketConnection_UnknownErrorException);
+				throw(exc, &UnknownErrorException);
 			}
 		} else if (res == 0) {
 			break;
@@ -95,7 +95,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offs
 
 	if (this->nonblocking) {
 		if (syscall(__NR_fcntl, this->fd, FcntlMode_SetStatus, FileStatus_ReadWrite) == -1) {
-			throw(exc, &SocketConnection_FcntlFailedException);
+			throw(exc, &FcntlFailedException);
 		}
 	}
 
@@ -124,13 +124,13 @@ ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
-			throw(exc, &SocketConnection_ConnectionResetException);
+			throw(exc, &ConnectionResetException);
 		} else if (errno == EPIPE || errno == ENOTCONN) {
-			throw(exc, &SocketConnection_NotConnectedException);
+			throw(exc, &NotConnectedException);
 		} else if (errno == EBADF) {
-			throw(exc, &SocketConnection_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &SocketConnection_UnknownErrorException);
+			throw(exc, &UnknownErrorException);
 		}
 	}
 

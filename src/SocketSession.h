@@ -6,7 +6,7 @@
 
 typedef void (* SocketSession_OnDone)(void *, void *);
 
-Exception_Export(SocketSession_NotIdleException);
+Exception_Export(NotIdleException);
 
 typedef enum {
 	SocketSession_OperationType_Idle,

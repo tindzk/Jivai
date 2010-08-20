@@ -3,7 +3,10 @@
 
 #import "ExceptionManager.h"
 
-Exception_Export(NetworkAddress_GetAddrInfoFailedException);
+#undef self
+#define self NetworkAddress
+
+Exception_Export(GetAddrInfoFailedException);
 
 typedef struct {
 	unsigned long ip;

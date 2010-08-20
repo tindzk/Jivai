@@ -7,6 +7,9 @@
 #import "../SocketConnection.h"
 #import "../ExceptionManager.h"
 
+#undef self
+#define self HTTP_Client
+
 /* Will be mostly used for buffering the headers.
  * Therefore, it shouldn't be too large.
  */
@@ -22,10 +25,10 @@
 #define HTTP_Client_ReadChunkSize 16384
 #endif
 
-Exception_Export(HTTP_Client_BufferTooSmallException);
-Exception_Export(HTTP_Client_ConnectionResetException);
-Exception_Export(HTTP_Client_MalformedChunkException);
-Exception_Export(HTTP_Client_ResponseMalformedException);
+Exception_Export(BufferTooSmallException);
+Exception_Export(ConnectionResetException);
+Exception_Export(MalformedChunkException);
+Exception_Export(ResponseMalformedException);
 
 typedef struct {
 	HTTP_OnVersion onVersion;

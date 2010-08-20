@@ -2,10 +2,10 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(HTTP_Server_BodyTooLargeException);
-Exception_Define(HTTP_Server_BodyUnexpectedException);
-Exception_Define(HTTP_Server_HeaderTooLargeException);
-Exception_Define(HTTP_Server_UnknownContentTypeException);
+Exception_Define(BodyTooLargeException);
+Exception_Define(BodyUnexpectedException);
+Exception_Define(HeaderTooLargeException);
+Exception_Define(UnknownContentTypeException);
 
 void HTTP_Server0(ExceptionManager *e) {
 	exc = e;
@@ -119,22 +119,22 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 						String("boundary="));
 
 					if (posBoundary == String_NotFound) {
-						throw(exc, &HTTP_Server_UnknownContentTypeException);
+						throw(exc, &UnknownContentTypeException);
 					}
 
 					String_Copy(&this->headers.boundary, value, posBoundary + sizeof("boundary=") - 1);
 				} else {
-					throw(exc, &HTTP_Server_UnknownContentTypeException);
+					throw(exc, &UnknownContentTypeException);
 				}
 			} else if (String_Equals(name, String("content-length"))) {
 				if (this->method != HTTP_Method_Post) {
-					throw(exc, &HTTP_Server_BodyUnexpectedException);
+					throw(exc, &BodyUnexpectedException);
 				}
 
 				this->headers.contentLength = Integer64_ParseString(value);
 
 				if (this->headers.contentLength > this->maxBodyLength) {
-					throw(exc, &HTTP_Server_BodyTooLargeException);
+					throw(exc, &BodyTooLargeException);
 				}
 			}
 		}
@@ -176,7 +176,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 		if (this->header.size - this->header.len == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(exc, &HTTP_Server_HeaderTooLargeException);
+			throw(exc, &HeaderTooLargeException);
 		}
 
 		ssize_t len = SocketConnection_Read(this->conn,
@@ -205,7 +205,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 			return HTTP_Server_Result_Error;
 		} else if (requestOffset == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(exc, &HTTP_Server_HeaderTooLargeException);
+			throw(exc, &HeaderTooLargeException);
 		}
 	}
 

@@ -5,12 +5,15 @@
 #import "String.h"
 #import "Exception.h"
 
+#undef self
+#define self Directory
+
 #ifndef Directory_BufSize
 #define Directory_BufSize 1024
 #endif
 
-Exception_Export(Directory_CannotOpenDirectoryException);
-Exception_Export(Directory_ReadingFailedException);
+Exception_Export(CannotOpenDirectoryException);
+Exception_Export(ReadingFailedException);
 
 typedef struct {
 	int fd;

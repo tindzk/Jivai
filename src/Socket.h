@@ -8,19 +8,22 @@
 #import "SocketConnection.h"
 #import "ExceptionManager.h"
 
+#undef self
+#define self Socket
+
 typedef enum {
 	Socket_Protocol_TCP,
 	Socket_Protocol_UDP
 } Socket_Protocol;
 
-Exception_Export(Socket_AcceptFailedException);
-Exception_Export(Socket_AddressInUseException);
-Exception_Export(Socket_BindFailedException);
-Exception_Export(Socket_ConnectFailedException);
-Exception_Export(Socket_FcntlFailedException);
-Exception_Export(Socket_ListenFailedException);
-Exception_Export(Socket_SetSocketOptionException);
-Exception_Export(Socket_SocketFailedException);
+Exception_Export(AcceptFailedException);
+Exception_Export(AddressInUseException);
+Exception_Export(BindFailedException);
+Exception_Export(ConnectFailedException);
+Exception_Export(FcntlFailedException);
+Exception_Export(ListenFailedException);
+Exception_Export(SetSocketOptionException);
+Exception_Export(SocketFailedException);
 
 typedef struct {
 	int fd;

@@ -1,13 +1,13 @@
 #import "Socket.h"
 
-Exception_Define(Socket_AcceptFailedException);
-Exception_Define(Socket_AddressInUseException);
-Exception_Define(Socket_BindFailedException);
-Exception_Define(Socket_ConnectFailedException);
-Exception_Define(Socket_FcntlFailedException);
-Exception_Define(Socket_ListenFailedException);
-Exception_Define(Socket_SetSocketOptionException);
-Exception_Define(Socket_SocketFailedException);
+Exception_Define(AcceptFailedException);
+Exception_Define(AddressInUseException);
+Exception_Define(BindFailedException);
+Exception_Define(ConnectFailedException);
+Exception_Define(FcntlFailedException);
+Exception_Define(ListenFailedException);
+Exception_Define(SetSocketOptionException);
+Exception_Define(SocketFailedException);
 
 static ExceptionManager *exc;
 
@@ -33,7 +33,7 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 	};
 
 	if ((this->fd = syscall(__NR_socketcall, SYS_SOCKET, args)) < 0) {
-		throw(exc, &Socket_SocketFailedException);
+		throw(exc, &SocketFailedException);
 	}
 }
 
@@ -41,7 +41,7 @@ void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
 	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetStatus, 0);
 
 	if (flags < 0) {
-		throw(exc, &Socket_FcntlFailedException);
+		throw(exc, &FcntlFailedException);
 	}
 
 	if (enable) {
@@ -51,7 +51,7 @@ void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
 	}
 
 	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetStatus, flags) < 0) {
-		throw(exc, &Socket_FcntlFailedException);
+		throw(exc, &FcntlFailedException);
 	}
 }
 
@@ -59,7 +59,7 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetDescriptorFlags, 0);
 
 	if (flags < 0) {
-		throw(exc, &Socket_FcntlFailedException);
+		throw(exc, &FcntlFailedException);
 	}
 
 	if (enable) {
@@ -69,7 +69,7 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 	}
 
 	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetDescriptorFlags, flags) < 0) {
-		throw(exc, &Socket_FcntlFailedException);
+		throw(exc, &FcntlFailedException);
 	}
 }
 
@@ -79,7 +79,7 @@ void Socket_SetReusableFlag(Socket *this) {
 	long args[] = { this->fd, SOL_SOCKET, SO_REUSEADDR, (long) &opt, sizeof(opt) };
 
 	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
-		throw(exc, &Socket_SetSocketOptionException);
+		throw(exc, &SetSocketOptionException);
 	}
 }
 
@@ -96,16 +96,16 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 
 	if (syscall(__NR_socketcall, SYS_BIND, args) < 0) {
 		if (errno == EADDRINUSE) {
-			throw(exc, &Socket_AddressInUseException);
+			throw(exc, &AddressInUseException);
 		} else {
-			throw(exc, &Socket_BindFailedException);
+			throw(exc, &BindFailedException);
 		}
 	}
 
 	long args2[] = { this->fd, maxconns };
 
 	if (syscall(__NR_socketcall, SYS_LISTEN, args2) < 0) {
-		throw(exc, &Socket_ListenFailedException);
+		throw(exc, &ListenFailedException);
 	}
 }
 
@@ -118,7 +118,7 @@ void Socket_SetLinger(Socket *this) {
 	long args[] = { this->fd, SOL_SOCKET, SO_LINGER, (long) &ling, sizeof(ling) };
 
 	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
-		throw(exc, &Socket_SetSocketOptionException);
+		throw(exc, &SetSocketOptionException);
 	}
 }
 
@@ -137,7 +137,7 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 	long args[] = { this->fd, (long) &addr, sizeof(addr) };
 
 	if (syscall(__NR_socketcall, SYS_CONNECT, args) < 0) {
-		throw(exc, &Socket_ConnectFailedException);
+		throw(exc, &ConnectFailedException);
 	}
 
 	this->unused = false;
@@ -165,7 +165,7 @@ SocketConnection Socket_Accept(Socket *this) {
 	SocketConnection conn;
 
 	if ((conn.fd = syscall(__NR_socketcall, SYS_ACCEPT, args)) < 0) {
-		throw(exc, &Socket_AcceptFailedException);
+		throw(exc, &AcceptFailedException);
 	}
 
 	conn.addr.ip   = remote.sin_addr.s_addr;

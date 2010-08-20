@@ -9,10 +9,13 @@
 #import "../Exception.h"
 #import "../SocketConnection.h"
 
-Exception_Export(HTTP_Server_BodyTooLargeException);
-Exception_Export(HTTP_Server_BodyUnexpectedException);
-Exception_Export(HTTP_Server_HeaderTooLargeException);
-Exception_Export(HTTP_Server_UnknownContentTypeException);
+#undef self
+#define self HTTP_Server
+
+Exception_Export(BodyTooLargeException);
+Exception_Export(BodyUnexpectedException);
+Exception_Export(HeaderTooLargeException);
+Exception_Export(UnknownContentTypeException);
 
 typedef void (* HTTP_Server_OnRespond)(void *, bool);
 

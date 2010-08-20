@@ -2,17 +2,17 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(Signal_SigAlrmException);
-Exception_Define(Signal_SigBusException);
-Exception_Define(Signal_SigFpeException);
-Exception_Define(Signal_SigIllException);
-Exception_Define(Signal_SigIntException);
-Exception_Define(Signal_SigPipeException);
-Exception_Define(Signal_SigQuitException);
-Exception_Define(Signal_SigSegvException);
-Exception_Define(Signal_SigTermException);
-Exception_Define(Signal_SignalHandlerNotSetException);
-Exception_Define(Signal_UnknownException);
+Exception_Define(SigAlrmException);
+Exception_Define(SigBusException);
+Exception_Define(SigFpeException);
+Exception_Define(SigIllException);
+Exception_Define(SigIntException);
+Exception_Define(SigPipeException);
+Exception_Define(SigQuitException);
+Exception_Define(SigSegvException);
+Exception_Define(SigTermException);
+Exception_Define(SignalHandlerNotSetException);
+Exception_Define(UnknownException);
 
 void Signal0(ExceptionManager *e) {
 	exc = e;
@@ -39,7 +39,7 @@ void Signal_Register(int signal, void (*cb)(int, siginfo_t *, void *)) {
 	sigact.sa_restorer  = NULL;
 
 	if (sigaction(signal, &sigact, (struct sigaction *) NULL) != 0) {
-		throw(exc, &Signal_SignalHandlerNotSetException);
+		throw(exc, &SignalHandlerNotSetException);
 	}
 }
 
@@ -52,7 +52,7 @@ void Signal_Ignore(int signal) {
 	sigact.sa_handler = SIG_IGN;
 
 	if (sigaction(signal, &sigact, NULL) != 0) {
-		throw(exc, &Signal_SignalHandlerNotSetException);
+		throw(exc, &SignalHandlerNotSetException);
 	}
 }
 

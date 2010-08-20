@@ -2,7 +2,7 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(HTML_Tree_IllegalNestingException);
+Exception_Define(IllegalNestingException);
 
 void HTML_Tree0(ExceptionManager *e) {
 	exc = e;
@@ -39,7 +39,7 @@ HTML_Tree_Node* HTML_Tree_GetRoot(HTML_Tree *this) {
 void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
-			throw(exc, &HTML_Tree_IllegalNestingException);
+			throw(exc, &IllegalNestingException);
 		}
 
 		this->node = this->node->parent;

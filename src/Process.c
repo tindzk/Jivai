@@ -25,8 +25,8 @@
  * This file is based upon vmchecker/testing/pa/tracker.c by Claudiu Gheorghe.
  */
 
-Exception_Define(Process_ForkFailedException);
-Exception_Define(Process_SpawningProcessFailedException);
+Exception_Define(ForkFailedException);
+Exception_Define(SpawningProcessFailedException);
 
 static ExceptionManager *exc;
 
@@ -87,7 +87,7 @@ int OVERLOAD Process_Spawn(Process *this, float *time) {
 				Memory_Free(argv[i]);
 			}
 
-			throw(exc, &Process_SpawningProcessFailedException);
+			throw(exc, &SpawningProcessFailedException);
 		}
 
 		_exit(127);
@@ -110,7 +110,7 @@ int OVERLOAD Process_Spawn(Process *this, float *time) {
 			Memory_Free(argv[i]);
 		}
 
-		throw(exc, &Process_ForkFailedException);
+		throw(exc, &ForkFailedException);
 	}
 
 	for (size_t i = 0; argv[i] != NULL; i++) {

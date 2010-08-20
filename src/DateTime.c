@@ -1,6 +1,6 @@
 #import "DateTime.h"
 
-Exception_Define(DateTime_YearLower1970Exception);
+Exception_Define(YearLower1970Exception);
 
 static ExceptionManager *exc;
 
@@ -71,7 +71,7 @@ DateTime DateTime_FromUnixEpoch(uint64_t time) {
 
 uint64_t DateTime_ToUnixEpoch(DateTime *this) {
 	if (this->date.year < 1970) {
-		throw(exc, &DateTime_YearLower1970Exception);
+		throw(exc, &YearLower1970Exception);
 	}
 
 	short years = this->date.year - 1970;

@@ -6,8 +6,11 @@
 #import "StringArray.h"
 #import "ExceptionManager.h"
 
-Exception_Export(Process_ForkFailedException);
-Exception_Export(Process_SpawningProcessFailedException);
+#undef self
+#define self Process
+
+Exception_Export(ForkFailedException);
+Exception_Export(SpawningProcessFailedException);
 
 extern char **environ;
 

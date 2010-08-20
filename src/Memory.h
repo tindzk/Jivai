@@ -5,9 +5,12 @@
 #import <stdint.h>
 #import <string.h>
 
-Exception_Export(Memory_NullPointerException);
-Exception_Export(Memory_OutOfBoundsException);
-Exception_Export(Memory_OutOfMemoryException);
+#undef self
+#define self Memory
+
+Exception_Export(NullPointerException);
+Exception_Export(OutOfBoundsException);
+Exception_Export(OutOfMemoryException);
 
 #ifndef Memory_BoundaryChecks
 #define Memory_BoundaryChecks 1

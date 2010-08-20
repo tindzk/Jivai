@@ -1,6 +1,6 @@
 #import "InputLine.h"
 
-Exception_Define(Terminal_InputLine_CommandExceedsAllowedLengthException);
+Exception_Define(CommandExceedsAllowedLengthException);
 
 static ExceptionManager *exc;
 
@@ -241,7 +241,7 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 				this->line.len = 0;
 				this->pos = 0;
 
-				throw(exc, &Terminal_InputLine_CommandExceedsAllowedLengthException);
+				throw(exc, &CommandExceedsAllowedLengthException);
 			}
 		}
 	}

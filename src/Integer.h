@@ -4,7 +4,10 @@
 #import "ExceptionManager.h"
 #import "String.h"
 
-Exception_Export(Integer_NumberTooBigException);
+#undef self
+#define self Integer
+
+Exception_Export(NumberTooBigException);
 
 void Integer0(ExceptionManager *e);
 

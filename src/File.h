@@ -7,26 +7,29 @@
 #import "String.h"
 #import "Exception.h"
 
-Exception_Export(File_AccessDeniedException);
-Exception_Export(File_AlreadyExistsException);
-Exception_Export(File_AttributeNonExistentException);
-Exception_Export(File_BufferTooSmallException);
-Exception_Export(File_CannotOpenFileException);
-Exception_Export(File_GettingAttributeFailedException);
-Exception_Export(File_InvalidFileDescriptorException);
-Exception_Export(File_InvalidParameterException);
-Exception_Export(File_IsDirectoryException);
-Exception_Export(File_NotFoundException);
-Exception_Export(File_NotReadableException);
-Exception_Export(File_NotWritableException);
-Exception_Export(File_ReadingFailedException);
-Exception_Export(File_ReadingInterruptedException);
-Exception_Export(File_SeekingFailedException);
-Exception_Export(File_SettingAttributeFailedException);
-Exception_Export(File_StatFailedException);
-Exception_Export(File_TruncatingFailedException);
-Exception_Export(File_WritingFailedException);
-Exception_Export(File_WritingInterruptedException);
+#undef self
+#define self File
+
+Exception_Export(AccessDeniedException);
+Exception_Export(AlreadyExistsException);
+Exception_Export(AttributeNonExistentException);
+Exception_Export(BufferTooSmallException);
+Exception_Export(CannotOpenFileException);
+Exception_Export(GettingAttributeFailedException);
+Exception_Export(InvalidFileDescriptorException);
+Exception_Export(InvalidParameterException);
+Exception_Export(IsDirectoryException);
+Exception_Export(NotFoundException);
+Exception_Export(NotReadableException);
+Exception_Export(NotWritableException);
+Exception_Export(ReadingFailedException);
+Exception_Export(ReadingInterruptedException);
+Exception_Export(SeekingFailedException);
+Exception_Export(SettingAttributeFailedException);
+Exception_Export(StatFailedException);
+Exception_Export(TruncatingFailedException);
+Exception_Export(WritingFailedException);
+Exception_Export(WritingInterruptedException);
 
 typedef struct {
 	int fd;

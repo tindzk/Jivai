@@ -4,7 +4,10 @@
 #import "String.h"
 #import "Exception.h"
 
-Exception_Export(Time_GetTimeOfDayFailedException);
+#undef self
+#define self Time
+
+Exception_Export(GetTimeOfDayFailedException);
 
 typedef struct {
 	uint8_t hour;

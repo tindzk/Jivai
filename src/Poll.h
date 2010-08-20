@@ -6,6 +6,9 @@
 #import "Fcntl.h"
 #import "Memory.h"
 
+#undef self
+#define self Poll
+
 /* Needed for compatibility with diet libc. */
 #ifndef EPOLLRDHUP
 #define EPOLLRDHUP 0x2000

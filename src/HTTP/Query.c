@@ -1,6 +1,6 @@
 #import "Query.h"
 
-Exception_Define(HTTP_Query_ExceedsPermittedLengthException);
+Exception_Define(ExceedsPermittedLengthException);
 
 static ExceptionManager *exc;
 
@@ -122,7 +122,7 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 
 			if (abslen > value->size) {
 				String_Destroy(&name);
-				throw(exc, &HTTP_Query_ExceedsPermittedLengthException);
+				throw(exc, &ExceedsPermittedLengthException);
 			}
 
 			HTTP_Query_Unescape(val, value->buf, isFormUri);

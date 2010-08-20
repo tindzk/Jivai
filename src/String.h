@@ -16,8 +16,11 @@ typedef struct _String {
 #import "StringArray.h"
 #import "ExceptionManager.h"
 
-Exception_Export(String_NotMutableException);
-Exception_Export(String_BufferOverflowException);
+#undef self
+#define self String
+
+Exception_Export(NotMutableException);
+Exception_Export(BufferOverflowException);
 
 void String0(ExceptionManager *e);
 

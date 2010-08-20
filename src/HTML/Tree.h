@@ -6,7 +6,10 @@
 #import "../String.h"
 #import "../Exception.h"
 
-Exception_Export(HTML_Tree_IllegalNestingException);
+#undef self
+#define self HTML_Tree
+
+Exception_Export(IllegalNestingException);
 
 typedef struct {
 	String name;

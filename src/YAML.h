@@ -3,7 +3,10 @@
 #import "Exception.h"
 #import "StreamInterface.h"
 
-Exception_Export(YAML_IllegalNestingException);
+#undef self
+#define self YAML
+
+Exception_Export(IllegalNestingException);
 
 typedef enum {
 	YAML_NodeType_Node,

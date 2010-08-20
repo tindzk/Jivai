@@ -4,7 +4,10 @@
 #import "../Terminal.h"
 #import "../Exception.h"
 
-Exception_Export(Terminal_InputLine_CommandExceedsAllowedLengthException);
+#undef self
+#define self Terminal_InputLine
+
+Exception_Export(CommandExceedsAllowedLengthException);
 
 typedef void (* Terminal_InputLine_OnKeyUp)(void *);
 typedef void (* Terminal_InputLine_OnKeyDown)(void *);

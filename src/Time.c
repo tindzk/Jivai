@@ -1,6 +1,6 @@
 #import "Time.h"
 
-Exception_Define(Time_GetTimeOfDayFailedException);
+Exception_Define(GetTimeOfDayFailedException);
 
 static ExceptionManager *exc;
 
@@ -38,7 +38,7 @@ Time_UnixEpoch Time_GetCurrentUnixTime(void) {
 	Time_UnixEpoch time;
 
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &time) < 0) {
-		throw(exc, &Time_GetTimeOfDayFailedException);
+		throw(exc, &GetTimeOfDayFailedException);
 	}
 
 	return time;

@@ -2,12 +2,12 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(Poll_FileDescriptorAlreadyAddedException);
-Exception_Define(Poll_FileDescriptorNotSupportedException);
-Exception_Define(Poll_InvalidFileDescriptorException);
-Exception_Define(Poll_SettingCloexecFailedException);
-Exception_Define(Poll_UnknownErrorException);
-Exception_Define(Poll_UnknownFileDescriptorException);
+Exception_Define(FileDescriptorAlreadyAddedException);
+Exception_Define(FileDescriptorNotSupportedException);
+Exception_Define(InvalidFileDescriptorException);
+Exception_Define(SettingCloexecFailedException);
+Exception_Define(UnknownErrorException);
+Exception_Define(UnknownFileDescriptorException);
 
 void Poll0(ExceptionManager *e) {
 	exc = e;
@@ -15,14 +15,14 @@ void Poll0(ExceptionManager *e) {
 
 void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
 	if ((this->fd = syscall(__NR_epoll_create, maxfds)) < 0) {
-		throw(exc, &Poll_UnknownErrorException);
+		throw(exc, &UnknownErrorException);
 	}
 
 	if (syscall(__NR_fcntl, this->fd,
 		FcntlMode_GetDescriptorFlags,
 		FileDescriptorFlags_CloseOnExec) < 0)
 	{
-		throw(exc, &Poll_SettingCloexecFailedException);
+		throw(exc, &SettingCloexecFailedException);
 	}
 
 	this->events = (struct epoll_event *) Memory_Alloc(maxfds * sizeof(struct epoll_event));
@@ -46,13 +46,13 @@ void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
 
 	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
 		if (errno == EPERM) {
-			throw(exc, &Poll_FileDescriptorNotSupportedException);
+			throw(exc, &FileDescriptorNotSupportedException);
 		} else if (errno == EEXIST) {
-			throw(exc, &Poll_FileDescriptorAlreadyAddedException);
+			throw(exc, &FileDescriptorAlreadyAddedException);
 		} else if (errno == EBADF) {
-			throw(exc, &Poll_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &Poll_UnknownErrorException);
+			throw(exc, &UnknownErrorException);
 		}
 	}
 }
@@ -67,13 +67,13 @@ void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
 
 	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
 		if (errno == ENOENT) {
-			throw(exc, &Poll_UnknownFileDescriptorException);
+			throw(exc, &UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
-			throw(exc, &Poll_FileDescriptorNotSupportedException);
+			throw(exc, &FileDescriptorNotSupportedException);
 		} else if (errno == EBADF) {
-			throw(exc, &Poll_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &Poll_UnknownErrorException);
+			throw(exc, &UnknownErrorException);
 		}
 	}
 }
@@ -83,13 +83,13 @@ void Poll_DeleteEvent(Poll *this, int fd) {
 
 	if (syscall(__NR_epoll_ctl, this->fd, EPOLL_CTL_DEL, fd, NULL) < 0) {
 		if (errno == ENOENT) {
-			throw(exc, &Poll_UnknownFileDescriptorException);
+			throw(exc, &UnknownFileDescriptorException);
 		} else if (errno == EPERM) {
-			throw(exc, &Poll_FileDescriptorNotSupportedException);
+			throw(exc, &FileDescriptorNotSupportedException);
 		} else if (errno == EBADF) {
-			throw(exc, &Poll_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &Poll_UnknownErrorException);
+			throw(exc, &UnknownErrorException);
 		}
 	}
 }
@@ -101,9 +101,9 @@ size_t Poll_Process(Poll *this, int timeout) {
 
 	if ((nfds = syscall(__NR_epoll_wait, this->fd, this->events, this->maxfds, timeout)) < 0) {
 		if (errno == EBADF) {
-			throw(exc, &Poll_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &Poll_UnknownErrorException);
+			throw(exc, &UnknownErrorException);
 		}
 	}
 

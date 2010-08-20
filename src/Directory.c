@@ -1,7 +1,7 @@
 #import "Directory.h"
 
-Exception_Define(Directory_CannotOpenDirectoryException);
-Exception_Define(Directory_ReadingFailedException);
+Exception_Define(CannotOpenDirectoryException);
+Exception_Define(ReadingFailedException);
 
 static ExceptionManager *exc;
 
@@ -15,7 +15,7 @@ void Directory_Init(Directory *this, String path) {
 		FileStatus_Directory);
 
 	if (this->fd == -1) {
-		throw(exc, &Directory_CannotOpenDirectoryException);
+		throw(exc, &CannotOpenDirectoryException);
 	}
 
 	this->bpos = 0;
@@ -31,7 +31,7 @@ bool Directory_Read(Directory *this, Directory_Entry *res) {
 		this->bpos  = 0;
 
 		if (this->nread == -1) {
-			throw(exc, &Directory_ReadingFailedException);
+			throw(exc, &ReadingFailedException);
 		}
 
 		if (this->nread == 0) {

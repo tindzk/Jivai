@@ -22,26 +22,26 @@ File *File_StdIn  = &_File_StdIn;
 File *File_StdOut = &_File_StdOut;
 File *File_StdErr = &_File_StdErr;
 
-Exception_Define(File_AccessDeniedException);
-Exception_Define(File_AlreadyExistsException);
-Exception_Define(File_AttributeNonExistentException);
-Exception_Define(File_BufferTooSmallException);
-Exception_Define(File_CannotOpenFileException);
-Exception_Define(File_GettingAttributeFailedException);
-Exception_Define(File_InvalidFileDescriptorException);
-Exception_Define(File_InvalidParameterException);
-Exception_Define(File_IsDirectoryException);
-Exception_Define(File_NotFoundException);
-Exception_Define(File_NotReadableException);
-Exception_Define(File_NotWritableException);
-Exception_Define(File_ReadingFailedException);
-Exception_Define(File_ReadingInterruptedException);
-Exception_Define(File_SeekingFailedException);
-Exception_Define(File_SettingAttributeFailedException);
-Exception_Define(File_StatFailedException);
-Exception_Define(File_TruncatingFailedException);
-Exception_Define(File_WritingFailedException);
-Exception_Define(File_WritingInterruptedException);
+Exception_Define(AccessDeniedException);
+Exception_Define(AlreadyExistsException);
+Exception_Define(AttributeNonExistentException);
+Exception_Define(BufferTooSmallException);
+Exception_Define(CannotOpenFileException);
+Exception_Define(GettingAttributeFailedException);
+Exception_Define(InvalidFileDescriptorException);
+Exception_Define(InvalidParameterException);
+Exception_Define(IsDirectoryException);
+Exception_Define(NotFoundException);
+Exception_Define(NotReadableException);
+Exception_Define(NotWritableException);
+Exception_Define(ReadingFailedException);
+Exception_Define(ReadingInterruptedException);
+Exception_Define(SeekingFailedException);
+Exception_Define(SettingAttributeFailedException);
+Exception_Define(StatFailedException);
+Exception_Define(TruncatingFailedException);
+Exception_Define(WritingFailedException);
+Exception_Define(WritingInterruptedException);
 
 static ExceptionManager *exc;
 
@@ -54,15 +54,15 @@ void File_Open(File *this, String path, int mode) {
 
 	if ((this->fd = syscall(__NR_open, String_ToNul(path), mode, 0666)) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &File_AccessDeniedException);
+			throw(exc, &AccessDeniedException);
 		} else if (errno == ENOENT) {
-			throw(exc, &File_NotFoundException);
+			throw(exc, &NotFoundException);
 		} else if (errno == EISDIR) {
-			throw(exc, &File_IsDirectoryException);
+			throw(exc, &IsDirectoryException);
 		} else if (errno == EEXIST) {
-			throw(exc, &File_AlreadyExistsException);
+			throw(exc, &AlreadyExistsException);
 		} else {
-			throw(exc, &File_CannotOpenFileException);
+			throw(exc, &CannotOpenFileException);
 		}
 	}
 
@@ -91,7 +91,7 @@ void File_Close(File *this) {
 
 void File_SetXattr(File *this, String name, String value) {
 	if (syscall(__NR_fsetxattr, this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
-		throw(exc, &File_SettingAttributeFailedException);
+		throw(exc, &SettingAttributeFailedException);
 	}
 }
 
@@ -104,16 +104,16 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 
 	if (size < 0) {
 		if (errno == ENODATA) {
-			throw(exc, &File_AttributeNonExistentException);
+			throw(exc, &AttributeNonExistentException);
 		} else {
-			throw(exc, &File_GettingAttributeFailedException);
+			throw(exc, &GettingAttributeFailedException);
 		}
 	}
 
 	String res = HeapString(size);
 
 	if (syscall(__NR_fgetxattr, this->fd, nname, res.buf, res.size) < 0) {
-		throw(exc, &File_GettingAttributeFailedException);
+		throw(exc, &GettingAttributeFailedException);
 	}
 
 	res.len = res.size;
@@ -130,11 +130,11 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 
 	if (size < 0) {
 		if (errno == ENODATA) {
-			throw(exc, &File_AttributeNonExistentException);
+			throw(exc, &AttributeNonExistentException);
 		} else if (errno == ERANGE) {
-			throw(exc, &File_BufferTooSmallException);
+			throw(exc, &BufferTooSmallException);
 		} else {
-			throw(exc, &File_GettingAttributeFailedException);
+			throw(exc, &GettingAttributeFailedException);
 		}
 	}
 
@@ -146,13 +146,13 @@ void OVERLOAD File_Truncate(File *this, off64_t length) {
 
 	if (syscall(__NR_ftruncate64, this->fd, length) == -1) {
 		if (errno == EBADF) {
-			throw(exc, &File_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else if (errno == EACCES) {
-			throw(exc, &File_NotWritableException);
+			throw(exc, &NotWritableException);
 		} else if (errno == EINVAL) {
-			throw(exc, &File_InvalidParameterException);
+			throw(exc, &InvalidParameterException);
 		} else {
-			throw(exc, &File_TruncatingFailedException);
+			throw(exc, &TruncatingFailedException);
 		}
 	}
 }
@@ -168,11 +168,11 @@ Stat64 File_GetStat(File *this) {
 
 	if (syscall(__NR_fstat64, this->fd, &attr) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &File_AccessDeniedException);
+			throw(exc, &AccessDeniedException);
 		} else if (errno == EBADF) {
-			throw(exc, &File_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else {
-			throw(exc, &File_StatFailedException);
+			throw(exc, &StatFailedException);
 		}
 	}
 
@@ -185,7 +185,7 @@ off64_t File_GetSize(File *this) {
 
 size_t File_Read(File *this, void *buf, size_t len) {
 	if (!this->readable) {
-		throw(exc, &File_NotReadableException);
+		throw(exc, &NotReadableException);
 	}
 
 	errno = 0;
@@ -194,11 +194,11 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 	if ((res = syscall(__NR_read, this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(exc, &File_ReadingInterruptedException);
+			throw(exc, &ReadingInterruptedException);
 		} else if (errno == EISDIR) {
-			throw(exc, &File_IsDirectoryException);
+			throw(exc, &IsDirectoryException);
 		} else {
-			throw(exc, &File_ReadingFailedException);
+			throw(exc, &ReadingFailedException);
 		}
 	}
 
@@ -207,7 +207,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
 	if (!this->writable) {
-		throw(exc, &File_NotWritableException);
+		throw(exc, &NotWritableException);
 	}
 
 	errno = 0;
@@ -216,11 +216,11 @@ size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
 
 	if ((res = write(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(exc, &File_WritingInterruptedException);
+			throw(exc, &WritingInterruptedException);
 		} else if (errno == EISDIR) {
-			throw(exc, &File_IsDirectoryException);
+			throw(exc, &IsDirectoryException);
 		} else {
-			throw(exc, &File_WritingFailedException);
+			throw(exc, &WritingFailedException);
 		}
 	}
 
@@ -233,7 +233,7 @@ size_t OVERLOAD File_Write(File *this, String s) {
 
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 	if (!this->readable) {
-		throw(exc, &File_NotReadableException);
+		throw(exc, &NotReadableException);
 	}
 
 	errno = 0;
@@ -248,11 +248,11 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 		&pos, whence) == -1)
 	{
 		if (errno == EBADF) {
-			throw(exc, &File_InvalidFileDescriptorException);
+			throw(exc, &InvalidFileDescriptorException);
 		} else if (errno == EINVAL) {
-			throw(exc, &File_InvalidParameterException);
+			throw(exc, &InvalidParameterException);
 		} else {
-			throw(exc, &File_SeekingFailedException);
+			throw(exc, &SeekingFailedException);
 		}
 	}
 

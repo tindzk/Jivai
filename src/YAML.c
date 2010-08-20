@@ -2,7 +2,7 @@
 
 static ExceptionManager *exc;
 
-Exception_Define(YAML_IllegalNestingException);
+Exception_Define(IllegalNestingException);
 
 void YAML0(ExceptionManager *e) {
 	exc = e;
@@ -62,7 +62,7 @@ void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size) {
 	} else if (depth < this->depth) {
 		while (this->depth - depth > 0) {
 			if (this->node->parent == NULL) {
-				throw(exc, &YAML_IllegalNestingException);
+				throw(exc, &IllegalNestingException);
 			}
 
 			if (this->node->type == YAML_NodeType_Node) {
@@ -73,7 +73,7 @@ void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size) {
 		}
 
 		if (this->node->parent == NULL) {
-			throw(exc, &YAML_IllegalNestingException);
+			throw(exc, &IllegalNestingException);
 		}
 
 		if (this->node->parent != NULL) {

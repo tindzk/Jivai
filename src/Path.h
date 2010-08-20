@@ -8,6 +8,9 @@
 #import "String.h"
 #import "Exception.h"
 
+#undef self
+#define self Path
+
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
 #endif
@@ -16,28 +19,28 @@
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
-Exception_Export(Path_AccessDeniedException);
-Exception_Export(Path_AlreadyExistsException);
-Exception_Export(Path_AttributeNonExistentException);
-Exception_Export(Path_BufferTooSmallException);
-Exception_Export(Path_CreationFailedException);
-Exception_Export(Path_DeletingFailedException);
-Exception_Export(Path_DirectoryNotEmptyException);
-Exception_Export(Path_EmptyPathException);
-Exception_Export(Path_GettingAttributeFailedException);
-Exception_Export(Path_InsufficientSpaceException);
-Exception_Export(Path_IsDirectoryException);
-Exception_Export(Path_NameTooLongException);
-Exception_Export(Path_NonExistentFileException);
-Exception_Export(Path_NonExistentPathException);
-Exception_Export(Path_NotDirectoryException);
-Exception_Export(Path_PermissionDeniedException);
-Exception_Export(Path_ReadingLinkFailedException);
-Exception_Export(Path_ResolvingFailedException);
-Exception_Export(Path_SettingAttributeFailedException);
-Exception_Export(Path_SettingTimeFailedException);
-Exception_Export(Path_StatFailedException);
-Exception_Export(Path_TruncatingFailedException);
+Exception_Export(AccessDeniedException);
+Exception_Export(AlreadyExistsException);
+Exception_Export(AttributeNonExistentException);
+Exception_Export(BufferTooSmallException);
+Exception_Export(CreationFailedException);
+Exception_Export(DeletingFailedException);
+Exception_Export(DirectoryNotEmptyException);
+Exception_Export(EmptyPathException);
+Exception_Export(GettingAttributeFailedException);
+Exception_Export(InsufficientSpaceException);
+Exception_Export(IsDirectoryException);
+Exception_Export(NameTooLongException);
+Exception_Export(NonExistentFileException);
+Exception_Export(NonExistentPathException);
+Exception_Export(NotDirectoryException);
+Exception_Export(PermissionDeniedException);
+Exception_Export(ReadingLinkFailedException);
+Exception_Export(ResolvingFailedException);
+Exception_Export(SettingAttributeFailedException);
+Exception_Export(SettingTimeFailedException);
+Exception_Export(StatFailedException);
+Exception_Export(TruncatingFailedException);
 
 void Path0(ExceptionManager *e);
 

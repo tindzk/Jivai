@@ -8,17 +8,20 @@
 #import "Exception.h"
 #import "NetworkAddress.h"
 
+#undef self
+#define self SocketConnection
+
 #ifndef SocketConnection_ChunkSize
 #define SocketConnection_ChunkSize 65536
 #endif
 
-Exception_Export(SocketConnection_ConnectionRefusedException);
-Exception_Export(SocketConnection_ConnectionResetException);
-Exception_Export(SocketConnection_FcntlFailedException);
-Exception_Export(SocketConnection_FileDescriptorUnusableException);
-Exception_Export(SocketConnection_InvalidFileDescriptorException);
-Exception_Export(SocketConnection_NotConnectedException);
-Exception_Export(SocketConnection_UnknownErrorException);
+Exception_Export(ConnectionRefusedException);
+Exception_Export(ConnectionResetException);
+Exception_Export(FcntlFailedException);
+Exception_Export(FileDescriptorUnusableException);
+Exception_Export(InvalidFileDescriptorException);
+Exception_Export(NotConnectedException);
+Exception_Export(UnknownErrorException);
 
 typedef struct {
 	NetworkAddress addr;

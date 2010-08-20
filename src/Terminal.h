@@ -5,7 +5,10 @@
 #import "UniStd.h" /* isatty */
 #import "Exception.h"
 
-Exception_Export(Terminal_IoctlFailedException);
+#undef self
+#define self Terminal
+
+Exception_Export(IoctlFailedException);
 
 /* VT100 escape sequence strings. */
 #define Terminal_VT100_Normal              String("\33[0m")

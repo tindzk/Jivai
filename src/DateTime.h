@@ -2,6 +2,9 @@
 #import "Time.h"
 #import "Exception.h"
 
+#undef self
+#define self DateTime
+
 typedef struct {
 	Date date;
 	Time time;
@@ -22,7 +25,7 @@ typedef struct {
 		}                  \
 	}
 
-Exception_Export(DateTime_YearLower1970Exception);
+Exception_Export(YearLower1970Exception);
 
 void DateTime0(ExceptionManager *e);
 void DateTime_Init(DateTime *this);

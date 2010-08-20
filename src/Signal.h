@@ -4,17 +4,20 @@
 #import "Compiler.h"
 #import "Exception.h"
 
-Exception_Export(Signal_SigAlrmException);
-Exception_Export(Signal_SigBusException);
-Exception_Export(Signal_SigFpeException);
-Exception_Export(Signal_SigIllException);
-Exception_Export(Signal_SigIntException);
-Exception_Export(Signal_SigPipeException);
-Exception_Export(Signal_SigQuitException);
-Exception_Export(Signal_SigSegvException);
-Exception_Export(Signal_SigTermException);
-Exception_Export(Signal_SignalHandlerNotSetException);
-Exception_Export(Signal_UnknownException);
+#undef self
+#define self Signal
+
+Exception_Export(SigAlrmException);
+Exception_Export(SigBusException);
+Exception_Export(SigFpeException);
+Exception_Export(SigIllException);
+Exception_Export(SigIntException);
+Exception_Export(SigPipeException);
+Exception_Export(SigQuitException);
+Exception_Export(SigSegvException);
+Exception_Export(SigTermException);
+Exception_Export(SignalHandlerNotSetException);
+Exception_Export(UnknownException);
 
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 typedef struct _sig_ucontext {

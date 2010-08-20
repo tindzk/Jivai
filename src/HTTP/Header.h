@@ -7,11 +7,14 @@
 #import "../String.h"
 #import "../Exception.h"
 
-Exception_Export(HTTP_Header_EmptyRequestUriException);
-Exception_Export(HTTP_Header_RequestMalformedException);
-Exception_Export(HTTP_Header_UnknownMethodException);
-Exception_Export(HTTP_Header_UnknownStatusException);
-Exception_Export(HTTP_Header_UnknownVersionException);
+#undef self
+#define self HTTP_Header
+
+Exception_Export(EmptyRequestUriException);
+Exception_Export(RequestMalformedException);
+Exception_Export(UnknownMethodException);
+Exception_Export(UnknownStatusException);
+Exception_Export(UnknownVersionException);
 
 typedef enum {
 	HTTP_Header_Type_Request,

@@ -2,7 +2,10 @@
 #import "../HTTP.h"
 #import "../String.h"
 
-Exception_Export(HTTP_Query_ExceedsPermittedLengthException);
+#undef self
+#define self HTTP_Query
+
+Exception_Export(ExceedsPermittedLengthException);
 
 typedef struct {
 	HTTP_OnParameter onParameter;

@@ -1,5 +1,7 @@
 #import <setjmp.h>
 
+#import "Macros.h"
+
 #ifndef Exception_TraceSize
 #define Exception_TraceSize 15
 #endif
@@ -29,7 +31,8 @@ typedef struct {
 } ExceptionManager;
 
 #define Exception_Define(name) \
-	String name __section(".exceptions") = String(#name)
+	static String name __section(".exceptions") = String(#name); \
+	String* __eval(self, name) __section(".exceptions") = &name
 
 #define Exception_Export(name) \
-	extern String name
+	extern String* __eval(self, name)
