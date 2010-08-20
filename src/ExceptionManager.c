@@ -19,7 +19,7 @@ void ExceptionManager_Push(ExceptionManager *this, ExceptionManager_Record *reco
 }
 
 void Exception_Print(Exception *e) {
-#ifdef Exception_SaveOrigin
+#if Exception_SaveOrigin
 	String s = String_Format(
 		String("Uncaught exception '%' in %:%\n"),
 		*(String *) e->p,

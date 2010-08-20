@@ -27,7 +27,7 @@ int main(void) {
 	} catch(&CustomException, e) {
 		String_Print(String("CustomException caught.\n"));
 
-#ifdef Exception_SaveTrace
+#if Exception_SaveTrace
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 	} finally {

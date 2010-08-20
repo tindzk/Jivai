@@ -5,14 +5,14 @@
 #endif
 
 typedef struct {
-#ifdef Exception_SaveOrigin
+#if Exception_SaveOrigin
 	String file;
 	int line;
 #endif
 
 	void *p;
 
-#ifdef Exception_SaveTrace
+#if Exception_SaveTrace
 	void *trace[Exception_TraceSize];
 	int traceItems;
 #endif

@@ -79,7 +79,7 @@ void Signal_OnSignal(int signal, UNUSED siginfo_t *info, UNUSED void *ucontext) 
 		exc->e.p = &Signal_UnknownException;
 	}
 
-#ifdef Exception_SaveTrace
+#if Exception_SaveTrace
 	exc->e.traceItems = Backtrace_GetTrace(exc->e.trace, Exception_TraceSize);
 
 	/* Overwrite the first trace item with the address from which the signal was raised. */
@@ -92,7 +92,7 @@ void Signal_OnSignal(int signal, UNUSED siginfo_t *info, UNUSED void *ucontext) 
 #endif
 #endif
 
-#ifdef Exception_SaveOrigin
+#if Exception_SaveOrigin
 	exc->e.file = String(__FILE__);
 	exc->e.line = __LINE__;
 #endif
