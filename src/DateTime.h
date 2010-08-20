@@ -1,9 +1,6 @@
-#ifndef DATE_TIME_H
-#define DATE_TIME_H
-
-#include "Date.h"
-#include "Time.h"
-#include "Exception.h"
+#import "Date.h"
+#import "Time.h"
+#import "Exception.h"
 
 typedef struct {
 	Date date;
@@ -34,5 +31,3 @@ bool DateTime_Equals(DateTime a, DateTime b);
 DateTime DateTime_FromUnixEpoch(uint64_t time);
 uint64_t DateTime_ToUnixEpoch(DateTime *this);
 DateTime DateTime_GetCurrent(void);
-
-#endif

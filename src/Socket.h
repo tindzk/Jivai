@@ -1,15 +1,12 @@
-#ifndef SOCKET_H
-#define SOCKET_H
+#import <errno.h>
+#import <linux/net.h>
+#import <sys/syscall.h>
 
-#include <errno.h>
-#include <linux/net.h>
-#include <sys/syscall.h>
-
-#include "Fcntl.h"
-#include "String.h"
-#include "NetworkAddress.h"
-#include "SocketConnection.h"
-#include "ExceptionManager.h"
+#import "Fcntl.h"
+#import "String.h"
+#import "NetworkAddress.h"
+#import "SocketConnection.h"
+#import "ExceptionManager.h"
 
 typedef enum {
 	Socket_Protocol_TCP,
@@ -42,5 +39,3 @@ void Socket_SetLinger(Socket *this);
 SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short port);
 SocketConnection Socket_Accept(Socket *this);
 void Socket_Destroy(Socket *this);
-
-#endif

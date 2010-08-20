@@ -1,4 +1,4 @@
-#include "Logger.h"
+#import "Logger.h"
 
 void Logger_Init(Logger *this, Logger_Printer printer, void *context, int levels) {
 	this->printer = printer;

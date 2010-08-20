@@ -1,7 +1,4 @@
-#ifndef HTTP_VERSION_H
-#define HTTP_VERSION_H
-
-#include <String.h>
+#import "../String.h"
 
 typedef enum {
 	HTTP_Version_1_0,
@@ -10,5 +7,3 @@ typedef enum {
 } HTTP_Version;
 
 HTTP_Version HTTP_Version_FromString(String s);
-
-#endif

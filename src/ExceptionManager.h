@@ -1,11 +1,8 @@
-#ifndef EXCEPTION_MANAGER_H
-#define EXCEPTION_MANAGER_H
-
-#include "String.h"
-#include "Integer.h"
-#include "NULL.h"
-#include "Backtrace.h"
-#include "Compiler.h"
+#import "String.h"
+#import "Integer.h"
+#import "NULL.h"
+#import "Backtrace.h"
+#import "Compiler.h"
 
 void ExceptionManager_Init(ExceptionManager *this);
 void ExceptionManager_Raise(ExceptionManager *this);
@@ -132,5 +129,3 @@ void Exception_Print(Exception *e);
 
 #define throw(...) \
 	ExceptionManager_Throw(__VA_ARGS__)
-
-#endif

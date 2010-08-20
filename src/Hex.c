@@ -1,4 +1,4 @@
-#include "Hex.h"
+#import "Hex.h"
 
 String Hex_ToString(long hex) {
 	static char symbols[] = "0123456789abcdef";

@@ -1,7 +1,4 @@
-#ifndef ARRAY_H
-#define ARRAY_H
-
-#include "Memory.h"
+#import "Memory.h"
 
 #define Array(type, name) \
 	struct {              \
@@ -60,5 +57,3 @@
 
 #define Array_Sort(this, cmp) \
 	qsort((this)->buf, (this)->len, Array_ItemSize(this), (void *) cmp)
-
-#endif

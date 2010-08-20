@@ -1,7 +1,4 @@
-#ifndef HTTP_STATUS_H
-#define HTTP_STATUS_H
-
-#include "../String.h"
+#import "../String.h"
 
 typedef struct {
 	int code;
@@ -70,5 +67,3 @@ typedef enum {
 
 HTTP_StatusItem HTTP_Status_GetItem(HTTP_Status status);
 HTTP_Status HTTP_Status_GetStatusByCode(int code);
-
-#endif

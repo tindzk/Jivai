@@ -20,10 +20,7 @@
  *
  */
 
-#ifndef BLOCK_H
-#define BLOCK_H
-
-#include "Memory.h"
+#import "Memory.h"
 
 enum {
 	Block_Flags_RefCountMask   = (0xffff),
@@ -77,5 +74,3 @@ void _Block_object_dispose(Block_Layout *object, const int flags);
 
 #define Block_Release(block) \
 	_Block_Release((Block_Layout *)(block))
-
-#endif

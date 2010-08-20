@@ -1,10 +1,7 @@
-#ifndef YAML_H
-#define YAML_H
-
-#include "Tree.h"
-#include "String.h"
-#include "Exception.h"
-#include "StreamInterface.h"
+#import "Tree.h"
+#import "String.h"
+#import "Exception.h"
+#import "StreamInterface.h"
 
 Exception_Export(YAML_IllegalNestingException);
 
@@ -60,5 +57,3 @@ void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size);
 void YAML_AddSection(YAML *this, size_t depth, String s);
 void YAML_AddItem(YAML *this, size_t depth, String key, String value);
 void YAML_Parse(YAML *this);
-
-#endif

@@ -1,8 +1,5 @@
-#ifndef CHAR_H
-#define CHAR_H
-
-#include "Boolean.h"
-#include "UniStd.h" /* write() */
+#import "Boolean.h"
+#import "UniStd.h" /* write() */
 
 /* See also: http://php.net/manual/en/function.trim.php */
 #define Char_IsSpace(c) \
@@ -28,5 +25,3 @@ int Char_ToLower(int c);
 int Char_ToUpper(int c);
 bool Char_IsPrintable(int x);
 bool Char_IsHexDigit(int ch);
-
-#endif

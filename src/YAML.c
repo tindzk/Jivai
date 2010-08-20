@@ -1,4 +1,4 @@
-#include "YAML.h"
+#import "YAML.h"
 
 static ExceptionManager *exc;
 

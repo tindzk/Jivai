@@ -1,13 +1,10 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#import <unistd.h>
+#import <sys/wait.h>
+#import <sys/types.h>
 
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-
-#include "String.h"
-#include "StringArray.h"
-#include "ExceptionManager.h"
+#import "String.h"
+#import "StringArray.h"
+#import "ExceptionManager.h"
 
 Exception_Export(Process_ForkFailedException);
 Exception_Export(Process_SpawningProcessFailedException);
@@ -25,5 +22,3 @@ void Process_AddParameter(Process *this, String param);
 String Process_GetCommandLine(Process *this);
 int OVERLOAD Process_Spawn(Process *this, float *time);
 int OVERLOAD Process_Spawn(Process *this);
-
-#endif

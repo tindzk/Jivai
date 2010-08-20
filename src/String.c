@@ -1,4 +1,4 @@
-#include "String.h"
+#import "String.h"
 
 Exception_Define(String_NotMutableException);
 Exception_Define(String_BufferOverflowException);

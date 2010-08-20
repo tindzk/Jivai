@@ -1,4 +1,4 @@
-#include "Number.h"
+#import "Number.h"
 
 String Number_Format(float number, size_t decimals) {
 	bool isNeg = (number < 0);

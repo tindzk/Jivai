@@ -1,9 +1,4 @@
-#ifndef HTML_ENTITIES_H
-#define HTML_ENTITIES_H
-
-#include "../String.h"
-#include "../Unicode.h"
+#import "../String.h"
+#import "../Unicode.h"
 
 String HTML_Entities_Decode(String s);
-
-#endif

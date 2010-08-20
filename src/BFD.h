@@ -1,17 +1,14 @@
-#ifndef BFD_H
-#define BFD_H
-
-#include <bfd.h>
+#import <bfd.h>
 
 #define _GNU_SOURCE
 #include <libiberty.h>
 #undef _GNU_SOURCE
 
-#include <link.h>
+#import <link.h>
 
-#include "Memory.h"
-#include "BitMask.h"
-#include "Compiler.h"
+#import "Memory.h"
+#import "BitMask.h"
+#import "Compiler.h"
 
 typedef struct {
 	String filename;
@@ -28,5 +25,3 @@ typedef struct {
 } BFD_FileMatch;
 
 BFD_Item* BFD_ResolveSymbols(void *const *buffer, int size);
-
-#endif

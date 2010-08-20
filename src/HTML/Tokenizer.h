@@ -1,11 +1,8 @@
-#ifndef HTML_TOKENIZER_H
-#define HTML_TOKENIZER_H
-
-#include "../Bit.h"
-#include "../BitMask.h"
-#include "../HTML.h"
-#include "../String.h"
-#include "../StreamInterface.h"
+#import "../Bit.h"
+#import "../BitMask.h"
+#import "../HTML.h"
+#import "../String.h"
+#import "../StreamInterface.h"
 
 typedef enum {
 	HTML_Tokenizer_TokenType_Value,
@@ -48,5 +45,3 @@ void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c);
 void HTML_Tokenizer_ProcessString(HTML_Tokenizer *this, String s);
 void HTML_Tokenizer_ProcessStream(HTML_Tokenizer *this, StreamInterface *stream, void *context);
 void HTML_Tokenizer_Poll(HTML_Tokenizer *this);
-
-#endif

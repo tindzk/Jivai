@@ -1,4 +1,4 @@
-#include "Path.h"
+#import "Path.h"
 
 Exception_Define(Path_AccessDeniedException);
 Exception_Define(Path_AlreadyExistsException);

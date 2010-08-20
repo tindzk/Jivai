@@ -1,11 +1,8 @@
-#ifndef SOCKET_SESSION_H
-#define SOCKET_SESSION_H
-
-#include "String.h"
-#include "Connection.h"
-#include "SocketConnection.h"
-#include "ExceptionManager.h"
-#include "ConnectionInterface.h"
+#import "String.h"
+#import "Connection.h"
+#import "SocketConnection.h"
+#import "ExceptionManager.h"
+#import "ConnectionInterface.h"
 
 typedef void (* SocketSession_OnDone)(void *, void *);
 
@@ -49,5 +46,3 @@ void SocketSession_Write(SocketSession *this, String s, SocketSession_OnDone onD
 void SocketSession_SendFile(SocketSession *this, File file, size_t length, SocketSession_OnDone onDone);
 void SocketSession_Continue(SocketSession *this);
 bool SocketSession_IsIdle(SocketSession *this);
-
-#endif

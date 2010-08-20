@@ -1,14 +1,11 @@
-#ifndef FILE_H
-#define FILE_H
+#import <errno.h>
+#import <stdlib.h>
+#import <attr/xattr.h>
+#import <sys/syscall.h>
 
-#include <errno.h>
-#include <stdlib.h>
-#include <attr/xattr.h>
-#include <sys/syscall.h>
-
-#include "Stat.h"
-#include "String.h"
-#include "Exception.h"
+#import "Stat.h"
+#import "String.h"
+#import "Exception.h"
 
 Exception_Export(File_AccessDeniedException);
 Exception_Export(File_AlreadyExistsException);
@@ -63,5 +60,3 @@ size_t OVERLOAD File_Write(File *this, void *buf, size_t len);
 size_t OVERLOAD File_Write(File *this, String s);
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence);
 off64_t File_Tell(File *this);
-
-#endif

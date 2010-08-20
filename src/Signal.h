@@ -1,11 +1,8 @@
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#import <signal.h>
 
-#include <signal.h>
-
-#include "String.h"
-#include "Compiler.h"
-#include "Exception.h"
+#import "String.h"
+#import "Compiler.h"
+#import "Exception.h"
 
 Exception_Export(Signal_SigAlrmException);
 Exception_Export(Signal_SigBusException);
@@ -33,5 +30,3 @@ void Signal0(ExceptionManager *e);
 void Signal_Register(int signal, void (*cb)(int, siginfo_t *, void *));
 void Signal_Ignore(int signal);
 void Signal_OnSignal(int signal, siginfo_t *info, void *ucontext);
-
-#endif

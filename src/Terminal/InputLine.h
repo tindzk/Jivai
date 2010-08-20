@@ -1,11 +1,8 @@
-#ifndef TERMINAL_INPUT_LINE_H
-#define TERMINAL_INPUT_LINE_H
-
-#include "../File.h"
-#include "../String.h"
-#include "../Unicode.h"
-#include "../Terminal.h"
-#include "../Exception.h"
+#import "../File.h"
+#import "../String.h"
+#import "../Unicode.h"
+#import "../Terminal.h"
+#import "../Exception.h"
 
 Exception_Export(Terminal_InputLine_CommandExceedsAllowedLengthException);
 
@@ -47,5 +44,3 @@ void Terminal_InputLine_DeleteSucceeding(Terminal_InputLine *this);
 void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n);
 void Terminal_InputLine_MoveLeft(Terminal_InputLine *this, size_t n);
 void Terminal_InputLine_Process(Terminal_InputLine *this);
-
-#endif

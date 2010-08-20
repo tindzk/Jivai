@@ -1,4 +1,4 @@
-#include "InputLine.h"
+#import "InputLine.h"
 
 Exception_Define(Terminal_InputLine_CommandExceedsAllowedLengthException);
 

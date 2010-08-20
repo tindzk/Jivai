@@ -1,9 +1,6 @@
-#ifndef HTTP_QUERY_H
-#define HTTP_QUERY_H
-
-#include "../Hex.h"
-#include "../HTTP.h"
-#include "../String.h"
+#import "../Hex.h"
+#import "../HTTP.h"
+#import "../String.h"
 
 Exception_Export(HTTP_Query_ExceedsPermittedLengthException);
 
@@ -18,5 +15,3 @@ void HTTP_Query_Init(HTTP_Query *this, HTTP_OnParameter onParameter, void *conte
 size_t HTTP_Query_GetAbsoluteLength(String s);
 void HTTP_Query_Unescape(String src, char *dst, bool isFormUri);
 void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri);
-
-#endif

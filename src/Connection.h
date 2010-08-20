@@ -1,8 +1,5 @@
-#ifndef CONNECTION_H
-#define CONNECTION_H
-
-#include "Client.h"
-#include "DoublyLinkedList.h"
+#import "Client.h"
+#import "DoublyLinkedList.h"
 
 typedef enum {
 	Connection_Status_Close = 0,
@@ -18,5 +15,3 @@ typedef struct _Connection {
 } Connection;
 
 DoublyLinkedList_DeclareList(Connection, Connections);
-
-#endif

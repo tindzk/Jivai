@@ -1,6 +1,3 @@
-#ifndef BOOLEAN_H
-#define BOOLEAN_H
-
 /* Clang's stdbool.h is not used because it defines `true' and `false'
  * as plain integers, making it impossible to differentiate between
  * `int' and `bool' in function declarations, which can be necessary
@@ -14,5 +11,3 @@ typedef enum {
 
 #define false (bool) false
 #define true  (bool) true
-
-#endif

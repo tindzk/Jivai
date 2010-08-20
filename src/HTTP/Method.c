@@ -1,4 +1,4 @@
-#include "Method.h"
+#import "Method.h"
 
 HTTP_Method HTTP_Method_FromString(String s) {
 	if (String_Equals(s, String("GET"))) {

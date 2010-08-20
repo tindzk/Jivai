@@ -1,7 +1,4 @@
-#ifndef CHARSET_H
-#define CHARSET_H
-
-#include "String.h"
+#import "String.h"
 
 /*
  * Portions Copyright (c) 1996-2009, PostgreSQL Global Development Group
@@ -16,5 +13,3 @@
 	((unsigned char)(c) & Charset_HighBit)
 
 String Charset_Latin1ToUTF8(String s);
-
-#endif

@@ -1,11 +1,8 @@
-#ifndef STRING_H
-#define STRING_H
-
-#include "UniStd.h" /* write() */
-#include "NULL.h"
-#include "Char.h"
-#include "VarArg.h"
-#include "Compiler.h"
+#import "UniStd.h" /* write() */
+#import "NULL.h"
+#import "Char.h"
+#import "VarArg.h"
+#import "Compiler.h"
 
 typedef struct _String {
 	size_t len;
@@ -14,10 +11,10 @@ typedef struct _String {
 	bool mutable;
 } String;
 
-#include "Memory.h"
-#include "Exception.h"
-#include "StringArray.h"
-#include "ExceptionManager.h"
+#import "Memory.h"
+#import "Exception.h"
+#import "StringArray.h"
+#import "ExceptionManager.h"
 
 Exception_Export(String_NotMutableException);
 Exception_Export(String_BufferOverflowException);
@@ -128,5 +125,3 @@ short OVERLOAD String_NaturalCompare(String a, String b);
 		String_Append(this, __tmp);     \
 		String_Destroy(&__tmp);         \
 	} while(0)
-
-#endif

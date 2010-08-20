@@ -20,7 +20,7 @@
  *
  */
 
-#include "Block.h"
+#import "Block.h"
 
 void *_NSConcreteStackBlock[32]  = { 0 };
 void *_NSConcreteMallocBlock[32] = { 0 };

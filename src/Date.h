@@ -1,7 +1,4 @@
-#ifndef DATE_H
-#define DATE_H
-
-#include "Integer.h"
+#import "Integer.h"
 
 typedef struct {
 	uint16_t year;
@@ -47,5 +44,3 @@ void Date_Init(Date *this);
 bool Date_IsLeapYear(int year);
 short Date_Compare(Date a, Date b);
 bool Date_Equals(Date a, Date b);
-
-#endif

@@ -1,7 +1,4 @@
-#ifndef DOUBLY_LINKED_LIST_H
-#define DOUBLY_LINKED_LIST_H
-
-#include "LinkedList.h"
+#import "LinkedList.h"
 
 #define DoublyLinkedList_New() \
 	{ NULL, NULL }
@@ -89,5 +86,3 @@
 
 #define DoublyLinkedList_Foreach(...) \
 	LinkedList_Foreach(__VA_ARGS__)
-
-#endif

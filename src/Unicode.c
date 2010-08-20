@@ -1,4 +1,4 @@
-#include "Unicode.h"
+#import "Unicode.h"
 
 /* Taken from BusyBox (busybox-1.16.1/libbb/unicode.c). */
 size_t Unicode_CalcWidth(const char *src) {

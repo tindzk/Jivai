@@ -1,6 +1,3 @@
-#ifndef UNI_STD_H
-#define UNI_STD_H
-
 #ifndef __USE_XOPEN
 
 /* Required for Clang when the code is compiled with -fblocks
@@ -13,7 +10,5 @@
 #undef __USE_XOPEN
 #include <unistd.h>
 #define __USE_XOPEN
-
-#endif
 
 #endif

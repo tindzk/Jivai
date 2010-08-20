@@ -1,4 +1,4 @@
-#include "Charset.h"
+#import "Charset.h"
 
 /*
  * Portions Copyright (c) 1996-2009, PostgreSQL Global Development Group

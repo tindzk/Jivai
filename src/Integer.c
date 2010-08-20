@@ -1,4 +1,4 @@
-#include "Integer.h"
+#import "Integer.h"
 
 Exception_Define(Integer_NumberTooBigException);
 

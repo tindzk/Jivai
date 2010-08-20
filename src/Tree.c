@@ -1,4 +1,4 @@
-#include "Tree.h"
+#import "Tree.h"
 
 void Tree_Init(Tree *this, Tree_DestroyNode destroyNode) {
 	this->destroyNode = destroyNode;

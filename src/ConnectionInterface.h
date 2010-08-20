@@ -1,7 +1,4 @@
-#ifndef CONNECTION_INTERFACE_H
-#define CONNECTION_INTERFACE_H
-
-#include "SocketConnection.h"
+#import "SocketConnection.h"
 
 typedef struct {
 	void* (*new)();
@@ -10,5 +7,3 @@ typedef struct {
 	bool (*pull)(void *);
 	bool (*push)(void *);
 } ConnectionInterface;
-
-#endif

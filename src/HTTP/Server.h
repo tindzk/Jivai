@@ -1,16 +1,13 @@
-#ifndef HTTP_SERVER_H
-#define HTTP_SERVER_H
+#import "Query.h"
+#import "Header.h"
+#import "Status.h"
+#import "Method.h"
+#import "ContentType.h"
 
-#include "Query.h"
-#include "Header.h"
-#include "Status.h"
-#include "Method.h"
-#include "ContentType.h"
-
-#include "../HTTP.h"
-#include "../String.h"
-#include "../Exception.h"
-#include "../SocketConnection.h"
+#import "../HTTP.h"
+#import "../String.h"
+#import "../Exception.h"
+#import "../SocketConnection.h"
 
 Exception_Export(HTTP_Server_BodyTooLargeException);
 Exception_Export(HTTP_Server_BodyUnexpectedException);
@@ -72,5 +69,3 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value);
 HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this);
 HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this);
 bool HTTP_Server_Process(HTTP_Server *this);
-
-#endif

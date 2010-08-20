@@ -1,12 +1,9 @@
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#import <pty.h>
 
-#include <pty.h>
-
-#include "Bit.h"
-#include "File.h"
-#include "UniStd.h" /* isatty */
-#include "Exception.h"
+#import "Bit.h"
+#import "File.h"
+#import "UniStd.h" /* isatty */
+#import "Exception.h"
 
 Exception_Export(Terminal_IoctlFailedException);
 
@@ -135,5 +132,3 @@ char Terminal_ReadChar(Terminal *this);
 void Terminal_HideCursor(Terminal *this);
 void Terminal_ShowCursor(Terminal *this);
 Terminal_Key Terminal_ReadKey(Terminal *this);
-
-#endif

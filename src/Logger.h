@@ -1,9 +1,6 @@
-#ifndef LOGGER_H
-#define LOGGER_H
-
-#include "String.h"
-#include "Bit.h"
-#include "BitMask.h"
+#import "String.h"
+#import "Bit.h"
+#import "BitMask.h"
 
 #ifndef Logger_DisabledLevels
 #define Logger_DisabledLevels 0
@@ -51,5 +48,3 @@ String Logger_LevelToString(Logger_Level level);
 			Memory_Free(__fmt.buf);                            \
 		}                                                      \
 	} while(0)
-
-#endif

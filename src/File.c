@@ -1,4 +1,4 @@
-#include "File.h"
+#import "File.h"
 
 static File _File_StdIn = {
 	.fd       = STDIN_FILENO,

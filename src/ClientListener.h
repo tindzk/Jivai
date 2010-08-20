@@ -1,10 +1,7 @@
-#ifndef CLIENT_LISTENER_H
-#define CLIENT_LISTENER_H
-
-#include "Block.h"
-#include "Server.h"
-#include "Connection.h"
-#include "ConnectionInterface.h"
+#import "Block.h"
+#import "Server.h"
+#import "Connection.h"
+#import "ConnectionInterface.h"
 
 typedef struct {
 	Connections         connections;
@@ -21,5 +18,3 @@ void ClientListener_OnDisconnect(ClientListener *this, Client *client);
 static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull);
 Connection_Status ClientListener_OnPull(ClientListener *this, Client *client);
 Connection_Status ClientListener_OnPush(ClientListener *this, Client *client);
-
-#endif

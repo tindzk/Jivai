@@ -1,4 +1,4 @@
-#include "URL.h"
+#import "URL.h"
 
 URL_Parts URL_Parse(String url) {
 	URL_Parts res;

@@ -1,4 +1,4 @@
-#include "Terminal.h"
+#import "Terminal.h"
 
 Exception_Define(Terminal_IoctlFailedException);
 

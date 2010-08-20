@@ -1,4 +1,4 @@
-#include "Entities.h"
+#import "Entities.h"
 
 /* Taken from http://www.w3.org/TR/REC-html40/sgml/entities.html */
 static struct {

@@ -1,4 +1,4 @@
-#include "Version.h"
+#import "Version.h"
 
 HTTP_Version HTTP_Version_FromString(String s) {
 	if (String_Equals(s, String("HTTP/1.1"))) {

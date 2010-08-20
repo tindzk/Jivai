@@ -1,4 +1,4 @@
-#include "Process.h"
+#import "Process.h"
 
 /*
  * Copyright (C) 2008-2010 vmchecker authors and contributors.

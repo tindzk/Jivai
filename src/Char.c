@@ -1,4 +1,4 @@
-#include "Char.h"
+#import "Char.h"
 
 void Char_Print(char c) {
 	write(STDOUT_FILENO, &c, 1);

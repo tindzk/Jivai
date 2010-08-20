@@ -1,4 +1,4 @@
-#include "HTML.h"
+#import "HTML.h"
 
 void HTML_Unescape(String *html) {
 	if (html->len == 0) {

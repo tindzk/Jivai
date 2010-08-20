@@ -1,12 +1,9 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#import "String.h"
+#import "Exception.h"
 
-#include "String.h"
-#include "Exception.h"
-
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
+#import <stdlib.h>
+#import <stdint.h>
+#import <string.h>
 
 Exception_Export(Memory_NullPointerException);
 Exception_Export(Memory_OutOfBoundsException);
@@ -51,5 +48,3 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 
 #define Memory_CloneObject(pSource) \
 	Memory_Clone(pSource, sizeof(*(pSource)))
-
-#endif

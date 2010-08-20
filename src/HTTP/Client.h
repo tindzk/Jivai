@@ -1,14 +1,11 @@
-#ifndef HTTP_CLIENT_H
-#define HTTP_CLIENT_H
+#import "Header.h"
 
-#include "Header.h"
-
-#include "../Array.h"
-#include "../String.h"
-#include "../Socket.h"
-#include "../StringArray.h"
-#include "../SocketConnection.h"
-#include "../ExceptionManager.h"
+#import "../Array.h"
+#import "../String.h"
+#import "../Socket.h"
+#import "../StringArray.h"
+#import "../SocketConnection.h"
+#import "../ExceptionManager.h"
 
 /* Will be mostly used for buffering the headers.
  * Therefore, it shouldn't be too large.
@@ -120,5 +117,3 @@ void HTTP_Client_ProcessChunk(HTTP_Client *this);
 HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this);
 bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res);
 String OVERLOAD HTTP_Client_Read(HTTP_Client *this, size_t max);
-
-#endif

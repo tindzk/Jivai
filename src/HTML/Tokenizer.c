@@ -1,4 +1,4 @@
-#include "Tokenizer.h"
+#import "Tokenizer.h"
 
 void HTML_Tokenizer_Init(HTML_Tokenizer *this, HTML_Tokenizer_OnToken onToken, void *context) {
 	this->onToken = onToken;

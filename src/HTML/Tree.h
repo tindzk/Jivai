@@ -1,13 +1,10 @@
-#ifndef HTML_TREE_H
-#define HTML_TREE_H
+#import "Tokenizer.h"
 
-#include "Tokenizer.h"
-
-#include "../Tree.h"
-#include "../Block.h"
-#include "../Array.h"
-#include "../String.h"
-#include "../Exception.h"
+#import "../Tree.h"
+#import "../Block.h"
+#import "../Array.h"
+#import "../String.h"
+#import "../Exception.h"
 
 Exception_Export(HTML_Tree_IllegalNestingException);
 
@@ -47,5 +44,3 @@ HTML_Tree_Attr* HTML_Tree_GetAttr(HTML_Tree_Node *node, String name);
 HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...);
 HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...);
 void HTML_Tree_Foreach(HTML_Tree_Node *node, void (^cb)(HTML_Tree_Node *));
-
-#endif

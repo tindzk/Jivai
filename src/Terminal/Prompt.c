@@ -1,4 +1,4 @@
-#include "Prompt.h"
+#import "Prompt.h"
 
 void Terminal_Prompt_Init(Terminal_Prompt *this, Terminal *term) {
 	this->term = term;

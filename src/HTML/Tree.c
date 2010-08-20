@@ -1,4 +1,4 @@
-#include "Tree.h"
+#import "Tree.h"
 
 static ExceptionManager *exc;
 

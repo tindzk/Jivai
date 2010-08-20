@@ -1,7 +1,4 @@
-#ifndef STAT_H
-#define STAT_H
-
-#include "Time.h"
+#import "Time.h"
 
 typedef enum {
 	FileStatus_ReadOnly  = 00,
@@ -87,5 +84,3 @@ typedef struct {
 } Stat64;
 
 typedef __off64_t off64_t;
-
-#endif

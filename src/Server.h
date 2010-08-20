@@ -1,11 +1,8 @@
-#ifndef SERVER_H
-#define SERVER_H
-
-#include "Poll.h"
-#include "Socket.h"
-#include "Client.h"
-#include "BitMask.h"
-#include "Connection.h"
+#import "Poll.h"
+#import "Socket.h"
+#import "Client.h"
+#import "BitMask.h"
+#import "Connection.h"
 
 #ifndef Server_ConnectionLimit
 #define Server_ConnectionLimit SOMAXCONN
@@ -45,5 +42,3 @@ void Server_Process(Server *this);
 void Server_DestroyClient(Server *this, Client *client);
 void Server_AcceptClient(Server *this);
 void Server_OnEvent(Server *this, int events, Client *client);
-
-#endif

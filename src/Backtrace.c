@@ -1,4 +1,4 @@
-#include "Backtrace.h"
+#import "Backtrace.h"
 
 void Backtrace_PrintTrace(UNUSED void **dest, UNUSED size_t size) {
 #ifdef Backtrace_HasBFD

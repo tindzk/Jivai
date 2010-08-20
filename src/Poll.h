@@ -1,13 +1,10 @@
-#ifndef POLL_H
-#define POLL_H
+#import <errno.h>
+#import <sys/epoll.h>
+#import <sys/syscall.h>
 
-#include <errno.h>
-#include <sys/epoll.h>
-#include <sys/syscall.h>
-
-#include "NULL.h"
-#include "Fcntl.h"
-#include "Memory.h"
+#import "NULL.h"
+#import "Fcntl.h"
+#import "Memory.h"
 
 /* Needed for compatibility with diet libc. */
 #ifndef EPOLLRDHUP
@@ -41,5 +38,3 @@ void Poll_AddEvent(Poll *this, void *ptr, int fd, int events);
 void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events);
 void Poll_DeleteEvent(Poll *this, int fd);
 size_t Poll_Process(Poll *this, int timeout);
-
-#endif

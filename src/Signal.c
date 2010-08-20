@@ -1,4 +1,4 @@
-#include "Signal.h"
+#import "Signal.h"
 
 static ExceptionManager *exc;
 

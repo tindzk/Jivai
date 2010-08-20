@@ -1,8 +1,5 @@
-#ifndef FILE_STREAM_H
-#define FILE_STREAM_H
-
-#include "File.h"
-#include "StreamInterface.h"
+#import "File.h"
+#import "StreamInterface.h"
 
 #define FileStream       File
 #define FileStream_Open  File_Open
@@ -13,5 +10,3 @@ size_t FileStream_Write(FileStream *this, void *buf, size_t len);
 bool FileStream_IsEof(UNUSED FileStream *this);
 
 extern StreamInterface FileStream_Methods;
-
-#endif

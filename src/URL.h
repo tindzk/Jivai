@@ -1,7 +1,4 @@
-#ifndef URL_H
-#define URL_H
-
-#include "String.h"
+#import "String.h"
 
 typedef struct {
 	String scheme;
@@ -20,5 +17,3 @@ typedef enum {
 } URL_State;
 
 URL_Parts URL_Parse(String url);
-
-#endif

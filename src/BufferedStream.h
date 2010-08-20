@@ -1,9 +1,6 @@
-#ifndef BUFFERED_STREAM_H
-#define BUFFERED_STREAM_H
-
-#include "String.h"
-#include "Memory.h"
-#include "StreamInterface.h"
+#import "String.h"
+#import "Memory.h"
+#import "StreamInterface.h"
 
 typedef struct {
 	StreamInterface *stream;
@@ -29,5 +26,3 @@ void BufferedStream_Reset(BufferedStream *this);
 void BufferedStream_Close(BufferedStream *this);
 
 extern StreamInterface BufferedStream_Methods;
-
-#endif

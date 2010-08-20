@@ -1,4 +1,4 @@
-#include "SocketConnectionStream.h"
+#import "SocketConnectionStream.h"
 
 bool SocketConnectionStream_IsEof(UNUSED SocketConnectionStream *this) {
 	return false;

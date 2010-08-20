@@ -1,11 +1,8 @@
-#ifndef TIME_H
-#define TIME_H
+#import <time.h>
+#import <sys/syscall.h>
 
-#include <time.h>
-#include <sys/syscall.h>
-
-#include "String.h"
-#include "Exception.h"
+#import "String.h"
+#import "Exception.h"
 
 Exception_Export(Time_GetTimeOfDayFailedException);
 
@@ -25,5 +22,3 @@ void Time_Init(Time *this);
 short Time_Compare(Time a, Time b);
 bool Time_Equals(Time a, Time b);
 Time_UnixEpoch Time_GetCurrentUnixTime(void);
-
-#endif

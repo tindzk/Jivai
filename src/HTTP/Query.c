@@ -1,4 +1,4 @@
-#include "Query.h"
+#import "Query.h"
 
 Exception_Define(HTTP_Query_ExceedsPermittedLengthException);
 

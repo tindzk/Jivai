@@ -1,7 +1,4 @@
-#ifndef TREE_H
-#define TREE_H
-
-#include "Memory.h"
+#import "Memory.h"
 
 #define Tree_Define(type)  \
 	/* Number of nodes. */ \
@@ -33,5 +30,3 @@ Tree_Node* Tree_AddNode(Tree_Node *node);
 
 #define Tree_AddNode(node, size) \
 	Tree_AddCustomNode((Tree_Node *) (node), size)
-
-#endif

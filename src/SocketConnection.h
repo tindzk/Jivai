@@ -1,15 +1,12 @@
-#ifndef SOCKET_CONNECTION_H
-#define SOCKET_CONNECTION_H
+#import <errno.h>
+#import <linux/net.h>
+#import <netinet/tcp.h>
 
-#include <errno.h>
-#include <linux/net.h>
-#include <netinet/tcp.h>
-
-#include "File.h"
-#include "Fcntl.h"
-#include "String.h"
-#include "Exception.h"
-#include "NetworkAddress.h"
+#import "File.h"
+#import "Fcntl.h"
+#import "String.h"
+#import "Exception.h"
+#import "NetworkAddress.h"
 
 #ifndef SocketConnection_ChunkSize
 #define SocketConnection_ChunkSize 65536
@@ -40,5 +37,3 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len);
 ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len);
 bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len);
 void SocketConnection_Close(SocketConnection *this);
-
-#endif

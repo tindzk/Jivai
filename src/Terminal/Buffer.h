@@ -1,9 +1,6 @@
-#ifndef TERMINAL_BUFFER_H
-#define TERMINAL_BUFFER_H
-
-#include "../Block.h"
-#include "../Unicode.h"
-#include "../Terminal.h"
+#import "../Block.h"
+#import "../Unicode.h"
+#import "../Terminal.h"
 
 typedef struct {
 	String value;
@@ -26,5 +23,3 @@ void Terminal_Buffer_ChangeValue(Terminal_Buffer *this, size_t id, String s);
 void Terminal_Buffer_SetAttr(Terminal_Buffer *this, int color, int font);
 void Terminal_Buffer_Print(Terminal_Buffer *this, String s);
 void Terminal_Buffer_Clear(Terminal_Buffer *this);
-
-#endif

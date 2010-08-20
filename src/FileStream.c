@@ -1,4 +1,4 @@
-#include "FileStream.h"
+#import "FileStream.h"
 
 /* Clang does not support pointers to overloaded C functions. */
 size_t FileStream_Write(FileStream *this, void *buf, size_t len) {

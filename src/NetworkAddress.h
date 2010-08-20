@@ -1,10 +1,7 @@
-#ifndef NETWORK_ADDRESS_H
-#define NETWORK_ADDRESS_H
+#import <errno.h>
+#import <netdb.h>
 
-#include <errno.h>
-#include <netdb.h>
-
-#include "ExceptionManager.h"
+#import "ExceptionManager.h"
 
 Exception_Export(NetworkAddress_GetAddrInfoFailedException);
 
@@ -17,5 +14,3 @@ void NetworkAddress0(ExceptionManager *e);
 
 struct in_addr NetworkAddress_ResolveHost(String hostname);
 String NetworkAddress_ToString(NetworkAddress addr);
-
-#endif

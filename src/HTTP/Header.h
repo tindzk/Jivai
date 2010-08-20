@@ -1,14 +1,11 @@
-#ifndef HTTP_HEADER_H
-#define HTTP_HEADER_H
+#import "Query.h"
+#import "Method.h"
+#import "Version.h"
 
-#include "Query.h"
-#include "Method.h"
-#include "Version.h"
-
-#include "../HTTP.h"
-#include "../Char.h"
-#include "../String.h"
-#include "../Exception.h"
+#import "../HTTP.h"
+#import "../Char.h"
+#import "../String.h"
+#import "../Exception.h"
 
 Exception_Export(HTTP_Header_EmptyRequestUriException);
 Exception_Export(HTTP_Header_RequestMalformedException);
@@ -44,5 +41,3 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s);
 void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s);
 ssize_t HTTP_Header_GetLength(String str);
 void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s);
-
-#endif

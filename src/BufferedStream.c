@@ -1,4 +1,4 @@
-#include "BufferedStream.h"
+#import "BufferedStream.h"
 
 void BufferedStream_Init(BufferedStream *this, StreamInterface *stream, void *data) {
 	this->stream = stream;

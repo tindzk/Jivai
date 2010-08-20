@@ -1,4 +1,4 @@
-#include "Buffer.h"
+#import "Buffer.h"
 
 void Terminal_Buffer_Init(Terminal_Buffer *this, Terminal *term, size_t spacing) {
 	this->term = term;

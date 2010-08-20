@@ -1,11 +1,8 @@
-#ifndef INTEGER_H
-#define INTEGER_H
+#import <stdint.h>
+#import <limits.h>
 
-#include <stdint.h>
-#include <limits.h>
-
-#include "ExceptionManager.h"
-#include "String.h"
+#import "ExceptionManager.h"
+#import "String.h"
 
 Exception_Export(Integer_NumberTooBigException);
 
@@ -28,5 +25,3 @@ short Integer64_Compare(int64_t a, int64_t b);
 
 #define Integer64_ToString(num) \
 	Integer64_ToStringBuf(num, StackString(Integer64_CountDigits(num) + (((num) < 0) ? 1 : 0)))
-
-#endif

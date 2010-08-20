@@ -1,4 +1,4 @@
-#include "Selection.h"
+#import "Selection.h"
 
 void Terminal_Selection_Init(Terminal_Selection *this, Terminal *term) {
 	this->term = term;

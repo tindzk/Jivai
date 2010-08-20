@@ -1,7 +1,4 @@
-#ifndef STREAM_INTERFACE_H
-#define STREAM_INTERFACE_H
-
-#include <stddef.h>
+#import <stddef.h>
 
 typedef struct {
 	size_t (*read)(void *, void *, size_t);
@@ -9,5 +6,3 @@ typedef struct {
 	void (*close)(void *);
 	bool (*isEof)(void *);
 } StreamInterface;
-
-#endif

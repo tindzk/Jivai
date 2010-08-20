@@ -1,4 +1,4 @@
-#include "Time.h"
+#import "Time.h"
 
 Exception_Define(Time_GetTimeOfDayFailedException);
 

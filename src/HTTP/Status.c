@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Status.h"
+#import "Status.h"
 
 static HTTP_StatusItem items[] = {
 	[HTTP_Status_Info_Continue] = HTTP_StatusItem(

@@ -1,8 +1,5 @@
-#ifndef SOCKET_CONNECTION_STREAM_H
-#define SOCKET_CONNECTION_STREAM_H
-
-#include "StreamInterface.h"
-#include "SocketConnection.h"
+#import "StreamInterface.h"
+#import "SocketConnection.h"
 
 #define SocketConnectionStream       SocketConnection
 #define SocketConnectionStream_Read  SocketConnection_Read
@@ -12,5 +9,3 @@
 bool SocketConnectionStream_IsEof(SocketConnectionStream *this);
 
 extern StreamInterface SocketConnectionStream_Methods;
-
-#endif

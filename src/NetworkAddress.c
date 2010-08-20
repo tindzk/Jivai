@@ -1,4 +1,4 @@
-#include "NetworkAddress.h"
+#import "NetworkAddress.h"
 
 Exception_Define(NetworkAddress_GetAddrInfoFailedException);
 

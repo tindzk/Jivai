@@ -1,4 +1,4 @@
-#include "ExceptionManager.h"
+#import "ExceptionManager.h"
 
 void ExceptionManager_Init(ExceptionManager *this) {
 	this->cur = NULL;

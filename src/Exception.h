@@ -1,11 +1,8 @@
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#import <setjmp.h>
 
 #ifndef Exception_TraceSize
 #define Exception_TraceSize 15
 #endif
-
-#include <setjmp.h>
 
 typedef struct {
 #ifdef Exception_SaveOrigin
@@ -36,5 +33,3 @@ typedef struct {
 
 #define Exception_Export(name) \
 	extern String name
-
-#endif

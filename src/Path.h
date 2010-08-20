@@ -1,15 +1,12 @@
-#ifndef PATH_H
-#define PATH_H
+#import <errno.h>
+#import <stdlib.h>
+#import <attr/xattr.h>
+#import <sys/syscall.h>
 
-#include <errno.h>
-#include <stdlib.h>
-#include <attr/xattr.h>
-#include <sys/syscall.h>
-
-#include "Time.h"
-#include "Stat.h"
-#include "String.h"
-#include "Exception.h"
+#import "Time.h"
+#import "Stat.h"
+#import "String.h"
+#import "Exception.h"
 
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
@@ -74,5 +71,3 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value);
 void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink);
 void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink);
 void OVERLOAD Path_SetTime(String path, time_t timestamp);
-
-#endif

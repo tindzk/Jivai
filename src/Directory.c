@@ -1,4 +1,4 @@
-#include "Directory.h"
+#import "Directory.h"
 
 Exception_Define(Directory_CannotOpenDirectoryException);
 Exception_Define(Directory_ReadingFailedException);
