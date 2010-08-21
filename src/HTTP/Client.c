@@ -12,7 +12,7 @@ void HTTP_Client0(ExceptionManager *e) {
 	exc = e;
 }
 
-void OVERLOAD HTTP_Client_Init(HTTP_Client *this) {
+overload void HTTP_Client_Init(HTTP_Client *this) {
 	this->closed = true;
 
 	this->resp = HeapString(HTTP_Client_BufferSize);
@@ -29,13 +29,13 @@ void OVERLOAD HTTP_Client_Init(HTTP_Client *this) {
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 }
 
-void OVERLOAD HTTP_Client_Init(HTTP_Client *this, String host) {
+overload void HTTP_Client_Init(HTTP_Client *this, String host) {
 	HTTP_Client_Init(this);
 
 	this->host = String_Clone(host);
 }
 
-void OVERLOAD HTTP_Client_Init(HTTP_Client *this, String host, short port) {
+overload void HTTP_Client_Init(HTTP_Client *this, String host, short port) {
 	HTTP_Client_Init(this);
 
 	this->host = String_Clone(host);
@@ -53,7 +53,7 @@ void HTTP_Client_Destroy(HTTP_Client *this) {
 	Socket_Destroy(&this->socket);
 }
 
-void OVERLOAD HTTP_Client_SetBufferSize(HTTP_Client *this, size_t size) {
+overload void HTTP_Client_SetBufferSize(HTTP_Client *this, size_t size) {
 	String_Align(&this->resp, size);
 }
 
@@ -65,7 +65,7 @@ void HTTP_Client_SetVersion(HTTP_Client *this, HTTP_Version version) {
 	this->version = version;
 }
 
-void OVERLOAD HTTP_Client_Open(HTTP_Client *this) {
+overload void HTTP_Client_Open(HTTP_Client *this) {
 	if (!this->closed) {
 		HTTP_Client_Close(this);
 	}
@@ -74,12 +74,12 @@ void OVERLOAD HTTP_Client_Open(HTTP_Client *this) {
 	this->closed = false;
 }
 
-void OVERLOAD HTTP_Client_Open(HTTP_Client *this, String host) {
+overload void HTTP_Client_Open(HTTP_Client *this, String host) {
 	String_Copy(&this->host, host);
 	HTTP_Client_Open(this);
 }
 
-void OVERLOAD HTTP_Client_Open(HTTP_Client *this, String host, short port) {
+overload void HTTP_Client_Open(HTTP_Client *this, String host, short port) {
 	String_Copy(&this->host, host);
 	this->port = port;
 
@@ -163,7 +163,7 @@ String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path) {
 	return res;
 }
 
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *items) {
+overload void HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *items) {
 	HTTP_Client_Reopen(this);
 
 	String s = HeapString(items->len * 50);
@@ -182,7 +182,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *item
 	} tryEnd;
 }
 
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
+overload void HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 	HTTP_Client_Reopen(this);
 
 	String s = HeapString(paths.len * 50);
@@ -200,7 +200,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 	} tryEnd;
 }
 
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String host, String path) {
+overload void HTTP_Client_Request(HTTP_Client *this, String host, String path) {
 	HTTP_Client_Reopen(this);
 
 	String request = HTTP_Client_GetRequest(this, host, path);
@@ -212,7 +212,7 @@ void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String host, String path) {
 	} tryEnd;
 }
 
-void OVERLOAD HTTP_Client_Request(HTTP_Client *this, String path) {
+overload void HTTP_Client_Request(HTTP_Client *this, String path) {
 	HTTP_Client_Request(this, this->host, path);
 }
 
@@ -357,7 +357,7 @@ static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 	} tryEnd;
 }
 
-bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
+overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 	res->len = 0;
 
 	if (this->closed) {
@@ -552,7 +552,7 @@ bool OVERLOAD HTTP_Client_Read(HTTP_Client *this, String *res) {
 	return true;
 }
 
-String OVERLOAD HTTP_Client_Read(HTTP_Client *this, size_t max) {
+overload String HTTP_Client_Read(HTTP_Client *this, size_t max) {
 	String res = HeapString(max);
 
 	String buf = HeapString(HTTP_Client_ReadChunkSize);

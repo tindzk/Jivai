@@ -12,7 +12,7 @@ void ClientListener0(ExceptionManager *e);
 void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_Events *events);
 void ClientListener_OnInit(ClientListener *this);
 void ClientListener_OnDestroy(ClientListener *this);
-bool ClientListener_OnConnect(UNUSED ClientListener *this);
+bool ClientListener_OnConnect(__unused ClientListener *this);
 void ClientListener_OnAccept(ClientListener *this, Client *client);
 void ClientListener_OnDisconnect(ClientListener *this, Client *client);
 static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull);

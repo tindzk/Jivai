@@ -38,8 +38,8 @@ void Terminal_InputLine0(ExceptionManager *e);
 
 void Terminal_InputLine_Init(Terminal_InputLine *this, Terminal *term);
 void Terminal_InputLine_Destroy(Terminal_InputLine *this);
-void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update);
-void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this);
+overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update);
+overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this);
 void Terminal_InputLine_Print(Terminal_InputLine *this, String s);
 void Terminal_InputLine_SetValue(Terminal_InputLine *this, String s);
 void Terminal_InputLine_DeletePreceding(Terminal_InputLine *this);

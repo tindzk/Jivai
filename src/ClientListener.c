@@ -33,7 +33,7 @@ void ClientListener_OnDestroy(ClientListener *this) {
 	DoublyLinkedList_Destroy(&this->connections, destroy);
 }
 
-bool ClientListener_OnConnect(UNUSED ClientListener *this) {
+bool ClientListener_OnConnect(__unused ClientListener *this) {
 	return true;
 }
 

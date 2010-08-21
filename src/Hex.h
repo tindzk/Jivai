@@ -1,5 +1,5 @@
 #import "String.h"
 
 String Hex_ToString(long hex);
-int OVERLOAD Hex_ToInteger(char c);
-long OVERLOAD Hex_ToInteger(String s);
+overload int Hex_ToInteger(char c);
+overload long Hex_ToInteger(String s);

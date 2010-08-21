@@ -19,7 +19,7 @@ String Hex_ToString(long hex) {
 	return res;
 }
 
-int OVERLOAD Hex_ToInteger(char c) {
+overload int Hex_ToInteger(char c) {
 	if ('a' <= c && c <= 'f') {
 		return c - 'a' + 10;
 	} else if ('A' <= c && c <= 'F') {
@@ -31,7 +31,7 @@ int OVERLOAD Hex_ToInteger(char c) {
 	}
 }
 
-long OVERLOAD Hex_ToInteger(String s) {
+overload long Hex_ToInteger(String s) {
 	int  total      = 0;
 	long multiplier = 1;
 

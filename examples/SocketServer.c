@@ -45,7 +45,7 @@ void CustomClientListener_OnInit(CustomClientListener *this) {
 	this->activeConn = 0;
 }
 
-void CustomClientListener_OnDestroy(UNUSED CustomClientListener *this) {
+void CustomClientListener_OnDestroy(__unused CustomClientListener *this) {
 	/* ... */
 }
 

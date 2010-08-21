@@ -7,7 +7,7 @@ typedef struct {
 	bool interrupt;
 } Context;
 
-void OnKeyEnter(UNUSED Context *this, String s) {
+void OnKeyEnter(__unused Context *this, String s) {
 	String_Print(String("\nBuffer contains: '"));
 	String_Print(s);
 	String_Print(String("'\n"));

@@ -56,7 +56,7 @@ void Signal_Ignore(int signal) {
 	}
 }
 
-void Signal_OnSignal(int signal, UNUSED siginfo_t *info, UNUSED void *ucontext) {
+void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *ucontext) {
 	if (signal == SIGALRM) {
 		exc->e.p = &Signal_SigAlrmException;
 	} else if (signal == SIGBUS) {

@@ -1,6 +1,6 @@
 #import "SocketConnectionStream.h"
 
-bool SocketConnectionStream_IsEof(UNUSED SocketConnectionStream *this) {
+bool SocketConnectionStream_IsEof(__unused SocketConnectionStream *this) {
 	return false;
 }
 

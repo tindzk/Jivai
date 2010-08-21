@@ -7,6 +7,6 @@
 #define FileStream_Read  File_Read
 
 size_t FileStream_Write(FileStream *this, void *buf, size_t len);
-bool FileStream_IsEof(UNUSED FileStream *this);
+bool FileStream_IsEof(__unused FileStream *this);
 
 extern StreamInterface FileStream_Methods;

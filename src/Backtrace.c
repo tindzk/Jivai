@@ -1,6 +1,6 @@
 #import "Backtrace.h"
 
-void Backtrace_PrintTrace(UNUSED void **dest, UNUSED size_t size) {
+void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, size);
 

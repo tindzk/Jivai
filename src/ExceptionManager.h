@@ -86,11 +86,11 @@ void Exception_Print(Exception *e);
 
 #define catch(c, _e)                         \
 	} else if (__exc_mgr->e.p == c) {        \
-		UNUSED Exception *_e = &__exc_mgr->e;
+		__unused Exception *_e = &__exc_mgr->e;
 
 #define catchAny(_e)                         \
 	} else if (true) {                       \
-		UNUSED Exception *_e = &__exc_mgr->e;
+		__unused Exception *_e = &__exc_mgr->e;
 
 #define finally               \
 	} else {                  \

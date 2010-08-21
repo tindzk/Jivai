@@ -5,7 +5,7 @@ size_t FileStream_Write(FileStream *this, void *buf, size_t len) {
 	return File_Write(this, buf, len);
 }
 
-bool FileStream_IsEof(UNUSED FileStream *this) {
+bool FileStream_IsEof(__unused FileStream *this) {
 	return false;
 }
 

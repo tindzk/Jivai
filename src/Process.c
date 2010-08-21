@@ -64,7 +64,7 @@ String Process_GetCommandLine(Process *this) {
 	return out;
 }
 
-int OVERLOAD Process_Spawn(Process *this, float *time) {
+overload int Process_Spawn(Process *this, float *time) {
 	char *argv[this->params->len + 1];
 
 	argv[0] = String_ToNulHeap(this->cmd);
@@ -120,6 +120,6 @@ int OVERLOAD Process_Spawn(Process *this, float *time) {
 	return ret;
 }
 
-int OVERLOAD Process_Spawn(Process *this) {
+overload int Process_Spawn(Process *this) {
 	return Process_Spawn(this, NULL);
 }

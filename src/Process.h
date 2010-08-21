@@ -23,5 +23,5 @@ void Process_Init(Process *this, String cmd);
 void Process_Destroy(Process *this);
 void Process_AddParameter(Process *this, String param);
 String Process_GetCommandLine(Process *this);
-int OVERLOAD Process_Spawn(Process *this, float *time);
-int OVERLOAD Process_Spawn(Process *this);
+overload int Process_Spawn(Process *this, float *time);
+overload int Process_Spawn(Process *this);

@@ -7,7 +7,7 @@
 
 ExceptionManager exc;
 
-void OnLogMessage(UNUSED void *ptr, String msg, Logger_Level level, String file, int line) {
+void OnLogMessage(__unused void *ptr, String msg, Logger_Level level, String file, int line) {
 	String slevel = Logger_LevelToString(level);
 	String sline  = Integer_ToString(line);
 

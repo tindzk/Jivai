@@ -29,12 +29,12 @@ void Path0(ExceptionManager *e) {
 	exc = e;
 }
 
-bool OVERLOAD Path_Exists(String path, bool follow) {
+overload bool Path_Exists(String path, bool follow) {
 	Stat attr;
 	return syscall(follow ? __NR_stat : __NR_lstat, String_ToNul(path), &attr) == 0;
 }
 
-inline bool OVERLOAD Path_Exists(String path) {
+inline overload bool Path_Exists(String path) {
 	return Path_Exists(path, false);
 }
 
@@ -79,15 +79,15 @@ off64_t Path_GetSize(String path) {
 	return Path_GetStat(path).size;
 }
 
-inline bool OVERLOAD Path_IsFile(String path) {
+inline overload bool Path_IsFile(String path) {
 	return Path_GetStat(path).mode & FileMode_Regular;
 }
 
-inline bool OVERLOAD Path_IsFile(Stat64 attr) {
+inline overload bool Path_IsFile(Stat64 attr) {
 	return attr.mode & FileMode_Regular;
 }
 
-bool OVERLOAD Path_IsDirectory(String path) {
+overload bool Path_IsDirectory(String path) {
 	bool res = false;
 
 	try (exc) {
@@ -103,11 +103,11 @@ bool OVERLOAD Path_IsDirectory(String path) {
 	return res;
 }
 
-inline bool OVERLOAD Path_IsDirectory(Stat64 attr) {
+inline overload bool Path_IsDirectory(Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 
-void OVERLOAD Path_Truncate(String path, off64_t length) {
+overload void Path_Truncate(String path, off64_t length) {
 	if (path.len == 0) {
 		throw(exc, &EmptyPathException);
 	}
@@ -129,11 +129,11 @@ void OVERLOAD Path_Truncate(String path, off64_t length) {
 	}
 }
 
-inline void OVERLOAD Path_Truncate(String path) {
+inline overload void Path_Truncate(String path) {
 	Path_Truncate(path, 0);
 }
 
-String OVERLOAD Path_GetFilename(String path, bool verify) {
+overload String Path_GetFilename(String path, bool verify) {
 	if (path.len == 0) {
 		throw(exc, &EmptyPathException);
 	}
@@ -157,11 +157,11 @@ String OVERLOAD Path_GetFilename(String path, bool verify) {
 	return String_Slice(path, pos + 1);
 }
 
-inline String OVERLOAD Path_GetFilename(String path) {
+inline overload String Path_GetFilename(String path) {
 	return Path_GetFilename(path, true);
 }
 
-String OVERLOAD Path_GetDirectory(String path, bool verify) {
+String overload Path_GetDirectory(String path, bool verify) {
 	if (path.len == 0) {
 		throw(exc, &EmptyPathException);
 	}
@@ -188,7 +188,7 @@ String OVERLOAD Path_GetDirectory(String path, bool verify) {
 	return String_Slice(path, 0, pos);
 }
 
-inline String OVERLOAD Path_GetDirectory(String path) {
+inline overload String Path_GetDirectory(String path) {
 	return Path_GetDirectory(path, true);
 }
 
@@ -228,7 +228,7 @@ String Path_Resolve(String path) {
 	return res;
 }
 
-void OVERLOAD Path_Create(String path, int mode, bool recursive) {
+overload void Path_Create(String path, int mode, bool recursive) {
 	if (path.len == 0) {
 		throw(exc, &EmptyPathException);
 	}
@@ -286,7 +286,7 @@ void OVERLOAD Path_Create(String path, int mode, bool recursive) {
 	}
 }
 
-inline void OVERLOAD Path_Create(String path, bool recursive) {
+inline overload void Path_Create(String path, bool recursive) {
 	Path_Create(path,
 		Permission_OwnerRead    |
 		Permission_OwnerWrite   |
@@ -298,11 +298,11 @@ inline void OVERLOAD Path_Create(String path, bool recursive) {
 		Permission_OthersExecute, recursive);
 }
 
-inline void OVERLOAD Path_Create(String path, int mode) {
+inline overload void Path_Create(String path, int mode) {
 	Path_Create(path, mode, false);
 }
 
-inline void OVERLOAD Path_Create(String path) {
+inline overload void Path_Create(String path) {
 	Path_Create(path, false);
 }
 
@@ -384,7 +384,7 @@ void Path_SetXattr(String path, String name, String value) {
 	}
 }
 
-String OVERLOAD Path_GetXattr(String path, String name) {
+overload String Path_GetXattr(String path, String name) {
 	char *npath = String_ToNul(path);
 	char *nname = String_ToNul(name);
 
@@ -411,7 +411,7 @@ String OVERLOAD Path_GetXattr(String path, String name) {
 	return res;
 }
 
-void OVERLOAD Path_GetXattr(String path, String name, String *value) {
+overload void Path_GetXattr(String path, String name, String *value) {
 	char *npath = String_ToNul(path);
 	char *nname = String_ToNul(name);
 
@@ -432,7 +432,7 @@ void OVERLOAD Path_GetXattr(String path, String name, String *value) {
 	value->len = size;
 }
 
-void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
+overload void Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
 	Time_UnixEpoch t;
 
 	t.sec  = timestamp;
@@ -463,10 +463,10 @@ void OVERLOAD Path_SetTime(String path, time_t timestamp, long nano, bool follow
 	}
 }
 
-inline void OVERLOAD Path_SetTime(String path, time_t timestamp, bool followSymlink) {
+inline overload void Path_SetTime(String path, time_t timestamp, bool followSymlink) {
 	Path_SetTime(path, timestamp, 0, followSymlink);
 }
 
-inline void OVERLOAD Path_SetTime(String path, time_t timestamp) {
+inline overload void Path_SetTime(String path, time_t timestamp) {
 	Path_SetTime(path, timestamp, 0, false);
 }

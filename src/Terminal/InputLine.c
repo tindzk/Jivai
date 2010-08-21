@@ -28,7 +28,7 @@ void Terminal_InputLine_Destroy(Terminal_InputLine *this) {
 	String_Destroy(&this->line);
 }
 
-void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update) {
+overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update) {
 	if (update) {
 		size_t n = Unicode_Count(this->line, 0, this->pos);
 
@@ -40,7 +40,7 @@ void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update
 	this->pos = 0;
 }
 
-void OVERLOAD Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
+overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
 	Terminal_InputLine_ClearLine(this, true);
 }
 

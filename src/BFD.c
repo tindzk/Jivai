@@ -173,7 +173,7 @@ void BFD_ProcessFile(const char *filename, bfd_vma addr, BFD_Item *cur) {
 	bfd_close(abfd);
 }
 
-static int BFD_FindMatchingFile(struct dl_phdr_info *info, UNUSED size_t size, void *data) {
+static int BFD_FindMatchingFile(struct dl_phdr_info *info, __unused size_t size, void *data) {
 	BFD_FileMatch *match = data;
 	/* This code is modeled from Gfind_proc_info-lsb.c:callback() from libunwind */
 	long n;

@@ -95,7 +95,7 @@ void File_SetXattr(File *this, String name, String value) {
 	}
 }
 
-String OVERLOAD File_GetXattr(File *this, String name) {
+overload String File_GetXattr(File *this, String name) {
 	char *nname = String_ToNul(name);
 
 	errno = 0;
@@ -121,7 +121,7 @@ String OVERLOAD File_GetXattr(File *this, String name) {
 	return res;
 }
 
-void OVERLOAD File_GetXattr(File *this, String name, String *value) {
+overload void File_GetXattr(File *this, String name, String *value) {
 	char *nname = String_ToNul(name);
 
 	errno = 0;
@@ -141,7 +141,7 @@ void OVERLOAD File_GetXattr(File *this, String name, String *value) {
 	value->len = size;
 }
 
-void OVERLOAD File_Truncate(File *this, off64_t length) {
+overload void File_Truncate(File *this, off64_t length) {
 	errno = 0;
 
 	if (syscall(__NR_ftruncate64, this->fd, length) == -1) {
@@ -157,7 +157,7 @@ void OVERLOAD File_Truncate(File *this, off64_t length) {
 	}
 }
 
-void OVERLOAD File_Truncate(File *this) {
+overload void File_Truncate(File *this) {
 	File_Truncate(this, 0);
 }
 
@@ -205,7 +205,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 	return res;
 }
 
-size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
+overload size_t File_Write(File *this, void *buf, size_t len) {
 	if (!this->writable) {
 		throw(exc, &NotWritableException);
 	}
@@ -227,7 +227,7 @@ size_t OVERLOAD File_Write(File *this, void *buf, size_t len) {
 	return res;
 }
 
-size_t OVERLOAD File_Write(File *this, String s) {
+overload size_t File_Write(File *this, String s) {
 	return File_Write(this, s.buf, s.len);
 }
 

@@ -6,7 +6,7 @@ ExceptionManager exc;
 
 static size_t depth = 0;
 
-void OnToken(UNUSED void *p, HTML_Tokenizer_TokenType type, String value) {
+void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		depth--;
 	}

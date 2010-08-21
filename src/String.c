@@ -63,7 +63,7 @@ void String_Align(String *this, size_t length) {
 	}
 }
 
-void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
+overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
 	if (!this->mutable) {
 		throw(exc, &NotMutableException);
 	}
@@ -97,11 +97,11 @@ void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset, ssize_t s
 	this->len = srcRight - srcOffset;
 }
 
-inline void OVERLOAD String_Copy(String *this, String src, ssize_t srcOffset) {
+inline overload void String_Copy(String *this, String src, ssize_t srcOffset) {
 	String_Copy(this, src, srcOffset, src.len - srcOffset);
 }
 
-void OVERLOAD String_Copy(String *this, String src) {
+overload void String_Copy(String *this, String src) {
 	if (!this->mutable) {
 		throw(exc, &NotMutableException);
 	}
@@ -153,7 +153,7 @@ char String_CharAt(String s, ssize_t offset) {
 	return s.buf[offset];
 }
 
-String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
+overload String String_Slice(String s, ssize_t offset, ssize_t length) {
 	String out;
 	size_t right;
 
@@ -181,7 +181,7 @@ String OVERLOAD String_Slice(String s, ssize_t offset, ssize_t length) {
 	return out;
 }
 
-inline String OVERLOAD String_Slice(String s, ssize_t offset) {
+inline overload String String_Slice(String s, ssize_t offset) {
 	if (offset < 0) {
 		offset += s.len;
 	}
@@ -189,7 +189,7 @@ inline String OVERLOAD String_Slice(String s, ssize_t offset) {
 	return String_Slice(s, offset, s.len - offset);
 }
 
-void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
+overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
 		throw(exc, &NotMutableException);
 	}
@@ -229,7 +229,7 @@ void OVERLOAD String_Crop(String *this, ssize_t offset, ssize_t length) {
 	}
 }
 
-inline void OVERLOAD String_Crop(String *this, ssize_t offset) {
+inline overload void String_Crop(String *this, ssize_t offset) {
 	if (offset < 0) {
 		offset += this->len;
 	}
@@ -264,7 +264,7 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-void OVERLOAD String_Append(String *this, String s) {
+overload void String_Append(String *this, String s) {
 	if (s.len == 0) {
 		return;
 	}
@@ -276,7 +276,7 @@ void OVERLOAD String_Append(String *this, String s) {
 	this->len = this->len + s.len;
 }
 
-void OVERLOAD String_Append(String *this, String s, ssize_t offset, ssize_t length) {
+overload void String_Append(String *this, String s, ssize_t offset, ssize_t length) {
 	size_t right;
 
 	if (offset < 0) {
@@ -304,7 +304,7 @@ void OVERLOAD String_Append(String *this, String s, ssize_t offset, ssize_t leng
 	}
 }
 
-inline void OVERLOAD String_Append(String *this, String s, ssize_t offset) {
+inline overload void String_Append(String *this, String s, ssize_t offset) {
 	if (offset < 0) {
 		offset += this->len;
 	}
@@ -312,7 +312,7 @@ inline void OVERLOAD String_Append(String *this, String s, ssize_t offset) {
 	String_Append(this, s, offset, s.len - offset);
 }
 
-void OVERLOAD String_Append(String *this, char c) {
+overload void String_Append(String *this, char c) {
 	String_Align(this, this->len + 1);
 	this->buf[this->len] = c;
 	this->len++;
@@ -424,7 +424,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-StringArray* OVERLOAD String_Split(String s, size_t offset, char c) {
+overload StringArray* String_Split(String s, size_t offset, char c) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -451,11 +451,11 @@ StringArray* OVERLOAD String_Split(String s, size_t offset, char c) {
 	return res;
 }
 
-inline StringArray* OVERLOAD String_Split(String s, char c) {
+inline overload StringArray* String_Split(String s, char c) {
 	return String_Split(s, 0, c);
 }
 
-ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, char c) {
+overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
 	if (offset < 0) {
@@ -477,7 +477,7 @@ ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, char c) {
 	return String_NotFound;
 }
 
-ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, char c) {
+overload ssize_t String_ReverseFind(String s, ssize_t offset, char c) {
 	if (s.len == 0) {
 		return String_NotFound;
 	}
@@ -499,11 +499,11 @@ ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, char c) {
 	return String_NotFound;
 }
 
-inline ssize_t OVERLOAD String_ReverseFind(String s, char c) {
+inline overload ssize_t String_ReverseFind(String s, char c) {
 	return String_ReverseFind(s, s.len - 1, c);
 }
 
-ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle) {
+overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle) {
 	if (s.len == 0) {
 		return String_NotFound;
 	}
@@ -536,11 +536,11 @@ ssize_t OVERLOAD String_ReverseFind(String s, ssize_t offset, String needle) {
 	return String_NotFound;
 }
 
-inline ssize_t OVERLOAD String_ReverseFind(String s, String needle) {
+inline overload ssize_t String_ReverseFind(String s, String needle) {
 	return String_ReverseFind(s, s.len - 1, needle);
 }
 
-ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, String needle) {
+overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String needle) {
 	size_t right;
 
 	if (offset < 0) {
@@ -578,11 +578,11 @@ ssize_t OVERLOAD String_Find(String s, ssize_t offset, ssize_t length, String ne
 	return String_NotFound;
 }
 
-inline ssize_t OVERLOAD String_Find(String s, String needle) {
+inline overload ssize_t String_Find(String s, String needle) {
 	return String_Find(s, 0, s.len, needle);
 }
 
-inline ssize_t OVERLOAD String_Find(String s, ssize_t offset, String needle) {
+inline overload ssize_t String_Find(String s, ssize_t offset, String needle) {
 	if (offset < 0) {
 		offset += s.len;
 	}
@@ -590,11 +590,11 @@ inline ssize_t OVERLOAD String_Find(String s, ssize_t offset, String needle) {
 	return String_Find(s, offset, s.len - offset, needle);
 }
 
-inline ssize_t OVERLOAD String_Find(String s, char c) {
+inline overload ssize_t String_Find(String s, char c) {
 	return String_Find(s, 0, s.len, c);
 }
 
-inline ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
+inline overload ssize_t String_Find(String s, ssize_t offset, char c) {
 	if (offset < 0) {
 		offset += s.len;
 	}
@@ -602,11 +602,11 @@ inline ssize_t OVERLOAD String_Find(String s, ssize_t offset, char c) {
 	return String_Find(s, offset, s.len - offset, c);
 }
 
-bool OVERLOAD String_Contains(String s, String needle) {
+overload bool String_Contains(String s, String needle) {
 	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
-bool OVERLOAD String_Contains(String s, char needle) {
+overload bool String_Contains(String s, char needle) {
 	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
@@ -626,7 +626,7 @@ void String_TrimLeft(String *this) {
 	}
 }
 
-void OVERLOAD String_Trim(String *this) {
+overload void String_Trim(String *this) {
 	size_t i, lpos = 0;
 
 	for (i = 0; i < this->len; i++) {
@@ -654,7 +654,7 @@ void OVERLOAD String_Trim(String *this) {
 	}
 }
 
-String OVERLOAD String_Trim(String s) {
+overload String String_Trim(String s) {
 	size_t i, lpos = 0;
 
 	for (i = 0; i < s.len; i++) {
@@ -730,7 +730,7 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out) {
+overload ssize_t String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
@@ -768,33 +768,33 @@ ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String ri
 	return posRight + right.len;
 }
 
-inline ssize_t OVERLOAD String_Between(String s, String left, String right, String *out) {
+inline overload ssize_t String_Between(String s, String left, String right, String *out) {
 	return String_Between(s, 0, left, right, true, out);
 }
 
-inline ssize_t OVERLOAD String_Between(String s, ssize_t offset, String left, String right, String *out) {
+inline overload ssize_t String_Between(String s, ssize_t offset, String left, String right, String *out) {
 	return String_Between(s, offset, left, right, true, out);
 }
 
-inline String OVERLOAD String_Between(String s, ssize_t offset, String left, String right, bool leftAligned) {
+inline overload String String_Between(String s, ssize_t offset, String left, String right, bool leftAligned) {
 	String out = StackString(0);
 	String_Between(s, offset, left, right, leftAligned, &out);
 	return out;
 }
 
-inline String OVERLOAD String_Between(String s, ssize_t offset, String left, String right) {
+inline overload String String_Between(String s, ssize_t offset, String left, String right) {
 	String out = StackString(0);
 	String_Between(s, offset, left, right, &out);
 	return out;
 }
 
-inline String OVERLOAD String_Between(String s, String left, String right, bool leftAligned) {
+inline overload String String_Between(String s, String left, String right, bool leftAligned) {
 	String out = StackString(0);
 	String_Between(s, 0, left, right, leftAligned, &out);
 	return out;
 }
 
-inline String OVERLOAD String_Between(String s, String left, String right) {
+inline overload String String_Between(String s, String left, String right) {
 	String out = StackString(0);
 	String_Between(s, 0, left, right, true, &out);
 	return out;
@@ -869,7 +869,7 @@ String String_Concat(String a, String b) {
 	return res;
 }
 
-bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String replacement) {
+overload bool String_Replace(String *this, ssize_t offset, String needle, String replacement) {
 	if (offset < 0) {
 		offset += this->len;
 	}
@@ -899,11 +899,11 @@ bool OVERLOAD String_Replace(String *this, ssize_t offset, String needle, String
 	return true;
 }
 
-inline bool OVERLOAD String_Replace(String *this, String needle, String replacement) {
+inline overload bool String_Replace(String *this, String needle, String replacement) {
 	return String_Replace(this, 0, needle, replacement);
 }
 
-bool OVERLOAD String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement) {
+overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement) {
 	if (offset < 0) {
 		offset += this->len;
 	}
@@ -950,7 +950,7 @@ bool OVERLOAD String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 	return lastPos != 0;
 }
 
-inline bool OVERLOAD String_ReplaceAll(String *this, String needle, String replacement) {
+inline overload bool String_ReplaceAll(String *this, String needle, String replacement) {
 	return String_ReplaceAll(this, 0, needle, replacement);
 }
 
@@ -1047,7 +1047,7 @@ short String_CompareLeft(String a, String b) {
 	return 0;
 }
 
-short OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros) {
+overload short String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros) {
 	size_t ai = 0;
 	size_t bi = 0;
 
@@ -1117,6 +1117,6 @@ short OVERLOAD String_NaturalCompare(String a, String b, bool foldcase, bool ski
 	}
 }
 
-inline short OVERLOAD String_NaturalCompare(String a, String b) {
+inline overload short String_NaturalCompare(String a, String b) {
 	return String_NaturalCompare(a, b, true, true, true);
 }
