@@ -92,9 +92,9 @@ bool OVERLOAD Path_IsDirectory(String path) {
 
 	try (exc) {
 		res = Path_GetStat(path).mode & FileMode_Directory;
-	} catch (&Path_NonExistentPathException, e) {
+	} catch (&NonExistentPathException, e) {
 		res = false;
-	} catch (&Path_NotDirectoryException, e) {
+	} catch (&NotDirectoryException, e) {
 		res = false;
 	} finally {
 
