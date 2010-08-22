@@ -36,7 +36,7 @@ typedef struct {
 
 void Server0(ExceptionManager *e);
 
-void Server_Init(Server *this, Server_Events events, bool edgeTriggered, int port);
+void Server_Init(Server *this, Server_Events events, bool edgeTriggered, short port);
 void Server_Destroy(Server *this);
 void Server_Process(Server *this);
 void Server_DestroyClient(Server *this, Client *client);
