@@ -1,6 +1,3 @@
-#ifndef STACK_ARRAY_H
-#define STACK_ARRAY_H
-
 typedef struct {
 	size_t len;
 	size_t size;
@@ -67,5 +64,3 @@ typedef struct {
 		StackArray_At(this, (this)->len, item) = data; \
 		(this)->len++;                                 \
 	} while(0)
-
-#endif

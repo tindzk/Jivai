@@ -1,6 +1,3 @@
-#ifndef VAR_ARG_H
-#define VAR_ARG_H
-
 typedef __builtin_va_list VarArg;
 
 #define VarArg_Start(v, l) \
@@ -14,5 +11,3 @@ typedef __builtin_va_list VarArg;
 
 #define VarArg_Copy(d, s) \
 	__builtin_va_copy((d), (s))
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef FCNTL_H
-#define FCNTL_H
-
 typedef enum {
 	FcntlMode_GetDescriptorFlags = 1,
 	FcntlMode_SetDescriptorFlags = 2,
@@ -11,5 +8,3 @@ typedef enum {
 typedef enum {
 	FileDescriptorFlags_CloseOnExec = 1
 } FileDescriptorFlags;
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef LINKED_LIST_H
-#define LINKED_LIST_H
-
 #define LinkedList_New() \
 	{ NULL, NULL }
 
@@ -46,5 +43,3 @@
 
 #define LinkedList_Foreach(this, node) \
 	for (typeof((this)->first) node = (this)->first; node != NULL; node = node->next)
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef BIT_MASK_H
-#define BIT_MASK_H
-
 #define BitMask_ArgSet(arg, mask) \
 	((arg) | (mask))
 
@@ -21,5 +18,3 @@
 
 #define BitMask_Has(arg, mask) \
 	(bool) ((arg) & (mask))
-
-#endif

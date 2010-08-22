@@ -1,6 +1,3 @@
-#ifndef BIT_H
-#define BIT_H
-
 #define Bit(pos) \
 	(1 << (pos))
 
@@ -24,5 +21,3 @@
 
 #define Bit_Has(arg, pos) \
 	(bool) ((arg) & (1 << (pos)))
-
-#endif
