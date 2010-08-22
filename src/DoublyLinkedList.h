@@ -86,3 +86,6 @@
 
 #define DoublyLinkedList_Foreach(...) \
 	LinkedList_Foreach(__VA_ARGS__)
+
+#define DoublyLinkedList_ReverseForeach(this, node) \
+	for (typeof((this)->last) node = (this)->last; node != NULL; node = node->prev)
