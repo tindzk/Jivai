@@ -92,6 +92,9 @@ Exception:
 String:
 	$(CC) -o build/String.bin $(CFLAGS) String.c $(LIBFILES)
 
+PHP:
+	$(CC) -o build/PHP.bin $(CFLAGS) PHP.c $(LIBFILES)
+
 # Delete all compiled binaries with a `make clean'.
 clean:
 	rm build/*.bin
