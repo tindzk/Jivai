@@ -36,7 +36,7 @@ void Socket0(ExceptionManager *e);
 void Socket_Init(Socket *this, Socket_Protocol protocol);
 void Socket_SetNonBlockingFlag(Socket *this, bool enable);
 void Socket_SetCloexecFlag(Socket *this, bool enable);
-void Socket_SetReusableFlag(Socket *this);
+void Socket_SetReusableFlag(Socket *this, bool enable);
 void Socket_Listen(Socket *this, unsigned short port, int maxconns);
 void Socket_SetLinger(Socket *this);
 SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short port);

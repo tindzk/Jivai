@@ -13,13 +13,18 @@ void Server_Init(Server *this, Server_Events events, bool edgeTriggered, short p
 	this->edgeTriggered = edgeTriggered;
 
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
-	Socket_SetReusableFlag(&this->socket);
-	Socket_SetCloexecFlag(&this->socket, true);
+
+	Socket_SetCloexecFlag    (&this->socket, true);
+	Socket_SetReusableFlag   (&this->socket, true);
 	Socket_SetNonBlockingFlag(&this->socket, true);
+
 	Socket_Listen(&this->socket, port, Server_ConnectionLimit);
 
 	/* Add the server socket to epoll. */
-	Poll_AddEvent(&this->poll, NULL, this->socket.fd, EPOLLIN | EPOLLHUP | EPOLLERR);
+	Poll_AddEvent(&this->poll, NULL, this->socket.fd,
+		EPOLLIN  |
+		EPOLLHUP |
+		EPOLLERR);
 
 	this->events.onInit(this->events.context);
 }
@@ -47,7 +52,10 @@ void Server_AcceptClient(Server *this) {
 
 	this->events.onClientAccept(this->events.context, client);
 
-	int flags = EPOLLRDHUP | EPOLLHUP | EPOLLERR;
+	int flags =
+		EPOLLERR |
+		EPOLLHUP |
+		EPOLLRDHUP;
 
 	if (this->edgeTriggered) {
 		BitMask_Set(flags, EPOLLET);

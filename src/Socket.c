@@ -73,8 +73,8 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 	}
 }
 
-void Socket_SetReusableFlag(Socket *this) {
-	int opt = 1;
+void Socket_SetReusableFlag(Socket *this, bool enable) {
+	int opt = enable;
 
 	long args[] = { this->fd, SOL_SOCKET, SO_REUSEADDR, (long) &opt, sizeof(opt) };
 
