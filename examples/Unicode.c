@@ -4,7 +4,7 @@ void printChars(String s) {
 	size_t offset = 0;
 
 	while (true) {
-		String tmp = StaticString(0);
+		String tmp = StackString(0);
 
 		tmp.buf = s.buf + offset;
 		tmp.len = Unicode_Next(s, offset);
@@ -26,7 +26,7 @@ void printCharsReverse(String s) {
 	size_t offset = s.len;
 
 	while (true) {
-		String tmp = StaticString(0);
+		String tmp = StackString(0);
 		tmp.len = Unicode_Prev(s, offset);
 
 		if (tmp.len == 0) {
