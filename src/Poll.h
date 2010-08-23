@@ -14,13 +14,16 @@
 #define EPOLLRDHUP 0x2000
 #endif
 
+#ifndef Poll_Events
+#define Poll_Events 4096
+#endif
+
 typedef void (* Poll_OnEvent)(void *, int, void *);
 
 typedef struct {
 	int fd;
-	size_t maxfds;
 
-	struct epoll_event *events;
+	struct epoll_event events[Poll_Events];
 
 	void *context;
 	Poll_OnEvent onEvent;
@@ -35,7 +38,7 @@ Exception_Export(Poll_UnknownFileDescriptorException);
 
 void Poll0(ExceptionManager *e);
 
-void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context);
+void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context);
 void Poll_Destroy(Poll *this);
 void Poll_AddEvent(Poll *this, void *ptr, int fd, int events);
 void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events);

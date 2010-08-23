@@ -13,8 +13,8 @@ void Poll0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
-	if ((this->fd = syscall(__NR_epoll_create, maxfds)) < 0) {
+void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context) {
+	if ((this->fd = syscall(__NR_epoll_create, Poll_Events)) < 0) {
 		throw(exc, &UnknownErrorException);
 	}
 
@@ -25,15 +25,12 @@ void Poll_Init(Poll *this, size_t maxfds, Poll_OnEvent onEvent, void *context) {
 		throw(exc, &SettingCloexecFailedException);
 	}
 
-	this->events = (struct epoll_event *) Memory_Alloc(maxfds * sizeof(struct epoll_event));
-	this->maxfds = maxfds;
 	this->onEvent = onEvent;
 	this->context = context;
 }
 
 void Poll_Destroy(Poll *this) {
 	syscall(__NR_close, this->fd);
-	Memory_Free(this->events);
 }
 
 void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
@@ -99,7 +96,7 @@ size_t Poll_Process(Poll *this, int timeout) {
 
 	ssize_t nfds;
 
-	if ((nfds = syscall(__NR_epoll_wait, this->fd, this->events, this->maxfds, timeout)) < 0) {
+	if ((nfds = syscall(__NR_epoll_wait, this->fd, this->events, Poll_Events, timeout)) < 0) {
 		if (errno == EBADF) {
 			throw(exc, &InvalidFileDescriptorException);
 		} else {
