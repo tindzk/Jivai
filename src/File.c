@@ -262,3 +262,18 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 off64_t File_Tell(File *this) {
 	return File_Seek(this, 0L, SEEK_CUR);
 }
+
+void File_GetContents(String path, String *res) {
+	File file;
+	File_Open(&file, path, FileStatus_ReadOnly);
+
+	size_t len = 0;
+
+	do {
+		len = File_Read(&file,
+			res->buf  + res->len,
+			res->size - res->len);
+
+		res->len += len;
+	} while (len > 0);
+}

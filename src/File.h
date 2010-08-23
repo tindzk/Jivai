@@ -63,3 +63,4 @@ overload size_t File_Write(File *this, void *buf, size_t len);
 overload size_t File_Write(File *this, String s);
 off64_t File_Seek(File *this, off64_t offset, File_SeekType whence);
 off64_t File_Tell(File *this);
+void File_GetContents(String path, String *res);
