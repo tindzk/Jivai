@@ -32,7 +32,7 @@ typedef struct {
 
 #define Exception_Define(name) \
 	static String name __section(".exceptions") = String(#name); \
-	String* __eval(self, name) __section(".exceptions") = &name
+	String* ref(name) __section(".exceptions") = &name
 
 #define Exception_Export(name) \
-	extern String* __eval(self, name)
+	extern String* ref(name)
