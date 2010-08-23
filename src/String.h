@@ -43,6 +43,7 @@ overload String String_Slice(String s, ssize_t offset);
 overload void String_Crop(String *this, ssize_t offset, ssize_t length);
 overload void String_Crop(String *this, ssize_t offset);
 void String_Delete(String *this, ssize_t offset, ssize_t length);
+void String_Prepend(String *this, String s);
 overload void String_Append(String *this, String s);
 overload void String_Append(String *this, char c);
 overload void String_Append(String *this, String s, ssize_t offset, ssize_t length);

@@ -292,6 +292,12 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
+void String_Prepend(String *this, String s) {
+	String tmp = String_Concat(s, *this);
+	String_Copy(this, tmp);
+	String_Destroy(&tmp);
+}
+
 overload void String_Append(String *this, String s) {
 	if (s.len == 0) {
 		return;
