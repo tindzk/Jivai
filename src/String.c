@@ -81,8 +81,23 @@ void String_Resize(String *this, size_t length) {
 
 void String_Align(String *this, size_t length) {
 	if (length > 0) {
-		if (this->size == 0 || length > this->size) {
+		if (this->size == 0) {
 			String_Resize(this, length);
+		} else if (length > this->size) {
+#if String_SmartAlign
+			/* See also:
+			 * http://stackoverflow.com/questions/2243366/how-to-implement-a-variable-length-string-y-in-c
+			 */
+			size_t size = this->size;
+
+			do {
+				size <<= 1;
+			} while (size < length);
+
+			String_Resize(this, size);
+#else
+			String_Resize(this, length);
+#endif
 		}
 	}
 }

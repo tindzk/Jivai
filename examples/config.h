@@ -19,6 +19,11 @@
 #define Exception_SaveTrace 1
 #define Exception_TraceSize 20
 
+/* This will possibly improve the performance when dealing with
+ * long strings.
+ */
+#define String_SmartAlign 1
+
 /* Support formatting call traces. */
 #define Backtrace_HasBFD
 

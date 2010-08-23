@@ -19,6 +19,10 @@ typedef struct _String {
 #undef self
 #define self String
 
+#ifndef String_SmartAlign
+#define String_SmartAlign 1
+#endif
+
 Exception_Export(NotMutableException);
 Exception_Export(BufferOverflowException);
 
