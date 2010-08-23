@@ -5,7 +5,7 @@
 #import "Connection.h"
 
 #ifndef Server_ConnectionLimit
-#define Server_ConnectionLimit SOMAXCONN
+#define Server_ConnectionLimit 128
 #endif
 
 typedef void (* Server_OnInit)(void *);
