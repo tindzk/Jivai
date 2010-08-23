@@ -5,7 +5,7 @@
 #import "Connection.h"
 
 #ifndef Server_ConnectionLimit
-#define Server_ConnectionLimit 128
+#define Server_ConnectionLimit 1024
 #endif
 
 typedef void (* Server_OnInit)(void *);
