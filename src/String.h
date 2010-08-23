@@ -93,13 +93,13 @@ overload short String_NaturalCompare(String a, String b);
 	(String) { sizeof(s) - 1, sizeof(s) - 1, s, false }
 
 #define HeapString(len) \
-	(String) { 0, len, (len > 0) ? Memory_Alloc(len) : NULL, true }
+	(String) { 0, len, ((len) > 0) ? Memory_Alloc(len) : NULL, true }
 
 #define BufString(buf, len) \
 	(String) { len, 0, buf, false }
 
 #define StackString(len) \
-	(String) { 0, len, (len > 0) ? alloca(len) : NULL, true }
+	(String) { 0, len, ((len) > 0) ? alloca((len)) : NULL, true }
 
 #define String_StackClone(s) \
 	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), true }
