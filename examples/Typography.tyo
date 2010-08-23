@@ -1,0 +1,10 @@
+.chapter[Introduction] {
+	.b{This} is bold.
+	.b{.i{These}} are nested attributes.
+}
+
+.chapter[Installation] {
+	.section[Getting Started] {
+
+	}
+}
