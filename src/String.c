@@ -80,10 +80,6 @@ void String_Resize(String *this, size_t length) {
 }
 
 void String_Align(String *this, size_t length) {
-	if (!this->mutable) {
-		throw(exc, &NotMutableException);
-	}
-
 	if (length > 0) {
 		if (this->size == 0 || length > this->size) {
 			String_Resize(this, length);
