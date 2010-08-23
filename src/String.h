@@ -24,8 +24,12 @@ Exception_Export(BufferOverflowException);
 
 void String0(ExceptionManager *e);
 
+String HeapString(size_t len);
+String BufString(char *buf, size_t len);
 void String_Destroy(String *this);
+String String_FromNul(char* s);
 char* String_ToNulBuf(String s, char *buf);
+char* String_ToNulHeap(String s);
 void String_Resize(String *this, size_t length);
 void String_Align(String *this, size_t length);
 overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength);
@@ -92,26 +96,14 @@ overload short String_NaturalCompare(String a, String b);
 #define String(s) \
 	(String) { sizeof(s) - 1, sizeof(s) - 1, s, false }
 
-#define HeapString(len) \
-	(String) { 0, len, ((len) > 0) ? Memory_Alloc(len) : NULL, true }
-
-#define BufString(buf, len) \
-	(String) { len, 0, buf, false }
-
 #define StackString(len) \
 	(String) { 0, len, ((len) > 0) ? alloca((len)) : NULL, true }
 
 #define String_StackClone(s) \
 	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), true }
 
-#define String_FromNul(s) \
-	BufString(s, strlen(s))
-
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))
-
-#define String_ToNulHeap(s) \
-	String_ToNulBuf(s, Memory_Alloc((s).len + 1))
 
 #define String_FmtPrint(...)            \
 	do {                                \

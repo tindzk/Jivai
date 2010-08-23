@@ -9,6 +9,26 @@ void String0(ExceptionManager *e) {
 	exc = e;
 }
 
+inline String HeapString(size_t len) {
+	return (String) {
+		.len  = 0,
+		.size = len,
+		.buf  = (len > 0)
+			? Memory_Alloc(len)
+			: NULL,
+		.mutable = true
+	};
+}
+
+inline String BufString(char *buf, size_t len) {
+	return (String) {
+		.len     = len,
+		.size    = 0,
+		.buf     = buf,
+		.mutable = false
+	};
+}
+
 void String_Destroy(String *this) {
 	this->len  = 0;
 	this->size = 0;
@@ -16,6 +36,10 @@ void String_Destroy(String *this) {
 	if (this->mutable && this->buf != NULL) {
 		Memory_Free(this->buf);
 	}
+}
+
+inline String String_FromNul(char* s) {
+	return BufString(s, strlen(s));
 }
 
 inline char* String_ToNulBuf(String s, char *buf) {
@@ -26,6 +50,10 @@ inline char* String_ToNulBuf(String s, char *buf) {
 	buf[s.len] = '\0';
 
 	return buf;
+}
+
+inline char* String_ToNulHeap(String s) {
+	return String_ToNulBuf(s, Memory_Alloc(s.len + 1));
 }
 
 void String_Resize(String *this, size_t length) {
