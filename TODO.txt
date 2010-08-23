@@ -14,7 +14,3 @@ Backtrace:
 HTTP:
   - Request: File uploads are not supported yet. Implement a
     MIME parser.
-
-Integer:
-  - Integer[64]_ToString() macro calls Integer[64]_CountDigits()
-    three (!) times.
