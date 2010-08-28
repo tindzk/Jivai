@@ -1,6 +1,7 @@
 #import <errno.h>
 #import <netdb.h>
 
+#import "String.h"
 #import "ExceptionManager.h"
 
 #undef self

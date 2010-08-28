@@ -1,25 +1,24 @@
-#import "String.h"
-#import "Integer.h"
+#import <setjmp.h>
+
 #import "NULL.h"
-#import "Backtrace.h"
 #import "Compiler.h"
+#import "Exception.h"
+
+typedef struct {
+	struct _ExceptionManager_Record *cur;
+	Exception e;
+} ExceptionManager;
+
+typedef struct _ExceptionManager_Record {
+	struct _ExceptionManager_Record *prev; /* Linked list. */
+	jmp_buf jmpBuffer;
+} ExceptionManager_Record;
 
 void ExceptionManager_Init(ExceptionManager *this);
 void ExceptionManager_Raise(ExceptionManager *this);
-void ExceptionManager_Push(ExceptionManager *this, ExceptionManager_Record *record);
-void Exception_Print(Exception *e);
-
-#ifndef Exception_SaveOrigin
-#define Exception_SaveOrigin 1
-#endif
-
-#ifndef Exception_SaveTrace
-#define Exception_SaveTrace 0
-#endif
-
-#ifndef Exception_Safety
-#define Exception_Safety 0
-#endif
+void ExceptionManager_Push(ExceptionManager *this,
+	 ExceptionManager_Record *record);
+void ExceptionManager_Pop(ExceptionManager *this);
 
 #if Exception_Safety
 #define ExceptionManager_Check(this)                        \
@@ -37,43 +36,14 @@ void Exception_Print(Exception *e);
 	do { } while (0)
 #endif
 
-#if Exception_SaveOrigin
-#define ExceptionManager_SetOrigin(this)   \
-	do {                                   \
-		(this)->e.func = String(__func__); \
-	} while(0)
-#else
-#define ExceptionManager_SetOrigin(this) \
-	do { } while(0)
-#endif
-
-#if Exception_SaveTrace
-#define ExceptionManager_SetTrace(this)        \
-	(this)->e.traceItems = Backtrace_GetTrace( \
-		(this)->e.trace,                       \
-		Exception_TraceSize)
-#else
-#define ExceptionManager_SetTrace(this) \
-	do { } while (0)
-#endif
-
-#define ExceptionManager_Throw(this, c)   \
-	do {                                  \
-		ExceptionManager_Check(this);     \
-		(this)->e.module =                \
-			__eval(Modules, self);        \
-		(this)->e.code = c;               \
-		(this)->e.scode = String(#c);     \
-		ExceptionManager_SetOrigin(this); \
-		ExceptionManager_SetTrace(this);  \
-		ExceptionManager_Raise(this);     \
-	} while(0)
-
-#define ExceptionManager_Pop(this)           \
-	do {                                     \
-		if ((this)->cur != NULL) {           \
-			(this)->cur = (this)->cur->prev; \
-		}                                    \
+#define throw(this, c)  \
+	do {                                 \
+		ExceptionManager_Check(this);    \
+		Exception_SetTrace((this)->e);   \
+		Exception_SetModule((this)->e);  \
+		Exception_SetOrigin((this)->e);  \
+		Exception_SetCode((this)->e, c); \
+		ExceptionManager_Raise(this);    \
 	} while(0)
 
 #define try(this)                                 \
@@ -81,8 +51,7 @@ void Exception_Print(Exception *e);
 	ExceptionManager_Check(this);                 \
 	ExceptionManager *__exc_mgr = this;           \
 	ExceptionManager_Push(__exc_mgr,              \
-		StackNew(ExceptionManager_Record)         \
-	);                                            \
+		StackNew(ExceptionManager_Record));       \
 	bool __exc_rethrow = false;                   \
 	if (setjmp(__exc_mgr->cur->jmpBuffer) == 0) {
 
@@ -100,9 +69,9 @@ void Exception_Print(Exception *e);
 	} else if (true) {                          \
 		__unused Exception *_e = &__exc_mgr->e;
 
-#define finally               \
-	} else {                  \
-		__exc_rethrow = true; \
+#define finally     \
+	} else {        \
+		excRethrow; \
 	}
 
 #define tryEnd                             \
@@ -134,6 +103,3 @@ void Exception_Print(Exception *e);
 #define excThrow(...)                \
 	ExceptionManager_Pop(__exc_mgr); \
 	throw(__VA_ARGS__)
-
-#define throw(...) \
-	ExceptionManager_Throw(__VA_ARGS__)

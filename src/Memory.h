@@ -1,10 +1,10 @@
-#import "Module.h"
-#import "String.h"
-#import "Exception.h"
-
 #import <stdlib.h>
 #import <stdint.h>
 #import <string.h>
+
+#import "Module.h"
+#import "String.h"
+#import "ExceptionManager.h"
 
 #undef self
 #define self Memory

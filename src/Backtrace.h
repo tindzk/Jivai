@@ -1,5 +1,6 @@
 #import "Hex.h"
 #import "Memory.h"
+#import "Integer.h"
 #import "Compiler.h"
 
 #ifdef Backtrace_HasBFD

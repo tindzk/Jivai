@@ -1,6 +1,16 @@
-#import <setjmp.h>
-
 #import "Macros.h"
+
+#ifndef Exception_SaveOrigin
+#define Exception_SaveOrigin 1
+#endif
+
+#ifndef Exception_SaveTrace
+#define Exception_SaveTrace 0
+#endif
+
+#ifndef Exception_Safety
+#define Exception_Safety 0
+#endif
 
 #ifndef Exception_TraceSize
 #define Exception_TraceSize 15
@@ -40,19 +50,37 @@ typedef struct {
 
 #if Exception_SaveTrace
 	void *trace[Exception_TraceSize];
-	int traceItems;
+	size_t traceItems;
 #endif
 } Exception;
 
-typedef struct _ExceptionManager_Record {
-	struct _ExceptionManager_Record *prev; /* linked list */
-	jmp_buf jmpBuffer;
-} ExceptionManager_Record;
+void Exception_Print(Exception *e);
 
-typedef struct {
-	ExceptionManager_Record *cur;
-	Exception e;
-} ExceptionManager;
+#if Exception_SaveOrigin
+#define Exception_SetOrigin(e) \
+	(e).func = String(__func__)
+#else
+#define Exception_SetOrigin(e) \
+	do { } while(0)
+#endif
 
-#define Exception_Entry(name) \
-	[name] = String(#name)
+#if Exception_SaveTrace
+#import "Backtrace.h"
+
+#define Exception_SetTrace(e)            \
+	(e).traceItems = Backtrace_GetTrace( \
+		(e).trace,                       \
+		Exception_TraceSize)
+#else
+#define Exception_SetTrace(e) \
+	do { } while (0)
+#endif
+
+#define Exception_SetCode(e, c) \
+	do {                        \
+		(e).code  = c;          \
+		(e).scode = String(#c); \
+	} while(0)
+
+#define Exception_SetModule(e) \
+	(e).module = __eval(Modules, self)

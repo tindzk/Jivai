@@ -1,8 +1,13 @@
-#import "UniStd.h" /* write() */
-#import "NULL.h"
 #import "Char.h"
+#import "NULL.h"
+#import "UniStd.h" /* write(), size_t */
 #import "VarArg.h"
+#import "Boolean.h"
 #import "Compiler.h"
+
+#ifndef String_SmartAlign
+#define String_SmartAlign 1
+#endif
 
 typedef struct _String {
 	size_t len;
@@ -11,18 +16,15 @@ typedef struct _String {
 	bool mutable;
 } String;
 
-#import "Module.h"
-#import "Memory.h"
 #import "Exception.h"
-#import "StringArray.h"
 #import "ExceptionManager.h"
+
+#import "Memory.h"
+#import "Module.h"
+#import "StringArray.h"
 
 #undef self
 #define self String
-
-#ifndef String_SmartAlign
-#define String_SmartAlign 1
-#endif
 
 enum {
 	excNotMutable = excOffset,

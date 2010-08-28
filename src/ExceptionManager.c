@@ -1,10 +1,11 @@
+#import "String.h"
 #import "ExceptionManager.h"
 
-void ExceptionManager_Init(ExceptionManager *this) {
+inline void ExceptionManager_Init(ExceptionManager *this) {
 	this->cur = NULL;
 }
 
-void ExceptionManager_Raise(ExceptionManager *this) {
+inline void ExceptionManager_Raise(ExceptionManager *this) {
 	if (this->cur == NULL) {
 		Exception_Print(&this->e);
 		exit(EXIT_FAILURE);
@@ -13,22 +14,15 @@ void ExceptionManager_Raise(ExceptionManager *this) {
 	longjmp(this->cur->jmpBuffer, 1);
 }
 
-void ExceptionManager_Push(ExceptionManager *this, ExceptionManager_Record *record) {
+inline void ExceptionManager_Push(ExceptionManager *this,
+								  ExceptionManager_Record *record)
+{
 	record->prev = this->cur;
 	this->cur = record;
 }
 
-void Exception_Print(Exception *e) {
-#if Exception_SaveOrigin
-	String_FmtPrint(
-		String("Uncaught exception %.% (in %)\n"),
-		Module_ResolveName(e->module),
-		e->scode,
-		e->func);
-#else
-	String_FmtFormat(
-		String("Uncaught exception %.% '%'\n"),
-		Module_ResolveName(e->module),
-		e->scode);
-#endif
+inline void ExceptionManager_Pop(ExceptionManager *this) {
+	if (this->cur != NULL) {
+		this->cur = this->cur->prev;
+	}
 }
