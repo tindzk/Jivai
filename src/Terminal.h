@@ -2,13 +2,18 @@
 
 #import "Bit.h"
 #import "File.h"
+#import "Module.h"
 #import "UniStd.h" /* isatty */
 #import "Exception.h"
 
 #undef self
 #define self Terminal
 
-Exception_Export(IoctlFailedException);
+size_t Modules_Terminal;
+
+enum {
+	excIoctlFailed = excOffset
+};
 
 /* VT100 escape sequence strings. */
 #define Terminal_VT100_Normal              String("\33[0m")

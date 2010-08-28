@@ -1,10 +1,12 @@
 #import "Typography.h"
 
+size_t Modules_Typography;
+
 static ExceptionManager *exc;
 
-Exception_Define(IllegalNestingException);
-
 void Typography0(ExceptionManager *e) {
+	Modules_Typography = Module_Register(String("Typography"));
+
 	exc = e;
 }
 
@@ -144,7 +146,7 @@ static void Typography_Read(Typography *this, size_t st) {
 					Typography_Flush(this, &value);
 
 					if (this->node->parent == NULL) {
-						throw(exc, &IllegalNestingException);
+						throw(exc, excIllegalNesting);
 					}
 
 					this->node = this->node->parent;

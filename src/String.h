@@ -11,6 +11,7 @@ typedef struct _String {
 	bool mutable;
 } String;
 
+#import "Module.h"
 #import "Memory.h"
 #import "Exception.h"
 #import "StringArray.h"
@@ -23,15 +24,19 @@ typedef struct _String {
 #define String_SmartAlign 1
 #endif
 
-Exception_Export(NotMutableException);
-Exception_Export(BufferOverflowException);
+enum {
+	excNotMutable = excOffset,
+	excBufferOverflow
+};
+
+extern size_t Modules_String;
 
 void String0(ExceptionManager *e);
 
 String HeapString(size_t len);
 String BufString(char *buf, size_t len);
 void String_Destroy(String *this);
-String String_FromNul(char* s);
+String String_FromNul(char *s);
 char* String_ToNulBuf(String s, char *buf);
 char* String_ToNulHeap(String s);
 void String_Resize(String *this, size_t length);
@@ -99,7 +104,7 @@ overload short String_NaturalCompare(String a, String b);
 #define String_NotFound -1
 
 #define String(s) \
-	(String) { sizeof(s) - 1, sizeof(s) - 1, s, false }
+	(String) { sizeof(s) - 1, sizeof(s) - 1, (char *) s, false }
 
 #define StackString(len) \
 	(String) { 0, len, ((len) > 0) ? alloca((len)) : NULL, false }

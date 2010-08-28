@@ -301,10 +301,10 @@ int main(void) {
 	ClientListener listener;
 	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
 
-	try(&exc) {
+	try (&exc) {
 		Server_Init(&server, events, true, 8080);
 		String_Print(String("Server started.\n"));
-	} catch(&Socket_AddressInUseException, e) {
+	} catch (Modules_Socket, excAddressInUse, e) {
 		String_Print(String("The address is already in use!\n"));
 		error = true;
 	} finally {
@@ -313,13 +313,13 @@ int main(void) {
 		}
 	} tryEnd;
 
-	try(&exc) {
+	try (&exc) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} catch(&Signal_SigIntException, e) {
+	} catch (Modules_Signal, excSigInt, e) {
 		String_Print(String("Server shutdown.\n"));
-	} catchAny(e) {
+	} catchAny (e) {
 		Exception_Print(e);
 
 #if Exception_SaveTrace

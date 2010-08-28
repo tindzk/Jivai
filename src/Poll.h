@@ -29,12 +29,14 @@ typedef struct {
 	Poll_OnEvent onEvent;
 } Poll;
 
-Exception_Export(Poll_FileDescriptorAlreadyAddedException);
-Exception_Export(Poll_FileDescriptorNotSupportedException);
-Exception_Export(Poll_InvalidFileDescriptorException);
-Exception_Export(Poll_SettingCloexecFailedException);
-Exception_Export(Poll_UnknownErrorException);
-Exception_Export(Poll_UnknownFileDescriptorException);
+enum {
+	excFileDescriptorAlreadyAdded = excOffset,
+	excFileDescriptorNotSupported,
+	excSettingCloexecFailed,
+	excUnknownFileDescriptor
+};
+
+extern size_t Modules_Poll;
 
 void Poll0(ExceptionManager *e);
 

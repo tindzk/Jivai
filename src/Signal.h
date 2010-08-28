@@ -7,17 +7,21 @@
 #undef self
 #define self Signal
 
-Exception_Export(SigAlrmException);
-Exception_Export(SigBusException);
-Exception_Export(SigFpeException);
-Exception_Export(SigIllException);
-Exception_Export(SigIntException);
-Exception_Export(SigPipeException);
-Exception_Export(SigQuitException);
-Exception_Export(SigSegvException);
-Exception_Export(SigTermException);
-Exception_Export(SignalHandlerNotSetException);
-Exception_Export(UnknownException);
+enum {
+	excSigAlrm = excOffset,
+	excSigBus,
+	excSigFpe,
+	excSigIll,
+	excSigInt,
+	excSigPipe,
+	excSigQuit,
+	excSigSegv,
+	excSigTerm,
+	excSignalHandlerNotSet,
+	excUnknown
+};
+
+extern size_t Modules_Signal;
 
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 typedef struct _sig_ucontext {

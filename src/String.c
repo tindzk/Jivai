@@ -1,11 +1,12 @@
 #import "String.h"
 
-Exception_Define(NotMutableException);
-Exception_Define(BufferOverflowException);
+size_t Modules_String;
 
 static ExceptionManager *exc;
 
 void String0(ExceptionManager *e) {
+	Modules_String = Module_Register(String("String"));
+
 	exc = e;
 }
 
@@ -38,7 +39,7 @@ void String_Destroy(String *this) {
 	}
 }
 
-inline String String_FromNul(char* s) {
+inline String String_FromNul(char *s) {
 	return BufString(s, strlen(s));
 }
 
@@ -58,7 +59,7 @@ inline char* String_ToNulHeap(String s) {
 
 void String_Resize(String *this, size_t length) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	if (length > 0) {
@@ -104,7 +105,7 @@ void String_Align(String *this, size_t length) {
 
 overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	size_t srcRight;
@@ -122,7 +123,7 @@ overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t s
 	if ((size_t) srcOffset > srcRight
 	 || (size_t) srcOffset > src.len
 	 || srcRight           > src.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	String_Align(this, this->len + srcRight - srcOffset);
@@ -142,7 +143,7 @@ inline overload void String_Copy(String *this, String src, ssize_t srcOffset) {
 
 overload void String_Copy(String *this, String src) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	if (src.len > 0) {
@@ -186,7 +187,7 @@ char String_CharAt(String s, ssize_t offset) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	return s.buf[offset];
@@ -209,7 +210,7 @@ overload String String_Slice(String s, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > s.len
 	 || right           > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	out.len     = right - offset;
@@ -230,7 +231,7 @@ inline overload String String_Slice(String s, ssize_t offset) {
 
 overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	size_t right;
@@ -248,7 +249,7 @@ overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > this->len
 	 || right           > this->len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	if (offset > 0) {
@@ -278,7 +279,7 @@ inline overload void String_Crop(String *this, ssize_t offset) {
 
 void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	size_t from;
@@ -292,7 +293,7 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > from
 	 || (size_t) offset > this->len
 	 || from            > this->len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	Memory_Move(
@@ -337,7 +338,7 @@ overload void String_Append(String *this, String s, ssize_t offset, ssize_t leng
 	if ((size_t) offset > right
 	 || (size_t) offset > s.len
 	 || right           > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	length = right - offset;
@@ -451,7 +452,7 @@ inline bool String_EndsWith(String s, String needle) {
 
 void String_ToLower(String *this) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -461,7 +462,7 @@ void String_ToLower(String *this) {
 
 void String_ToUpper(String *this) {
 	if (!this->mutable) {
-		throw(exc, &NotMutableException);
+		throw(exc, excNotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -532,7 +533,7 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, char c) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	for (ssize_t i = offset; i >= 0; i--) {
@@ -558,7 +559,7 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	size_t cnt = 0;
@@ -600,7 +601,7 @@ overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String ne
 
 	if ((size_t) offset > s.len
 	 || (size_t) right  > s.len) {
-		throw(exc, &BufferOverflowException);
+		throw(exc, excBufferOverflow);
 	}
 
 	size_t cnt = 0;

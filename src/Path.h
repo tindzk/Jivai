@@ -5,6 +5,7 @@
 
 #import "Time.h"
 #import "Stat.h"
+#import "Module.h"
 #import "String.h"
 #import "Exception.h"
 
@@ -19,28 +20,23 @@
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
-Exception_Export(AccessDeniedException);
-Exception_Export(AlreadyExistsException);
-Exception_Export(AttributeNonExistentException);
-Exception_Export(BufferTooSmallException);
-Exception_Export(CreationFailedException);
-Exception_Export(DeletingFailedException);
-Exception_Export(DirectoryNotEmptyException);
-Exception_Export(EmptyPathException);
-Exception_Export(GettingAttributeFailedException);
-Exception_Export(InsufficientSpaceException);
-Exception_Export(IsDirectoryException);
-Exception_Export(NameTooLongException);
-Exception_Export(NonExistentFileException);
-Exception_Export(NonExistentPathException);
-Exception_Export(NotDirectoryException);
-Exception_Export(PermissionDeniedException);
-Exception_Export(ReadingLinkFailedException);
-Exception_Export(ResolvingFailedException);
-Exception_Export(SettingAttributeFailedException);
-Exception_Export(SettingTimeFailedException);
-Exception_Export(StatFailedException);
-Exception_Export(TruncatingFailedException);
+extern size_t Modules_Path;
+
+enum {
+	excCreationFailed = excOffset,
+	excDeletingFailed,
+	excDirectoryNotEmpty,
+	excEmptyPath,
+	excInsufficientSpace,
+	excNameTooLong,
+	excNonExistentFile,
+	excNonExistentPath,
+	excNotDirectory,
+	excPermissionDenied,
+	excReadingLinkFailed,
+	excResolvingFailed,
+	excSettingTimeFailed
+};
 
 void Path0(ExceptionManager *e);
 

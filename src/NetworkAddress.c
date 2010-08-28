@@ -1,10 +1,12 @@
 #import "NetworkAddress.h"
 
-Exception_Define(GetAddrInfoFailedException);
+size_t Modules_NetworkAddress;
 
 static ExceptionManager *exc;
 
 void NetworkAddress0(ExceptionManager *e) {
+	Modules_NetworkAddress = Module_Register(String("NetworkAddress"));
+
 	exc = e;
 }
 
@@ -12,7 +14,7 @@ struct in_addr NetworkAddress_ResolveHost(String hostname) {
 	struct addrinfo *host;
 
 	if (getaddrinfo(String_ToNul(hostname), NULL, NULL, &host)) {
-		throw(exc, &GetAddrInfoFailedException);
+		throw(exc, excGetAddrInfoFailed);
 	}
 
 	struct sockaddr_in saddr = *((struct sockaddr_in *) host->ai_addr);

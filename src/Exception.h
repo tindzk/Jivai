@@ -6,13 +6,37 @@
 #define Exception_TraceSize 15
 #endif
 
+/* General exceptions. */
+enum {
+	excAccessDenied,
+	excAlreadyExists,
+	excAttributeNonExistent,
+	excBufferTooSmall,
+	excConnectionReset,
+	excFcntlFailed,
+	excGettingAttributeFailed,
+	excIllegalNesting,
+	excInvalidFileDescriptor,
+	excInvalidParameter,
+	excIsDirectory,
+	excReadingFailed,
+	excSettingAttributeFailed,
+	excStatFailed,
+	excTruncatingFailed,
+	excUnknownError,
+
+	excOffset
+};
+
 typedef struct {
 #if Exception_SaveOrigin
-	String file;
-	int line;
+	String func;
 #endif
 
-	void *p;
+	size_t module;
+	size_t code;
+
+	String scode;
 
 #if Exception_SaveTrace
 	void *trace[Exception_TraceSize];
@@ -30,9 +54,5 @@ typedef struct {
 	Exception e;
 } ExceptionManager;
 
-#define Exception_Define(name) \
-	static String name __section(".exceptions") = String(#name); \
-	String* ref(name) __section(".exceptions") = &name
-
-#define Exception_Export(name) \
-	extern String* ref(name)
+#define Exception_Entry(name) \
+	[name] = String(#name)

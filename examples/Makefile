@@ -20,7 +20,7 @@ CFLAGS += -std=gnu99 -fblocks
 LIBPATH = ../src
 
 # Only build these modules.
-LIBFILES += $(LIBPATH)/{Block,HTML,HTML/{Tokenizer,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,ExceptionManager,YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
+LIBFILES += $(LIBPATH)/{Block,Typography,Path,Module,HTML,HTML/{Tokenizer,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,ExceptionManager,YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
 
 # Enable human-readable backtraces (requires BFD).
 LIBFILES += $(LIBPATH)/BFD.c -lbfd
@@ -94,6 +94,9 @@ String:
 
 PHP:
 	$(CC) -o build/PHP.bin $(CFLAGS) PHP.c $(LIBFILES)
+
+Typography:
+	$(CC) -o build/Typography.bin $(CFLAGS) Typography.c $(LIBFILES)
 
 # Delete all compiled binaries with a `make clean'.
 clean:

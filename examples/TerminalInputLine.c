@@ -1,5 +1,5 @@
-#include <Terminal/InputLine.h>
 #include <ExceptionManager.h>
+#include <Terminal/InputLine.h>
 
 ExceptionManager exc;
 
@@ -25,8 +25,6 @@ bool OnKeyPress(Context *this, String ch) {
 
 	return false;
 }
-
-#include <stdio.h>
 
 int main(void) {
 	ExceptionManager_Init(&exc);

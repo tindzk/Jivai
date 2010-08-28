@@ -2,6 +2,7 @@
 #import <sys/wait.h>
 #import <sys/types.h>
 
+#import "Module.h"
 #import "String.h"
 #import "StringArray.h"
 #import "ExceptionManager.h"
@@ -9,8 +10,12 @@
 #undef self
 #define self Process
 
-Exception_Export(ForkFailedException);
-Exception_Export(SpawningProcessFailedException);
+enum {
+	excForkFailed = excOffset,
+	excSpawningProcessFailed
+};
+
+extern size_t Modules_Process;
 
 extern char **environ;
 

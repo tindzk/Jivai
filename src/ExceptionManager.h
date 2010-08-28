@@ -40,8 +40,7 @@ void Exception_Print(Exception *e);
 #if Exception_SaveOrigin
 #define ExceptionManager_SetOrigin(this)   \
 	do {                                   \
-		(this)->e.file = String(__FILE__); \
-		(this)->e.line = __LINE__;         \
+		(this)->e.func = String(__func__); \
 	} while(0)
 #else
 #define ExceptionManager_SetOrigin(this) \
@@ -58,13 +57,16 @@ void Exception_Print(Exception *e);
 	do { } while (0)
 #endif
 
-#define ExceptionManager_Throw(this, c)    \
-	do {                                   \
-		ExceptionManager_Check(this);      \
-		(this)->e.p = (void *) c;          \
-		ExceptionManager_SetOrigin(this);  \
-		ExceptionManager_SetTrace(this);   \
-		ExceptionManager_Raise(this);      \
+#define ExceptionManager_Throw(this, c)   \
+	do {                                  \
+		ExceptionManager_Check(this);     \
+		(this)->e.module =                \
+			__eval(Modules, self);        \
+		(this)->e.code = c;               \
+		(this)->e.scode = String(#c);     \
+		ExceptionManager_SetOrigin(this); \
+		ExceptionManager_SetTrace(this);  \
+		ExceptionManager_Raise(this);     \
 	} while(0)
 
 #define ExceptionManager_Pop(this)           \
@@ -84,12 +86,18 @@ void Exception_Print(Exception *e);
 	bool __exc_rethrow = false;                   \
 	if (setjmp(__exc_mgr->cur->jmpBuffer) == 0) {
 
-#define catch(c, _e)                         \
-	} else if (__exc_mgr->e.p == c) {        \
+#define catch(_module, _code, _e)               \
+	} else if (__exc_mgr->e.module == _module   \
+			&& __exc_mgr->e.code   == _code)    \
+	{                                           \
 		__unused Exception *_e = &__exc_mgr->e;
 
-#define catchAny(_e)                         \
-	} else if (true) {                       \
+#define catchModule(_module, _e)                 \
+	} else if (__exc_mgr->e.module == _module) { \
+		__unused Exception *_e = &__exc_mgr->e;
+
+#define catchAny(_e)                            \
+	} else if (true) {                          \
 		__unused Exception *_e = &__exc_mgr->e;
 
 #define finally               \

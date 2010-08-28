@@ -10,11 +10,15 @@
 #undef self
 #define self HTTP_Header
 
-Exception_Export(EmptyRequestUriException);
-Exception_Export(RequestMalformedException);
-Exception_Export(UnknownMethodException);
-Exception_Export(UnknownStatusException);
-Exception_Export(UnknownVersionException);
+enum {
+	excEmptyRequestUri = excOffset,
+	excRequestMalformed,
+	excUnknownMethod,
+	excUnknownStatus,
+	excUnknownVersion
+};
+
+extern size_t Modules_HTTP_Header;
 
 typedef enum {
 	HTTP_Header_Type_Request,

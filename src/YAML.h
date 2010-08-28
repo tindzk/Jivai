@@ -6,8 +6,6 @@
 #undef self
 #define self YAML
 
-Exception_Export(IllegalNestingException);
-
 typedef enum {
 	YAML_NodeType_Node,
 	YAML_NodeType_Section,
@@ -48,6 +46,8 @@ typedef struct {
 	size_t depth;
 	size_t depthWidth;
 } YAML;
+
+extern size_t Modules_YAML;
 
 void YAML0(ExceptionManager *e);
 

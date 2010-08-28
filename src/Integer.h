@@ -1,13 +1,17 @@
 #import <stdint.h>
 #import <limits.h>
 
-#import "ExceptionManager.h"
 #import "String.h"
+#import "ExceptionManager.h"
 
 #undef self
 #define self Integer
 
-Exception_Export(NumberTooBigException);
+extern size_t Modules_Integer;
+
+enum {
+	excNumberTooBig = excOffset
+};
 
 void Integer0(ExceptionManager *e);
 

@@ -1,3 +1,4 @@
+#import "Module.h"
 #import "String.h"
 #import "Exception.h"
 
@@ -7,10 +8,6 @@
 
 #undef self
 #define self Memory
-
-Exception_Export(NullPointerException);
-Exception_Export(OutOfBoundsException);
-Exception_Export(OutOfMemoryException);
 
 #ifndef Memory_BoundaryChecks
 #define Memory_BoundaryChecks 1
@@ -23,6 +20,14 @@ Exception_Export(OutOfMemoryException);
 #ifndef Memory_OutOfMemoryChecks
 #define Memory_OutOfMemoryChecks 0
 #endif
+
+enum {
+	excNullPointer = excOffset,
+	excOutOfBounds,
+	excOutOfMemory
+};
+
+extern size_t Modules_Memory;
 
 void Memory0(ExceptionManager *e);
 

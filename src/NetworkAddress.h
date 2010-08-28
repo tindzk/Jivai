@@ -6,7 +6,11 @@
 #undef self
 #define self NetworkAddress
 
-Exception_Export(GetAddrInfoFailedException);
+enum {
+	excGetAddrInfoFailed = excOffset
+};
+
+extern size_t Modules_NetworkAddress;
 
 typedef struct {
 	unsigned long ip;

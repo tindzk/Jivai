@@ -1,10 +1,12 @@
 #import "Time.h"
 
-Exception_Define(GetTimeOfDayFailedException);
+size_t Modules_Time;
 
 static ExceptionManager *exc;
 
 void Time0(ExceptionManager *e) {
+	Modules_Time = Module_Register(String("Time"));
+
 	exc = e;
 }
 
@@ -38,7 +40,7 @@ Time_UnixEpoch Time_GetCurrentUnixTime(void) {
 	Time_UnixEpoch time;
 
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &time) < 0) {
-		throw(exc, &GetTimeOfDayFailedException);
+		throw(exc, excGetTimeOfDayFailed);
 	}
 
 	return time;

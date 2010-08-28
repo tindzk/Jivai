@@ -1,20 +1,12 @@
 #import "Signal.h"
 
+size_t Modules_Signal;
+
 static ExceptionManager *exc;
 
-Exception_Define(SigAlrmException);
-Exception_Define(SigBusException);
-Exception_Define(SigFpeException);
-Exception_Define(SigIllException);
-Exception_Define(SigIntException);
-Exception_Define(SigPipeException);
-Exception_Define(SigQuitException);
-Exception_Define(SigSegvException);
-Exception_Define(SigTermException);
-Exception_Define(SignalHandlerNotSetException);
-Exception_Define(UnknownException);
-
 void Signal0(ExceptionManager *e) {
+	Modules_Signal = Module_Register(String("Signal"));
+
 	exc = e;
 
 	/* Register these signals as exceptions. */
@@ -39,7 +31,7 @@ void Signal_Register(int signal, void (*cb)(int, siginfo_t *, void *)) {
 	sigact.sa_restorer  = NULL;
 
 	if (sigaction(signal, &sigact, (struct sigaction *) NULL) != 0) {
-		throw(exc, &SignalHandlerNotSetException);
+		throw(exc, excSignalHandlerNotSet);
 	}
 }
 
@@ -52,31 +44,43 @@ void Signal_Ignore(int signal) {
 	sigact.sa_handler = SIG_IGN;
 
 	if (sigaction(signal, &sigact, NULL) != 0) {
-		throw(exc, &SignalHandlerNotSetException);
+		throw(exc, excSignalHandlerNotSet);
 	}
 }
 
 void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *ucontext) {
+	exc->e.module = Modules_Signal;
+
 	if (signal == SIGALRM) {
-		exc->e.p = &Signal_SigAlrmException;
+		exc->e.code  = excSigAlrm;
+		exc->e.scode = String("excSigAlrm");
 	} else if (signal == SIGBUS) {
-		exc->e.p = &Signal_SigBusException;
+		exc->e.code  = excSigBus;
+		exc->e.scode = String("excSigBus");
 	} else if (signal == SIGFPE) {
-		exc->e.p = &Signal_SigFpeException;
+		exc->e.code  = excSigFpe;
+		exc->e.scode = String("excSigFpe");
 	} else if (signal == SIGILL) {
-		exc->e.p = &Signal_SigIllException;
+		exc->e.code  = excSigIll;
+		exc->e.scode = String("excSigIll");
 	} else if (signal == SIGINT) {
-		exc->e.p = &Signal_SigIntException;
+		exc->e.code  = excSigInt;
+		exc->e.scode = String("excSigInt");
 	} else if (signal == SIGQUIT) {
-		exc->e.p = &Signal_SigQuitException;
+		exc->e.code  = excSigQuit;
+		exc->e.scode = String("excSigQuit");
 	} else if (signal == SIGSEGV) {
-		exc->e.p = &Signal_SigSegvException;
+		exc->e.code  = excSigSegv;
+		exc->e.scode = String("excSigSegv");
 	} else if (signal == SIGTERM) {
-		exc->e.p = &Signal_SigTermException;
+		exc->e.code  = excSigTerm;
+		exc->e.scode = String("excSigTerm");
 	} else if (signal == SIGPIPE) {
-		exc->e.p = &Signal_SigPipeException;
+		exc->e.code  = excSigPipe;
+		exc->e.scode = String("excSigPipe");
 	} else {
-		exc->e.p = &Signal_UnknownException;
+		exc->e.code  = excUnknown;
+		exc->e.scode = String("excUnknown");
 	}
 
 #if Exception_SaveTrace
@@ -85,16 +89,15 @@ void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *uconte
 	/* Overwrite the first trace item with the address from which the signal was raised. */
 	sig_ucontext_t *uc = (sig_ucontext_t *) ucontext;
 
-#if defined(__i386__)
-	exc->e.trace[0] = (void *) uc->uc_mcontext.eip;
-#elif defined(__x86_64__)
-	exc->e.trace[0] = (void *) uc->uc_mcontext.rip;
-#endif
+	#if defined(__i386__)
+		exc->e.trace[0] = (void *) uc->uc_mcontext.eip;
+	#elif defined(__x86_64__)
+		exc->e.trace[0] = (void *) uc->uc_mcontext.rip;
+	#endif
 #endif
 
 #if Exception_SaveOrigin
-	exc->e.file = String(__FILE__);
-	exc->e.line = __LINE__;
+	exc->e.func = String(__func__);
 #endif
 
 	ExceptionManager_Raise(exc);

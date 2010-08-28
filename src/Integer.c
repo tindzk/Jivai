@@ -1,40 +1,42 @@
 #import "Integer.h"
 
-Exception_Define(NumberTooBigException);
+size_t Modules_Integer;
 
 static ExceptionManager *exc;
 
 void Integer0(ExceptionManager *e) {
+	Modules_Integer = Module_Register(String("Integer"));
+
 	exc = e;
 }
 
-#define INTEGER_PARSE_STRING(s, type, max)      \
-	if (s.len == 0) {                           \
-		return 0;                               \
-	}                                           \
-	size_t i, j, c, digit;                      \
-	type res;                                   \
-	c = 0;                                      \
-	res = 0;                                    \
-	i = s.len;                                  \
-	while (i--) {                               \
-		if (!Char_IsDigit(s.buf[i])) {          \
-			continue;                           \
-		}                                       \
-		digit = Char_ParseDigit(s.buf[i]);      \
-		j = c;                                  \
-		while (j--) {                           \
-			digit *= 10;                        \
-		}                                       \
-		if (res + digit > max) {                \
-			throw(exc, &NumberTooBigException); \
-		}                                       \
-		res += digit;                           \
-		c++;                                    \
-	}                                           \
-	if (s.buf[0] == '-') {                      \
-		res *= -1;                              \
-	}                                           \
+#define INTEGER_PARSE_STRING(s, type, max) \
+	if (s.len == 0) {                      \
+		return 0;                          \
+	}                                      \
+	size_t i, j, c, digit;                 \
+	type res;                              \
+	c = 0;                                 \
+	res = 0;                               \
+	i = s.len;                             \
+	while (i--) {                          \
+		if (!Char_IsDigit(s.buf[i])) {     \
+			continue;                      \
+		}                                  \
+		digit = Char_ParseDigit(s.buf[i]); \
+		j = c;                             \
+		while (j--) {                      \
+			digit *= 10;                   \
+		}                                  \
+		if (res + digit > max) {           \
+			throw(exc, excNumberTooBig);   \
+		}                                  \
+		res += digit;                      \
+		c++;                               \
+	}                                      \
+	if (s.buf[0] == '-') {                 \
+		res *= -1;                         \
+	}                                      \
 	return res;
 
 int Integer_ParseString(String s) {

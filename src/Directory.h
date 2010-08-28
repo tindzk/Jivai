@@ -12,8 +12,11 @@
 #define Directory_BufSize 1024
 #endif
 
-Exception_Export(CannotOpenDirectoryException);
-Exception_Export(ReadingFailedException);
+enum {
+	excCannotOpenDirectory = excOffset
+};
+
+extern size_t Modules_Directory;
 
 typedef struct {
 	int fd;

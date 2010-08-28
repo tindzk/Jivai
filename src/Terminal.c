@@ -1,10 +1,12 @@
 #import "Terminal.h"
 
-Exception_Define(IoctlFailedException);
+size_t Modules_Terminal;
 
 static ExceptionManager *exc;
 
 void Terminal0(ExceptionManager *e) {
+	Modules_Terminal = Module_Register(String("Terminal"));
+
 	exc = e;
 }
 
@@ -149,7 +151,7 @@ Terminal_Size Terminal_GetSize(void) {
 		res.cols = (int) size.ws_col;
 		res.rows = (int) size.ws_row;
 	} else {
-		throw(exc, &IoctlFailedException);
+		throw(exc, excIoctlFailed);
 	}
 
 	return res;

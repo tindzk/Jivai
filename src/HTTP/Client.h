@@ -25,10 +25,11 @@
 #define HTTP_Client_ReadChunkSize 16384
 #endif
 
-Exception_Export(BufferTooSmallException);
-Exception_Export(ConnectionResetException);
-Exception_Export(MalformedChunkException);
-Exception_Export(ResponseMalformedException);
+enum {
+	excConnectionError = excOffset,
+	excMalformedChunk,
+	excResponseMalformed
+};
 
 typedef struct {
 	HTTP_OnVersion onVersion;
@@ -92,6 +93,8 @@ typedef struct {
 	 */
 	bool inChunk;
 } HTTP_Client;
+
+extern size_t Modules_HTTP_Client;
 
 void HTTP_Client0(ExceptionManager *e);
 overload void HTTP_Client_Init(HTTP_Client *this);

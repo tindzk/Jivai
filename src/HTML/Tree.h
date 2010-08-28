@@ -9,7 +9,7 @@
 #undef self
 #define self HTML_Tree
 
-Exception_Export(IllegalNestingException);
+extern size_t Modules_HTML_Tree;
 
 typedef struct {
 	String name;

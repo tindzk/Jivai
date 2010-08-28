@@ -25,7 +25,9 @@ typedef struct {
 		}                  \
 	}
 
-Exception_Export(YearLower1970Exception);
+enum {
+	excYearLower1970 = excOffset
+};
 
 void DateTime0(ExceptionManager *e);
 void DateTime_Init(DateTime *this);

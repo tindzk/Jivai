@@ -16,14 +16,17 @@ typedef enum {
 	Socket_Protocol_UDP
 } Socket_Protocol;
 
-Exception_Export(AcceptFailedException);
-Exception_Export(AddressInUseException);
-Exception_Export(BindFailedException);
-Exception_Export(ConnectFailedException);
-Exception_Export(FcntlFailedException);
-Exception_Export(ListenFailedException);
-Exception_Export(SetSocketOptionException);
-Exception_Export(SocketFailedException);
+enum {
+	excAcceptFailed = excOffset,
+	excAddressInUse,
+	excBindFailed,
+	excConnectFailed,
+	excListenFailed,
+	excSetSocketOption,
+	excSocketFailed
+};
+
+extern size_t Modules_Socket;
 
 typedef struct {
 	int fd;

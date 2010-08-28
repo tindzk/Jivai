@@ -38,7 +38,7 @@ typedef struct {
 // --------------------
 
 typedef struct {
-	int activeConn;
+	ssize_t activeConn;
 } CustomClientListener;
 
 void CustomClientListener_OnInit(CustomClientListener *this) {
@@ -60,15 +60,15 @@ void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 
 	client->data = data;
 
-	String tmp, tmp2;
-	String_Print(tmp = String_Format(
+	String tmp;
+
+	String_FmtPrint(
 		String("Got TCP connection from %:%, fd=%\n"),
-		tmp2 = NetworkAddress_ToString(client->conn->addr),
+		tmp = NetworkAddress_ToString(client->conn->addr),
 		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd)));
+		Integer_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
-	String_Destroy(&tmp2);
 
 	String resp = String("Hi.\n");
 	SocketConnection_Write(client->conn, resp.buf, resp.len);
@@ -77,15 +77,15 @@ void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 }
 
 void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *client) {
-	String tmp, tmp2;
-	String_Print(tmp = String_Format(
+	String tmp;
+
+	String_FmtPrint(
 		String("Client %:%, fd=% disconnected\n"),
-		tmp2 = NetworkAddress_ToString(client->conn->addr),
+		tmp = NetworkAddress_ToString(client->conn->addr),
 		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd)));
+		Integer_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
-	String_Destroy(&tmp2);
 
 	Memory_Free(client->data);
 
@@ -96,15 +96,13 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 	String s = StackString(1024);
 	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
 
-	String_Trim(&s);
+	String input = String_Trim(s);
 
-	String tmp;
-	String_Print(tmp = String_Format(
+	String_FmtPrint(
 		String("Received data from fd=%: '%'\n"),
-		Integer_ToString(client->conn->fd), s));
-	String_Destroy(&tmp);
+		Integer_ToString(client->conn->fd), input);
 
-	if (String_BeginsWith(s, String("info"))) {
+	if (String_BeginsWith(input, String("info"))) {
 		ClientData *data = client->data;
 
 		String resp = String_Format(
@@ -114,14 +112,14 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 		SocketConnection_Write(client->conn, resp.buf, resp.len);
 
 		String_Destroy(&resp);
-	} else if (String_BeginsWith(s, String("active"))) {
+	} else if (String_BeginsWith(input, String("active"))) {
 		String tmp = String_Format(
 			String("% active connection(s).\n"),
 			Integer_ToString(this->activeConn - 1));
 
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 		String_Destroy(&tmp);
-	} else if (String_BeginsWith(s, String("exit"))) {
+	} else if (String_BeginsWith(input, String("exit"))) {
 		String tmp = String("Bye.\n");
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 
@@ -167,14 +165,14 @@ int main(void) {
 	events.onPush             = (void *) &CustomClientListener_OnData;
 	events.onPull             = NULL;
 
-	try(&exc) {
+	try (&exc) {
 		Server_Init(&server, events, false, 1337);
 		String_Print(String("Server started.\n"));
 
 		while (true) {
 			Server_Process(&server);
 		}
-	} catch(&Signal_SigIntException, e) {
+	} catch (Modules_Signal, excSigInt, e) {
 		String_Print(String("Server shutdown.\n"));
 	} finally {
 		Server_Destroy(&server);

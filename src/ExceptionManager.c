@@ -20,18 +20,15 @@ void ExceptionManager_Push(ExceptionManager *this, ExceptionManager_Record *reco
 
 void Exception_Print(Exception *e) {
 #if Exception_SaveOrigin
-	String s = String_Format(
-		String("Uncaught exception '%' in %:%\n"),
-		*(String *) e->p,
-		e->file,
-		Integer_ToString(e->line));
+	String_FmtPrint(
+		String("Uncaught exception %.% (in %)\n"),
+		Module_ResolveName(e->module),
+		e->scode,
+		e->func);
 #else
-	String s = String_Format(
-		String("Uncaught exception '%'\n"),
-		*(String *) e->p);
+	String_FmtFormat(
+		String("Uncaught exception %.% '%'\n"),
+		Module_ResolveName(e->module),
+		e->scode);
 #endif
-
-	String_Print(s);
-
-	String_Destroy(&s);
 }

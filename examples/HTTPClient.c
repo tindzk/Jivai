@@ -1,3 +1,4 @@
+#include <Block.h>
 #include <Socket.h>
 #include <SocketConnection.h>
 #include <ExceptionManager.h>
@@ -29,7 +30,7 @@ void HTTP_Client_GetResponse(String hostname, String path, short port, String *r
 
 	try (&exc) {
 		SocketConnection_Write(&conn, request.buf, request.len);
-	} catchAny(e) {
+	} catchAny (e) {
 		cleanup(&socket, &conn);
 		excRethrow;
 	} finally {
@@ -48,7 +49,7 @@ void HTTP_Client_GetResponse(String hostname, String path, short port, String *r
 			}
 
 			resp->len += len;
-		} catch(&SocketConnection_ConnectionResetException, e) {
+		} catch (Modules_SocketConnection, excConnectionReset, e) {
 			excBreak;
 		} finally {
 

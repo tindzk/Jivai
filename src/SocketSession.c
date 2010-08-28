@@ -1,10 +1,13 @@
 #import "SocketSession.h"
 
-Exception_Define(NotIdleException);
+size_t Modules_SocketSession;
 
 static ExceptionManager *exc;
 
 void SocketSession0(ExceptionManager *e) {
+	Modules_SocketSession =
+		Module_Register(String("SocketSession"));
+
 	exc = e;
 }
 
@@ -17,7 +20,7 @@ void SocketSession_Init(SocketSession *this, SocketConnection *conn, void *conte
 
 void SocketSession_Write(SocketSession *this, String s, SocketSession_OnDone onDone) {
 	if (!SocketSession_IsIdle(this)) {
-		throw(exc, &NotIdleException);
+		throw(exc, excNotIdle);
 	}
 
 	if (s.len == 0) {
@@ -36,7 +39,7 @@ void SocketSession_Write(SocketSession *this, String s, SocketSession_OnDone onD
 
 void SocketSession_SendFile(SocketSession *this, File file, size_t length, SocketSession_OnDone onDone) {
 	if (!SocketSession_IsIdle(this)) {
-		throw(exc, &NotIdleException);
+		throw(exc, excNotIdle);
 	}
 
 	this->operation.type = SocketSession_OperationType_File;

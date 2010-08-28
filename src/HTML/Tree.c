@@ -1,10 +1,12 @@
 #import "Tree.h"
 
+size_t Modules_HTML_Tree;
+
 static ExceptionManager *exc;
 
-Exception_Define(IllegalNestingException);
-
 void HTML_Tree0(ExceptionManager *e) {
+	Modules_HTML_Tree = Module_Register(String("HTML.Tree"));
+
 	exc = e;
 }
 
@@ -39,7 +41,7 @@ HTML_Tree_Node* HTML_Tree_GetRoot(HTML_Tree *this) {
 void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
-			throw(exc, &IllegalNestingException);
+			throw(exc, excIllegalNesting);
 		}
 
 		this->node = this->node->parent;

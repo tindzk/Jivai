@@ -10,32 +10,24 @@
 #undef self
 #define self File
 
-Exception_Export(AccessDeniedException);
-Exception_Export(AlreadyExistsException);
-Exception_Export(AttributeNonExistentException);
-Exception_Export(BufferTooSmallException);
-Exception_Export(CannotOpenFileException);
-Exception_Export(GettingAttributeFailedException);
-Exception_Export(InvalidFileDescriptorException);
-Exception_Export(InvalidParameterException);
-Exception_Export(IsDirectoryException);
-Exception_Export(NotFoundException);
-Exception_Export(NotReadableException);
-Exception_Export(NotWritableException);
-Exception_Export(ReadingFailedException);
-Exception_Export(ReadingInterruptedException);
-Exception_Export(SeekingFailedException);
-Exception_Export(SettingAttributeFailedException);
-Exception_Export(StatFailedException);
-Exception_Export(TruncatingFailedException);
-Exception_Export(WritingFailedException);
-Exception_Export(WritingInterruptedException);
-
 typedef struct {
 	int fd;
 	bool readable;
 	bool writable;
 } File;
+
+enum {
+	excCannotOpenFile = excOffset,
+	excNotFound,
+	excNotReadable,
+	excNotWritable,
+	excReadingInterrupted,
+	excSeekingFailed,
+	excWritingFailed,
+	excWritingInterrupted
+};
+
+extern size_t Modules_File;
 
 typedef enum {
 	File_SeekType_Set = 0,

@@ -1,14 +1,13 @@
 #import "Header.h"
 
+size_t Modules_HTTP_Header;
+
 static ExceptionManager *exc;
 
-Exception_Define(EmptyRequestUriException);
-Exception_Define(RequestMalformedException);
-Exception_Define(UnknownMethodException);
-Exception_Define(UnknownStatusException);
-Exception_Define(UnknownVersionException);
-
 void HTTP_Header0(ExceptionManager *e) {
+	Modules_HTTP_Header =
+		Module_Register(String("HTTP.Header"));
+
 	exc = e;
 }
 
@@ -18,13 +17,13 @@ void HTTP_Header_Init(HTTP_Header *this, HTTP_Header_Events events) {
 
 void HTTP_Header_ParseMethod(HTTP_Header *this, String s) {
 	if (s.len == 0) {
-		throw(exc, &RequestMalformedException);
+		throw(exc, excRequestMalformed);
 	}
 
 	HTTP_Method method = HTTP_Method_FromString(s);
 
 	if (method == HTTP_Method_Unset) {
-		throw(exc, &UnknownMethodException);
+		throw(exc, excUnknownMethod);
 	}
 
 	if (this->events.onMethod != NULL) {
@@ -36,7 +35,7 @@ void HTTP_Header_ParseVersion(HTTP_Header *this, String s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
-		throw(exc, &UnknownVersionException);
+		throw(exc, excUnknownVersion);
 	}
 
 	if (this->events.onVersion != NULL) {
@@ -48,13 +47,13 @@ void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
 	int code = Integer_ParseString(s);
 
 	if (code == 0) {
-		throw(exc, &UnknownStatusException);
+		throw(exc, excUnknownStatus);
 	}
 
 	HTTP_Status status = HTTP_Status_GetStatusByCode(code);
 
 	if (status == HTTP_Status_Unset) {
-		throw(exc, &UnknownStatusException);
+		throw(exc, excUnknownStatus);
 	}
 
 	if (this->events.onStatus != NULL) {
@@ -64,7 +63,7 @@ void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
 
 void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 	if (s.len == 0) {
-		throw(exc, &EmptyRequestUriException);
+		throw(exc, excEmptyRequestUri);
 	}
 
 	ssize_t pos = String_Find(s, '?');
@@ -157,7 +156,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
-		throw(exc, &RequestMalformedException);
+		throw(exc, excRequestMalformed);
 	}
 
 	ssize_t pos2ndLine = pos1stLine;
@@ -170,7 +169,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		ssize_t posMethod = String_Find(s, ' ');
 
 		if (posMethod == String_NotFound) {
-			throw(exc, &RequestMalformedException);
+			throw(exc, excRequestMalformed);
 		}
 
 		String method = String_Slice(s, 0, posMethod);
@@ -185,7 +184,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		ssize_t posVersion = String_Find(s, ' ');
 
 		if (posVersion == String_NotFound) {
-			throw(exc, &RequestMalformedException);
+			throw(exc, excRequestMalformed);
 		}
 
 		String version = String_Slice(s, 0, posVersion);
@@ -194,7 +193,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
 		if (posCode == String_NotFound) {
-			throw(exc, &RequestMalformedException);
+			throw(exc, excRequestMalformed);
 		}
 
 		String code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);

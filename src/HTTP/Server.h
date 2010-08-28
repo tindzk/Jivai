@@ -12,10 +12,14 @@
 #undef self
 #define self HTTP_Server
 
-Exception_Export(BodyTooLargeException);
-Exception_Export(BodyUnexpectedException);
-Exception_Export(HeaderTooLargeException);
-Exception_Export(UnknownContentTypeException);
+enum {
+	excBodyTooLarge = excOffset,
+	excBodyUnexpected,
+	excHeaderTooLarge,
+	excUnknownContentType
+};
+
+extern size_t Modules_HTTP_Server;
 
 typedef void (* HTTP_Server_OnRespond)(void *, bool);
 

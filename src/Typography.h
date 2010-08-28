@@ -5,7 +5,7 @@
 #undef self
 #define self Typography
 
-Exception_Export(IllegalNestingException);
+extern size_t Modules_Typography;
 
 typedef struct {
 	String value;

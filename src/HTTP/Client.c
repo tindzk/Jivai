@@ -1,14 +1,12 @@
 #import "Client.h"
 
+size_t Modules_HTTP_Client;
+
 static ExceptionManager *exc;
 
-Exception_Define(BufferTooSmallException);
-Exception_Define(ConnectionErrorException);
-Exception_Define(ConnectionResetException);
-Exception_Define(MalformedChunkException);
-Exception_Define(ResponseMalformedException);
-
 void HTTP_Client0(ExceptionManager *e) {
+	Modules_HTTP_Client = Module_Register(String("HTTP.Client"));
+
 	exc = e;
 }
 
@@ -220,13 +218,13 @@ size_t HTTP_Client_ParseChunk(String *s) {
 	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
-		throw(exc, &MalformedChunkException);
+		throw(exc, excMalformedChunk);
 	}
 
 	long len = Hex_ToInteger(String_Slice(*s, 0, pos));
 
 	if (len == -1) {
-		throw(exc, &MalformedChunkException);
+		throw(exc, excMalformedChunk);
 	}
 
 	String_Crop(s, pos + 2);
@@ -264,7 +262,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 		 * For now this module only supports blocking connections.
 		 */
 		if (len == -1) {
-			throw(exc, &ConnectionErrorException);
+			throw(exc, excConnectionError);
 		}
 
 		this->resp.len += len;
@@ -276,7 +274,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			this->resp.len = 0;
 			this->closed   = true;
 
-			throw(exc, &ResponseMalformedException);
+			throw(exc, excResponseMalformed);
 		} else if (requestOffset > 0) { /* The response is complete. */
 			HTTP_Header_Events events;
 			events.context   = this;
@@ -302,7 +300,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 					this->resp.size);
 
 				if (len == -1) {
-					throw(exc, &ConnectionErrorException);
+					throw(exc, excConnectionError);
 				}
 
 				this->resp.len = len;
@@ -315,12 +313,12 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 				 * responses.
 				 */
 
-				throw(exc, &BufferTooSmallException);
+				throw(exc, excBufferTooSmall);
 			}
 		}
-	} catch(SocketConnection_ConnectionResetException, e) {
+	} catch(Modules_SocketConnection, excConnectionReset, e) {
 		this->closed = true;
-		excThrow(exc, HTTP_Client_ConnectionResetException);
+		excThrow(exc, excConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -345,13 +343,13 @@ static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 			this->resp.size - this->resp.len);
 
 		if (len == -1) {
-			throw(exc, &ConnectionErrorException);
+			throw(exc, excConnectionError);
 		}
 
 		this->resp.len += len;
-	} catch(SocketConnection_ConnectionResetException, e) {
+	} catch(Modules_SocketConnection, excConnectionReset, e) {
 		this->closed = true;
-		excThrow(exc, &HTTP_Client_ConnectionResetException);
+		excThrow(exc, excConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -430,7 +428,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 					goto retry;
 				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
 					/* Chunk does not end on CRLF. */
-					throw(exc, &MalformedChunkException);
+					throw(exc, excMalformedChunk);
 				} else {
 					/* Don't set this->total and this->read to 0 because
 					 * this will cause the next HTTP_Client_Read() call
@@ -521,12 +519,12 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 			}
 
 			if (read == -1) {
-				throw(exc, &ConnectionErrorException);
+				throw(exc, excConnectionError);
 			}
 
 			res->len   += read;
 			this->read += read;
-		} catch(SocketConnection_ConnectionResetException, e) {
+		} catch(Modules_SocketConnection, excConnectionReset, e) {
 			this->closed = true;
 
 			if (this->total == -1) {
@@ -538,7 +536,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 				excBreak;
 			} else {
-				excThrow(exc, &HTTP_Client_ConnectionResetException);
+				excThrow(exc, excConnectionReset);
 			}
 		} finally {
 

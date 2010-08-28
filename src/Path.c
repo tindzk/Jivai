@@ -1,31 +1,12 @@
 #import "Path.h"
 
-Exception_Define(AccessDeniedException);
-Exception_Define(AlreadyExistsException);
-Exception_Define(AttributeNonExistentException);
-Exception_Define(BufferTooSmallException);
-Exception_Define(CreationFailedException);
-Exception_Define(DeletingFailedException);
-Exception_Define(DirectoryNotEmptyException);
-Exception_Define(EmptyPathException);
-Exception_Define(GettingAttributeFailedException);
-Exception_Define(InsufficientSpaceException);
-Exception_Define(IsDirectoryException);
-Exception_Define(NameTooLongException);
-Exception_Define(NonExistentFileException);
-Exception_Define(NonExistentPathException);
-Exception_Define(NotDirectoryException);
-Exception_Define(PermissionDeniedException);
-Exception_Define(ReadingLinkFailedException);
-Exception_Define(ResolvingFailedException);
-Exception_Define(SettingAttributeFailedException);
-Exception_Define(SettingTimeFailedException);
-Exception_Define(StatFailedException);
-Exception_Define(TruncatingFailedException);
+size_t Modules_Path;
 
 static ExceptionManager *exc;
 
 void Path0(ExceptionManager *e) {
+	Modules_Path = Module_Register(String("Path"));
+
 	exc = e;
 }
 
@@ -51,7 +32,7 @@ String Path_GetCwd(void) {
 
 Stat64 Path_GetStat(String path) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	errno = 0;
@@ -60,15 +41,15 @@ Stat64 Path_GetStat(String path) {
 
 	if (syscall(__NR_stat64, String_ToNul(path), &attr) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOENT) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NotDirectoryException);
+			throw(exc, excNotDirectory);
 		} else {
-			throw(exc, &StatFailedException);
+			throw(exc, excStatFailed);
 		}
 	}
 
@@ -92,9 +73,9 @@ overload bool Path_IsDirectory(String path) {
 
 	try (exc) {
 		res = Path_GetStat(path).mode & FileMode_Directory;
-	} catch (&NonExistentPathException, e) {
+	} catch (Modules_Path, excNonExistentPath, e) {
 		res = false;
-	} catch (&NotDirectoryException, e) {
+	} catch (Modules_Path, excNotDirectory, e) {
 		res = false;
 	} finally {
 
@@ -109,22 +90,22 @@ inline overload bool Path_IsDirectory(Stat64 attr) {
 
 overload void Path_Truncate(String path, off64_t length) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	errno = 0;
 
 	if (syscall(__NR_truncate64, String_ToNul(path), length) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == EISDIR) {
-			throw(exc, &IsDirectoryException);
+			throw(exc, excIsDirectory);
 		} else {
-			throw(exc, &TruncatingFailedException);
+			throw(exc, excTruncatingFailed);
 		}
 	}
 }
@@ -135,7 +116,7 @@ inline overload void Path_Truncate(String path) {
 
 overload String Path_GetFilename(String path, bool verify) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	if (verify && !Path_IsFile(path)) {
@@ -163,7 +144,7 @@ inline overload String Path_GetFilename(String path) {
 
 String overload Path_GetDirectory(String path, bool verify) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	if (String_Equals(path, String("/"))) {
@@ -195,13 +176,13 @@ inline overload String Path_GetDirectory(String path) {
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
 String Path_Resolve(String path) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	int fd;
 
 	if ((fd = syscall(__NR_open, ".", FileStatus_ReadOnly)) == -1) {
-		throw(exc, &ResolvingFailedException);
+		throw(exc, excResolvingFailed);
 	}
 
 	bool isDir = Path_IsDirectory(path);
@@ -230,7 +211,7 @@ String Path_Resolve(String path) {
 
 overload void Path_Create(String path, int mode, bool recursive) {
 	if (path.len == 0) {
-		throw(exc, &EmptyPathException);
+		throw(exc, excEmptyPath);
 	}
 
 	if (String_Equals(path, String("."))) {
@@ -238,7 +219,7 @@ overload void Path_Create(String path, int mode, bool recursive) {
 	}
 
 	if (Path_Exists(path)) {
-		throw(exc, &AlreadyExistsException);
+		throw(exc, excAlreadyExists);
 	}
 
 	if (recursive) {
@@ -252,15 +233,15 @@ overload void Path_Create(String path, int mode, bool recursive) {
 
 				if (res == -1) {
 					if (errno == EACCES) {
-						throw(exc, &AccessDeniedException);
+						throw(exc, excAccessDenied);
 					} else if (errno == ENAMETOOLONG) {
-						throw(exc, &NameTooLongException);
+						throw(exc, excNameTooLong);
 					} else if (errno == ENOSPC) {
-						throw(exc, &InsufficientSpaceException);
+						throw(exc, excInsufficientSpace);
 					} else if (errno == ENOTDIR) {
-						throw(exc, &NotDirectoryException);
+						throw(exc, excNotDirectory);
 					} else if (errno != EEXIST) {
-						throw(exc, &CreationFailedException);
+						throw(exc, excCreationFailed);
 					}
 				}
 			}
@@ -270,17 +251,17 @@ overload void Path_Create(String path, int mode, bool recursive) {
 
 		if (syscall(__NR_mkdir, String_ToNul(path), mode) == -1) {
 			if (errno == EACCES) {
-				throw(exc, &AccessDeniedException);
+				throw(exc, excAccessDenied);
 			} else if (errno == EEXIST) {
-				throw(exc, &AlreadyExistsException);
+				throw(exc, excAlreadyExists);
 			} else if (errno == ENAMETOOLONG) {
-				throw(exc, &NameTooLongException);
+				throw(exc, excNameTooLong);
 			} else if (errno == ENOSPC) {
-				throw(exc, &InsufficientSpaceException);
+				throw(exc, excInsufficientSpace);
 			} else if (errno == ENOTDIR) {
-				throw(exc, &NotDirectoryException);
+				throw(exc, excNotDirectory);
 			} else {
-				throw(exc, &CreationFailedException);
+				throw(exc, excCreationFailed);
 			}
 		}
 	}
@@ -311,15 +292,15 @@ void Path_Delete(String path) {
 
 	if (syscall(__NR_unlink, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == EISDIR) {
-			throw(exc, &IsDirectoryException);
+			throw(exc, excIsDirectory);
 		} else {
-			throw(exc, &DeletingFailedException);
+			throw(exc, excDeletingFailed);
 		}
 	}
 }
@@ -329,17 +310,17 @@ void Path_DeleteDirectory(String path) {
 
 	if (syscall(__NR_rmdir, String_ToNul(path)) == -1) {
 		if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NotDirectoryException);
+			throw(exc, excNotDirectory);
 		} else if (errno == ENOENT) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == ENOTEMPTY) {
-			throw(exc, &DirectoryNotEmptyException);
+			throw(exc, excDirectoryNotEmpty);
 		} else {
-			throw(exc, &DeletingFailedException);
+			throw(exc, excDeletingFailed);
 		}
 	}
 }
@@ -351,15 +332,15 @@ void Path_ReadLink(String path, String *out) {
 
 	if (len == -1) {
 		if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == ENOENT) {
-			throw(exc, &NonExistentFileException);
+			throw(exc, excNonExistentFile);
 		} else {
-			throw(exc, &ReadingLinkFailedException);
+			throw(exc, excReadingLinkFailed);
 		}
 	}
 
@@ -371,16 +352,16 @@ void Path_Symlink(String path1, String path2) {
 
 	if (syscall(__NR_symlink, String_ToNul(path1), String_ToNul(path2)) == -1) {
 		if (errno == EEXIST) {
-			throw(exc, &AlreadyExistsException);
+			throw(exc, excAlreadyExists);
 		} else {
-			throw(exc, &CreationFailedException);
+			throw(exc, excCreationFailed);
 		}
 	}
 }
 
 void Path_SetXattr(String path, String name, String value) {
 	if (syscall(__NR_setxattr, String_ToNul(path), String_ToNul(name), value.buf, value.len, 0) < 0) {
-		throw(exc, &SettingAttributeFailedException);
+		throw(exc, excSettingAttributeFailed);
 	}
 }
 
@@ -394,16 +375,16 @@ overload String Path_GetXattr(String path, String name) {
 
 	if (size < 0) {
 		if (errno == ENODATA) {
-			throw(exc, &AttributeNonExistentException);
+			throw(exc, excAttributeNonExistent);
 		} else {
-			throw(exc, &GettingAttributeFailedException);
+			throw(exc, excGettingAttributeFailed);
 		}
 	}
 
 	String res = HeapString(size);
 
 	if (getxattr(npath, nname, res.buf, res.size) < 0) {
-		throw(exc, &GettingAttributeFailedException);
+		throw(exc, excGettingAttributeFailed);
 	}
 
 	res.len = res.size;
@@ -421,11 +402,11 @@ overload void Path_GetXattr(String path, String name, String *value) {
 
 	if (size < 0) {
 		if (errno == ENODATA) {
-			throw(exc, &AttributeNonExistentException);
+			throw(exc, excAttributeNonExistent);
 		} else if (errno == ERANGE) {
-			throw(exc, &BufferTooSmallException);
+			throw(exc, excBufferTooSmall);
 		} else {
-			throw(exc, &GettingAttributeFailedException);
+			throw(exc, excGettingAttributeFailed);
 		}
 	}
 
@@ -448,17 +429,17 @@ overload void Path_SetTime(String path, time_t timestamp, long nano, bool follow
 		flags) == -1)
 	{
 		if (errno == ENAMETOOLONG) {
-			throw(exc, &NameTooLongException);
+			throw(exc, excNameTooLong);
 		} else if (errno == ENOENT) {
-			throw(exc, &NonExistentPathException);
+			throw(exc, excNonExistentPath);
 		} else if (errno == ENOTDIR) {
-			throw(exc, &NotDirectoryException);
+			throw(exc, excNotDirectory);
 		} else if (errno == EACCES) {
-			throw(exc, &AccessDeniedException);
+			throw(exc, excAccessDenied);
 		} else if (errno == EPERM) {
-			throw(exc, &PermissionDeniedException);
+			throw(exc, excPermissionDenied);
 		} else {
-			throw(exc, &SettingTimeFailedException);
+			throw(exc, excSettingTimeFailed);
 		}
 	}
 }

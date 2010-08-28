@@ -15,13 +15,13 @@
 #define SocketConnection_ChunkSize 65536
 #endif
 
-Exception_Export(ConnectionRefusedException);
-Exception_Export(ConnectionResetException);
-Exception_Export(FcntlFailedException);
-Exception_Export(FileDescriptorUnusableException);
-Exception_Export(InvalidFileDescriptorException);
-Exception_Export(NotConnectedException);
-Exception_Export(UnknownErrorException);
+enum {
+	excConnectionRefused = excOffset,
+	excFileDescriptorUnusable,
+	excNotConnected
+};
+
+extern size_t Modules_SocketConnection;
 
 typedef struct {
 	NetworkAddress addr;
