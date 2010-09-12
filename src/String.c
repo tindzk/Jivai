@@ -656,30 +656,16 @@ overload bool String_Contains(String s, char needle) {
 	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
-void String_TrimLeft(String *this) {
-	size_t pos = 0;
-
-	for (size_t i = 0; i < this->len; i++) {
-		if (Char_IsSpace(this->buf[i])) {
-			pos = i + 1;
-		} else {
-			break;
-		}
-	}
-
-	if (pos > 0) {
-		String_Crop(this, pos, this->len - pos);
-	}
-}
-
-overload void String_Trim(String *this) {
+overload void String_Trim(String *this, bool left, bool right) {
 	size_t i, lpos = 0;
 
-	for (i = 0; i < this->len; i++) {
-		if (Char_IsSpace(this->buf[i])) {
-			lpos = i + 1;
-		} else {
-			break;
+	if (left) {
+		for (i = 0; i < this->len; i++) {
+			if (Char_IsSpace(this->buf[i])) {
+				lpos = i + 1;
+			} else {
+				break;
+			}
 		}
 	}
 
@@ -688,11 +674,13 @@ overload void String_Trim(String *this) {
 	} else {
 		size_t rpos = this->len - 1;
 
-		for (i = rpos; i > 0; i--) {
-			if (Char_IsSpace(this->buf[i])) {
-				rpos = i - 1;
-			} else {
-				break;
+		if (right) {
+			for (i = rpos; i > 0; i--) {
+				if (Char_IsSpace(this->buf[i])) {
+					rpos = i - 1;
+				} else {
+					break;
+				}
 			}
 		}
 
@@ -700,14 +688,20 @@ overload void String_Trim(String *this) {
 	}
 }
 
-overload String String_Trim(String s) {
+inline overload void String_Trim(String *this) {
+	String_Trim(this, true, true);
+}
+
+overload String String_Trim(String s, bool left, bool right) {
 	size_t i, lpos = 0;
 
-	for (i = 0; i < s.len; i++) {
-		if (Char_IsSpace(s.buf[i])) {
-			lpos = i + 1;
-		} else {
-			break;
+	if (left) {
+		for (i = 0; i < s.len; i++) {
+			if (Char_IsSpace(s.buf[i])) {
+				lpos = i + 1;
+			} else {
+				break;
+			}
 		}
 	}
 
@@ -716,11 +710,13 @@ overload String String_Trim(String s) {
 	} else {
 		size_t rpos = s.len - 1;
 
-		for (i = rpos; i > 0; i--) {
-			if (Char_IsSpace(s.buf[i])) {
-				rpos = i - 1;
-			} else {
-				break;
+		if (right) {
+			for (i = rpos; i > 0; i--) {
+				if (Char_IsSpace(s.buf[i])) {
+					rpos = i - 1;
+				} else {
+					break;
+				}
 			}
 		}
 
@@ -728,6 +724,10 @@ overload String String_Trim(String s) {
 	}
 
 	return s;
+}
+
+inline overload String String_Trim(String s) {
+	return String_Trim(s, true, true);
 }
 
 String String_Format(String fmt, ...) {
