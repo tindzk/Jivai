@@ -136,12 +136,10 @@ static void Typography_Read(Typography *this, size_t st) {
 			case BLOCK:
 				if (prev == '\\') {
 					if (cur == '{' || cur == '}') {
-						String_Append(&value, cur);
-					} else {
-						String_Append(&value, '/');
-						String_Append(&value, '\\');
-						String_Append(&value, cur);
+						value.len--;
 					}
+
+					String_Append(&value, cur);
 				} else if (cur == '}') {
 					Typography_Flush(this, &value);
 
@@ -155,7 +153,7 @@ static void Typography_Read(Typography *this, size_t st) {
 				} else if (cur == '.') {
 					prevstate = BLOCK;
 					state     = POINT;
-				} else if (cur != '\\') {
+				} else {
 					String_Append(&value, cur);
 				}
 
