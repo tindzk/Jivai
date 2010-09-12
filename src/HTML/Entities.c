@@ -329,3 +329,36 @@ String HTML_Entities_Decode(String s) {
 
     return res;
 }
+
+String HTML_Entities_Encode(String s) {
+	String res = HeapString(s.len * 1.3);
+
+	for (size_t i = 0; i < s.len; i++) {
+		switch (s.buf[i]) {
+			case '&':
+				String_Append(&res, String("&amp;"));
+				break;
+
+			case '"':
+				String_Append(&res, String("&quot;"));
+				break;
+
+			case '\'':
+				String_Append(&res, String("&#039;"));
+				break;
+
+			case '<':
+				String_Append(&res, String("&lt;"));
+				break;
+
+			case '>':
+				String_Append(&res, String("&gt;"));
+				break;
+
+			default:
+				String_Append(&res, s.buf[i]);
+		}
+	}
+
+	return res;
+}
