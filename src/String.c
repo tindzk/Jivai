@@ -953,6 +953,12 @@ inline overload bool String_Replace(String *this, String needle, String replacem
 	return String_Replace(this, 0, needle, replacement);
 }
 
+inline overload String String_Replace(String s, String needle, String replacement) {
+	String tmp = s;
+	String_Replace(&tmp, 0, needle, replacement);
+	return tmp;
+}
+
 overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement) {
 	if (offset < 0) {
 		offset += this->len;
@@ -1002,6 +1008,12 @@ overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 
 inline overload bool String_ReplaceAll(String *this, String needle, String replacement) {
 	return String_ReplaceAll(this, 0, needle, replacement);
+}
+
+inline overload String String_ReplaceAll(String s, String needle, String replacement) {
+	String tmp = s;
+	String_ReplaceAll(&tmp, 0, needle, replacement);
+	return tmp;
 }
 
 String String_Consume(String *this, size_t n) {
