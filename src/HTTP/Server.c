@@ -210,7 +210,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 	/* Trim the request... */
 	size_t oldLength = this->header.len;
-	String_Trim(&this->header, true, false);
+	String_Trim(&this->header, String_TrimLeft);
 	requestOffset -= oldLength - this->header.len; /* ...and update requestOffset accordingly. */
 
 	HTTP_Header_Events events;

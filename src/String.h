@@ -1,7 +1,9 @@
+#import "Bit.h"
 #import "Char.h"
 #import "NULL.h"
 #import "UniStd.h" /* write(), size_t */
 #import "VarArg.h"
+#import "BitMask.h"
 #import "Boolean.h"
 #import "Compiler.h"
 
@@ -15,6 +17,11 @@ typedef struct _String {
 	char *buf;
 	bool mutable;
 } String;
+
+enum {
+	String_TrimLeft  = Bit(0),
+	String_TrimRight = Bit(1)
+};
 
 #import "Exception.h"
 #import "ExceptionManager.h"
@@ -80,9 +87,9 @@ overload ssize_t String_Find(String s, char c);
 overload ssize_t String_Find(String s, ssize_t offset, char c);
 overload bool String_Contains(String s, String needle);
 overload bool String_Contains(String s, char needle);
-overload void String_Trim(String *this, bool left, bool right);
+overload void String_Trim(String *this, short type);
 overload void String_Trim(String *this);
-overload String String_Trim(String s, bool left, bool right);
+overload String String_Trim(String s, short type);
 overload String String_Trim(String s);
 String String_Format(String fmt, ...);
 overload ssize_t String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out);

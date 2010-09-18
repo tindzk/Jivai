@@ -656,10 +656,10 @@ overload bool String_Contains(String s, char needle) {
 	return String_Find(s, 0, s.len, needle) != String_NotFound;
 }
 
-overload void String_Trim(String *this, bool left, bool right) {
+overload void String_Trim(String *this, short type) {
 	size_t i, lpos = 0;
 
-	if (left) {
+	if (BitMask_Has(type, String_TrimLeft)) {
 		for (i = 0; i < this->len; i++) {
 			if (Char_IsSpace(this->buf[i])) {
 				lpos = i + 1;
@@ -674,7 +674,7 @@ overload void String_Trim(String *this, bool left, bool right) {
 	} else {
 		size_t rpos = this->len - 1;
 
-		if (right) {
+		if (BitMask_Has(type, String_TrimRight)) {
 			for (i = rpos; i > 0; i--) {
 				if (Char_IsSpace(this->buf[i])) {
 					rpos = i - 1;
@@ -689,13 +689,15 @@ overload void String_Trim(String *this, bool left, bool right) {
 }
 
 inline overload void String_Trim(String *this) {
-	String_Trim(this, true, true);
+	String_Trim(this,
+		String_TrimLeft |
+		String_TrimRight);
 }
 
-overload String String_Trim(String s, bool left, bool right) {
+overload String String_Trim(String s, short type) {
 	size_t i, lpos = 0;
 
-	if (left) {
+	if (BitMask_Has(type, String_TrimLeft)) {
 		for (i = 0; i < s.len; i++) {
 			if (Char_IsSpace(s.buf[i])) {
 				lpos = i + 1;
@@ -710,7 +712,7 @@ overload String String_Trim(String s, bool left, bool right) {
 	} else {
 		size_t rpos = s.len - 1;
 
-		if (right) {
+		if (BitMask_Has(type, String_TrimRight)) {
 			for (i = rpos; i > 0; i--) {
 				if (Char_IsSpace(s.buf[i])) {
 					rpos = i - 1;
@@ -727,7 +729,9 @@ overload String String_Trim(String s, bool left, bool right) {
 }
 
 inline overload String String_Trim(String s) {
-	return String_Trim(s, true, true);
+	return String_Trim(s,
+		String_TrimLeft |
+		String_TrimRight);
 }
 
 String String_Format(String fmt, ...) {
