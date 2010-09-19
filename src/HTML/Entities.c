@@ -360,7 +360,7 @@ overload void HTML_Entities_Encode(String s, String *out) {
 }
 
 overload String HTML_Entities_Encode(String s) {
-	String res = HeapString(s.len * 1.3);
+	String res = HeapString(s.len * HTML_Entities_GrowthFactor);
 	HTML_Entities_Encode(s, &res);
 
 	return res;
