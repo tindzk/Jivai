@@ -680,11 +680,11 @@ overload void String_Trim(String *this, short type) {
 	if (lpos == this->len) {
 		this->len = 0;
 	} else {
-		size_t rpos = this->len - 1;
+		size_t rpos = this->len;
 
 		if (BitMask_Has(type, String_TrimRight)) {
 			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(this->buf[i])) {
+				if (Char_IsSpace(this->buf[i - 1])) {
 					rpos = i - 1;
 				} else {
 					break;
@@ -692,7 +692,7 @@ overload void String_Trim(String *this, short type) {
 			}
 		}
 
-		String_Crop(this, lpos, rpos - lpos + 1);
+		String_Crop(this, lpos, rpos - lpos);
 	}
 }
 
@@ -718,11 +718,11 @@ overload String String_Trim(String s, short type) {
 	if (lpos == s.len) {
 		s.len = 0;
 	} else {
-		size_t rpos = s.len - 1;
+		size_t rpos = s.len;
 
 		if (BitMask_Has(type, String_TrimRight)) {
 			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(s.buf[i])) {
+				if (Char_IsSpace(s.buf[i - 1])) {
 					rpos = i - 1;
 				} else {
 					break;
@@ -730,7 +730,7 @@ overload String String_Trim(String s, short type) {
 			}
 		}
 
-		return String_Slice(s, lpos, rpos - lpos + 1);
+		return String_Slice(s, lpos, rpos - lpos);
 	}
 
 	return s;
