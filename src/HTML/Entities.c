@@ -330,35 +330,38 @@ String HTML_Entities_Decode(String s) {
     return res;
 }
 
-String HTML_Entities_Encode(String s) {
-	String res = HeapString(s.len * 1.3);
-
+overload void HTML_Entities_Encode(String s, String *out) {
 	for (size_t i = 0; i < s.len; i++) {
 		switch (s.buf[i]) {
 			case '&':
-				String_Append(&res, String("&amp;"));
+				String_Append(out, String("&amp;"));
 				break;
 
 			case '"':
-				String_Append(&res, String("&quot;"));
+				String_Append(out, String("&quot;"));
 				break;
 
 			case '\'':
-				String_Append(&res, String("&#039;"));
+				String_Append(out, String("&#039;"));
 				break;
 
 			case '<':
-				String_Append(&res, String("&lt;"));
+				String_Append(out, String("&lt;"));
 				break;
 
 			case '>':
-				String_Append(&res, String("&gt;"));
+				String_Append(out, String("&gt;"));
 				break;
 
 			default:
-				String_Append(&res, s.buf[i]);
+				String_Append(out, s.buf[i]);
 		}
 	}
+}
+
+overload String HTML_Entities_Encode(String s) {
+	String res = HeapString(s.len * 1.3);
+	HTML_Entities_Encode(s, &res);
 
 	return res;
 }
