@@ -304,8 +304,16 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-void String_Prepend(String *this, String s) {
+overload void String_Prepend(String *this, String s) {
 	String tmp = String_Concat(s, *this);
+	String_Copy(this, tmp);
+	String_Destroy(&tmp);
+}
+
+overload void String_Prepend(String *this, char c) {
+	String tmp = HeapString(this->len + 1);
+	String_Append(&tmp, c);
+	String_Append(&tmp, *this);
 	String_Copy(this, tmp);
 	String_Destroy(&tmp);
 }
