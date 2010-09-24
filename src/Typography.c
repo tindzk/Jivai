@@ -160,9 +160,15 @@ static void Typography_Read(Typography *this, size_t st) {
 				break;
 
 			case OPTIONS:
-				if (cur == ']' && prev != '\\') {
+				if (prev == '\\') {
+					String_Append(&options, cur);
+
+					if (cur == '\\') {
+						cur = '\0';
+					}
+				} else if (cur == ']') {
 					state = POINT;
-				} else {
+				} else if (cur != '\\') {
 					String_Append(&options, cur);
 				}
 
