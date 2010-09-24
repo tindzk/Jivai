@@ -96,7 +96,14 @@ static void Typography_Read(Typography *this, size_t st) {
 				break;
 
 			case POINT:
-				if (Char_IsAlpha(cur) || Char_IsDigit(cur) || (cur == ' ' && name.len != 0)) {
+				if (prev == '\\') {
+					if (cur != '[' && cur != ']'
+					 && cur != '{' && cur != '}') {
+						String_Append(&name, '\\');
+					}
+
+					String_Append(&name, cur);
+				} else if (Char_IsAlpha(cur) || Char_IsDigit(cur) || (cur == ' ' && name.len != 0)) {
 					String_Append(&name, cur);
 				} else if (cur == '[') {
 					state = OPTIONS;
@@ -121,7 +128,7 @@ static void Typography_Read(Typography *this, size_t st) {
 					Typography_Read(this, BLOCK);
 
 					state = prevstate;
-				} else {
+				} else if (cur != '\\') {
 					String_Append(&value, String("."));
 					String_Append(&value, name);
 
