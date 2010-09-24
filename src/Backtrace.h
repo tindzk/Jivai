@@ -1,4 +1,5 @@
 #import "Hex.h"
+#import "String.h"
 #import "Memory.h"
 #import "Integer.h"
 #import "Compiler.h"
