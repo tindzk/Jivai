@@ -1030,10 +1030,14 @@ String String_Consume(String *this, size_t n) {
 	return res;
 }
 
-void String_Print(String s) {
+overload void String_Print(String s, bool err) {
 	if (s.buf != NULL) {
-		write(STDOUT_FILENO, s.buf, s.len);
+		write(err ? STDERR_FILENO : STDOUT_FILENO, s.buf, s.len);
 	}
+}
+
+inline overload void String_Print(String s) {
+	String_Print(s, false);
 }
 
 /*

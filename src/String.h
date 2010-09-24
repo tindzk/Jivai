@@ -110,7 +110,8 @@ overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 overload bool String_ReplaceAll(String *this, String needle, String replacement);
 overload String String_ReplaceAll(String s, String needle, String replacement);
 String String_Consume(String *this, size_t n);
-void String_Print(String s);
+overload void String_Print(String s, bool err);
+overload void String_Print(String s);
 overload short String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
 overload short String_NaturalCompare(String a, String b);
 
