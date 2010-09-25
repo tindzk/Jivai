@@ -1,5 +1,6 @@
 #import "Date.h"
 #import "Time.h"
+#import "String.h"
 #import "Exception.h"
 
 #undef self

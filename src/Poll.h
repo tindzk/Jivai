@@ -4,6 +4,7 @@
 
 #import "NULL.h"
 #import "Fcntl.h"
+#import "String.h"
 #import "Memory.h"
 
 #undef self
