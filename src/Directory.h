@@ -1,4 +1,3 @@
-#import <dirent.h> /* Defines DT_* constants. */
 #import <sys/syscall.h>
 
 #import "Stat.h"
@@ -19,14 +18,6 @@ enum {
 extern size_t Modules_Directory;
 
 typedef struct {
-	int fd;
-	struct linux_dirent *d;
-	int nread;
-	char buf[Directory_BufSize];
-	int bpos;
-} Directory;
-
-typedef struct {
 	unsigned long inode;
 	unsigned long offset;
 	unsigned short reclen;
@@ -34,8 +25,28 @@ typedef struct {
 } Directory_LinuxEntry;
 
 typedef struct {
+	int fd;
+	Directory_LinuxEntry *d;
+	int nread;
+	char buf[Directory_BufSize];
+	int bpos;
+} Directory;
+
+typedef enum {
+	Directory_ItemType_Unknown     =  0,
+	Directory_ItemType_FIFO        =  1,
+	Directory_ItemType_CharDevice  =  2,
+	Directory_ItemType_Directory   =  4,
+	Directory_ItemType_BlockDevice =  6,
+	Directory_ItemType_Regular     =  8,
+	Directory_ItemType_Symlink     = 10,
+	Directory_ItemType_Socket      = 12,
+	Directory_ItemType_Whiteout    = 14
+} Directory_ItemType;
+
+typedef struct {
 	long inode;
-	char type;
+	Directory_ItemType type;
 	String name;
 } Directory_Entry;
 
