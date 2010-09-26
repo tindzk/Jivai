@@ -48,6 +48,7 @@ void String_Destroy(String *this);
 String String_FromNul(char *s);
 char* String_ToNulBuf(String s, char *buf);
 char* String_ToNulHeap(String s);
+String String_Disown(String s);
 void String_Resize(String *this, size_t length);
 void String_Align(String *this, size_t length);
 overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength);

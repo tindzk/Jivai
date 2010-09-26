@@ -57,6 +57,11 @@ inline char* String_ToNulHeap(String s) {
 	return String_ToNulBuf(s, Memory_Alloc(s.len + 1));
 }
 
+inline String String_Disown(String s) {
+	s.mutable = false;
+	return s;
+}
+
 void String_Resize(String *this, size_t length) {
 	if (!this->mutable) {
 		throw(exc, excNotMutable);
