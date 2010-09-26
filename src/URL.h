@@ -17,3 +17,4 @@ typedef enum {
 } URL_State;
 
 URL_Parts URL_Parse(String url);
+void URL_Parts_Destroy(URL_Parts *this);

@@ -77,3 +77,10 @@ URL_Parts URL_Parse(String url) {
 
 	return res;
 }
+
+void URL_Parts_Destroy(URL_Parts *this) {
+	String_Destroy(&this->scheme);
+	String_Destroy(&this->host);
+	String_Destroy(&this->path);
+	String_Destroy(&this->fragment);
+}
