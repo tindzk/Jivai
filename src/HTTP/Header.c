@@ -109,8 +109,8 @@ void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s) {
 
 		if ((pos = String_Find(s, String(": "))) != String_NotFound) {
 			this->events.onHeader(this->events.context,
-				String_Slice(s, 0, pos),   /* name  */
-				String_Slice(s, pos + 2)); /* value */
+				String_Trim(String_Slice(s, 0, pos)),   /* name  */
+				String_Trim(String_Slice(s, pos + 2))); /* value */
 		}
 	}
 }
