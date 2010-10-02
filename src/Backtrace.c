@@ -4,20 +4,20 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, size);
 
-	String_Print(String("Traceback (most recent call first):\n"));
+	String_Print(String("Traceback (most recent call first):\n"), true);
 
 	for (ssize_t i = size - 1; i >= 0; i--) {
-		String_Print(String("\tat "));
+		String_Print(String("\tat "), true);
 
 		if (items[i].function.len == 0) {
-			String_Print(String("0x"));
+			String_Print(String("0x"), true);
 
 			String hex = Hex_ToString(items[i].addr);
-			String_Print(hex);
+			String_Print(hex, true);
 			String_Destroy(&hex);
 		} else {
-			String_Print(items[i].function);
-			String_Print(String("("));
+			String_Print(items[i].function, true);
+			String_Print(String("("), true);
 
 			if (items[i].filename.len > 0) {
 				ssize_t pos = String_ReverseFind(items[i].filename, '/');
@@ -26,18 +26,18 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 					String_Crop(&items[i].filename, pos + 1);
 				}
 
-				String_Print(items[i].filename);
-				String_Print(String(":"));
-				String_Print(Integer_ToString(items[i].line));
+				String_Print(items[i].filename, true);
+				String_Print(String(":"), true);
+				String_Print(Integer_ToString(items[i].line), true);
 			}
 
-			String_Print(String(")"));
+			String_Print(String(")"), true);
 		}
 
 		String_Destroy(&items[i].filename);
 		String_Destroy(&items[i].function);
 
-		String_Print(String("\n"));
+		String_Print(String("\n"), true);
 	}
 
 	Memory_Free(items);
