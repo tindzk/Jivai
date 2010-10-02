@@ -51,6 +51,7 @@ enum {
 #define Terminal_VT100_Cursor_Right        String("\33[C")
 #define Terminal_VT100_Cursor_Save         String("\33[s")
 #define Terminal_VT100_Cursor_Restore      String("\33[u")
+#define Terminal_VT100_Cursor_Home         String("\33[H")
 
 #define Terminal_VT100_Delete_Line         String("\33[2K")
 #define Terminal_VT100_Delete_UntilEol     String("\33[K")
@@ -154,6 +155,7 @@ overload void Terminal_Print(Terminal *this, String s);
 overload void Terminal_Print(Terminal *this, char c);
 void Terminal_DeleteLine(Terminal *this);
 void Terminal_DeleteUntilEol(Terminal *this);
+void Terminal_MoveHome(Terminal *this);
 void Terminal_MoveUp(Terminal *this, size_t n);
 void Terminal_MoveDown(Terminal *this, size_t n);
 void Terminal_MoveLeft(Terminal *this, size_t n);

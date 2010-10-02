@@ -236,6 +236,10 @@ void Terminal_DeleteUntilEol(Terminal *this) {
 	File_Write(this->out, Terminal_VT100_Delete_UntilEol);
 }
 
+void Terminal_MoveHome(Terminal *this) {
+	File_Write(this->out, Terminal_VT100_Cursor_Home);
+}
+
 void Terminal_MoveUp(Terminal *this, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, Terminal_VT100_Cursor_Up);
