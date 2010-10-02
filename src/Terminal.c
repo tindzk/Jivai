@@ -19,6 +19,8 @@ void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100) {
 	tcgetattr(STDIN_FILENO, &this->oldTermios);
 
 	this->curTermios = this->oldTermios;
+
+	this->style = (Terminal_Style) {0, 0};
 }
 
 void Terminal_Configure(Terminal *this, bool echo, bool signal) {
@@ -44,18 +46,13 @@ void Terminal_Destroy(Terminal *this) {
 	tcsetattr(STDIN_FILENO, 0, &this->oldTermios);
 }
 
+void Terminal_ResetVT100(Terminal *this) {
+	File_Write(this->out, Terminal_VT100_Normal);
+}
+
 /* Write VT100 escape sequences to the stream for the given color. */
 void Terminal_SetVT100Color(Terminal *this, int color) {
-	if (color == Terminal_Color_Normal) {
-		File_Write(this->out, Terminal_VT100_Normal);
-		return;
-	}
-
 	switch (color & Terminal_Color_ForegroundMask) {
-		case Terminal_Color_Normal:
-			File_Write(this->out, Terminal_VT100_Normal);
-			break;
-
 		case Terminal_Color_ForegroundBlack:
 			File_Write(this->out, Terminal_VT100_Foreground_Black);
 			break;
@@ -122,6 +119,8 @@ void Terminal_SetVT100Color(Terminal *this, int color) {
 			File_Write(this->out, Terminal_VT100_Background_White);
 			break;
 	}
+
+	this->style.color = color;
 }
 
 void Terminal_SetVT100Font(Terminal *this, int font) {
@@ -139,6 +138,22 @@ void Terminal_SetVT100Font(Terminal *this, int font) {
 
 	if (BitMask_Has(font, Terminal_Font_Blink)) {
 		File_Write(this->out, Terminal_VT100_Blink);
+	}
+
+	this->style.font = font;
+}
+
+Terminal_Style Terminal_GetStyle(Terminal *this) {
+	return this->style;
+}
+
+void Terminal_Restore(Terminal *this, Terminal_Style style) {
+	if (this->style.color != style.color
+	 || this->style.font  != style.font) {
+		Terminal_ResetVT100(this);
+
+		Terminal_SetVT100Font (this, style.font);
+		Terminal_SetVT100Color(this, style.color);
 	}
 }
 
@@ -173,7 +188,7 @@ overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 
 	/* Restore the normal color state for the stream. */
 	if (this->isVT100) {
-		Terminal_SetVT100Color(this, Terminal_Color_Normal);
+		Terminal_ResetVT100(this);
 	}
 }
 

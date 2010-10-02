@@ -113,6 +113,11 @@ typedef struct {
 } Terminal_Size;
 
 typedef struct {
+	int color;
+	int font;
+} Terminal_Style;
+
+typedef struct {
 	File *in;
 	File *out;
 
@@ -120,6 +125,8 @@ typedef struct {
 
 	struct termios oldTermios;
 	struct termios curTermios;
+
+	Terminal_Style style;
 } Terminal;
 
 #define CTRLKEY(x) \
@@ -130,8 +137,11 @@ void Terminal0(ExceptionManager *e);
 void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100);
 void Terminal_Configure(Terminal *this, bool echo, bool signal);
 void Terminal_Destroy(Terminal *this);
+void Terminal_ResetVT100(Terminal *this);
 void Terminal_SetVT100Color(Terminal *this, int color);
 void Terminal_SetVT100Font(Terminal *this, int font);
+Terminal_Style Terminal_GetStyle(Terminal *this);
+void Terminal_Restore(Terminal *this, Terminal_Style style);
 Terminal_Size Terminal_GetSize(void);
 void Terminal_Write(Terminal *this, String s);
 overload void Terminal_Print(Terminal *this, int color, int font, String s);
