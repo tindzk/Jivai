@@ -161,7 +161,7 @@ void Terminal_Write(Terminal *this, String s) {
 	File_Write(this->out, s);
 }
 
-void Terminal_Print(Terminal *this, int color, int font, String s) {
+overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 	/* Setup the stream with the given color if possible. */
 	if (this->isVT100) {
 		Terminal_SetVT100Color(this, color);
@@ -175,6 +175,10 @@ void Terminal_Print(Terminal *this, int color, int font, String s) {
 	if (this->isVT100) {
 		Terminal_SetVT100Color(this, Terminal_Color_Normal);
 	}
+}
+
+overload void Terminal_Print(Terminal *this, String s) {
+	File_Write(this->out, s);
 }
 
 void Terminal_DeleteLine(Terminal *this) {
