@@ -228,8 +228,18 @@ overload void Terminal_Print(Terminal *this, char c) {
 	File_Write(this->out, &c, 1);
 }
 
-void Terminal_DeleteLine(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Delete_Line);
+overload void Terminal_DeleteLine(Terminal *this, size_t n) {
+	if (n == 1) {
+		File_Write(this->out, Terminal_VT100_Delete_Line);
+	} else {
+		File_Write(this->out, String("\33["));
+		File_Write(this->out, Integer_ToString(n));
+		File_Write(this->out, String("M"));
+	}
+}
+
+inline overload void Terminal_DeleteLine(Terminal *this) {
+	Terminal_DeleteLine(this, 1);
 }
 
 void Terminal_DeleteUntilEol(Terminal *this) {
