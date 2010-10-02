@@ -75,6 +75,38 @@
 	}
 }
 
+.chapter[Requirements] {
+	.list {
+		.item{Git}
+		.item{Clang}
+		.item{Linux 2.6}
+	}
+}
+
+.chapter[Installation] {
+	First make sure the mentioned requirements are met. Then checkout the code:
+
+	.command {
+		git clone git://github.com/tindzk/Jivai.git
+	}
+}
+
+.chapter[Getting Started] {
+	.command {
+		cd Jivai/examples/
+		mkdir build
+	}
+
+	Now you're ready to try out the sample programs. Let's compile the HTTP server:
+
+	.command {
+		make httpd
+		build/httpd.bin
+	}
+
+	Then point you browser to .url[localhost:8080]{http://localhost:8080/}.
+}
+
 .chapter[License] {
 	.p {
 		Licensed under the EUPL, Version 1.1 only (the
