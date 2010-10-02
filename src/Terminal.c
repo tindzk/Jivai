@@ -236,6 +236,26 @@ void Terminal_DeleteUntilEol(Terminal *this) {
 	File_Write(this->out, Terminal_VT100_Delete_UntilEol);
 }
 
+void Terminal_MoveUp(Terminal *this, size_t n) {
+	if (n == 1) {
+		File_Write(this->out, Terminal_VT100_Cursor_Up);
+	} else {
+		File_Write(this->out, String("\33["));
+		File_Write(this->out, Integer_ToString(n));
+		File_Write(this->out, String("A"));
+	}
+}
+
+void Terminal_MoveDown(Terminal *this, size_t n) {
+	if (n == 1) {
+		File_Write(this->out, Terminal_VT100_Cursor_Down);
+	} else {
+		File_Write(this->out, String("\33["));
+		File_Write(this->out, Integer_ToString(n));
+		File_Write(this->out, String("B"));
+	}
+}
+
 void Terminal_MoveLeft(Terminal *this, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, Terminal_VT100_Cursor_Left);
