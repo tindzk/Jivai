@@ -20,7 +20,7 @@ size_t StringStream_Read(StringStream *this, void *buf, size_t len) {
 	return bytes;
 }
 
-size_t StringStream_Write(__unused StringStream *this, void *buf, size_t len) {
+size_t StringStream_Write(__unused StringStream *this, __unused void *buf, __unused size_t len) {
 	return 0;
 }
 
@@ -29,7 +29,7 @@ void StringStream_Close(__unused StringStream *this) {
 }
 
 bool StringStream_IsEof(StringStream *this) {
-	return (size_t) (this->offset + 1) == this->str->len;
+	return (size_t) this->offset == this->str->len;
 }
 
 StreamInterface StringStream_Methods = {
