@@ -110,8 +110,8 @@ typedef struct {
 } Terminal_Key;
 
 typedef struct {
-	int cols;
-	int rows;
+	unsigned short cols;
+	unsigned short rows;
 } Terminal_Size;
 
 typedef struct {

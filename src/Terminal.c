@@ -191,8 +191,8 @@ Terminal_Size Terminal_GetSize(void) {
 	Terminal_Size res;
 
 	if (ioctl(STDIN_FILENO, TIOCGWINSZ, &size) == 0) {
-		res.cols = (int) size.ws_col;
-		res.rows = (int) size.ws_row;
+		res.cols = size.ws_col;
+		res.rows = size.ws_row;
 	} else {
 		throw(exc, excIoctlFailed);
 	}
