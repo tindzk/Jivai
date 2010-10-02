@@ -771,16 +771,15 @@ String String_Format(String fmt, ...) {
 	VarArg_Start(argptr, fmt);
 
 	for (size_t i = 0; i < fmt.len; i++) {
-		if (fmt.buf[i] == '%') {
-			if (i > 0 && fmt.buf[i - 1] == '!') {
-				res.buf[res.len - 1] = '%';
-			} else {
-				param = VarArg_Get(argptr, String);
+		if (i + 1 != fmt.len && fmt.buf[i] == '!' && fmt.buf[i + 1] == '%') {
+			res.buf[res.len] = '%';
+			res.len++;
+		} else if (fmt.buf[i] == '%') {
+			param = VarArg_Get(argptr, String);
 
-				if (param.len > 0) {
-					Memory_Copy(res.buf + res.len, param.buf, param.len);
-					res.len += param.len;
-				}
+			if (param.len > 0) {
+				Memory_Copy(res.buf + res.len, param.buf, param.len);
+				res.len += param.len;
 			}
 		} else {
 			res.buf[res.len] = fmt.buf[i];
