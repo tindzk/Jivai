@@ -147,6 +147,7 @@ Terminal_Size Terminal_GetSize(void);
 void Terminal_Write(Terminal *this, String s);
 overload void Terminal_Print(Terminal *this, int color, int font, String s);
 overload void Terminal_Print(Terminal *this, String s);
+overload void Terminal_Print(Terminal *this, char c);
 void Terminal_DeleteLine(Terminal *this);
 void Terminal_DeleteUntilEol(Terminal *this);
 void Terminal_MoveLeft(Terminal *this, size_t n);

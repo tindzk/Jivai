@@ -224,6 +224,10 @@ overload void Terminal_Print(Terminal *this, String s) {
 	File_Write(this->out, s);
 }
 
+overload void Terminal_Print(Terminal *this, char c) {
+	File_Write(this->out, &c, 1);
+}
+
 void Terminal_DeleteLine(Terminal *this) {
 	File_Write(this->out, Terminal_VT100_Delete_Line);
 }
