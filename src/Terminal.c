@@ -266,6 +266,14 @@ void Terminal_ShowCursor(Terminal *this) {
 	File_Write(this->out, Terminal_VT100_Cursor_Show);
 }
 
+void Terminal_SaveCursor(Terminal *this) {
+	File_Write(this->out, Terminal_VT100_Cursor_Save);
+}
+
+void Terminal_RestoreCursor(Terminal *this) {
+	File_Write(this->out, Terminal_VT100_Cursor_Restore);
+}
+
 char Terminal_ReadChar(Terminal *this) {
 	char c = '\0';
 	File_Read(this->in, &c, 1);
