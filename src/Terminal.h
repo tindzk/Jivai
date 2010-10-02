@@ -142,6 +142,7 @@ void Terminal_SetVT100Color(Terminal *this, int color);
 void Terminal_SetVT100Font(Terminal *this, int font);
 Terminal_Style Terminal_GetStyle(Terminal *this);
 void Terminal_Restore(Terminal *this, Terminal_Style style);
+size_t Terminal_ResolveColorName(String name, bool bg);
 Terminal_Size Terminal_GetSize(void);
 void Terminal_Write(Terminal *this, String s);
 overload void Terminal_Print(Terminal *this, int color, int font, String s);

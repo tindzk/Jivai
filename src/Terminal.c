@@ -157,6 +157,34 @@ void Terminal_Restore(Terminal *this, Terminal_Style style) {
 	}
 }
 
+size_t Terminal_ResolveColorName(String name, bool bg) {
+	int color = 0;
+
+	if (String_Equals(name, String("black"))) {
+		color = Terminal_Color_ForegroundBlack;
+	} else if (String_Equals(name, String("red"))) {
+		color = Terminal_Color_ForegroundRed;
+	} else if (String_Equals(name, String("green"))) {
+		color = Terminal_Color_ForegroundGreen;
+	} else if (String_Equals(name, String("yellow"))) {
+		color = Terminal_Color_ForegroundYellow;
+	} else if (String_Equals(name, String("blue"))) {
+		color = Terminal_Color_ForegroundBlue;
+	} else if (String_Equals(name, String("magenta"))) {
+		color = Terminal_Color_ForegroundMagenta;
+	} else if (String_Equals(name, String("cyan"))) {
+		color = Terminal_Color_ForegroundCyan;
+	} else if (String_Equals(name, String("white"))) {
+		color = Terminal_Color_ForegroundWhite;
+	}
+
+	if (bg) {
+		color *= 1 << 4;
+	}
+
+	return color;
+}
+
 Terminal_Size Terminal_GetSize(void) {
 	struct winsize size;
 
