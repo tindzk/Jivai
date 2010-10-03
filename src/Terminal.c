@@ -200,10 +200,6 @@ Terminal_Size Terminal_GetSize(void) {
 	return res;
 }
 
-void Terminal_Write(Terminal *this, String s) {
-	File_Write(this->out, s);
-}
-
 overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 	/* Setup the stream with the given color if possible. */
 	if (this->isVT100) {

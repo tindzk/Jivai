@@ -48,7 +48,7 @@ overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
 }
 
 void Terminal_InputLine_Print(Terminal_InputLine *this, String s) {
-	Terminal_Write(this->term, s);
+	Terminal_Print(this->term, s);
 
 	String_Append(&this->line, s);
 	this->pos += s.len;
@@ -197,7 +197,7 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 	} else if (key.t == Terminal_KeyType_End) {
 		Terminal_InputLine_MoveRight(this, this->line.len - this->pos);
 	} else if (key.c == '\n') {
-		Terminal_Write(this->term, String("\n"));
+		Terminal_Print(this->term, String("\n"));
 
 		if (this->onKeyEnter != NULL) {
 			this->onKeyEnter(this->context, this->line);
