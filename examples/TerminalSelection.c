@@ -1,5 +1,4 @@
-#include <Terminal/Selection.h>
-#include <ExceptionManager.h>
+#import <Terminal/Selection.h>
 
 ExceptionManager exc;
 

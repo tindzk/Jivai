@@ -16,12 +16,11 @@
  * See also the httpd.c which makes use of it.
  */
 
-#include <Client.h>
-#include <Signal.h>
-#include <Server.h>
-#include <Socket.h>
-#include <SocketConnection.h>
-#include <ExceptionManager.h>
+#import <Client.h>
+#import <Signal.h>
+#import <Server.h>
+#import <Socket.h>
+#import <SocketConnection.h>
 
 ExceptionManager exc;
 

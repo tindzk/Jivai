@@ -1,5 +1,4 @@
-#include <Terminal/Prompt.h>
-#include <ExceptionManager.h>
+#import <Terminal/Prompt.h>
 
 ExceptionManager exc;
 

@@ -1,6 +1,6 @@
-#include <FileStream.h>
-#include <BufferedStream.h>
-#include <HTML/Tree.h>
+#import <HTML/Tree.h>
+#import <FileStream.h>
+#import <BufferedStream.h>
 
 ExceptionManager exc;
 

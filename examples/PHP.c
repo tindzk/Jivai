@@ -27,7 +27,7 @@ function Integer($value) {
 exit(main());
 #endif
 
-#include <String.h>
+#import <String.h>
 
 #define echo          String_Print
 #define substr        String_Slice

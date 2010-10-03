@@ -1,6 +1,6 @@
-#include <Integer.h>
-#include <String.h>
-#include <Logger.h>
+#import <String.h>
+#import <Logger.h>
+#import <Integer.h>
 
 #undef Logger_DisabledLevels
 #define Logger_DisabledLevels Logger_Level_Debug

@@ -1,6 +1,5 @@
-#include <Socket.h>
-#include <SocketConnection.h>
-#include <ExceptionManager.h>
+#import <Socket.h>
+#import <SocketConnection.h>
 
 ExceptionManager exc;
 

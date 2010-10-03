@@ -1,6 +1,6 @@
-#include <YAML.h>
-#include <FileStream.h>
-#include <BufferedStream.h>
+#import <YAML.h>
+#import <FileStream.h>
+#import <BufferedStream.h>
 
 ExceptionManager exc;
 

@@ -1,5 +1,5 @@
-#include <Integer.h>
-#include <String.h>
+#import <String.h>
+#import <Integer.h>
 
 ExceptionManager exc;
 

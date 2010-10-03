@@ -1,6 +1,6 @@
-#include <FileStream.h>
-#include <BufferedStream.h>
-#include <HTML/Tokenizer.h>
+#import <FileStream.h>
+#import <BufferedStream.h>
+#import <HTML/Tokenizer.h>
 
 ExceptionManager exc;
 

@@ -1,7 +1,6 @@
-#include <Block.h>
-#include <Socket.h>
-#include <SocketConnection.h>
-#include <ExceptionManager.h>
+#import <Block.h>
+#import <Socket.h>
+#import <SocketConnection.h>
 
 ExceptionManager exc;
 

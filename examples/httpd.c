@@ -11,18 +11,17 @@
  * crash on malformed requests.
  */
 
-#include <Client.h>
-#include <Signal.h>
-#include <Server.h>
-#include <Socket.h>
-#include <Connection.h>
-#include <HTTP/Method.h>
-#include <HTTP/Server.h>
-#include <ClientListener.h>
-#include <SocketConnection.h>
-#include <ExceptionManager.h>
-#include <DoublyLinkedList.h>
-#include <ConnectionInterface.h>
+#import <Client.h>
+#import <Signal.h>
+#import <Server.h>
+#import <Socket.h>
+#import <Connection.h>
+#import <HTTP/Method.h>
+#import <HTTP/Server.h>
+#import <ClientListener.h>
+#import <SocketConnection.h>
+#import <DoublyLinkedList.h>
+#import <ConnectionInterface.h>
 
 ExceptionManager exc;
 

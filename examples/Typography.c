@@ -3,7 +3,6 @@
 #import <Path.h>
 #import <File.h>
 #import <Signal.h>
-#import <Exception.h>
 #import <Typography.h>
 #import <FileStream.h>
 #import <BufferedStream.h>

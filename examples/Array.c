@@ -1,5 +1,5 @@
-#include <Array.h>
-#include <String.h>
+#import <Array.h>
+#import <String.h>
 
 ExceptionManager exc;
 

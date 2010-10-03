@@ -1,5 +1,4 @@
-#include <Terminal.h>
-#include <ExceptionManager.h>
+#import <Terminal.h>
 
 ExceptionManager exc;
 
