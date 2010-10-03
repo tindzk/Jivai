@@ -43,7 +43,7 @@ URL_Parts URL_Parse(String url) {
 
 			case URL_State_Port:
 				if (String_EndsWith(buf, String("/"))) {
-					res.port = Integer_ParseString(buf);
+					res.port = (short) Integer_ParseString(buf);
 					buf.len = 0;
 
 					state = URL_State_Path;
@@ -74,6 +74,8 @@ URL_Parts URL_Parse(String url) {
 			String_Append(&res.fragment, buf);
 		}
 	}
+
+	String_Destroy(&buf);
 
 	return res;
 }
