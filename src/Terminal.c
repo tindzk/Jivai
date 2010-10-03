@@ -48,6 +48,8 @@ void Terminal_Destroy(Terminal *this) {
 
 void Terminal_ResetVT100(Terminal *this) {
 	File_Write(this->out, Terminal_VT100_Normal);
+
+	this->style = (Terminal_Style) {0, 0};
 }
 
 /* Write VT100 escape sequences to the stream for the given color. */
@@ -203,8 +205,8 @@ Terminal_Size Terminal_GetSize(void) {
 overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 	/* Setup the stream with the given color if possible. */
 	if (this->isVT100) {
+		Terminal_SetVT100Font (this, font);
 		Terminal_SetVT100Color(this, color);
-		Terminal_SetVT100Font(this, font);
 	}
 
 	/* Write the text into the stream. */
