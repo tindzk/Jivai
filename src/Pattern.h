@@ -108,6 +108,7 @@ typedef struct {
 } Pattern;
 
 void Pattern_Init(Pattern *this);
+void Pattern_Destroy(Pattern *this);
 void Pattern_Compile(Pattern *this, String pattern);
 
 /*
