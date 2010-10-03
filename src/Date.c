@@ -52,3 +52,20 @@ short Date_Compare(Date a, Date b) {
 inline bool Date_Equals(Date a, Date b) {
 	return Date_Compare(a, b) == 0;
 }
+
+/* See also DateTime_ToUnixEpoch(). */
+short Date_GetWeekDay(Date date) {
+	short year = date.year - 1900;
+
+	int day = (year * 365) + (year / 4);
+
+	day += Date_DaysPerMonth[date.month - 1] + date.day;
+
+	if (date.month < 2) {
+		if (Date_IsLeapYear(date.year)) {
+			day--;
+		}
+	}
+
+	return (short) (day % 7);
+}

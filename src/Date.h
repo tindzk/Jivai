@@ -44,3 +44,4 @@ void Date_Init(Date *this);
 bool Date_IsLeapYear(int year);
 short Date_Compare(Date a, Date b);
 bool Date_Equals(Date a, Date b);
+short Date_GetWeekDay(Date date);
