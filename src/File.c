@@ -243,7 +243,7 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 }
 
 off64_t File_Tell(File *this) {
-	return File_Seek(this, 0L, SEEK_CUR);
+	return File_Seek(this, 0L, File_SeekType_Cur);
 }
 
 void File_GetContents(String path, String *res) {
