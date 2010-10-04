@@ -88,11 +88,11 @@ size_t Integer64_CountDigits(int64_t num) {
 	} while(orig);
 
 void Integer_ToStringBuf(int num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, Integer_CountDigits(num), int)
+	INTEGER_TO_STRING_BUF(num, res, res->size, int)
 }
 
 void Integer64_ToStringBuf(int64_t num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, Integer64_CountDigits(num), int64_t)
+	INTEGER_TO_STRING_BUF(num, res, res->size, int64_t)
 }
 
 inline short Integer_Compare(int a, int b) {

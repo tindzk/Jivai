@@ -27,15 +27,14 @@ void Integer64_ToStringBuf(int64_t num, String *buf);
 short Integer_Compare(int a, int b);
 short Integer64_Compare(int64_t a, int64_t b);
 
-#define Integer_Length   String("-2147483647").len
-#define Integer64_Length String("-9223372036854775807").len
+#define Integer_ToString(num) ({           \
+	size_t len = Integer_CountDigits(num); \
+	String str = StackString(len);         \
+	Integer_ToStringBuf(num, &str);        \
+	str; })
 
-#define Integer_ToString(num) ({              \
-	String tmp = StackString(Integer_Length); \
-	Integer_ToStringBuf(num, &tmp);           \
-	tmp; })
-
-#define Integer64_ToString(num) ({              \
-	String tmp = StackString(Integer64_Length); \
-	Integer64_ToStringBuf(num, &tmp);           \
-	tmp; })
+#define Integer64_ToString(num) ({           \
+	size_t len = Integer64_CountDigits(num); \
+	String str = StackString(len);           \
+	Integer64_ToStringBuf(num, &str);        \
+	str; })
