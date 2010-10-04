@@ -3,7 +3,9 @@
 
 #import "String.h"
 
-String Float_ToStringBuf(float num, double precision, String out);
+void Float_ToStringBuf(float num, double precision, String *out);
 
-#define Float_ToString(num, precision) \
-	Float_ToStringBuf(num, precision, StackString(80))
+#define Float_ToString(num, precision) ({    \
+	String str = StackString(80);            \
+	Float_ToStringBuf(num, precision, &str); \
+	str; })
