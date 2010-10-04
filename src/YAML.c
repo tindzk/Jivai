@@ -133,7 +133,7 @@ void YAML_Parse(YAML *this) {
 
 	goto next;
 
-	while (!this->stream->isEof(this->context)) {
+	for (;;) {
 		bool popChar = false;
 
 		switch (state) {
@@ -222,6 +222,10 @@ void YAML_Parse(YAML *this) {
 
 		if (popChar) {
 			continue;
+		}
+
+		if (this->stream->isEof(this->context)) {
+			break;
 		}
 
 	next:
