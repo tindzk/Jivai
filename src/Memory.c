@@ -62,7 +62,7 @@ void* Memory_Realloc(void *pMem, size_t size) {
 	return res;
 }
 
-void Memory_Copy(void *pDest, void *pSource, size_t len) {
+void Memory_Copy(void *restrict pDest, void *restrict pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0 || len > SIZE_MAX) {
 		throw(exc, excOutOfBounds);
