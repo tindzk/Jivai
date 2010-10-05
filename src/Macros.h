@@ -8,4 +8,4 @@
 	__eval(self, name)
 
 #define def(ret, name, ...) \
-	ret ref(name)(self *this, ## __VA_ARGS__)
+	ret ref(name)(self *restrict this, ## __VA_ARGS__)
