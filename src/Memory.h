@@ -34,7 +34,7 @@ void Memory0(ExceptionManager *e);
 void* Memory_Alloc(size_t size);
 void Memory_FreePtr(void *pMem);
 void* Memory_Realloc(void *pMem, size_t size);
-void Memory_Copy(void *restrict pDest, void *restrict pSource, size_t len);
+void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len);
 void* Memory_Clone(void *pSource, size_t len);
 bool Memory_Equals(void *ptr1, void *ptr2, size_t num);
 void* Memory_Move(void *pDest, void *pSource, size_t num);
