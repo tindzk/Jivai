@@ -104,7 +104,7 @@
 		build/httpd.bin
 	}
 
-	Then point you browser to .url[localhost:8080]{http://localhost:8080/}.
+	Then point you browser to .url[http://localhost:8080/]{localhost:8080}.
 }
 
 .chapter[License] {
@@ -116,7 +116,10 @@
 
 	.p {
 		You may obtain a copy of the Licence at:
-			.url{http://ec.europa.eu/idabc/eupl}
+
+		.url[http://ec.europa.eu/idabc/eupl] {
+			http://ec.europa.eu/idabc/eupl
+		}
 	}
 
 	.p {
@@ -134,11 +137,19 @@
 
 .chapter[See also] {
 	.list {
-		.item{.url[Browse source]{http://github.com/tindzk/Jivai}}
-		.item{.url[GitHub account]{http://github.com/tindzk}}
+		.item{.url[http://github.com/tindzk/Jivai]{Browse source}}
+		.item{.url[http://github.com/tindzk]{GitHub account}}
+	}
+}
+
+.chapter[Donate] {
+	.url[http://flattr.com/thing/69446/Jivai-Object-oriented-framework-for-C-development] {
+		.image {
+			http://api.flattr.com/button/button-compact-static-100x17.png
+		}
 	}
 }
 
 .chapter[Contact] {
-	.mail[Tim Nieradzik]{tim.nieradzik@gmx.de}
+	.mail[tim.nieradzik@gmx.de]{Tim Nieradzik}
 }
