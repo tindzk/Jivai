@@ -23,7 +23,7 @@ void Terminal_InputLine_Init(Terminal_InputLine *this, Terminal *term) {
 	this->onKeyPress = NULL;
 	this->onKeyEnter = NULL;
 
-	this->pos = 0;
+	this->pos  = 0;
 	this->line = HeapString(150);
 }
 
@@ -201,7 +201,7 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 		this->line.len = 0;
 	} else {
 		String ch;
-		size_t len = Unicode_CalcWidth(&key.c);
+		ssize_t len = Unicode_CalcWidth(&key.c);
 
 		if (len == 0) {
 			ch = StackString(1);
@@ -225,13 +225,23 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 			if (this->pos == this->line.len) { /* EOL */
 				Terminal_InputLine_Print(this, ch);
 			} else {
-				String rest = String_Slice(this->line, this->pos);
-				this->line.len = this->pos;
+				String rest =
+					String_Clone(
+						String_Slice(
+							this->line, this->pos));
+
+				String_Crop(&this->line, 0, this->pos);
 
 				Terminal_InputLine_Print(this, ch);
 				Terminal_InputLine_Print(this, rest);
 
-				Terminal_InputLine_MoveLeft(this, rest.len);
+				size_t n = Unicode_Count(this->line,
+					this->line.len - rest.len,
+					rest.len);
+
+				Terminal_InputLine_MoveLeft(this, n);
+
+				String_Destroy(&rest);
 			}
 
 			if (this->line.len == this->line.size) {
