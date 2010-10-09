@@ -13,7 +13,8 @@ typedef enum {
 	Logger_Level_Warn  = Bit(3),
 	Logger_Level_Info  = Bit(4),
 	Logger_Level_Debug = Bit(5),
-	Logger_Level_Trace = Bit(6)
+	Logger_Level_Trace = Bit(6),
+	Logger_Level_Count = 7
 } Logger_Level;
 
 typedef void (* Logger_Printer)(void *, String, Logger_Level, String, int);
