@@ -1,5 +1,4 @@
 Terminal:
-  - "InputLine" is not fully Unicode-aware.
   - "Selection" will not work properly for chunks exceeding
     the terminal width.
 

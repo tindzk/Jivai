@@ -107,18 +107,17 @@ void Terminal_InputLine_DeleteSucceeding(Terminal_InputLine *this) {
 
 void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n) {
 	if (n > 0) {
-		size_t i = 0;
 		size_t bytes = 0;
 
-		while (i < n && this->pos + bytes < this->line.len) {
+		for (size_t i = 0; i < n; i++) {
 			size_t width = Unicode_Next(this->line, this->pos + bytes);
 
 			if (width == 0) {
+				n = i;
 				break;
 			}
 
 			bytes += width;
-			i++;
 		}
 
 		if (bytes == 0) {
@@ -132,23 +131,18 @@ void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n) {
 }
 
 void Terminal_InputLine_MoveLeft(Terminal_InputLine *this, size_t n) {
-	if ((int) this->pos - (int) n < 0) {
-		n = this->pos;
-	}
-
 	if (n > 0) {
-		size_t i = 0;
 		size_t bytes = 0;
 
-		while (i < n && this->pos - bytes - 1 >= 0) {
+		for (size_t i = 0; i < n; i++) {
 			size_t width = Unicode_Prev(this->line, this->pos - bytes);
 
 			if (width == 0) {
+				n = i;
 				break;
 			}
 
 			bytes += width;
-			i++;
 		}
 
 		if (bytes == 0) {
