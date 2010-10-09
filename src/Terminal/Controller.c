@@ -30,8 +30,14 @@ static void Terminal_Controller_Print(Terminal_Controller *this, Typography_Node
 
 			if (String_Equals(name, String("fg"))
 			 || String_Equals(name, String("bg"))) {
+				String strColor = Typography_Item(child)->options;
+
+				if (String_Equals(strColor, String("%"))) {
+					strColor = VarArg_Get(*argptr, String);
+				}
+
 				int color = Terminal_ResolveColorName(
-					Typography_Item(child)->options,
+					strColor,
 					String_Equals(name, String("bg")));
 
 				Terminal_SetVT100Color(this->term, color);
