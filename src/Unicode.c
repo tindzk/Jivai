@@ -65,7 +65,7 @@ size_t Unicode_Prev(String s, size_t offset) {
 overload size_t Unicode_Count(String s, size_t offset, size_t len) {
 	size_t cnt = 0;
 
-	while (offset < len) {
+	while (offset < offset + len) {
 		size_t width = Unicode_Next(s, offset);
 
 		if (width == 0) {
