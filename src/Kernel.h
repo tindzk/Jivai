@@ -5,6 +5,15 @@
 
 #import "String.h"
 
+#if defined(__x86_64__)
+#define __NR_stat64      __NR_stat
+#define __NR_fstat64     __NR_fstat
+#define __NR_sendfile64  __NR_sendfile
+#define __NR_truncate64  __NR_truncate
+#define __NR_ftruncate64 __NR_ftruncate
+#define __NR__llseek     __NR_lseek
+#endif
+
 typedef enum {
 	FileStatus_ReadOnly  = 00,
 	FileStatus_WriteOnly = 01,

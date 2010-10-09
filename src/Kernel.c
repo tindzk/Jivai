@@ -137,48 +137,84 @@ ssize_t Kernel_fcntl(int fd, int cmd, int arg) {
 }
 
 ssize_t Kernel_socket(int namespace, int style, int protocol) {
+#if defined(__NR_socket)
+	return syscall(__NR_socket, namespace, style, protocol);
+#else
 	long args[] = { namespace, style, protocol };
 	return syscall(__NR_socketcall, SYS_SOCKET, args);
+#endif
 }
 
 bool Kernel_setsockopt(int fd, int level, int option, void *value, size_t size) {
+#if defined(__NR_setsockopt)
+	return syscall(__NR_setsockopt, fd, level, option, value, size) == 0;
+#else
 	long args[] = { fd, level, option, (long) value, size };
 	return syscall(__NR_socketcall, SYS_SETSOCKOPT, args) == 0;
+#endif
 }
 
 bool Kernel_bind(int fd, struct sockaddr_in addr) {
+#if defined(__NR_bind)
+	return syscall(__NR_bind, fd, &addr, sizeof(addr)) == 0;
+#else
 	long args[] = { fd, (long) &addr, sizeof(addr) };
 	return syscall(__NR_socketcall, SYS_BIND, args) == 0;
+#endif
 }
 
 bool Kernel_listen(int fd, int backlog) {
+#if defined(__NR_listen)
+	return syscall(__NR_listen, fd, backlog) == 0;
+#else
 	long args[] = { fd, backlog };
 	return syscall(__NR_socketcall, SYS_LISTEN, args) == 0;
+#endif
 }
 
 bool Kernel_shutdown(int fd, int how) {
+#if defined(__NR_shutdown)
+	return syscall(__NR_shutdown, fd, how) == 0;
+#else
 	long args[] = { fd, how };
 	return syscall(__NR_socketcall, SYS_SHUTDOWN, args) == 0;
+#endif
 }
 
 bool Kernel_connect(int fd, void *addr, size_t size) {
+#if defined(__NR_connect)
+	return syscall(__NR_connect, fd, addr, size) == 0;
+#else
 	long args[] = { fd, (long) addr, size };
 	return syscall(__NR_socketcall, SYS_CONNECT, args) == 0;
+#endif
 }
 
 ssize_t Kernel_accept(int fd, void *addr, void *len) {
+#if defined(__NR_accept)
+	return syscall(__NR_accept, fd, addr, len);
+#else
 	long args[] = { fd, (long) addr, (long) len };
 	return syscall(__NR_socketcall, SYS_ACCEPT, args);
+#endif
 }
 
 ssize_t Kernel_recv(int fd, void *buf, size_t len, int flags) {
+#if defined(__NR_recvfrom)
+	return syscall(__NR_recvfrom, fd, buf, len, flags, NULL, NULL);
+#else
 	long args[] = { fd, (long) buf, len, flags };
 	return syscall(__NR_socketcall, SYS_RECV, args);
+#endif
 }
 
 ssize_t Kernel_send(int fd, void *buf, size_t len, int flags) {
+#if defined(__NR_sendto)
+	return syscall(__NR_sendto, fd, buf, len, flags, NULL, 0);
+#else
 	long args[] = { fd, (long) buf, len, flags };
 	return syscall(__NR_socketcall, SYS_SEND, args);
+#endif
 }
 
 ssize_t Kernel_sendfile64(int out, int in, off64_t *offset, size_t len) {
