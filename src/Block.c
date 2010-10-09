@@ -105,7 +105,7 @@ void _Block_Release(Block_Layout *block) {
 	}
 }
 
-void _Block_object_assign(Block_ByRef **dest, Block_ByRef *src, const int flags) {
+void __Block_object_assign(Block_ByRef **dest, Block_ByRef *src, const int flags) {
 	if (flags & Block_Flags_FieldIsByRef) {
 		Block_ByRef *copy = (Block_ByRef *) Memory_Alloc(src->size);
 
@@ -121,7 +121,11 @@ void _Block_object_assign(Block_ByRef **dest, Block_ByRef *src, const int flags)
 	}
 }
 
-void _Block_object_dispose(Block_Layout *object, const int flags) {
+void _Block_object_assign(void *dest, void const *src, int const flags) {
+	__Block_object_assign(dest, (void *) src, flags);
+}
+
+void __Block_object_dispose(Block_Layout *object, const int flags) {
 	if (flags & Block_Flags_FieldIsByRef) {
 		Block_ByRef *shared = ((Block_ByRef *) object)->forwarding;
 
@@ -131,4 +135,8 @@ void _Block_object_dispose(Block_Layout *object, const int flags) {
 			}
 		}
 	}
+}
+
+void _Block_object_dispose(const void *object, const int flags) {
+	__Block_object_dispose((void *) object, flags);
 }

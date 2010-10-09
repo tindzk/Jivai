@@ -66,8 +66,8 @@ void *_NSConcreteGlobalBlock[32];
 
 void* _Block_Copy(Block_Layout *block);
 void _Block_Release(Block_Layout *block);
-void _Block_object_assign(Block_ByRef **dest, Block_ByRef *src, const int flags);
-void _Block_object_dispose(Block_Layout *object, const int flags);
+void _Block_object_assign(void *dest, void const *src, int const flags);
+void _Block_object_dispose(const void *object, const int flags);
 
 #define Block_Copy(...) \
 	((__typeof(__VA_ARGS__)) _Block_Copy((Block_Layout *)(__VA_ARGS__)))
