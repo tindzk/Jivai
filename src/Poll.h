@@ -1,9 +1,9 @@
 #import <errno.h>
 #import <sys/epoll.h>
-#import <sys/syscall.h>
 
 #import "NULL.h"
 #import "Fcntl.h"
+#import "Kernel.h"
 #import "String.h"
 #import "Memory.h"
 

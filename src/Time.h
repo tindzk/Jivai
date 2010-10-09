@@ -1,11 +1,13 @@
-#import <time.h>
-#import <sys/syscall.h>
-
+#import "Kernel.h"
 #import "String.h"
 #import "Exception.h"
 
 #undef self
 #define self Time
+
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+#endif
 
 enum {
 	excGetTimeOfDayFailed = excOffset
@@ -18,11 +20,6 @@ typedef struct {
 	uint8_t minute;
 	uint8_t second;
 } Time;
-
-typedef struct {
-	time_t sec;
-	long   nsec;
-} Time_UnixEpoch;
 
 void Time0(ExceptionManager *e);
 void Time_Init(Time *this);

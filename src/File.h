@@ -1,9 +1,6 @@
 #import <errno.h>
-#import <stdlib.h>
-#import <attr/xattr.h>
-#import <sys/syscall.h>
 
-#import "Stat.h"
+#import "Kernel.h"
 #import "String.h"
 #import "Exception.h"
 

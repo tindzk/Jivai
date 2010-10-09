@@ -1,6 +1,4 @@
 #import <errno.h>
-#import <linux/net.h>
-#import <sys/syscall.h>
 
 #import "Fcntl.h"
 #import "String.h"

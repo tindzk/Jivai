@@ -39,7 +39,7 @@ inline bool Time_Equals(Time a, Time b) {
 Time_UnixEpoch Time_GetCurrentUnixTime(void) {
 	Time_UnixEpoch time;
 
-	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &time) < 0) {
+	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {
 		throw(exc, excGetTimeOfDayFailed);
 	}
 

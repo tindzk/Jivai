@@ -35,7 +35,7 @@ void File0(ExceptionManager *e) {
 void File_Open(File *this, String path, int mode) {
 	errno = 0;
 
-	if ((this->fd = syscall(__NR_open, String_ToNul(path), mode, 0666)) == -1) {
+	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
 		if (errno == EACCES) {
 			throw(exc, excAccessDenied);
 		} else if (errno == ENOENT) {
@@ -69,23 +69,21 @@ void File_Open(File *this, String path, int mode) {
 }
 
 void File_Close(File *this) {
-	syscall(__NR_close, this->fd);
+	Kernel_close(this->fd);
 }
 
 void File_SetXattr(File *this, String name, String value) {
-	if (syscall(__NR_fsetxattr, this->fd, String_ToNul(name), value.buf, value.len, 0) < 0) {
+	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
 		throw(exc, excSettingAttributeFailed);
 	}
 }
 
 overload String File_GetXattr(File *this, String name) {
-	char *nname = String_ToNul(name);
-
 	errno = 0;
 
-	ssize_t size = syscall(__NR_fgetxattr, this->fd, nname, NULL, 0);
+	ssize_t size = Kernel_fgetxattr(this->fd, name, NULL, 0);
 
-	if (size < 0) {
+	if (size == -1) {
 		if (errno == ENODATA) {
 			throw(exc, excAttributeNonExistent);
 		} else {
@@ -95,7 +93,7 @@ overload String File_GetXattr(File *this, String name) {
 
 	String res = HeapString(size);
 
-	if (syscall(__NR_fgetxattr, this->fd, nname, res.buf, res.size) < 0) {
+	if (Kernel_fgetxattr(this->fd, name, res.buf, res.size) == -1) {
 		throw(exc, excGettingAttributeFailed);
 	}
 
@@ -105,13 +103,11 @@ overload String File_GetXattr(File *this, String name) {
 }
 
 overload void File_GetXattr(File *this, String name, String *value) {
-	char *nname = String_ToNul(name);
-
 	errno = 0;
 
-	ssize_t size = syscall(__NR_fgetxattr, this->fd, nname, value->buf, value->size);
+	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, value->size);
 
-	if (size < 0) {
+	if (size == -1) {
 		if (errno == ENODATA) {
 			throw(exc, excAttributeNonExistent);
 		} else if (errno == ERANGE) {
@@ -127,7 +123,7 @@ overload void File_GetXattr(File *this, String name, String *value) {
 overload void File_Truncate(File *this, off64_t length) {
 	errno = 0;
 
-	if (syscall(__NR_ftruncate64, this->fd, length) == -1) {
+	if (!Kernel_ftruncate64(this->fd, length)) {
 		if (errno == EBADF) {
 			throw(exc, excInvalidFileDescriptor);
 		} else if (errno == EACCES) {
@@ -149,7 +145,7 @@ Stat64 File_GetStat(File *this) {
 
 	Stat64 attr;
 
-	if (syscall(__NR_fstat64, this->fd, &attr) == -1) {
+	if (!Kernel_fstat64(this->fd, &attr)) {
 		if (errno == EACCES) {
 			throw(exc, excAccessDenied);
 		} else if (errno == EBADF) {
@@ -175,7 +171,7 @@ size_t File_Read(File *this, void *buf, size_t len) {
 
 	ssize_t res;
 
-	if ((res = syscall(__NR_read, this->fd, buf, len)) == -1) {
+	if ((res = Kernel_read(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
 			throw(exc, excReadingInterrupted);
 		} else if (errno == EISDIR) {
@@ -197,7 +193,7 @@ overload size_t File_Write(File *this, void *buf, size_t len) {
 
 	ssize_t res;
 
-	if ((res = write(this->fd, buf, len)) == -1) {
+	if ((res = Kernel_write(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
 			throw(exc, excWritingInterrupted);
 		} else if (errno == EISDIR) {
@@ -223,13 +219,7 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 
 	off64_t pos;
 
-	/* Conversion taken from dietlibc-0.32/lib/lseek64.c */
-	if (syscall(__NR__llseek,
-		this->fd,
-		(unsigned long) (offset >> 32),
-		(unsigned long) offset & 0xffffffff,
-		&pos, whence) == -1)
-	{
+	if (!Kernel_llseek(this->fd, offset, &pos, whence)) {
 		if (errno == EBADF) {
 			throw(exc, excInvalidFileDescriptor);
 		} else if (errno == EINVAL) {

@@ -1,7 +1,5 @@
-#import <sys/syscall.h>
-
-#import "Stat.h"
 #import "String.h"
+#import "Kernel.h"
 #import "Exception.h"
 
 #undef self

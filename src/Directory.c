@@ -11,9 +11,9 @@ void Directory0(ExceptionManager *e) {
 }
 
 void Directory_Init(Directory *this, String path) {
-	this->fd = syscall(__NR_open, String_ToNul(path),
-		FileStatus_ReadOnly |
-		FileStatus_Directory);
+	this->fd = Kernel_open(path,
+		FileStatus_Directory |
+		FileStatus_ReadOnly, 0);
 
 	if (this->fd == -1) {
 		throw(exc, excCannotOpenDirectory);
@@ -23,12 +23,12 @@ void Directory_Init(Directory *this, String path) {
 }
 
 void Directory_Destroy(Directory *this) {
-	syscall(__NR_close, this->fd);
+	Kernel_close(this->fd);
 }
 
 bool Directory_Read(Directory *this, Directory_Entry *res) {
 	if (this->bpos == 0 || this->bpos >= this->nread) {
-		this->nread = syscall(__NR_getdents, this->fd, this->buf, Directory_BufSize);
+		this->nread = Kernel_getdents(this->fd, this->buf, Directory_BufSize);
 		this->bpos  = 0;
 
 		if (this->nread == -1) {

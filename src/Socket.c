@@ -15,27 +15,23 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 	this->unused   = true;
 	this->protocol = protocol;
 
-	long args[] = {
-		PF_INET,
+	int style = (protocol == Socket_Protocol_TCP)
+		? SOCK_STREAM
+		: SOCK_DGRAM;
 
-		(protocol == Socket_Protocol_TCP)
-			? SOCK_STREAM
-			: SOCK_DGRAM,
+	int proto = (protocol == Socket_Protocol_TCP)
+		? IPPROTO_TCP
+		: IPPROTO_UDP;
 
-		(protocol == Socket_Protocol_TCP)
-			? IPPROTO_TCP
-			: IPPROTO_UDP
-	};
-
-	if ((this->fd = syscall(__NR_socketcall, SYS_SOCKET, args)) < 0) {
+	if ((this->fd = Kernel_socket(PF_INET, style, proto)) == -1) {
 		throw(exc, excSocketFailed);
 	}
 }
 
 void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
-	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetStatus, 0);
+	int flags = Kernel_fcntl(this->fd, FcntlMode_GetStatus, 0);
 
-	if (flags < 0) {
+	if (flags == -1) {
 		throw(exc, excFcntlFailed);
 	}
 
@@ -45,15 +41,15 @@ void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
 		flags &= ~FileStatus_NonBlock;
 	}
 
-	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetStatus, flags) < 0) {
+	if (Kernel_fcntl(this->fd, FcntlMode_SetStatus, flags) == -1) {
 		throw(exc, excFcntlFailed);
 	}
 }
 
 void Socket_SetCloexecFlag(Socket *this, bool enable) {
-	int flags = syscall(__NR_fcntl, this->fd, FcntlMode_GetDescriptorFlags, 0);
+	int flags = Kernel_fcntl(this->fd, FcntlMode_GetDescriptorFlags, 0);
 
-	if (flags < 0) {
+	if (flags == -1) {
 		throw(exc, excFcntlFailed);
 	}
 
@@ -63,17 +59,15 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 		flags &= ~FileDescriptorFlags_CloseOnExec;
 	}
 
-	if (syscall(__NR_fcntl, this->fd, FcntlMode_SetDescriptorFlags, flags) < 0) {
+	if (Kernel_fcntl(this->fd, FcntlMode_SetDescriptorFlags, flags) == -1) {
 		throw(exc, excFcntlFailed);
 	}
 }
 
 void Socket_SetReusableFlag(Socket *this, bool enable) {
-	int opt = enable;
+	int val = enable;
 
-	long args[] = { this->fd, SOL_SOCKET, SO_REUSEADDR, (long) &opt, sizeof(opt) };
-
-	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
+	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val))) {
 		throw(exc, excSetSocketOption);
 	}
 }
@@ -87,9 +81,7 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 
 	errno = 0;
 
-	long args[] = { this->fd, (long) &addr, sizeof(addr) };
-
-	if (syscall(__NR_socketcall, SYS_BIND, args) < 0) {
+	if (!Kernel_bind(this->fd, addr)) {
 		if (errno == EADDRINUSE) {
 			throw(exc, excAddressInUse);
 		} else {
@@ -97,9 +89,7 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 		}
 	}
 
-	long args2[] = { this->fd, maxconns };
-
-	if (syscall(__NR_socketcall, SYS_LISTEN, args2) < 0) {
+	if (!Kernel_listen(this->fd, maxconns)) {
 		throw(exc, excListenFailed);
 	}
 }
@@ -110,9 +100,7 @@ void Socket_SetLinger(Socket *this) {
 	ling.l_onoff  = 1;
 	ling.l_linger = 30;
 
-	long args[] = { this->fd, SOL_SOCKET, SO_LINGER, (long) &ling, sizeof(ling) };
-
-	if (syscall(__NR_socketcall, SYS_SETSOCKOPT, args) < 0) {
+	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))) {
 		throw(exc, excSetSocketOption);
 	}
 }
@@ -129,9 +117,7 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 		Socket_Init(this, this->protocol);
 	}
 
-	long args[] = { this->fd, (long) &addr, sizeof(addr) };
-
-	if (syscall(__NR_socketcall, SYS_CONNECT, args) < 0) {
+	if (!Kernel_connect(this->fd, &addr, sizeof(addr))) {
 		throw(exc, excConnectFailed);
 	}
 
@@ -155,11 +141,9 @@ SocketConnection Socket_Accept(Socket *this) {
 	struct sockaddr_in remote;
 	socklen_t socklen = sizeof(remote);
 
-	long args[] = { this->fd, (long) &remote, (long) &socklen };
-
 	SocketConnection conn;
 
-	if ((conn.fd = syscall(__NR_socketcall, SYS_ACCEPT, args)) < 0) {
+	if ((conn.fd = Kernel_accept(this->fd, &remote, &socklen)) == -1) {
 		throw(exc, excAcceptFailed);
 	}
 
@@ -174,8 +158,6 @@ SocketConnection Socket_Accept(Socket *this) {
 }
 
 void Socket_Destroy(Socket *this) {
-	long args[] = { this->fd, SHUT_RDWR };
-	syscall(__NR_socketcall, SYS_SHUTDOWN, args);
-
-	syscall(__NR_close, this->fd);
+	Kernel_shutdown(this->fd, SHUT_RDWR);
+	Kernel_close(this->fd);
 }
