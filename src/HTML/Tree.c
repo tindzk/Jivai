@@ -62,7 +62,7 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 			sizeof(HTML_Tree_Node));
 
 		node->type  = HTML_Tree_NodeType_Value;
-		node->value = String_Clone(value);
+		node->value = HTML_Entities_Decode(value);
 		node->attrs = NULL;
 	} else if (type == HTML_Tokenizer_TokenType_AttrName
 			|| type == HTML_Tokenizer_TokenType_Option) {

@@ -1,3 +1,4 @@
+#import "Entities.h"
 #import "Tokenizer.h"
 
 #import "../Tree.h"
