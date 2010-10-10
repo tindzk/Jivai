@@ -547,7 +547,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 		} tryEnd;
 
 		if (read == 0) {
-			break;
+			return false;
 		}
 	}
 
