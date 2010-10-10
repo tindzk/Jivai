@@ -101,6 +101,7 @@ overload String String_Between(String s, ssize_t offset, String left, String rig
 overload String String_Between(String s, ssize_t offset, String left, String right);
 overload String String_Between(String s, String left, String right, bool leftAligned);
 overload String String_Between(String s, String left, String right);
+String String_Cut(String s, String left, String right);
 bool String_Filter(String *this, String s1, String s2);
 bool String_Outside(String *this, String left, String right);
 String String_Concat(String a, String b);

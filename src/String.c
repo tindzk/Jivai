@@ -862,6 +862,22 @@ inline overload String String_Between(String s, String left, String right) {
 	return out;
 }
 
+String String_Cut(String s, String left, String right) {
+	ssize_t posLeft = String_Find(s, left);
+
+	if (posLeft == String_NotFound) {
+		return String("");
+	}
+
+	ssize_t posRight = String_Find(s, posLeft + left.len, right);
+
+	if (posRight == String_NotFound) {
+		return String("");
+	}
+
+	return String_Slice(s, posLeft, posRight - posLeft);
+}
+
 bool String_Filter(String *this, String s1, String s2) {
 	ssize_t left, right;
 
