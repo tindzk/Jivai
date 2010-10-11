@@ -83,6 +83,27 @@ overload size_t Unicode_Count(String s) {
 	return Unicode_Count(s, 0, s.len);
 }
 
+void Unicode_Shrink(String *s, size_t len) {
+	size_t cnt    = 0;
+	size_t offset = 0;
+
+	while (offset < s->len) {
+		if (cnt == len) {
+			String_Crop(s, 0, offset);
+			break;
+		}
+
+		size_t width = Unicode_Next(*s, offset);
+
+		if (width == 0) {
+			break;
+		}
+
+		offset += width;
+		cnt++;
+	}
+}
+
 void Unicode_ToMultiByte(int c, String *res) {
     if (c <= 0x7F) {
 		res->buf[0] = c;
