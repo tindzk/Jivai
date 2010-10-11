@@ -14,32 +14,24 @@ int main(void) {
 	Terminal_Buffer termbuf;
 	Terminal_Buffer_Init(&termbuf, &term, 1);
 
-	int first = Terminal_Buffer_NewChunk(&termbuf);
+	Terminal_Buffer_Chunk chunk;
+	chunk.color = Terminal_Color_ForegroundRed;
+	chunk.font  = Terminal_Font_Italics;
+	chunk.value = String_Clone(String("Red foreground and italic font."));
 
-	Terminal_Buffer_SetAttr(&termbuf,
-		Terminal_Color_ForegroundRed,
-		Terminal_Font_Italics);
+	size_t first = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
-	Terminal_Buffer_Print(&termbuf,
-		String("Red foreground and italic font."));
+	chunk.color = Terminal_Color_Normal;
+	chunk.font  = Terminal_Font_Normal;
+	chunk.value = String_Clone(String("Normal text."));
 
-	int second = Terminal_Buffer_NewChunk(&termbuf);
+	size_t second = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
-	Terminal_Buffer_SetAttr(&termbuf,
-		Terminal_Color_Normal,
-		Terminal_Font_Normal);
+	chunk.color = Terminal_Color_Normal;
+	chunk.font  = Terminal_Font_Bold;
+	chunk.value = String_Clone(String("Bold text."));
 
-	Terminal_Buffer_Print(&termbuf,
-		String("Normal text."));
-
-	int third = Terminal_Buffer_NewChunk(&termbuf);
-
-	Terminal_Buffer_SetAttr(&termbuf,
-		Terminal_Color_Normal,
-		Terminal_Font_Bold);
-
-	Terminal_Buffer_Print(&termbuf,
-		String("Bold text."));
+	size_t third = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
 	sleep(1);
 
@@ -48,11 +40,15 @@ int main(void) {
 		Terminal_Color_ForegroundGreen,
 		Terminal_Font_Bold);
 
+	Terminal_Buffer_Redraw(&termbuf);
+
 	sleep(1);
 
 	Terminal_Buffer_ChangeValue(&termbuf,
 		first,
 		String("New value."));
+
+	Terminal_Buffer_Redraw(&termbuf);
 
 	sleep(1);
 
@@ -64,6 +60,8 @@ int main(void) {
 	Terminal_Buffer_ChangeValue(&termbuf,
 		third,
 		String("Blue text."));
+
+	Terminal_Buffer_Redraw(&termbuf);
 
 	sleep(3);
 

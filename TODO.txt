@@ -1,7 +1,3 @@
-Terminal:
-  - "Selection" will not work properly for chunks exceeding
-    the terminal width.
-
 Backtrace:
   - Backtraces do not work on 64-bit systems when compiling
     with -O2. libunwind is necessary.

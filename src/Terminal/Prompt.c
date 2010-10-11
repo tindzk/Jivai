@@ -6,19 +6,21 @@ void Terminal_Prompt_Init(Terminal_Prompt *this, Terminal *term) {
 }
 
 void Terminal_Prompt_Destroy(Terminal_Prompt *this) {
-	Terminal_Buffer_Clear(&this->termbuf);
 	Terminal_Buffer_Destroy(&this->termbuf);
 }
 
 bool Terminal_Prompt_Ask(Terminal_Prompt *this, String msg) {
-	Terminal_Buffer_NewChunk(&this->termbuf);
-	Terminal_Buffer_Print(&this->termbuf, msg);
+	Terminal_Buffer_Chunk chunk;
 
-	Terminal_Buffer_NewChunk(&this->termbuf);
-	Terminal_Buffer_Print(&this->termbuf, String("[y/n]"));
+	chunk.color = Terminal_Color_Normal;
+	chunk.font  = Terminal_Font_Normal;
+	chunk.value = String_Clone(msg);
 
-	/* Add a trailing space. */
-	Terminal_Buffer_NewChunk(&this->termbuf);
+	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
+
+	chunk.value = String_Clone(String("[y/n] "));
+
+	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 
 	while (true) {
 		Terminal_Key key = Terminal_ReadKey(this->term);
