@@ -194,11 +194,14 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 		Terminal_Print(this->term, String("\n"));
 
 		if (this->onKeyEnter != NULL) {
-			this->onKeyEnter(this->context, this->line);
+			String line = String_Disown(this->line);
+
+			this->pos      = 0;
+			this->line.len = 0;
+
+			this->onKeyEnter(this->context, line);
 		}
 
-		this->pos = 0;
-		this->line.len = 0;
 	} else {
 		String ch;
 		ssize_t len = Unicode_CalcWidth(&key.c);
@@ -246,7 +249,7 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 
 			if (this->line.len == this->line.size) {
 				this->line.len = 0;
-				this->pos = 0;
+				this->pos      = 0;
 
 				throw(exc, excCommandExceedsAllowedLength);
 			}
