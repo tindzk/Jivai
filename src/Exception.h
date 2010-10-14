@@ -83,4 +83,4 @@ void Exception_Print(Exception *e);
 	} while(0)
 
 #define Exception_SetModule(e) \
-	(e).module = __eval(Modules, self)
+	(e).module = underscoredConcat(Modules, self)
