@@ -66,8 +66,6 @@ overload void String_Prepend(String *this, String s);
 overload void String_Prepend(String *this, char c);
 overload void String_Append(String *this, String s);
 overload void String_Append(String *this, char c);
-overload void String_Append(String *this, String s, ssize_t offset, ssize_t length);
-overload void String_Append(String *this, String s, ssize_t offset);
 String String_Join(String *first, ...);
 bool String_Equals(String s, String needle);
 bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset);

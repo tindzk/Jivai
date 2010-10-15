@@ -335,42 +335,6 @@ overload void String_Append(String *this, String s) {
 	this->len = this->len + s.len;
 }
 
-overload void String_Append(String *this, String s, ssize_t offset, ssize_t length) {
-	size_t right;
-
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	if (length < 0) {
-		right = length + s.len;
-	} else {
-		right = length + offset;
-	}
-
-	if ((size_t) offset > right
-	 || (size_t) offset > s.len
-	 || right           > s.len) {
-		throw(exc, excBufferOverflow);
-	}
-
-	length = right - offset;
-
-	if (length > 0) {
-		String_Align(this, this->len + length);
-		Memory_Copy(this->buf + this->len, s.buf + offset, length);
-		this->len += length;
-	}
-}
-
-inline overload void String_Append(String *this, String s, ssize_t offset) {
-	if (offset < 0) {
-		offset += this->len;
-	}
-
-	String_Append(this, s, offset, s.len - offset);
-}
-
 overload void String_Append(String *this, char c) {
 	String_Align(this, this->len + 1);
 	this->buf[this->len] = c;
@@ -898,8 +862,8 @@ bool String_Filter(String *this, String s1, String s2) {
 		return false;
 	}
 
-	String_Append(&out, *this, left, right - left);
-	String_Append(&out, *this, right + s2.len);
+	String_Append(&out, String_Slice(*this, left, right - left));
+	String_Append(&out, String_Slice(*this, right + s2.len));
 
 	String_Copy(this, out);
 
@@ -921,8 +885,8 @@ bool String_Outside(String *this, String left, String right) {
 
 	String out = HeapString(posLeft + this->len - posRight - right.len);
 
-	String_Append(&out, *this, 0, posLeft);
-	String_Append(&out, *this, posRight + right.len);
+	String_Append(&out, String_Slice(*this, 0, posLeft));
+	String_Append(&out, String_Slice(*this, posRight + right.len));
 
 	String_Copy(this, out);
 
@@ -966,9 +930,9 @@ overload bool String_Replace(String *this, ssize_t offset, String needle, String
 
 	String out = HeapString(len);
 
-	String_Append(&out, *this, 0, pos);
+	String_Append(&out, String_Slice(*this, 0, pos));
 	String_Append(&out, replacement);
-	String_Append(&out, *this, pos + needle.len);
+	String_Append(&out, String_Slice(*this, pos + needle.len));
 
 	String_Copy(this, out);
 
@@ -1011,7 +975,7 @@ overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 			if (cnt == needle.len) {
 				size_t cur = i - needle.len + 1;
 
-				String_Append(&out, *this, lastPos, cur - lastPos);
+				String_Append(&out, String_Slice(*this, lastPos, cur - lastPos));
 				String_Append(&out, replacement);
 
 				lastPos = i + 1;
@@ -1025,7 +989,7 @@ overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 		}
 	}
 
-	String_Append(&out, *this, lastPos);
+	String_Append(&out, String_Slice(*this, lastPos));
 
 	String_Copy(this, out);
 
