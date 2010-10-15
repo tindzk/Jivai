@@ -16,7 +16,7 @@ void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100) {
 
 	this->isVT100 = assumeVT100 && isatty(out->fd);
 
-	tcgetattr(STDIN_FILENO, &this->oldTermios);
+	tcgetattr(FileNo_StdIn, &this->oldTermios);
 
 	this->curTermios = this->oldTermios;
 
@@ -39,11 +39,11 @@ void Terminal_Configure(Terminal *this, bool echo, bool signal) {
 	this->curTermios.c_iflag &= ~IXON;
 	this->curTermios.c_lflag &= ~ICANON;
 
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &this->curTermios);
+	tcsetattr(FileNo_StdIn, TCSAFLUSH, &this->curTermios);
 }
 
 void Terminal_Destroy(Terminal *this) {
-	tcsetattr(STDIN_FILENO, 0, &this->oldTermios);
+	tcsetattr(FileNo_StdIn, 0, &this->oldTermios);
 }
 
 void Terminal_ResetVT100(Terminal *this) {
@@ -192,7 +192,7 @@ Terminal_Size Terminal_GetSize(void) {
 
 	Terminal_Size res;
 
-	if (ioctl(STDIN_FILENO, TIOCGWINSZ, &size) == 0) {
+	if (ioctl(FileNo_StdIn, TIOCGWINSZ, &size) == 0) {
 		res.cols = size.ws_col;
 		res.rows = size.ws_row;
 	} else {

@@ -1,19 +1,19 @@
 #import "File.h"
 
 static File _File_StdIn = {
-	.fd       = STDIN_FILENO,
+	.fd       = FileNo_StdIn,
 	.readable = true,
 	.writable = false
 };
 
 static File _File_StdOut = {
-	.fd       = STDOUT_FILENO,
+	.fd       = FileNo_StdOut,
 	.readable = false,
 	.writable = true
 };
 
 static File _File_StdErr = {
-	.fd       = STDERR_FILENO,
+	.fd       = FileNo_StdErr,
 	.readable = false,
 	.writable = true
 };
