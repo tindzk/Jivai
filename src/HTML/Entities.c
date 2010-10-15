@@ -295,7 +295,8 @@ String HTML_Entities_Decode(String s) {
 					String_Append(&res, s);
 				} else {
 					size_t j;
-					for (j = 0; j < sizeof(entities) / sizeof(entities[0]); j++) {
+
+					for (j = 0; j < nElems(entities); j++) {
 						if (String_Equals(entities[j].entity, entity)) {
 							goto found;
 						}
@@ -303,11 +304,8 @@ String HTML_Entities_Decode(String s) {
 
 					goto error;
 
-					if (0) {
-						String s;
-
-					found:
-						s = StackString(4);
+					when (found) {
+						String s = StackString(4);
 						Unicode_ToMultiByte(entities[j].c, &s);
 
 						String_Append(&res, s);
@@ -319,8 +317,7 @@ String HTML_Entities_Decode(String s) {
 				goto error;
 			}
 
-			if (0) {
-			error:
+			when (error) {
 				String_Append(&res, String_Slice(s, pos - 1, i - pos + 2));
 				ampersand = false;
 			}
