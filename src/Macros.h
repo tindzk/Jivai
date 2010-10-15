@@ -12,6 +12,8 @@
 #define underscoredConcat(x, y) \
 	_underscoredConcat(x, y)
 
+#define $(s) String(s)
+
 #define ref(name) \
 	underscoredConcat(self, name)
 
