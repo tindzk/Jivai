@@ -34,6 +34,6 @@ void DateTime0(ExceptionManager *e);
 void DateTime_Init(DateTime *this);
 short DateTime_Compare(DateTime a, DateTime b);
 bool DateTime_Equals(DateTime a, DateTime b);
-DateTime DateTime_FromUnixEpoch(uint64_t time);
-uint64_t DateTime_ToUnixEpoch(DateTime *this);
+DateTime DateTime_FromUnixEpoch(u64 time);
+u64 DateTime_ToUnixEpoch(DateTime *this);
 DateTime DateTime_GetCurrent(void);

@@ -1,12 +1,12 @@
 #import "Hex.h"
 
-String Hex_ToString(uint64_t hex) {
+String Hex_ToString(u64 hex) {
 	static char symbols[] = "0123456789abcdef";
 
 	String res = HeapString(6);
 	String_Append(&res, String("000000"));
 
-	uint64_t digit;
+	u64 digit;
 	ssize_t i = res.len - 1;
 
 	do {

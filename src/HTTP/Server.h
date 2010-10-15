@@ -51,7 +51,7 @@ typedef struct {
 	String             body;
 	String             header;
 	size_t             maxHeaderLength;
-	uint64_t           maxBodyLength;
+	u64                maxBodyLength;
 	HTTP_Method        method;
 	SocketConnection   *conn;
 	HTTP_Server_State  state;
@@ -59,14 +59,14 @@ typedef struct {
 
 	struct {
 		HTTP_ContentType contentType;
-		uint64_t contentLength;
-		bool persistentConnection;
-		String boundary;
+		u64              contentLength;
+		bool             persistentConnection;
+		String           boundary;
 	} headers;
 } HTTP_Server;
 
 void HTTP_Server0(ExceptionManager *e);
-void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, uint64_t maxBodyLength);
+void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 void HTTP_Server_Destroy(HTTP_Server *this);
 void HTTP_Server_OnMethod(HTTP_Server *this, HTTP_Method method);
 void HTTP_Server_OnVersion(HTTP_Server *this, HTTP_Version version);

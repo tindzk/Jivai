@@ -30,7 +30,7 @@ inline bool DateTime_Equals(DateTime a, DateTime b) {
 		&& Time_Equals(a.time, b.time);
 }
 
-DateTime DateTime_FromUnixEpoch(uint64_t time) {
+DateTime DateTime_FromUnixEpoch(u64 time) {
 	DateTime res;
 
 	res.date.year = (int)(time / Date_SecondsYear);
@@ -71,7 +71,7 @@ DateTime DateTime_FromUnixEpoch(uint64_t time) {
 	return res;
 }
 
-uint64_t DateTime_ToUnixEpoch(DateTime *this) {
+u64 DateTime_ToUnixEpoch(DateTime *this) {
 	if (this->date.year < 1970) {
 		throw(exc, excYearLower1970);
 	}
@@ -94,9 +94,9 @@ uint64_t DateTime_ToUnixEpoch(DateTime *this) {
 	/* Add number of days up until the end of the current month. */
 	days += Date_DaysPerMonth[this->date.month - 1] + this->date.day - 1;
 
-	uint64_t hours   = days    * 24 + this->time.hour;
-	uint64_t minutes = hours   * 60 + this->time.minute;
-	uint64_t seconds = minutes * 60 + this->time.second;
+	u64 hours   = days    * 24 + this->time.hour;
+	u64 minutes = hours   * 60 + this->time.minute;
+	u64 seconds = minutes * 60 + this->time.second;
 
 	return seconds;
 }

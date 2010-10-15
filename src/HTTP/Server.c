@@ -10,7 +10,7 @@ void HTTP_Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, uint64_t maxBodyLength) {
+void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
 	this->events = events;
 
 	this->headers.boundary = HeapString(0);

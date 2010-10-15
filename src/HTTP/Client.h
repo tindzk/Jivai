@@ -84,7 +84,7 @@ typedef struct {
 	int64_t read;
 
 	/* How many bytes of the contents were pre-buffered in `resp'. */
-	uint64_t canRead;
+	u64 canRead;
 
 	/* Are we inside a chunk?
 	 * If a chunk is fully processed (i.e. `read' >= `total')
