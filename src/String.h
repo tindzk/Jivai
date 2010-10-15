@@ -1,10 +1,9 @@
 #import "Bit.h"
 #import "Char.h"
-#import "NULL.h"
+#import "Types.h"
 #import "UniStd.h" /* write(), size_t */
 #import "VarArg.h"
 #import "BitMask.h"
-#import "Boolean.h"
 #import "Compiler.h"
 
 #ifndef String_SmartAlign

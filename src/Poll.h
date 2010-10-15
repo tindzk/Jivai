@@ -1,7 +1,7 @@
 #import <errno.h>
 #import <sys/epoll.h>
 
-#import "NULL.h"
+#import "Types.h"
 #import "Fcntl.h"
 #import "Kernel.h"
 #import "String.h"

@@ -3,6 +3,7 @@
 #import <sys/syscall.h>
 #import <netinet/in.h>
 
+#import "Types.h"
 #import "String.h"
 
 #if defined(__x86_64__)

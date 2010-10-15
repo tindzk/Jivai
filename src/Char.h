@@ -1,4 +1,4 @@
-#import "Boolean.h"
+#import "Types.h"
 #import "UniStd.h" /* write() */
 
 /* See also: http://php.net/manual/en/function.trim.php */

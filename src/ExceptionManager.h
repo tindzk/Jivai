@@ -1,6 +1,6 @@
 #import <setjmp.h>
 
-#import "NULL.h"
+#import "Types.h"
 #import "Compiler.h"
 #import "Exception.h"
 
