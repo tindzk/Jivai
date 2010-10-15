@@ -61,7 +61,7 @@ Stat64 Path_GetStat(String path) {
 	return attr;
 }
 
-off64_t Path_GetSize(String path) {
+u64 Path_GetSize(String path) {
 	return Path_GetStat(path).size;
 }
 
@@ -93,7 +93,7 @@ inline overload bool Path_IsDirectory(Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 
-overload void Path_Truncate(String path, off64_t length) {
+overload void Path_Truncate(String path, u64 length) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}

@@ -46,7 +46,7 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 	return 0;
 }
 
-bool SocketConnection_SendFile(SocketConnection *this, File *file, off64_t *offset, size_t len) {
+bool SocketConnection_SendFile(SocketConnection *this, File *file, u64 *offset, size_t len) {
 	if (this->nonblocking) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus,
 			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)

@@ -20,7 +20,7 @@ ssize_t Kernel_getdents(int fd, char *buf, size_t len) {
 	return syscall(__NR_getdents, fd, buf, len);
 }
 
-bool Kernel_llseek(int fd, off64_t offset, off64_t *pos, int whence) {
+bool Kernel_llseek(int fd, u64 offset, u64 *pos, int whence) {
 	/* Conversion taken from dietlibc-0.32/lib/lseek64.c */
 	return syscall(__NR__llseek,
 		fd,
@@ -217,6 +217,6 @@ ssize_t Kernel_send(int fd, void *buf, size_t len, int flags) {
 #endif
 }
 
-ssize_t Kernel_sendfile64(int out, int in, off64_t *offset, size_t len) {
+ssize_t Kernel_sendfile64(int out, int in, u64 *offset, size_t len) {
 	return syscall(__NR_sendfile64, out, in, offset, len);
 }

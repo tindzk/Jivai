@@ -120,7 +120,7 @@ overload void File_GetXattr(File *this, String name, String *value) {
 	value->len = size;
 }
 
-overload void File_Truncate(File *this, off64_t length) {
+overload void File_Truncate(File *this, u64 length) {
 	errno = 0;
 
 	if (!Kernel_ftruncate64(this->fd, length)) {
@@ -158,7 +158,7 @@ Stat64 File_GetStat(File *this) {
 	return attr;
 }
 
-off64_t File_GetSize(File *this) {
+u64 File_GetSize(File *this) {
 	return File_GetStat(this).size;
 }
 
@@ -210,14 +210,14 @@ overload size_t File_Write(File *this, String s) {
 	return File_Write(this, s.buf, s.len);
 }
 
-off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
+u64 File_Seek(File *this, u64 offset, File_SeekType whence) {
 	if (!this->readable) {
 		throw(exc, excNotReadable);
 	}
 
 	errno = 0;
 
-	off64_t pos;
+	u64 pos;
 
 	if (!Kernel_llseek(this->fd, offset, &pos, whence)) {
 		if (errno == EBADF) {
@@ -232,7 +232,7 @@ off64_t File_Seek(File *this, off64_t offset, File_SeekType whence) {
 	return pos;
 }
 
-off64_t File_Tell(File *this) {
+u64 File_Tell(File *this) {
 	return File_Seek(this, 0L, File_SeekType_Cur);
 }
 

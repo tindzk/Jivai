@@ -34,7 +34,7 @@ typedef struct _SocketSession {
 
 			struct {
 				File    file;
-				off64_t offset;
+				u64     offset;
 				size_t  length;
 				SocketSession_OnDone onDone;
 			} file;

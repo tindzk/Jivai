@@ -108,8 +108,6 @@ typedef enum {
 	FileNo_StdErr = 2
 } FileNo;
 
-typedef __off64_t off64_t;
-
 #import "String.h"
 
 int Kernel_open(String path, int flags, int mode);
@@ -117,7 +115,7 @@ bool Kernel_close(int fd);
 ssize_t Kernel_read(int fd, char *buf, size_t len);
 ssize_t Kernel_write(int fd, char *buf, size_t len);
 ssize_t Kernel_getdents(int fd, char *buf, size_t len);
-bool Kernel_llseek(int fd, off64_t offset, off64_t *pos, int whence);
+bool Kernel_llseek(int fd, u64 offset, u64 *pos, int whence);
 bool Kernel_mkdir(String path, int flags);
 bool Kernel_unlink(String path);
 bool Kernel_rmdir(String path);
@@ -151,4 +149,4 @@ bool Kernel_connect(int fd, void *addr, size_t size);
 ssize_t Kernel_accept(int fd, void *addr, void *len);
 ssize_t Kernel_recv(int fd, void *buf, size_t len, int flags);
 ssize_t Kernel_send(int fd, void *buf, size_t len, int flags);
-ssize_t Kernel_sendfile64(int out, int in, off64_t *offset, size_t len);
+ssize_t Kernel_sendfile64(int out, int in, u64 *offset, size_t len);
