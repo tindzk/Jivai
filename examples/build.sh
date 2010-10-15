@@ -17,5 +17,6 @@ fi
 	map=../src:build/Jivai   \
 	optimlevel=0             \
 	dbgsym=yes               \
+	debug=yes                \
 	inclhdr=config.h         \
 	link=@bfd
