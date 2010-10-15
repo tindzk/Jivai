@@ -4,7 +4,6 @@
 #import <netinet/in.h>
 
 #import "Types.h"
-#import "String.h"
 
 #if defined(__x86_64__)
 #define __NR_stat64      __NR_stat
@@ -103,7 +102,15 @@ typedef struct {
 	__ino64_t inode;
 } Stat64;
 
+typedef enum {
+	FileNo_StdIn  = 0,
+	FileNo_StdOut = 1,
+	FileNo_StdErr = 2
+} FileNo;
+
 typedef __off64_t off64_t;
+
+#import "String.h"
 
 int Kernel_open(String path, int flags, int mode);
 bool Kernel_close(int fd);

@@ -1,5 +1,5 @@
 #import "Types.h"
-#import "UniStd.h" /* write() */
+#import "Kernel.h"
 
 /* See also: http://php.net/manual/en/function.trim.php */
 #define Char_IsSpace(c) \

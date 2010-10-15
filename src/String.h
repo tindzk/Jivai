@@ -1,7 +1,5 @@
 #import "Bit.h"
-#import "Char.h"
 #import "Types.h"
-#import "UniStd.h" /* write(), size_t */
 #import "VarArg.h"
 #import "BitMask.h"
 #import "Compiler.h"
@@ -21,6 +19,9 @@ enum {
 	String_TrimLeft  = Bit(0),
 	String_TrimRight = Bit(1)
 };
+
+#import "Char.h"
+#import "Kernel.h"
 
 #import "Exception.h"
 #import "ExceptionManager.h"

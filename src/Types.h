@@ -1,3 +1,5 @@
+#import "UniStd.h" /* size_t */
+
 /* Clang's stdbool.h is not used because it defines `true' and `false'
  * as plain integers, making it impossible to differentiate between
  * `int' and `bool' in function declarations, which can be necessary

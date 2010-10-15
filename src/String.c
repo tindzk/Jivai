@@ -1016,7 +1016,7 @@ String String_Consume(String *this, size_t n) {
 
 overload void String_Print(String s, bool err) {
 	if (s.buf != NULL) {
-		write(err ? STDERR_FILENO : STDOUT_FILENO, s.buf, s.len);
+		Kernel_write(err ? FileNo_StdErr : FileNo_StdOut, s.buf, s.len);
 	}
 }
 
