@@ -64,8 +64,8 @@ size_t Integer64_CountDigits(s64 num) {
 	INTEGER_COUNT_DIGITS(num)
 }
 
-#define INTEGER_TO_STRING_BUF(num, res, digits, type)         \
-	type orig = num;                                          \
+#define INTEGER_TO_STRING_BUF(num, res, digits)               \
+	typeof(num) orig = num;                                   \
 	size_t digit = digits;                                    \
 	int offset;                                               \
 	if (num < 0) {                                            \
@@ -88,11 +88,11 @@ size_t Integer64_CountDigits(s64 num) {
 	} while(orig);
 
 void Integer_ToStringBuf(s32 num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, res->size, s32)
+	INTEGER_TO_STRING_BUF(num, res, res->size)
 }
 
 void Integer64_ToStringBuf(s64 num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, res->size, s64)
+	INTEGER_TO_STRING_BUF(num, res, res->size)
 }
 
 inline short Integer_Compare(s32 a, s32 b) {
