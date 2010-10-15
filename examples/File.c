@@ -14,7 +14,7 @@ int main(void) {
 		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
 	} catch (Modules_File, excNotFound, e) {
 		String_Print(String("File not found.\n"));
-		return EXIT_FAILURE;
+		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
@@ -32,5 +32,5 @@ int main(void) {
 
 	File_Close(&file);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

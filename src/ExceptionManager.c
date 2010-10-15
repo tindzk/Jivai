@@ -8,7 +8,7 @@ inline void ExceptionManager_Init(ExceptionManager *this) {
 inline void ExceptionManager_Raise(ExceptionManager *this) {
 	if (this->cur == NULL) {
 		Exception_Print(&this->e);
-		exit(EXIT_FAILURE);
+		Runtime_Exit(ExitStatus_Failure);
 	}
 
 	longjmp(this->cur->jmpBuffer, 1);

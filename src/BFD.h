@@ -8,6 +8,7 @@
 
 #import "Memory.h"
 #import "BitMask.h"
+#import "Runtime.h"
 #import "Compiler.h"
 
 typedef struct {

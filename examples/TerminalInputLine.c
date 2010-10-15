@@ -46,7 +46,7 @@ int main(void) {
 	line.onKeyPress = (void *) &OnKeyPress;
 	line.onKeyEnter = (void *) &OnKeyEnter;
 
-	int res = EXIT_SUCCESS;
+	int res = ExitStatus_Success;
 
 	try(&exc) {
 		while (!context.interrupt) {
@@ -59,7 +59,7 @@ int main(void) {
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 
-		res = EXIT_FAILURE;
+		res = ExitStatus_Failure;
 	} finally {
 		Terminal_InputLine_Destroy(&line);
 		Terminal_Destroy(&term);

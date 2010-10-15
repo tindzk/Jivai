@@ -56,7 +56,7 @@ int main(void) {
 	 */
 	if (pos == String_NotFound) {
 		String_Print(String("Needle not found!\n"));
-		return EXIT_FAILURE;
+		return ExitStatus_Failure;
 	}
 
 	/* Extract and print both parts: */
@@ -69,5 +69,5 @@ int main(void) {
 	String_Print(String_Slice(s, pos));
 	String_Print(String("\n"));
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

@@ -108,10 +108,16 @@ typedef enum {
 	FileNo_StdErr = 2
 } FileNo;
 
+typedef enum {
+	ExitStatus_Success = 0,
+	ExitStatus_Failure = 1
+} ExitStatus;
+
 #import "String.h"
 
 int Kernel_open(String path, int flags, int mode);
 bool Kernel_close(int fd);
+void Kernel_exit(int status);
 ssize_t Kernel_read(int fd, char *buf, size_t len);
 ssize_t Kernel_write(int fd, char *buf, size_t len);
 ssize_t Kernel_getdents(int fd, char *buf, size_t len);

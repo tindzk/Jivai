@@ -40,7 +40,7 @@ exit(main());
 #undef  throw
 #define throw
 #define new
-#define Exception(x) printf("%s", x); exit(EXIT_FAILURE);
+#define Exception(x) printf("%s", x); Runtime_Exit(ExitStatus_Failure);
 function inverse(Integer $x) {
 	if (!$x) {
 		throw new Exception("Division by zero.");

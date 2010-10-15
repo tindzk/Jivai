@@ -8,6 +8,10 @@ bool Kernel_close(int fd) {
 	return syscall(__NR_close, fd) == 0;
 }
 
+void Kernel_exit(int status) {
+	syscall(__NR_exit, status);
+}
+
 ssize_t Kernel_read(int fd, char *buf, size_t len) {
 	return syscall(__NR_read, fd, buf, len);
 }

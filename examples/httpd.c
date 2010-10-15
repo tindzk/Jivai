@@ -308,7 +308,7 @@ int main(void) {
 		error = true;
 	} finally {
 		if (error) {
-			excReturn EXIT_FAILURE;
+			excReturn ExitStatus_Failure;
 		}
 	} tryEnd;
 
@@ -330,9 +330,9 @@ int main(void) {
 		Server_Destroy(&server);
 
 		if (error) {
-			excReturn EXIT_FAILURE;
+			excReturn ExitStatus_Failure;
 		}
 	} tryEnd;
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

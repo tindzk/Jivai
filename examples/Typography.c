@@ -79,10 +79,10 @@ int main(__unused int argc, __unused char *argv[]) {
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 
-		return EXIT_FAILURE;
+		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

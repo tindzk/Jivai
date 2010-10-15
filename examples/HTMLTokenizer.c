@@ -56,7 +56,7 @@ int main(void) {
 		FileStream_Open(&file, String("HTMLTokenizer.html"), FileStatus_ReadOnly);
 	} catch (Modules_File, excNotFound, e) {
 		String_Print(String("File not found.\n"));
-		return EXIT_FAILURE;
+		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
@@ -72,5 +72,5 @@ int main(void) {
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

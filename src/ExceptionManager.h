@@ -1,6 +1,7 @@
 #import <setjmp.h>
 
 #import "Types.h"
+#import "Runtime.h"
 #import "Compiler.h"
 #import "Exception.h"
 
@@ -28,7 +29,7 @@ void ExceptionManager_Pop(ExceptionManager *this);
 				"The exception manager in "));              \
 			String_Print(String(__FILE__));                 \
 			String_Print(String(" is not initialized!\n")); \
-			exit(EXIT_FAILURE);                             \
+			Runtime_Exit(ExitStatus_Failure);               \
 		}                                                   \
 	} while(0)
 #else
