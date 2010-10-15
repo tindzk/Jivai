@@ -3,7 +3,7 @@
 #import "../Terminal.h"
 
 #ifndef Terminal_ProgressBar_Padding
-#define Terminal_ProgressBar_Padding 7
+#define Terminal_ProgressBar_Padding 8
 #endif
 
 typedef struct {
