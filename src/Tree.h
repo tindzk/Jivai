@@ -25,8 +25,7 @@ void Tree_Init(Tree *this, Tree_DestroyNode destroyNode);
 void Tree_Destroy(Tree *this);
 void Tree_Reset(Tree *this);
 void Tree_FreeNodes(Tree *this, Tree_Node *node);
-void* Tree_AddCustomNode(Tree_Node *node, size_t size);
-Tree_Node* Tree_AddNode(Tree_Node *node);
+void* Tree_AddCustomNode(void *ptrNode, size_t size);
 
-#define Tree_AddNode(node, size) \
-	Tree_AddCustomNode((Tree_Node *) (node), size)
+#define Tree_AddNode(node) \
+	Tree_AddCustomNode(node, sizeof(typeof(*(node))))

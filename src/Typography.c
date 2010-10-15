@@ -42,7 +42,7 @@ Typography_Node* Typography_GetRoot(Typography *this) {
 
 static void Typography_Flush(Typography *this, String *value) {
 	if (value->len > 0) {
-		Typography_Node *node = Tree_AddNode(this->node,
+		Typography_Node *node = Tree_AddCustomNode(this->node,
 			sizeof(Typography_Node)
 		  + sizeof(Typography_Text));
 
@@ -110,7 +110,7 @@ static void Typography_Read(Typography *this, size_t st) {
 				} else if (cur == '{') {
 					Typography_Flush(this, &value);
 
-					this->node = Tree_AddNode(this->node,
+					this->node = Tree_AddCustomNode(this->node,
 						sizeof(Typography_Node)
 					  + sizeof(Typography_Item));
 

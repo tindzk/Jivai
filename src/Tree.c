@@ -35,7 +35,9 @@ void Tree_FreeNodes(Tree *this, Tree_Node *node) {
 	node->len = 0;
 }
 
-void* Tree_AddCustomNode(Tree_Node *node, size_t size) {
+void* Tree_AddCustomNode(void *ptrNode, size_t size) {
+	Tree_Node *node = ptrNode;
+
 	if (node->len == 0) {
 		node->nodes = New(Tree_Node *);
 	} else {

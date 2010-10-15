@@ -49,10 +49,11 @@ void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size) {
 
 	if (depth > this->depth) {
 		if (this->node->len == 0) {
-			this->node = Tree_AddNode(this->node,
+			this->node = Tree_AddCustomNode(this->node,
 				sizeof(YAML_Node) + size);
 		} else {
-			this->node = Tree_AddNode(this->node->nodes[this->node->len - 1],
+			this->node = Tree_AddCustomNode(
+				this->node->nodes[this->node->len - 1],
 				sizeof(YAML_Node) + size);
 		}
 
@@ -89,7 +90,7 @@ void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size) {
 		}
 	}
 
-	YAML_Node *node = Tree_AddNode((Tree_Node *) this->node,
+	YAML_Node *node = Tree_AddCustomNode(this->node,
 		sizeof(YAML_Node) + size);
 
 	node->type = type;
