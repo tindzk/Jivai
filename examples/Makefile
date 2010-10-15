@@ -20,7 +20,7 @@ CFLAGS += -std=gnu99 -fblocks
 LIBPATH = ../src
 
 # Only build these modules.
-LIBFILES += $(LIBPATH)/{Kernel,Block,Typography,Path,Module,HTML,HTML/{Tokenizer,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,Exception{,Manager},YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
+LIBFILES += $(LIBPATH)/{Kernel,Block,Typography,Path,Module,HTML,HTML/{Tokenizer,Entities,Tree},Unicode,Terminal/{Selection,Buffer,InputLine,Prompt},Terminal,Char,String,Backtrace,Integer,Memory,Socket,NetworkAddress,SocketConnection,Exception{,Manager},YAML,Tree,File,BufferedStream,FileStream,Server,Signal,Poll,Client,HTTP/{Header,Server,Query,Status,Method,Version},Hex,Logger,ClientListener}.c
 
 # Enable human-readable backtraces (requires BFD).
 LIBFILES += $(LIBPATH)/BFD.c -lbfd
