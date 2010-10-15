@@ -16,16 +16,16 @@ enum {
 void Integer0(ExceptionManager *e);
 
 int Integer_ParseString(String s);
-int64_t Integer64_ParseString(String s);
+s64 Integer64_ParseString(String s);
 
 size_t Integer_CountDigits(int num);
-size_t Integer64_CountDigits(int64_t num);
+size_t Integer64_CountDigits(s64 num);
 
 void Integer_ToStringBuf(int num, String *buf);
-void Integer64_ToStringBuf(int64_t num, String *buf);
+void Integer64_ToStringBuf(s64 num, String *buf);
 
 short Integer_Compare(int a, int b);
-short Integer64_Compare(int64_t a, int64_t b);
+short Integer64_Compare(s64 a, s64 b);
 
 #define Integer_ToString(num) ({           \
 	size_t len = Integer_CountDigits(num); \

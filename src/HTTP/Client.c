@@ -133,7 +133,7 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 	}
 }
 
-int64_t HTTP_Client_GetLength(HTTP_Client *this) {
+s64 HTTP_Client_GetLength(HTTP_Client *this) {
 	return this->total;
 }
 

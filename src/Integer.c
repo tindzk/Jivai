@@ -43,8 +43,8 @@ int Integer_ParseString(String s) {
 	INTEGER_PARSE_STRING(s, int, INT_MAX)
 }
 
-int64_t Integer64_ParseString(String s) {
-	INTEGER_PARSE_STRING(s, int64_t, INT64_MAX)
+s64 Integer64_ParseString(String s) {
+	INTEGER_PARSE_STRING(s, s64, INT64_MAX)
 }
 
 /* To determine the number of digits. */
@@ -60,7 +60,7 @@ size_t Integer_CountDigits(int num) {
 	INTEGER_COUNT_DIGITS(num)
 }
 
-size_t Integer64_CountDigits(int64_t num) {
+size_t Integer64_CountDigits(s64 num) {
 	INTEGER_COUNT_DIGITS(num)
 }
 
@@ -91,8 +91,8 @@ void Integer_ToStringBuf(int num, String *res) {
 	INTEGER_TO_STRING_BUF(num, res, res->size, int)
 }
 
-void Integer64_ToStringBuf(int64_t num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, res->size, int64_t)
+void Integer64_ToStringBuf(s64 num, String *res) {
+	INTEGER_TO_STRING_BUF(num, res, res->size, s64)
 }
 
 inline short Integer_Compare(int a, int b) {
@@ -100,7 +100,7 @@ inline short Integer_Compare(int a, int b) {
 		 - (a < b);
 }
 
-inline short Integer64_Compare(int64_t a, int64_t b) {
+inline short Integer64_Compare(s64 a, s64 b) {
 	return (a > b)
 		 - (a < b);
 }

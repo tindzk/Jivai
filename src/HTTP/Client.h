@@ -78,10 +78,10 @@ typedef struct {
 	 * whereas for chunked responses, it's the length
 	 * of the current chunk solely.
 	 */
-	int64_t total;
+	s64 total;
 
 	/* How many bytes out of `total' have been read so far. */
-	int64_t read;
+	s64 read;
 
 	/* How many bytes of the contents were pre-buffered in `resp'. */
 	u64 canRead;
@@ -111,7 +111,7 @@ void HTTP_Client_Close(HTTP_Client *this);
 void HTTP_Client_OnStatus(HTTP_Client *this, HTTP_Status status);
 void HTTP_Client_OnVersion(HTTP_Client *this, HTTP_Version version);
 void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value);
-int64_t HTTP_Client_GetLength(HTTP_Client *this);
+s64 HTTP_Client_GetLength(HTTP_Client *this);
 bool HTTP_Client_IsConnected(HTTP_Client *this);
 void HTTP_Client_Reopen(HTTP_Client *this);
 String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path);
