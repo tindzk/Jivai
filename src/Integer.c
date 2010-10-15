@@ -39,8 +39,8 @@ void Integer0(ExceptionManager *e) {
 	}                                      \
 	return res;
 
-int Integer_ParseString(String s) {
-	INTEGER_PARSE_STRING(s, int, INT_MAX)
+s32 Integer_ParseString(String s) {
+	INTEGER_PARSE_STRING(s, s32, INT_MAX)
 }
 
 s64 Integer64_ParseString(String s) {
@@ -56,7 +56,7 @@ s64 Integer64_ParseString(String s) {
 	} while(num);                 \
 	return digits;
 
-size_t Integer_CountDigits(int num) {
+size_t Integer_CountDigits(s32 num) {
 	INTEGER_COUNT_DIGITS(num)
 }
 
@@ -87,15 +87,15 @@ size_t Integer64_CountDigits(s64 num) {
 		orig /= 10;                                           \
 	} while(orig);
 
-void Integer_ToStringBuf(int num, String *res) {
-	INTEGER_TO_STRING_BUF(num, res, res->size, int)
+void Integer_ToStringBuf(s32 num, String *res) {
+	INTEGER_TO_STRING_BUF(num, res, res->size, s32)
 }
 
 void Integer64_ToStringBuf(s64 num, String *res) {
 	INTEGER_TO_STRING_BUF(num, res, res->size, s64)
 }
 
-inline short Integer_Compare(int a, int b) {
+inline short Integer_Compare(s32 a, s32 b) {
 	return (a > b)
 		 - (a < b);
 }
