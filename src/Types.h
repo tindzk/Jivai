@@ -1,3 +1,5 @@
+#import "Macros.h"
+
 /* Clang's stdbool.h is not used because it defines `true' and `false'
  * as plain integers, making it impossible to differentiate between
  * `int' and `bool' in function declarations, which can be necessary
@@ -33,3 +35,15 @@ typedef unsigned long long u64;
 	typedef unsigned int   size_t;
 	typedef   signed int   ssize_t;
 #endif
+
+typedef void Generic;
+
+typedef struct {
+	void *object;
+} GenericInstance;
+
+BasicInstance(Generic)
+
+/* Inline functions cannot be used as Memory's methods are not available yet. */
+#define Generic_New(size) (GenericInstance) { .object = Memory_Alloc(size) }
+#define Generic_Free(instance) ({ void *ptr = instance.object; Memory_Free(ptr); })

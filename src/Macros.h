@@ -20,57 +20,48 @@
 #define call(method, ...) \
 	ref(method)($this, ## __VA_ARGS__)
 
-#define ClassName(name) \
-	simpleConcat(name, Class)
+#define InstanceName(name) \
+	simpleConcat(name, Instance)
 
 #define def(ret, method, ...) \
-	ret ref(method)(__unused ClassName(self) $this, ## __VA_ARGS__)
+	ret ref(method)(__unused InstanceName(self) $this, ## __VA_ARGS__)
 
-#define BasicClass(name)                                                         \
-	static inline ClassName(name) underscoredConcat(name, AsClass)(name *ptr) {  \
-		return (ClassName(name)) { .p = ptr };                                   \
-	}                                                                            \
-	static inline name* underscoredConcat(name, GetPtr)(ClassName(name) class) { \
-		return class.p;                                                          \
-	}                                                                            \
-	static inline ClassName(name) underscoredConcat(name, Null)() {              \
-		return (ClassName(name)) { .p = NULL };                                  \
-	}                                                                            \
-	static inline bool underscoredConcat(name, IsNull)(ClassName(name) class) {  \
-		return class.p == NULL;                                                  \
-	}                                                                            \
-	static inline bool underscoredConcat(name, Equals)(ClassName(name) a, ClassName(name) b) { \
-		return a.p == b.p;                                                       \
+#define BasicInstance(name)                                                               \
+	static inline InstanceName(name) underscoredConcat(name, FromObject)(name *object) {  \
+		return (InstanceName(name)) { .object = object };                                 \
+	}                                                                                     \
+	static inline name* underscoredConcat(name, GetObject)(InstanceName(name) instance) { \
+		return instance.object;                                                           \
+	}                                                                                     \
+	static inline InstanceName(name) underscoredConcat(name, Null)() {                    \
+		return (InstanceName(name)) { .object = NULL };                                   \
+	}                                                                                     \
+	static inline bool underscoredConcat(name, IsNull)(InstanceName(name) instance) {     \
+		return instance.object == NULL;                                                   \
+	}                                                                                     \
+	static inline bool underscoredConcat(name, Equals)(InstanceName(name) a, InstanceName(name) b) { \
+		return a.object == b.object;                                                      \
+	}                                                                                     \
+	static inline GenericInstance underscoredConcat(name, ToGeneric)(InstanceName(name) instance) { \
+		return (GenericInstance) { .object = instance.object };                           \
 	}
 
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
 
-#define Class(name)                                                              \
-	name;                                                                        \
-	typedef struct {                                                             \
-		name *p;                                                                 \
-	} simpleConcat(name, Class);                                                 \
-	BasicClass(name)                                                             \
-	static inline ClassName(name) underscoredConcat(name, New)(void) {           \
-		return (ClassName(name)) { .p = Memory_Alloc(sizeof(name)) };            \
-	}                                                                            \
-	static inline void underscoredConcat(name, Free)(ClassName(name) class) {    \
-		Memory_Free(class.p);                                                    \
+#define Class(name)                                                                 \
+	name;                                                                           \
+	typedef struct {                                                                \
+		name *object;                                                               \
+	} InstanceName(name);                                                           \
+	BasicInstance(name)                                                             \
+	static inline InstanceName(name) underscoredConcat(name, New)(void) {           \
+		return (InstanceName(name)) { .object = Memory_Alloc(sizeof(name)) };       \
+	}                                                                               \
+	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) { \
+		Memory_Free(instance.object);                                               \
 	}
-
-typedef void Generic;
-
-typedef struct {
-	void *p;
-} GenericClass;
-
-BasicClass(Generic)
-
-/* Inline functions cannot be used as Memory's methods are not available yet. */
-#define Generic_New(size) (GenericClass) { .p = Memory_Alloc(size) }
-#define Generic_Free(class) ({ void *ptr = class.p; Memory_Free(ptr); })
 
 /* buildBugOnZero(), mustBeArray() and nElems() are taken from Linux
  * kernel 2.6.35.

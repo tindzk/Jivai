@@ -1,1 +1,1 @@
-#define this $this.p
+#define this $this.object
