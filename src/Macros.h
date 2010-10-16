@@ -1,5 +1,10 @@
-#define set    typedef enum
-#define record typedef struct
+#define set(name)           \
+	typedef enum name name; \
+	enum name
+
+#define record(name)          \
+	typedef struct name name; \
+	struct name
 
 #define when(lbl) if (0) lbl: if (1)
 
