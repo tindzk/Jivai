@@ -29,6 +29,10 @@
 #define def(ret, method, ...) \
 	ret ref(method)(__unused InstanceName(self) $this, ## __VA_ARGS__)
 
+/* Inspired by Nelson Elhage's NEWTYPE() macro.
+ * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
+ */
+
 #define BasicInstance(name)                                                               \
 	static inline InstanceName(name) underscoredConcat(name, FromObject)(name *object) {  \
 		return (InstanceName(name)) { .object = object };                                 \
@@ -49,16 +53,18 @@
 		return (GenericInstance) { .object = instance.object };                           \
 	}
 
-/* Inspired by Nelson Elhage's NEWTYPE() macro.
- * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
- */
+#define Class(name)           \
+	typedef struct name name; \
+	typedef struct {          \
+		struct name *object;  \
+	} InstanceName(name);     \
+	BasicInstance(name)       \
+	struct name
 
-#define Class(name)                                                                 \
-	name;                                                                           \
-	typedef struct {                                                                \
-		name *object;                                                               \
-	} InstanceName(name);                                                           \
-	BasicInstance(name)                                                             \
+/* This cannot be included in Class() as sizeof() is needed and the
+ * structure's final size is not yet determinable.
+ */
+#define ExtendClass(name)                                                           \
 	static inline InstanceName(name) underscoredConcat(name, New)(void) {           \
 		return (InstanceName(name)) { .object = Memory_Alloc(sizeof(name)) };       \
 	}                                                                               \
