@@ -389,8 +389,8 @@ inline bool String_Equals(String s, String needle) {
 }
 
 bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset) {
-	if (s.len == 0 || needle.len == 0) {
-		return false;
+	if (needle.len == 0) {
+		return true;
 	}
 
 	if (needle.len > s.len) {
