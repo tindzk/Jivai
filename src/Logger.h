@@ -39,3 +39,24 @@ String Logger_LevelToString(Logger_Level level);
 			Memory_Free(__fmt.buf);                            \
 		}                                                      \
 	} while(0)
+
+#define Logger_Fatal(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Fatal, fmt, ## __VA_ARGS__)
+
+#define Logger_Crit(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Crit, fmt, ## __VA_ARGS__)
+
+#define Logger_Error(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Error, fmt, ## __VA_ARGS__)
+
+#define Logger_Warn(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Warn, fmt, ## __VA_ARGS__)
+
+#define Logger_Info(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Info, fmt, ## __VA_ARGS__)
+
+#define Logger_Debug(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Debug, fmt, ## __VA_ARGS__)
+
+#define Logger_Trace(this, fmt, ...) \
+	Logger_Log(this, Logger_Level_Trace, fmt, ## __VA_ARGS__)
