@@ -15,10 +15,10 @@ inline void ExceptionManager_Raise(ExceptionManager *this) {
 }
 
 inline void ExceptionManager_Push(ExceptionManager *this,
-								  ExceptionManager_Record *record)
+								  ExceptionManager_Record *_record)
 {
-	record->prev = this->cur;
-	this->cur = record;
+	_record->prev = this->cur;
+	this->cur = _record;
 }
 
 inline void ExceptionManager_Pop(ExceptionManager *this) {

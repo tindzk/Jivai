@@ -18,7 +18,7 @@ typedef struct _ExceptionManager_Record {
 void ExceptionManager_Init(ExceptionManager *this);
 void ExceptionManager_Raise(ExceptionManager *this);
 void ExceptionManager_Push(ExceptionManager *this,
-	 ExceptionManager_Record *record);
+	 ExceptionManager_Record *_record);
 void ExceptionManager_Pop(ExceptionManager *this);
 
 #if Exception_Safety

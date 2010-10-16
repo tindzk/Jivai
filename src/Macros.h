@@ -1,3 +1,6 @@
+#define set    typedef enum
+#define record typedef struct
+
 #define when(lbl) if (0) lbl: if (1)
 
 #define _simpleConcat(x, y) \
