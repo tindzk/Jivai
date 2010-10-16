@@ -58,7 +58,7 @@
 		return (GenericInstance) { .object = instance.object };                           \
 	}
 
-#define Class(name)           \
+#define class(name)           \
 	typedef struct name name; \
 	typedef struct {          \
 		struct name *object;  \
