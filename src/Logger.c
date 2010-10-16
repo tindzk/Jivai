@@ -6,6 +6,11 @@ void Logger_Init(Logger *this, Logger_Printer printer, void *context, int levels
 	this->levels  = levels;
 }
 
+inline bool Logger_IsEnabled(Logger *this, Logger_Level level) {
+	return !BitMask_Has(Logger_DisabledLevels, level)
+		 && BitMask_Has(this->levels, level);
+}
+
 String Logger_LevelToString(Logger_Level level) {
 	switch (level) {
 		case Logger_Level_Fatal:

@@ -53,7 +53,7 @@ int main(void) {
 	Logger_Log(&logger, Logger_Level_Trace, String("Trace message 2."));
 
 	/* Logging formatted messages is possible, too. */
-	Logger_LogFmt(&logger, Logger_Level_Info, String("Stopping %..."), String("application"));
+	Logger_Log(&logger, Logger_Level_Info, String("Stopping %..."), String("application"));
 
 	return EXIT_SUCCESS;
 }

@@ -27,25 +27,15 @@ typedef struct {
 } Logger;
 
 void Logger_Init(Logger *this, Logger_Printer printer, void *context, int levels);
+bool Logger_IsEnabled(Logger *this, Logger_Level level);
 String Logger_LevelToString(Logger_Level level);
 
-#define Logger_IsEnabled(this, level) \
-	(!BitMask_Has(Logger_DisabledLevels, level) && BitMask_Has((this)->levels, level))
-
-#define Logger_Log(this, level, msg)                     \
-	do {                                                 \
-		if (Logger_IsEnabled(this, level)) {             \
-			(this)->printer((this)->context,             \
-				msg, level, String(__FILE__), __LINE__); \
-		}                                                \
-	} while(0)
-
-#define Logger_LogFmt(this, level, fmt, ...)                   \
+#define Logger_Log(this, level, fmt, ...)                      \
 	do {                                                       \
 		if (Logger_IsEnabled(this, level)) {                   \
-			String __fmt = String_Format(fmt, __VA_ARGS__);    \
+			String __fmt = String_Format(fmt, ## __VA_ARGS__); \
 			(this)->printer((this)->context,                   \
-					__fmt, level, String(__FILE__), __LINE__); \
+				__fmt, level, String(__FILE__), __LINE__);     \
 			Memory_Free(__fmt.buf);                            \
 		}                                                      \
 	} while(0)
