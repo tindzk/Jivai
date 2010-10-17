@@ -311,8 +311,6 @@ int main(void) {
 	ClientListener0(&exc);
 	SocketConnection0(&exc);
 
-	bool error = false;
-
 	Server         server;
 	ClientListener listener;
 
@@ -333,13 +331,9 @@ int main(void) {
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 
-		error = true;
+		excReturn ExitStatus_Failure;
 	} finally {
 		Server_Destroy(&server);
-
-		if (error) {
-			excReturn ExitStatus_Failure;
-		}
 	} tryEnd;
 
 	return ExitStatus_Success;
