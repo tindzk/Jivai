@@ -1,10 +1,10 @@
 #import "Kernel.h"
 
-int Kernel_open(String path, int flags, int mode) {
+ssize_t Kernel_open(String path, int flags, int mode) {
 	return syscall(__NR_open, String_ToNul(path), flags, mode);
 }
 
-bool Kernel_close(int fd) {
+bool Kernel_close(ssize_t fd) {
 	return syscall(__NR_close, fd) == 0;
 }
 
@@ -12,19 +12,19 @@ void Kernel_exit(int status) {
 	syscall(__NR_exit, status);
 }
 
-ssize_t Kernel_read(int fd, char *buf, size_t len) {
+ssize_t Kernel_read(ssize_t fd, char *buf, size_t len) {
 	return syscall(__NR_read, fd, buf, len);
 }
 
-ssize_t Kernel_write(int fd, char *buf, size_t len) {
+ssize_t Kernel_write(ssize_t fd, char *buf, size_t len) {
 	return syscall(__NR_write, fd, buf, len);
 }
 
-ssize_t Kernel_getdents(int fd, char *buf, size_t len) {
+ssize_t Kernel_getdents(ssize_t fd, char *buf, size_t len) {
 	return syscall(__NR_getdents, fd, buf, len);
 }
 
-bool Kernel_llseek(int fd, u64 offset, u64 *pos, int whence) {
+bool Kernel_llseek(ssize_t fd, u64 offset, u64 *pos, int whence) {
 	/* Conversion taken from dietlibc-0.32/lib/lseek64.c */
 	return syscall(__NR__llseek,
 		fd,
@@ -56,7 +56,7 @@ bool Kernel_setxattr(String path, String name, char *buf, size_t size, int flags
 		buf, size, flags) == 0;
 }
 
-bool Kernel_fsetxattr(int fd, String name, char *buf, size_t size, int flags) {
+bool Kernel_fsetxattr(ssize_t fd, String name, char *buf, size_t size, int flags) {
 	return syscall(__NR_fsetxattr, fd, String_ToNul(name), buf, size, flags) == 0;
 }
 
@@ -67,7 +67,7 @@ ssize_t Kernel_getxattr(String path, String name, char *buf, size_t size) {
 		buf, size);
 }
 
-ssize_t Kernel_fgetxattr(int fd, String name, char *buf, size_t size) {
+ssize_t Kernel_fgetxattr(ssize_t fd, String name, char *buf, size_t size) {
 	return syscall(__NR_fgetxattr, fd, String_ToNul(name), buf, size);
 }
 
@@ -88,7 +88,7 @@ bool Kernel_chdir(String path) {
 	return syscall(__NR_chdir, String_ToNul(path)) == 0;
 }
 
-bool Kernel_fchdir(int fd) {
+bool Kernel_fchdir(ssize_t fd) {
 	return syscall(__NR_fchdir, fd) == 0;
 }
 
@@ -108,7 +108,7 @@ bool Kernel_stat64(String path, Stat64 *attr) {
 	return syscall(__NR_stat64, String_ToNul(path), attr) == 0;
 }
 
-bool Kernel_fstat64(int fd, Stat64 *attr) {
+bool Kernel_fstat64(ssize_t fd, Stat64 *attr) {
 	return syscall(__NR_fstat64, fd, attr) == 0;
 }
 
@@ -116,7 +116,7 @@ bool Kernel_truncate64(String path, size_t len) {
 	return syscall(__NR_truncate64, String_ToNul(path), len) == 0;
 }
 
-bool Kernel_ftruncate64(int fd, size_t len) {
+bool Kernel_ftruncate64(ssize_t fd, size_t len) {
 	return syscall(__NR_ftruncate64, fd, len) == 0;
 }
 
@@ -128,7 +128,7 @@ ssize_t Kernel_epoll_create(size_t n) {
 	return syscall(__NR_epoll_create, n);
 }
 
-bool Kernel_epoll_ctl(int epfd, int op, int fd, struct epoll_event *event) {
+bool Kernel_epoll_ctl(int epfd, int op, ssize_t fd, struct epoll_event *event) {
 	return syscall(__NR_epoll_ctl, epfd, op, fd, event) == 0;
 }
 
@@ -136,7 +136,7 @@ ssize_t Kernel_epoll_wait(int epfd, struct epoll_event *events, int maxevents, i
 	return syscall(__NR_epoll_wait, epfd, events, maxevents, timeout);
 }
 
-ssize_t Kernel_fcntl(int fd, int cmd, int arg) {
+ssize_t Kernel_fcntl(ssize_t fd, int cmd, int arg) {
 	return syscall(__NR_fcntl, fd, cmd, arg);
 }
 
@@ -149,7 +149,7 @@ ssize_t Kernel_socket(int namespace, int style, int protocol) {
 #endif
 }
 
-bool Kernel_setsockopt(int fd, int level, int option, void *value, size_t size) {
+bool Kernel_setsockopt(ssize_t fd, int level, int option, void *value, size_t size) {
 #if defined(__NR_setsockopt)
 	return syscall(__NR_setsockopt, fd, level, option, value, size) == 0;
 #else
@@ -158,7 +158,7 @@ bool Kernel_setsockopt(int fd, int level, int option, void *value, size_t size) 
 #endif
 }
 
-bool Kernel_bind(int fd, struct sockaddr_in addr) {
+bool Kernel_bind(ssize_t fd, struct sockaddr_in addr) {
 #if defined(__NR_bind)
 	return syscall(__NR_bind, fd, &addr, sizeof(addr)) == 0;
 #else
@@ -167,7 +167,7 @@ bool Kernel_bind(int fd, struct sockaddr_in addr) {
 #endif
 }
 
-bool Kernel_listen(int fd, int backlog) {
+bool Kernel_listen(ssize_t fd, int backlog) {
 #if defined(__NR_listen)
 	return syscall(__NR_listen, fd, backlog) == 0;
 #else
@@ -176,7 +176,7 @@ bool Kernel_listen(int fd, int backlog) {
 #endif
 }
 
-bool Kernel_shutdown(int fd, int how) {
+bool Kernel_shutdown(ssize_t fd, int how) {
 #if defined(__NR_shutdown)
 	return syscall(__NR_shutdown, fd, how) == 0;
 #else
@@ -185,7 +185,7 @@ bool Kernel_shutdown(int fd, int how) {
 #endif
 }
 
-bool Kernel_connect(int fd, void *addr, size_t size) {
+bool Kernel_connect(ssize_t fd, void *addr, size_t size) {
 #if defined(__NR_connect)
 	return syscall(__NR_connect, fd, addr, size) == 0;
 #else
@@ -194,7 +194,7 @@ bool Kernel_connect(int fd, void *addr, size_t size) {
 #endif
 }
 
-ssize_t Kernel_accept(int fd, void *addr, void *len) {
+ssize_t Kernel_accept(ssize_t fd, void *addr, void *len) {
 #if defined(__NR_accept)
 	return syscall(__NR_accept, fd, addr, len);
 #else
@@ -203,7 +203,7 @@ ssize_t Kernel_accept(int fd, void *addr, void *len) {
 #endif
 }
 
-ssize_t Kernel_recv(int fd, void *buf, size_t len, int flags) {
+ssize_t Kernel_recv(ssize_t fd, void *buf, size_t len, int flags) {
 #if defined(__NR_recvfrom)
 	return syscall(__NR_recvfrom, fd, buf, len, flags, NULL, NULL);
 #else
@@ -212,7 +212,7 @@ ssize_t Kernel_recv(int fd, void *buf, size_t len, int flags) {
 #endif
 }
 
-ssize_t Kernel_send(int fd, void *buf, size_t len, int flags) {
+ssize_t Kernel_send(ssize_t fd, void *buf, size_t len, int flags) {
 #if defined(__NR_sendto)
 	return syscall(__NR_sendto, fd, buf, len, flags, NULL, 0);
 #else
@@ -221,6 +221,6 @@ ssize_t Kernel_send(int fd, void *buf, size_t len, int flags) {
 #endif
 }
 
-ssize_t Kernel_sendfile64(int out, int in, u64 *offset, size_t len) {
+ssize_t Kernel_sendfile64(ssize_t out, ssize_t in, u64 *offset, size_t len) {
 	return syscall(__NR_sendfile64, out, in, offset, len);
 }
