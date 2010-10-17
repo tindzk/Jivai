@@ -277,11 +277,10 @@ ConnectionInterface HttpConnection_Methods = {
 // main
 // ----
 
-bool startServer(Server *server) {
+bool startServer(Server *server, ClientListener *listener) {
 	Server_Events events;
 
-	ClientListener listener;
-	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
+	ClientListener_Init(listener, &HttpConnection_Methods, &events);
 
 	try (&exc) {
 		Server_Init(server, events, true, 8080);
@@ -314,9 +313,10 @@ int main(void) {
 
 	bool error = false;
 
-	Server server;
+	Server         server;
+	ClientListener listener;
 
-	if (!startServer(&server)) {
+	if (!startServer(&server, &listener)) {
 		return ExitStatus_Failure;
 	}
 
