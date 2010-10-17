@@ -8,7 +8,7 @@
 #define self File
 
 typedef struct {
-	int fd;
+	ssize_t fd;
 	bool readable;
 	bool writable;
 } File;
