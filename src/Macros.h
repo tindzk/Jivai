@@ -16,7 +16,11 @@
 	typedef struct name name; \
 	struct name
 
-#define when(lbl) if (0) lbl: if (1)
+#define when(lbl) \
+	if (0) lbl: if (1)
+
+#define repeat(n) \
+	for (size_t i = (n); i; i--)
 
 #define _simpleConcat(x, y) \
 	x ## y
