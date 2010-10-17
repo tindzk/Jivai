@@ -179,7 +179,7 @@ overload void HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *item
 
 	try (exc) {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
-	} finally {
+	} clean finally {
 		String_Destroy(&s);
 	} tryEnd;
 }
@@ -197,7 +197,7 @@ overload void HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 
 	try (exc) {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
-	} finally {
+	} clean finally {
 		String_Destroy(&s);
 	} tryEnd;
 }
@@ -209,7 +209,7 @@ overload void HTTP_Client_Request(HTTP_Client *this, String host, String path) {
 
 	try (exc) {
 		SocketConnection_Write(&this->conn, request.buf, request.len);
-	} finally {
+	} clean finally {
 		String_Destroy(&request);
 	} tryEnd;
 }
@@ -320,7 +320,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 				throw(exc, excBufferTooSmall);
 			}
 		}
-	} catch(Modules_SocketConnection, excConnectionReset, e) {
+	} clean catch(Modules_SocketConnection, excConnectionReset, e) {
 		this->closed = true;
 		excThrow(exc, excConnectionReset);
 	} finally {
@@ -351,7 +351,7 @@ static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 		}
 
 		this->resp.len += len;
-	} catch(Modules_SocketConnection, excConnectionReset, e) {
+	} clean catch(Modules_SocketConnection, excConnectionReset, e) {
 		this->closed = true;
 		excThrow(exc, excConnectionReset);
 	} finally {
@@ -528,7 +528,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 			res->len   += read;
 			this->read += read;
-		} catch(Modules_SocketConnection, excConnectionReset, e) {
+		} clean catch(Modules_SocketConnection, excConnectionReset, e) {
 			this->closed = true;
 
 			if (this->total == -1) {

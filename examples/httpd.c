@@ -129,7 +129,7 @@ void Request_OnRespond(Request *this, bool persistent) {
 			? String("Connection: Keep-Alive")
 			: String("Connection: Close"),
 
-		Integer_ToString(this->resp.len));
+		Integer64_ToString(this->resp.len));
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
 
@@ -286,7 +286,7 @@ bool startServer(Server *server, ClientListener *listener) {
 		Server_Init(server, events, true, 8080);
 		String_Print(String("Server started.\n"));
 		excReturn true;
-	} catch (Modules_Socket, excAddressInUse, e) {
+	} clean catch (Modules_Socket, excAddressInUse, e) {
 		String_Print(String("The address is already in use!\n"));
 		excReturn false;
 	} finally {
@@ -324,7 +324,7 @@ int main(void) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} catch (Modules_Signal, excSigInt, e) {
+	} clean catch (Modules_Signal, excSigInt, e) {
 		String_Print(String("Server shutdown.\n"));
 	} catchAny (e) {
 		Exception_Print(e);

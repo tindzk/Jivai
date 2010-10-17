@@ -57,35 +57,38 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	ExceptionManager_Push(__exc_mgr,              \
 		StackNew(ExceptionManager_Record));       \
 	bool __exc_rethrow = false;                   \
+	bool __exc_ignore_finally = false;            \
 	__label__ __exc_finally;                      \
 	void *__exc_return_ptr = && __exc_done;       \
 	if (setjmp(__exc_mgr->cur->jmpBuffer) == 0) {
+
+#define clean                            \
+		ExceptionManager_Pop(__exc_mgr); \
+	} else if (ExceptionManager_Pop(__exc_mgr), false) {
 
 #define catch(_module, _code, _e)               \
 	} else if (__exc_mgr->e.module == _module   \
 			&& __exc_mgr->e.code   == _code)    \
 	{                                           \
-		ExceptionManager_Pop(__exc_mgr);        \
 		__unused Exception *_e = &__exc_mgr->e;
 
 #define catchModule(_module, _e)                 \
 	} else if (__exc_mgr->e.module == _module) { \
-		ExceptionManager_Pop(__exc_mgr);         \
 		__unused Exception *_e = &__exc_mgr->e;
 
 #define catchAny(_e)                            \
 	} else if (true) {                          \
-		ExceptionManager_Pop(__exc_mgr);        \
 		__unused Exception *_e = &__exc_mgr->e;
 
-#define finally                          \
-	} else {                             \
-		ExceptionManager_Pop(__exc_mgr); \
-		__exc_rethrow = true;            \
-	}                                    \
-	__exc_finally:
+#define finally                  \
+	} else {                     \
+		__exc_rethrow = true;    \
+	}                            \
+	__exc_finally:               \
+	if (!__exc_ignore_finally) {
 
 #define tryEnd                             \
+	}                                      \
 	if (__exc_rethrow) {                   \
 		ExceptionManager_Raise(__exc_mgr); \
 	}                                      \
@@ -102,6 +105,8 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	__exc_return_ptr = && __exc_label; \
 	goto __exc_finally;                \
 	__exc_label:                       \
+	__exc_return_ptr = && __exc_done;  \
+	__exc_ignore_finally = true;
 
 #define excBreak       \
 	__exc_goto_finally \

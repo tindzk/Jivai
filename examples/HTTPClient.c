@@ -4,7 +4,27 @@
 
 ExceptionManager exc;
 
-void HTTP_Client_GetResponse(String hostname, String path, short port, String *resp) {
+bool HTTP_Client_Receive(SocketConnection *conn, String *resp) {
+	try (&exc) {
+		size_t len = SocketConnection_Read(conn,
+			resp->buf  + resp->len,
+			resp->size - resp->len);
+
+		if (len == 0) {
+			excReturn false;
+		}
+
+		resp->len += len;
+	} clean catch (Modules_SocketConnection, excConnectionReset, e) {
+		excReturn false;
+	} finally {
+
+	} tryEnd;
+
+	return true;
+}
+
+void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, String *resp) {
 	Socket socket;
 	Socket_Init(&socket, Socket_Protocol_TCP);
 
@@ -24,38 +44,16 @@ void HTTP_Client_GetResponse(String hostname, String path, short port, String *r
 			"Connection: Close\r\n"
 			"\r\n"),
 		path,
-		hostname
-	);
+		hostname);
 
 	try (&exc) {
 		SocketConnection_Write(&conn, request.buf, request.len);
-	} catchAny (e) {
+	} clean finally {
 		cleanup(&socket, &conn);
-		excRethrow;
-	} finally {
 		String_Destroy(&request);
 	} tryEnd;
 
-	while (true) {
-		try (&exc) {
-			size_t len = SocketConnection_Read(&conn,
-				resp->buf  + resp->len,
-				resp->size - resp->len
-			);
-
-			if (len == 0) {
-				break;
-			}
-
-			resp->len += len;
-		} catch (Modules_SocketConnection, excConnectionReset, e) {
-			excBreak;
-		} finally {
-
-		} tryEnd;
-	}
-
-	cleanup(&conn, &socket);
+	while (HTTP_Client_Receive(&conn, resp));
 }
 
 int main(void) {

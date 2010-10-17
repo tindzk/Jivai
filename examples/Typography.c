@@ -72,7 +72,7 @@ int main(__unused int argc, __unused char *argv[]) {
 		PrintTree(Typography_GetRoot(&tyo), 0);
 
 		Typography_Destroy(&tyo);
-	} catchAny(e) {
+	} clean catchAny(e) {
 		Exception_Print(e);
 
 #if Exception_SaveTrace

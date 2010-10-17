@@ -33,7 +33,7 @@ int main(void) {
 
 	try (&exc) {
 		func1();
-	} catch(Modules_Example, excCustomException, e) {
+	} clean catch(Modules_Example, excCustomException, e) {
 		String_Print(String("CustomException caught.\n"));
 
 #if Exception_SaveTrace

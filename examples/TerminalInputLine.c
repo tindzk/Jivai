@@ -48,11 +48,11 @@ int main(void) {
 
 	int res = ExitStatus_Success;
 
-	try(&exc) {
+	try (&exc) {
 		while (!context.interrupt) {
 			Terminal_InputLine_Process(&line);
 		}
-	} catchAny(e) {
+	} clean catchAny(e) {
 		Exception_Print(e);
 
 #if Exception_SaveTrace

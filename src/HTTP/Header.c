@@ -216,9 +216,9 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 			if (len > 0) {
 				String_Copy(&res, s, last + 1, len);
 
-				try(exc) {
+				try (exc) {
 					HTTP_Header_ParseHeaderLine(this, res);
-				} finally {
+				} clean finally {
 					String_Destroy(&res);
 				} tryEnd;
 			}

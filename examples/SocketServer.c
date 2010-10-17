@@ -171,7 +171,7 @@ int main(void) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} catch (Modules_Signal, excSigInt, e) {
+	} clean catch (Modules_Signal, excSigInt, e) {
 		String_Print(String("Server shutdown.\n"));
 	} finally {
 		Server_Destroy(&server);
