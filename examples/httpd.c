@@ -276,6 +276,26 @@ ConnectionInterface HttpConnection_Methods = {
 // main
 // ----
 
+bool startServer(Server *server) {
+	Server_Events events;
+
+	ClientListener listener;
+	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
+
+	try (&exc) {
+		Server_Init(server, events, true, 8080);
+		String_Print(String("Server started.\n"));
+		excReturn true;
+	} catch (Modules_Socket, excAddressInUse, e) {
+		String_Print(String("The address is already in use!\n"));
+		excReturn false;
+	} finally {
+
+	} tryEnd;
+
+	return false;
+}
+
 int main(void) {
 	ExceptionManager_Init(&exc);
 
@@ -295,22 +315,9 @@ int main(void) {
 
 	Server server;
 
-	Server_Events events;
-
-	ClientListener listener;
-	ClientListener_Init(&listener, &HttpConnection_Methods, &events);
-
-	try (&exc) {
-		Server_Init(&server, events, true, 8080);
-		String_Print(String("Server started.\n"));
-	} catch (Modules_Socket, excAddressInUse, e) {
-		String_Print(String("The address is already in use!\n"));
-		error = true;
-	} finally {
-		if (error) {
-			excReturn ExitStatus_Failure;
-		}
-	} tryEnd;
+	if (!startServer(&server)) {
+		return ExitStatus_Failure;
+	}
 
 	try (&exc) {
 		while (true) {
