@@ -26,7 +26,7 @@ extern size_t Modules_SocketConnection;
 typedef struct {
 	NetworkAddress addr;
 
-	int fd;
+	ssize_t fd;
 
 	bool corking;
 	bool closable;
