@@ -24,9 +24,9 @@ void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnec
 	this->body   = HeapString(0);
 	this->header = HeapString(maxHeaderLength);
 
-	this->state  = HTTP_Server_State_Header;
-	this->conn   = conn;
-	this->clean  = false;
+	this->state   = HTTP_Server_State_Header;
+	this->conn    = conn;
+	this->cleanup = false;
 
 	this->headers.persistentConnection = false;
 }
@@ -141,12 +141,12 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 }
 
 HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
-	if (this->clean) {
+	if (this->cleanup) {
 		/* Clean up variables from previous requests. */
 		this->headers.contentLength = 0;
 		this->headers.contentType = HTTP_ContentType_Unset;
 
-		this->clean = false;
+		this->cleanup = false;
 	}
 
 	if (this->body.buf != NULL) {
@@ -283,7 +283,7 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 	/* The next time HTTP_Server_ReadHeader() gets called, some headers
 	 * referring to the current request will be cleared.
 	 */
-	this->clean = true;
+	this->cleanup = true;
 
 	if (this->headers.contentType == HTTP_ContentType_MultiPart) {
 		/* TODO */

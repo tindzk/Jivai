@@ -48,7 +48,7 @@ typedef struct {
 } HTTP_Server_Events;
 
 typedef struct {
-	bool               clean;
+	bool               cleanup;
 	String             body;
 	String             header;
 	size_t             maxHeaderLength;
