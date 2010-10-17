@@ -57,6 +57,8 @@ static void BFD_ReadSymtab(bfd *abfd) {
 	symcount = bfd_read_minisymbols(abfd, false, (void *) &syms, &size);
 
 	if (symcount == 0) {
+		Memory_Free(syms);
+
 		symcount = bfd_read_minisymbols(
 			abfd,
 			true /* dynamic */,
