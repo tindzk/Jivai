@@ -14,7 +14,7 @@
 typedef struct {
 	String filename;
 	String function;
-	size_t line;
+	u32 line;
 	long long unsigned int addr;
 } BFD_Item;
 

@@ -48,7 +48,7 @@ static asymbol **syms;
 /* Read in the symbol table. */
 static void BFD_ReadSymtab(bfd *abfd) {
 	long symcount;
-	size_t size;
+	u32 size;
 
 	if (!BitMask_Has(bfd_get_file_flags(abfd), HAS_SYMS)) {
 		return;
