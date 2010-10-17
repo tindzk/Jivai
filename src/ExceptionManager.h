@@ -70,9 +70,9 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	} else if (true) {                          \
 		__unused Exception *_e = &__exc_mgr->e;
 
-#define finally     \
-	} else {        \
-		excRethrow; \
+#define finally               \
+	} else {                  \
+		__exc_rethrow = true; \
 	}
 
 #define tryEnd                             \
@@ -97,9 +97,6 @@ void ExceptionManager_Pop(ExceptionManager *this);
 #define excGoto                      \
 	ExceptionManager_Pop(__exc_mgr); \
 	goto
-
-#define excRethrow \
-	__exc_rethrow = true
 
 #define excThrow(...)                \
 	ExceptionManager_Pop(__exc_mgr); \
