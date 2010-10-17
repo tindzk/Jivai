@@ -5,6 +5,7 @@
 #import "../HTTP.h"
 #import "../Char.h"
 #import "../String.h"
+#import "../Integer.h"
 #import "../Exception.h"
 
 #undef self

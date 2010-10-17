@@ -6,6 +6,7 @@
 
 #import "../HTTP.h"
 #import "../String.h"
+#import "../Integer.h"
 #import "../Exception.h"
 #import "../SocketConnection.h"
 

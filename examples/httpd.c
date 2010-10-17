@@ -15,6 +15,7 @@
 #import <Signal.h>
 #import <Server.h>
 #import <Socket.h>
+#import <Integer.h>
 #import <Connection.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
