@@ -27,7 +27,7 @@ enum {
 extern size_t Modules_Socket;
 
 typedef struct {
-	int fd;
+	ssize_t fd;
 	bool unused;
 	Socket_Protocol protocol;
 } Socket;
