@@ -10,7 +10,7 @@ void Exception_Print(Exception *e) {
 		e->func);
 #else
 	String fmt = String_Format(
-		String("Uncaught exception %.% '%'\n"),
+		String("Uncaught exception %.%\n"),
 		Module_ResolveName(e->module),
 		e->scode);
 #endif
