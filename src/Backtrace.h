@@ -9,6 +9,6 @@
 #endif
 
 void Backtrace_PrintTrace(void **dest, size_t size);
-void* Backtrace_GetFrameAddr(int level);
-void* Backtrace_GetReturnAddr(int level);
+void* Backtrace_GetFrameAddr(u32 level);
+void* Backtrace_GetReturnAddr(u32 level);
 size_t Backtrace_GetTrace(void **buf, size_t size);

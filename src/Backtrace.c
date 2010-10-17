@@ -44,7 +44,7 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #endif
 }
 
-void* Backtrace_GetFrameAddr(int level) {
+void* Backtrace_GetFrameAddr(u32 level) {
 	switch (level + 1) {
 		case 1: return __builtin_frame_address(1);
 		case 2: return __builtin_frame_address(2);
@@ -66,7 +66,7 @@ void* Backtrace_GetFrameAddr(int level) {
 	}
 }
 
-void* Backtrace_GetReturnAddr(int level) {
+void* Backtrace_GetReturnAddr(u32 level) {
 	switch (level + 1) {
 		case 1: return __builtin_return_address(1);
 		case 2: return __builtin_return_address(2);
