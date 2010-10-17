@@ -65,24 +65,27 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	} else if (__exc_mgr->e.module == _module   \
 			&& __exc_mgr->e.code   == _code)    \
 	{                                           \
+		ExceptionManager_Pop(__exc_mgr);        \
 		__unused Exception *_e = &__exc_mgr->e;
 
 #define catchModule(_module, _e)                 \
 	} else if (__exc_mgr->e.module == _module) { \
+		ExceptionManager_Pop(__exc_mgr);         \
 		__unused Exception *_e = &__exc_mgr->e;
 
 #define catchAny(_e)                            \
 	} else if (true) {                          \
+		ExceptionManager_Pop(__exc_mgr);        \
 		__unused Exception *_e = &__exc_mgr->e;
 
-#define finally               \
-	} else {                  \
-		__exc_rethrow = true; \
-	}                         \
+#define finally                          \
+	} else {                             \
+		ExceptionManager_Pop(__exc_mgr); \
+		__exc_rethrow = true;            \
+	}                                    \
 	__exc_finally:
 
 #define tryEnd                             \
-	ExceptionManager_Pop(__exc_mgr);       \
 	if (__exc_rethrow) {                   \
 		ExceptionManager_Raise(__exc_mgr); \
 	}                                      \
