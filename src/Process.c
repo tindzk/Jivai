@@ -86,6 +86,7 @@ overload int Process_Spawn(Process *this, float *time) {
 		if (execve(argv[0], argv, environ) < 0) {
 			for (size_t i = 0; argv[i] != NULL; i++) {
 				Memory_Free(argv[i]);
+				argv[i] = NULL;
 			}
 
 			throw(exc, excSpawningProcessFailed);
@@ -109,6 +110,7 @@ overload int Process_Spawn(Process *this, float *time) {
 	} else {
 		for (size_t i = 0; argv[i] != NULL; i++) {
 			Memory_Free(argv[i]);
+			argv[i] = NULL;
 		}
 
 		throw(exc, excForkFailed);
