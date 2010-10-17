@@ -6,7 +6,7 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Server_Init(Server *this, Server_Events events, bool edgeTriggered, short port) {
+void Server_Init(Server *this, Server_Events events, bool edgeTriggered, unsigned short port) {
 	Poll_Init(&this->poll, (void *) &Server_OnEvent, this);
 	this->events = events;
 
