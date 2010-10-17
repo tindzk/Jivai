@@ -22,7 +22,7 @@
 typedef void (* Poll_OnEvent)(void *, int, void *);
 
 typedef struct {
-	int fd;
+	ssize_t fd;
 
 	struct epoll_event events[Poll_Events];
 
@@ -43,7 +43,7 @@ void Poll0(ExceptionManager *e);
 
 void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context);
 void Poll_Destroy(Poll *this);
-void Poll_AddEvent(Poll *this, void *ptr, int fd, int events);
-void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events);
+void Poll_AddEvent(Poll *this, void *ptr, ssize_t fd, int events);
+void Poll_ModifyEvent(Poll *this, void *ptr, ssize_t fd, int events);
 void Poll_DeleteEvent(Poll *this, int fd);
 size_t Poll_Process(Poll *this, int timeout);

@@ -30,7 +30,7 @@ void Poll_Destroy(Poll *this) {
 	Kernel_close(this->fd);
 }
 
-void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
+void Poll_AddEvent(Poll *this, void *ptr, ssize_t fd, int events) {
 	struct epoll_event ev = {0, {0}};
 
 	ev.events = events;
@@ -51,7 +51,7 @@ void Poll_AddEvent(Poll *this, void *ptr, int fd, int events) {
 	}
 }
 
-void Poll_ModifyEvent(Poll *this, void *ptr, int fd, int events) {
+void Poll_ModifyEvent(Poll *this, void *ptr, ssize_t fd, int events) {
 	struct epoll_event ev = {0, {0}};
 
 	ev.events = events;
