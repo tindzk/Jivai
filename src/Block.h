@@ -47,7 +47,7 @@ typedef struct _Block_ByRef {
 	void *isa;
 	struct _Block_ByRef *forwarding;
 	int flags;
-	int size;
+	size_t size;
 	void (*keep)(struct _Block_ByRef *dst, struct _Block_ByRef *src);
 	void (*destroy)(struct _Block_ByRef *);
 	/* long shared[0]; */
