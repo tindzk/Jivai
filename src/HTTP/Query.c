@@ -96,10 +96,27 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 			HTTP_Query_Unescape(tmp, name.buf, isFormUri);
 			name.len = len;
 
-			start = i;
+			start = i + 1;
 		} else if (s.buf[i] == '&' || s.len == i + 1) {
 			/* Handle malformed queries such as p1=v1&&&p2=v2. */
 			if (i > 0 && s.buf[i - 1] == '&') {
+				goto next;
+			}
+
+			if (s.len == i + 1) {
+				i++;
+			}
+
+			String escaped = String_Slice(s, start, i - start);
+
+			/* Parameter is an option. */
+			if (name.len == 0) {
+				String *value = this->onParameter(this->context, escaped);
+
+				if (value != NULL) {
+					value->len = 0;
+				}
+
 				goto next;
 			}
 
@@ -108,18 +125,6 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 			if (value == NULL) {
 				/* Ignore parameter. */
 				goto next;
-			}
-
-			String escaped;
-
-			if (s.len == i + 1) {
-				escaped = String_Slice(s,
-					start + 1,
-					i - start);
-			} else {
-				escaped = String_Slice(s,
-					start + 1,
-					i - start - 1);
 			}
 
 			size_t len = HTTP_Query_GetAbsoluteLength(escaped);
@@ -137,7 +142,8 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 			value->len = len;
 
 		next:
-			start = i + 1;
+			start    = i + 1;
+			name.len = 0;
 		}
 	}
 
