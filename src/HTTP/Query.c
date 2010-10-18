@@ -78,20 +78,14 @@ void HTTP_Query_Unescape(String src, char *dst, bool isFormUri) {
 }
 
 void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
-	size_t len;
-	size_t i = 0;
-	size_t abslen;
+	String name  = HeapString(0);
 	size_t start = 0;
 
-	String tmp;
-	String name = HeapString(0);
-
-	while (i < s.len) {
+	for (size_t i = 0; i < s.len; i++) {
 		if (s.buf[i] == '=') {
-			tmp.buf = s.buf + start;
-			tmp.len = i - start;
+			String tmp = String_Slice(s, start, i - start);
 
-			abslen = HTTP_Query_GetAbsoluteLength(tmp);
+			size_t abslen = HTTP_Query_GetAbsoluteLength(tmp);
 			String_Align(&name, abslen);
 
 			HTTP_Query_Unescape(tmp, name.buf, isFormUri);
@@ -100,7 +94,7 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 			start = i;
 		} else if (s.buf[i] == '&' || s.len == i + 1) {
 			/* Handle malformed queries such as p1=v1&&&p2=v2. */
-			if ((i > 0) && (s.buf[i - 1] == '&')) {
+			if (i > 0 && s.buf[i - 1] == '&') {
 				goto next;
 			}
 
@@ -111,17 +105,19 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 				goto next;
 			}
 
+			String val;
+
 			if (s.len == i + 1) {
-				len = i - start;
+				val = String_Slice(s,
+					start + 1,
+					i - start);
 			} else {
-				len = i - start - 1;
+				val = String_Slice(s,
+					start + 1,
+					i - start - 1);
 			}
 
-			String val;
-			val.buf = s.buf + start + 1;
-			val.len = len;
-
-			abslen = HTTP_Query_GetAbsoluteLength(val);
+			size_t abslen = HTTP_Query_GetAbsoluteLength(val);
 
 			if (abslen > value->size) {
 				String_Destroy(&name);
@@ -134,8 +130,6 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 		next:
 			start = i + 1;
 		}
-
-		i++;
 	}
 
 	String_Destroy(&name);
