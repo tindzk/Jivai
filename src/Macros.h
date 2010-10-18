@@ -85,12 +85,16 @@
 /* This cannot be included in Class() as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass(name)                                                           \
-	static inline InstanceName(name) underscoredConcat(name, New)(void) {           \
-		return (InstanceName(name)) { .object = Memory_Alloc(sizeof(name)) };       \
-	}                                                                               \
-	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) { \
-		Memory_Free(instance.object);                                               \
+#define ExtendClass(name)                                                                     \
+	static __unused alwaysInline InstanceName(name) underscoredConcat(name, NewStack)(void) { \
+		name obj;                                                                             \
+		return (InstanceName(name)) &obj;                                                     \
+	}                                                                                         \
+	static inline InstanceName(name) underscoredConcat(name, New)(void) {                     \
+		return (InstanceName(name)) Memory_Alloc(sizeof(name));                               \
+	}                                                                                         \
+	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) {           \
+		Memory_Free(instance.object);                                                         \
 	}
 
 /* buildBugOnZero(), mustBeArray() and nElems() are taken from Linux
