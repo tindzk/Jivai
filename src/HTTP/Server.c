@@ -296,6 +296,8 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 
 			if (len == -1) {
 				return HTTP_Server_Result_Incomplete;
+			} else if (len == 0) {
+				break;
 			}
 
 			this->body.len += len;
