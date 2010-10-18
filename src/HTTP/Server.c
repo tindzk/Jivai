@@ -306,6 +306,7 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 			if (this->events.onBodyParameter != NULL) {
 				HTTP_Query qry;
 				HTTP_Query_Init(&qry, this->events.onBodyParameter, this->events.context);
+				HTTP_Query_SetAutoResize(&qry, true);
 				HTTP_Query_Decode(&qry, this->body, true);
 			}
 		} clean finally {

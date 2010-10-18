@@ -98,6 +98,7 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 		if (pos != String_NotFound) {
 			HTTP_Query qry;
 			HTTP_Query_Init(&qry, this->events.onParameter, this->events.context);
+			HTTP_Query_SetAutoResize(&qry, true);
 			HTTP_Query_Decode(&qry, String_Slice(s, pos + 1), false);
 		}
 	}
