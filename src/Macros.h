@@ -72,12 +72,14 @@
 		return (GenericInstance) { .object = instance.object };                           \
 	}
 
-#define class(name)           \
-	typedef struct name name; \
-	typedef struct {          \
-		struct name *object;  \
-	} InstanceName(name);     \
-	BasicInstance(name)       \
+#define class(name)              \
+	typedef struct name name;    \
+	typedef union {              \
+		struct name *object;     \
+		GenericInstance generic; \
+		void *ptr;               \
+	} InstanceName(name);        \
+	BasicInstance(name)          \
 	struct name
 
 /* This cannot be included in Class() as sizeof() is needed and the
