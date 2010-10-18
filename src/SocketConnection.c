@@ -25,25 +25,23 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 
 	ssize_t res = Kernel_recv(this->fd, buf, len, flags);
 
-	if (res >= 0) {
-		return res;
+	if (res == -1) {
+		if (errno == EWOULDBLOCK || errno == EAGAIN) {
+			return -1;
+		} else if (errno == ECONNRESET) {
+			throw(exc, excConnectionReset);
+		} else if (errno == ECONNREFUSED) {
+			throw(exc, excConnectionRefused);
+		} else if (errno == ENOTCONN) {
+			throw(exc, excNotConnected);
+		} else if (errno == EBADF) {
+			throw(exc, excInvalidFileDescriptor);
+		} else {
+			throw(exc, excUnknownError);
+		}
 	}
 
-	if (errno == EWOULDBLOCK || errno == EAGAIN) {
-		return -1;
-	} else if (errno == ECONNRESET) {
-		throw(exc, excConnectionReset);
-	} else if (errno == ECONNREFUSED) {
-		throw(exc, excConnectionRefused);
-	} else if (errno == ENOTCONN) {
-		throw(exc, excNotConnected);
-	} else if (errno == EBADF) {
-		throw(exc, excInvalidFileDescriptor);
-	} else {
-		throw(exc, excUnknownError);
-	}
-
-	return 0;
+	return res;
 }
 
 bool SocketConnection_SendFile(SocketConnection *this, File *file, u64 *offset, size_t len) {
