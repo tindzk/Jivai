@@ -14,6 +14,11 @@ void HTTP_Query0(ExceptionManager *e) {
 void HTTP_Query_Init(HTTP_Query *this, HTTP_OnParameter onParameter, void *context) {
 	this->onParameter = onParameter;
 	this->context     = context;
+	this->autoResize  = false;
+}
+
+void HTTP_Query_SetAutoResize(HTTP_Query *this, bool value) {
+	this->autoResize = value;
 }
 
 size_t HTTP_Query_GetAbsoluteLength(String s) {
@@ -85,11 +90,11 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 		if (s.buf[i] == '=') {
 			String tmp = String_Slice(s, start, i - start);
 
-			size_t abslen = HTTP_Query_GetAbsoluteLength(tmp);
-			String_Align(&name, abslen);
+			size_t len = HTTP_Query_GetAbsoluteLength(tmp);
+			String_Align(&name, len);
 
 			HTTP_Query_Unescape(tmp, name.buf, isFormUri);
-			name.len = abslen;
+			name.len = len;
 
 			start = i;
 		} else if (s.buf[i] == '&' || s.len == i + 1) {
@@ -105,27 +110,31 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 				goto next;
 			}
 
-			String val;
+			String escaped;
 
 			if (s.len == i + 1) {
-				val = String_Slice(s,
+				escaped = String_Slice(s,
 					start + 1,
 					i - start);
 			} else {
-				val = String_Slice(s,
+				escaped = String_Slice(s,
 					start + 1,
 					i - start - 1);
 			}
 
-			size_t abslen = HTTP_Query_GetAbsoluteLength(val);
+			size_t len = HTTP_Query_GetAbsoluteLength(escaped);
 
-			if (abslen > value->size) {
-				String_Destroy(&name);
-				throw(exc, excExceedsPermittedLength);
+			if (len > value->size) {
+				if (this->autoResize) {
+					String_Resize(value, len);
+				} else {
+					String_Destroy(&name);
+					throw(exc, excExceedsPermittedLength);
+				}
 			}
 
-			HTTP_Query_Unescape(val, value->buf, isFormUri);
-			value->len = abslen;
+			HTTP_Query_Unescape(escaped, value->buf, isFormUri);
+			value->len = len;
 
 		next:
 			start = i + 1;
