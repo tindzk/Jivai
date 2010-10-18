@@ -87,11 +87,13 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 			path = decoded;
 		}
 
-		this->events.onPath(
-			this->events.context,
-			path);
-
-		String_Destroy(&path);
+		try (exc) {
+			this->events.onPath(
+				this->events.context,
+				path);
+		} clean finally {
+			String_Destroy(&path);
+		} tryEnd;
 	}
 
 	if (this->events.onParameter != NULL) {
