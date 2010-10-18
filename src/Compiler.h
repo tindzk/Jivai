@@ -10,5 +10,8 @@
 #define __unused \
 	__attribute__((unused))
 
+#define alwaysInline \
+	__attribute__((always_inline))
+
 #define overload \
 	__attribute__((overloadable))
