@@ -55,5 +55,5 @@ int main(void) {
 	/* Logging formatted messages is possible, too. */
 	Logger_Log(&logger, Logger_Level_Info, String("Stopping %..."), String("application"));
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

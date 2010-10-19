@@ -44,5 +44,5 @@ int main(void) {
 
 	Socket_Destroy(&socket);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

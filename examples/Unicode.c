@@ -70,5 +70,5 @@ int main(void) {
 
 	String_Print(String("\n"));
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

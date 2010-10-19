@@ -71,5 +71,5 @@ int main(void) {
 
 	String_Destroy(&resp);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

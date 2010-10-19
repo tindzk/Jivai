@@ -177,5 +177,5 @@ int main(void) {
 		Server_Destroy(&server);
 	} tryEnd;
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

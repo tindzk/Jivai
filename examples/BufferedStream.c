@@ -27,5 +27,5 @@ int main(void) {
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

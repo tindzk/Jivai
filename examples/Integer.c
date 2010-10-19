@@ -21,5 +21,5 @@ int main(void) {
 	String_Print(Integer64_ToString(12345678987654321));
 	String_Print(String("\n"));
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

@@ -68,5 +68,5 @@ int main(void) {
 	Terminal_Buffer_Destroy(&termbuf);
 	Terminal_Destroy(&term);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

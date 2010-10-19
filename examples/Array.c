@@ -52,5 +52,5 @@ int main(void) {
 
 	ItemArray_Free(arr);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

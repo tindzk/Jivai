@@ -45,5 +45,5 @@ int main(void) {
 
 	StackArray_Foreach(arr, DestroyItem, Item);
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }

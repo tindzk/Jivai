@@ -43,5 +43,5 @@ int main(void) {
 		String_Print(String("finally block.\n"));
 	} tryEnd;
 
-	return EXIT_SUCCESS;
+	return ExitStatus_Success;
 }
