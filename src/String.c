@@ -1177,3 +1177,11 @@ overload short String_NaturalCompare(String a, String b, bool foldcase, bool ski
 inline overload short String_NaturalCompare(String a, String b) {
 	return String_NaturalCompare(a, b, true, true, true);
 }
+
+void StringArray_ToHeap(StringArray *this) {
+	for (size_t i = 0; i < this->len; i++) {
+		if (!this->buf[i].mutable) {
+			this->buf[i] = String_Clone(this->buf[i]);
+		}
+	}
+}
