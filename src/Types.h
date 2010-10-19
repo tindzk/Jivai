@@ -46,4 +46,4 @@ BasicInstance(Generic)
 
 /* Inline functions cannot be used as Memory's methods are not available yet. */
 #define Generic_New(size) (GenericInstance) { .object = Memory_Alloc(size) }
-#define Generic_Free(instance) ({ void *ptr = instance.object; Memory_Free(ptr); })
+#define Generic_Free(instance) Memory_FreePtr(instance.object)
