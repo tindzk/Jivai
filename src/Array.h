@@ -57,3 +57,17 @@
 
 #define Array_Sort(this, cmp) \
 	qsort((this)->buf, (this)->len, Array_ItemSize(this), (void *) cmp)
+
+#define Array_Define(type, name)                                     \
+	typedef Array(type, name);                                       \
+	static inline name* underscoredConcat(name, New)(size_t items) { \
+		name *res;                                                   \
+		Array_Init(res, items);                                      \
+		return res;                                                  \
+	}                                                                \
+	static inline void underscoredConcat(name, Free)(name *this) {   \
+		Array_Destroy(this);                                         \
+	}                                                                \
+	static inline void underscoredConcat(name, Push)(name **this, type data) { \
+		Array_Push(*this, data);                                      \
+	}

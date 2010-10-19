@@ -9,7 +9,7 @@ typedef struct {
 	String field2;
 } Item;
 
-typedef Array(Item, Items);
+Array_Define(Item, ItemArray);
 
 void DestroyItem(Item *item) {
 	String_Destroy(&item->field1);
@@ -21,13 +21,11 @@ int main(void) {
 
 	String0(&exc);
 
-	Items *arr;
-
-	/* Initialize the array allocating memory for 5 elements. You
+	/* Initialize an array allocating memory for 5 elements. You
 	 * can add more than 5 elements, but this involves resizing
 	 * the array (which is done automatically).
 	 */
-	Array_Init(arr, 5);
+	ItemArray *arr = ItemArray_New(5);
 
 	/* Fill in the array with 50 elements. If you already know the
 	 * amount of elements you are going to add in advance,
@@ -41,7 +39,7 @@ int main(void) {
 			String_Clone(Integer_ToString(i + 5))
 		};
 
-		Array_Push(arr, item);
+		ItemArray_Push(&arr, item);
 	}
 
 	for (size_t i = 0; i < arr->len; i++) {
@@ -52,7 +50,7 @@ int main(void) {
 
 	Array_Foreach(arr, DestroyItem);
 
-	Array_Destroy(arr);
+	ItemArray_Free(arr);
 
 	return EXIT_SUCCESS;
 }
