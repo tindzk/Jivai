@@ -1,5 +1,6 @@
 #import <Array.h>
 #import <String.h>
+#import <Integer.h>
 
 ExceptionManager exc;
 
