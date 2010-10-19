@@ -1192,6 +1192,14 @@ inline overload short String_NaturalCompare(String a, String b) {
 	return String_NaturalCompare(a, b, true, true, true);
 }
 
+void StringArray_Destroy(StringArray *this) {
+	for (size_t i = 0; i < this->len; i++) {
+		String_Destroy(&this->buf[i]);
+	}
+
+	this->len = 0;
+}
+
 void StringArray_ToHeap(StringArray *this) {
 	for (size_t i = 0; i < this->len; i++) {
 		if (!this->buf[i].mutable) {
