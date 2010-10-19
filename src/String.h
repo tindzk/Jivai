@@ -22,13 +22,17 @@ enum {
 
 #import "Char.h"
 #import "Kernel.h"
-
 #import "Exception.h"
 #import "ExceptionManager.h"
-
 #import "Memory.h"
 #import "Module.h"
-#import "StringArray.h"
+#import "Array.h"
+
+typedef struct {
+	size_t len;
+	size_t size;
+	String buf[0];
+} StringArray;
 
 #undef self
 #define self String

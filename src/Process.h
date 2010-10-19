@@ -4,7 +4,6 @@
 #import "UniStd.h"
 #import "Module.h"
 #import "String.h"
-#import "StringArray.h"
 #import "ExceptionManager.h"
 
 #undef self

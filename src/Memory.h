@@ -2,9 +2,7 @@
 #import <stdint.h>
 #import <string.h>
 
-#import "Module.h"
-#import "String.h"
-#import "ExceptionManager.h"
+#import "Types.h"
 
 #undef self
 #define self Memory
@@ -21,15 +19,7 @@
 #define Memory_OutOfMemoryChecks 0
 #endif
 
-enum {
-	excNullPointer = excOffset,
-	excOutOfBounds,
-	excOutOfMemory
-};
-
 extern size_t Modules_Memory;
-
-void Memory0(ExceptionManager *e);
 
 void* Memory_Alloc(size_t size);
 void Memory_FreePtr(void *pMem);
@@ -56,3 +46,15 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 
 #define Memory_CloneObject(pSource) \
 	Memory_Clone(pSource, sizeof(*(pSource)))
+
+#import "Module.h"
+#import "String.h"
+#import "ExceptionManager.h"
+
+enum {
+	excNullPointer = excOffset,
+	excOutOfBounds,
+	excOutOfMemory
+};
+
+void Memory0(ExceptionManager *e);
