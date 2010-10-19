@@ -115,6 +115,7 @@ overload void String_Print(String s, bool err);
 overload void String_Print(String s);
 overload short String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
 overload short String_NaturalCompare(String a, String b);
+bool StringArray_Contains(StringArray *this, String needle);
 void StringArray_Destroy(StringArray *this);
 void StringArray_ToHeap(StringArray *this);
 

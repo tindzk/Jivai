@@ -1192,6 +1192,16 @@ inline overload short String_NaturalCompare(String a, String b) {
 	return String_NaturalCompare(a, b, true, true, true);
 }
 
+bool StringArray_Contains(StringArray *this, String needle) {
+	for (size_t i = 0; i < this->len; i++) {
+		if (String_Equals(this->buf[i], needle)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void StringArray_Destroy(StringArray *this) {
 	for (size_t i = 0; i < this->len; i++) {
 		String_Destroy(&this->buf[i]);
