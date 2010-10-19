@@ -28,11 +28,7 @@ enum {
 #import "Module.h"
 #import "Array.h"
 
-typedef struct {
-	size_t len;
-	size_t size;
-	String buf[0];
-} StringArray;
+Array_Define(String, StringArray);
 
 #undef self
 #define self String
