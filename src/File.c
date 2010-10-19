@@ -162,7 +162,7 @@ u64 File_GetSize(File *this) {
 	return File_GetStat(this).size;
 }
 
-size_t File_Read(File *this, void *buf, size_t len) {
+overload size_t File_Read(File *this, void *buf, size_t len) {
 	if (!this->readable) {
 		throw(exc, excNotReadable);
 	}
@@ -182,6 +182,10 @@ size_t File_Read(File *this, void *buf, size_t len) {
 	}
 
 	return res;
+}
+
+inline overload void File_Read(File *this, String *res) {
+	res->len = File_Read(this, res->buf, res->size);
 }
 
 overload size_t File_Write(File *this, void *buf, size_t len) {
