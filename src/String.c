@@ -894,7 +894,7 @@ bool String_Outside(String *this, String left, String right) {
 	return true;
 }
 
-String String_Concat(String a, String b) {
+overload String String_Concat(String a, String b) {
 	String res = HeapString(a.len + b.len);
 
 	if (a.len > 0) {
@@ -906,6 +906,20 @@ String String_Concat(String a, String b) {
 		Memory_Copy(res.buf + res.len, b.buf, b.len);
 		res.len += b.len;
 	}
+
+	return res;
+}
+
+overload String String_Concat(String s, char c) {
+	String res = HeapString(s.len + 1);
+
+	if (s.len > 0) {
+		Memory_Copy(res.buf, s.buf, s.len);
+	}
+
+	res.buf[s.len] = c;
+
+	res.len = s.len + 1;
 
 	return res;
 }
