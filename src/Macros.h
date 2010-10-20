@@ -97,6 +97,20 @@
 		Memory_Free(instance.object);                                                         \
 	}
 
+#define SingletonPrototype(name) \
+	InstanceName(name) underscoredConcat(name, GetInstance)(void);
+
+#define Singleton(name, ...)                                         \
+	InstanceName(name) underscoredConcat(name, GetInstance)(void) {  \
+		static name object;                                          \
+		static InstanceName(name) instance;                          \
+		if (underscoredConcat(name, IsNull)(instance)) {             \
+			instance = underscoredConcat(name, FromObject)(&object); \
+			underscoredConcat(name, Init)(instance, ## __VA_ARGS__); \
+		}                                                            \
+		return instance;                                             \
+	}
+
 /* buildBugOnZero(), mustBeArray() and nElems() are taken from Linux
  * kernel 2.6.35.
  */
