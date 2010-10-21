@@ -114,6 +114,18 @@
 		return instance;                                             \
 	}
 
+#define DefineCallback(name, ret, ...)                          \
+	typedef union name {                                        \
+		GenericCallback generic;                                \
+		struct {                                                \
+			GenericInstance context;                            \
+			ret (*cb)(GenericInstance context, ## __VA_ARGS__); \
+		};                                                      \
+	} name;
+
+#define callback(var, ...) \
+	(var).cb((var).context, ## __VA_ARGS__)
+
 /* buildBugOnZero(), mustBeArray() and nElems() are taken from Linux
  * kernel 2.6.35.
  */
