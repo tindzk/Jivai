@@ -7,6 +7,9 @@
 #define __section(x) \
 	__attribute__((__section__(x)))
 
+#define __used \
+	__attribute__((used))
+
 #define __unused \
 	__attribute__((unused))
 
