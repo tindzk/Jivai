@@ -1012,7 +1012,7 @@ inline overload bool String_ReplaceAll(String *this, String needle, String repla
 }
 
 inline overload String String_ReplaceAll(String s, String needle, String replacement) {
-	String tmp = s;
+	String tmp = String_Clone(s);
 	String_ReplaceAll(&tmp, 0, needle, replacement);
 	return tmp;
 }
