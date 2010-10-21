@@ -5,8 +5,6 @@ ExceptionManager exc;
 #undef self
 #define self Example
 
-size_t Modules_Example;
-
 enum {
 	excCustomException = excOffset
 };
@@ -28,8 +26,6 @@ int main(void) {
 
 	String0(&exc);
 	Memory0(&exc);
-
-	Modules_Example = Module_Register(String("Example"));
 
 	try (&exc) {
 		func1();
