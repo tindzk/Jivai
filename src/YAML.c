@@ -1,12 +1,8 @@
 #import "YAML.h"
 
-size_t Modules_YAML;
-
 static ExceptionManager *exc;
 
 void YAML0(ExceptionManager *e) {
-	Modules_YAML = Module_Register(String("YAML"));
-
 	exc = e;
 }
 

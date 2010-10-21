@@ -1,12 +1,8 @@
 #import "Client.h"
 
-size_t Modules_HTTP_Client;
-
 static ExceptionManager *exc;
 
 void HTTP_Client0(ExceptionManager *e) {
-	Modules_HTTP_Client = Module_Register(String("HTTP.Client"));
-
 	exc = e;
 }
 

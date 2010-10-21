@@ -2,7 +2,6 @@
 #import <sys/types.h>
 
 #import "UniStd.h"
-#import "Module.h"
 #import "String.h"
 #import "ExceptionManager.h"
 
@@ -13,8 +12,6 @@ enum {
 	excForkFailed = excOffset,
 	excSpawningProcessFailed
 };
-
-extern size_t Modules_Process;
 
 extern char **environ;
 

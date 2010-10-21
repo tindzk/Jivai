@@ -1,12 +1,8 @@
 #import "Poll.h"
 
-size_t Modules_Poll;
-
 static ExceptionManager *exc;
 
 void Poll0(ExceptionManager *e) {
-	Modules_Poll = Module_Register(String("Poll"));
-
 	exc = e;
 }
 

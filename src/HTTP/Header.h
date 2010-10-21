@@ -19,8 +19,6 @@ enum {
 	excUnknownVersion
 };
 
-extern size_t Modules_HTTP_Header;
-
 typedef enum {
 	HTTP_Header_Type_Request,
 	HTTP_Header_Type_Response

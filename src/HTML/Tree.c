@@ -1,12 +1,8 @@
 #import "Tree.h"
 
-size_t Modules_HTML_Tree;
-
 static ExceptionManager *exc;
 
 void HTML_Tree0(ExceptionManager *e) {
-	Modules_HTML_Tree = Module_Register(String("HTML.Tree"));
-
 	exc = e;
 }
 

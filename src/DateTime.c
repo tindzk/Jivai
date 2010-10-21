@@ -1,12 +1,8 @@
 #import "DateTime.h"
 
-size_t Modules_DateTime;
-
 static ExceptionManager *exc;
 
 void DateTime0(ExceptionManager *e) {
-	Modules_DateTime = Module_Register(String("DateTime"));
-
 	exc = e;
 }
 

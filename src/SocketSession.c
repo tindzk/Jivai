@@ -1,13 +1,8 @@
 #import "SocketSession.h"
 
-size_t Modules_SocketSession;
-
 static ExceptionManager *exc;
 
 void SocketSession0(ExceptionManager *e) {
-	Modules_SocketSession =
-		Module_Register(String("SocketSession"));
-
 	exc = e;
 }
 

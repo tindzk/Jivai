@@ -3,7 +3,6 @@
 #import "Bit.h"
 #import "File.h"
 #import "Macros.h"
-#import "Module.h"
 #import "UniStd.h" /* isatty */
 #import "BitMask.h"
 #import "Integer.h"
@@ -11,8 +10,6 @@
 
 #undef self
 #define self Terminal
-
-size_t Modules_Terminal;
 
 enum {
 	excIoctlFailed = excOffset

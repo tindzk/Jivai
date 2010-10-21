@@ -1,12 +1,8 @@
 #import "Directory.h"
 
-size_t Modules_Directory;
-
 static ExceptionManager *exc;
 
 void Directory0(ExceptionManager *e) {
-	Modules_Directory = Module_Register(String("Directory"));
-
 	exc = e;
 }
 

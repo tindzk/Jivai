@@ -1,12 +1,8 @@
 #import "Server.h"
 
-size_t Modules_HTTP_Server;
-
 static ExceptionManager *exc;
 
 void HTTP_Server0(ExceptionManager *e) {
-	Modules_HTTP_Server = Module_Register(String("HTTP.Server"));
-
 	exc = e;
 }
 

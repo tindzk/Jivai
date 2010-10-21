@@ -10,8 +10,6 @@
 #undef self
 #define self HTML_Tree
 
-extern size_t Modules_HTML_Tree;
-
 typedef struct {
 	String name;
 	String value;

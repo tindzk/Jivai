@@ -1,12 +1,8 @@
 #import "NetworkAddress.h"
 
-size_t Modules_NetworkAddress;
-
 static ExceptionManager *exc;
 
 void NetworkAddress0(ExceptionManager *e) {
-	Modules_NetworkAddress = Module_Register(String("NetworkAddress"));
-
 	exc = e;
 }
 

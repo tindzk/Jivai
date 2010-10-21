@@ -9,8 +9,6 @@ enum {
 	excExceedsPermittedLength = excOffset
 };
 
-extern size_t Modules_HTTP_Query;
-
 typedef struct {
 	HTTP_OnParameter onParameter;
 	void *context;

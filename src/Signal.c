@@ -1,12 +1,8 @@
 #import "Signal.h"
 
-size_t Modules_Signal;
-
 static ExceptionManager *exc;
 
 void Signal0(ExceptionManager *e) {
-	Modules_Signal = Module_Register(String("Signal"));
-
 	exc = e;
 
 	/* Register these signals as exceptions. */

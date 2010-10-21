@@ -24,8 +24,6 @@ enum {
 	excWritingInterrupted
 };
 
-extern size_t Modules_File;
-
 typedef enum {
 	File_SeekType_Set = 0,
 	File_SeekType_Cur,

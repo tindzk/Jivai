@@ -22,13 +22,9 @@ File *File_StdIn  = &_File_StdIn;
 File *File_StdOut = &_File_StdOut;
 File *File_StdErr = &_File_StdErr;
 
-size_t Modules_File;
-
 static ExceptionManager *exc;
 
 void File0(ExceptionManager *e) {
-	Modules_File = Module_Register(String("File"));
-
 	exc = e;
 }
 

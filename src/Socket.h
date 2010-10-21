@@ -24,8 +24,6 @@ enum {
 	excSocketFailed
 };
 
-extern size_t Modules_Socket;
-
 typedef struct {
 	ssize_t fd;
 	bool unused;

@@ -1,13 +1,8 @@
 #import "Header.h"
 
-size_t Modules_HTTP_Header;
-
 static ExceptionManager *exc;
 
 void HTTP_Header0(ExceptionManager *e) {
-	Modules_HTTP_Header =
-		Module_Register(String("HTTP.Header"));
-
 	exc = e;
 }
 

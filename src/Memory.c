@@ -1,12 +1,8 @@
 #import "Memory.h"
 
-size_t Modules_Memory;
-
 static ExceptionManager *exc;
 
 void Memory0(ExceptionManager *e) {
-	Modules_Memory = Module_Register(String("Memory"));
-
 	exc = e;
 }
 

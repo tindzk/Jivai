@@ -21,8 +21,6 @@ enum {
 	excNotConnected
 };
 
-extern size_t Modules_SocketConnection;
-
 typedef struct {
 	NetworkAddress addr;
 

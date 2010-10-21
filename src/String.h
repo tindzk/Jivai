@@ -25,7 +25,6 @@ enum {
 #import "Exception.h"
 #import "ExceptionManager.h"
 #import "Memory.h"
-#import "Module.h"
 #import "Array.h"
 
 Array_Define(String, StringArray);
@@ -37,8 +36,6 @@ enum {
 	excNotMutable = excOffset,
 	excBufferOverflow
 };
-
-extern size_t Modules_String;
 
 void String0(ExceptionManager *e);
 

@@ -5,13 +5,13 @@ void Exception_Print(Exception *e) {
 #if Exception_SaveOrigin
 	String fmt = String_Format(
 		String("Uncaught exception %.% (in %)\n"),
-		Module_ResolveName(e->module),
+		String_FromNul(Manifest_ResolveName(e->module)),
 		e->scode,
 		e->func);
 #else
 	String fmt = String_Format(
 		String("Uncaught exception %.%\n"),
-		Module_ResolveName(e->module),
+		String_FromNul(Manifest_ResolveName(e->module)),
 		e->scode);
 #endif
 

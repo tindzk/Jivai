@@ -21,8 +21,6 @@ enum {
 	excUnknown
 };
 
-extern size_t Modules_Signal;
-
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 typedef struct _sig_ucontext {
 	unsigned long     uc_flags;

@@ -1,12 +1,8 @@
 #import "Terminal.h"
 
-size_t Modules_Terminal;
-
 static ExceptionManager *exc;
 
 void Terminal0(ExceptionManager *e) {
-	Modules_Terminal = Module_Register(String("Terminal"));
-
 	exc = e;
 }
 

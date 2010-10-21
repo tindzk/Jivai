@@ -13,8 +13,6 @@ enum {
 	excGetTimeOfDayFailed = excOffset
 };
 
-extern size_t Modules_Time;
-
 typedef struct {
 	uint8_t hour;
 	uint8_t minute;

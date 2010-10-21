@@ -11,8 +11,6 @@ enum {
 	excGetAddrInfoFailed = excOffset
 };
 
-extern size_t Modules_NetworkAddress;
-
 typedef struct {
 	unsigned long ip;
 	unsigned short port;

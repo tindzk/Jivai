@@ -12,13 +12,9 @@
 
 static const String metaChars = String("|.^$*+?()[\\");
 
-size_t Modules_Pattern;
-
 static ExceptionManager *exc;
 
 void Pattern0(ExceptionManager *e) {
-	Modules_Pattern = Module_Register(String("Pattern"));
-
 	exc = e;
 }
 

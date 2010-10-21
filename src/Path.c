@@ -1,12 +1,8 @@
 #import "Path.h"
 
-size_t Modules_Path;
-
 static ExceptionManager *exc;
 
 void Path0(ExceptionManager *e) {
-	Modules_Path = Module_Register(String("Path"));
-
 	exc = e;
 }
 

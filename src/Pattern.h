@@ -63,8 +63,6 @@
 #undef self
 #define self Pattern
 
-size_t Modules_Pattern;
-
 enum {
 	excEmptyPattern = excOffset,
 	excNoClosingBracket,

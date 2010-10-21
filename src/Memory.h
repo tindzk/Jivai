@@ -19,8 +19,6 @@
 #define Memory_OutOfMemoryChecks 0
 #endif
 
-extern size_t Modules_Memory;
-
 void* Memory_Alloc(size_t size);
 void Memory_FreePtr(void *pMem);
 void* Memory_Realloc(void *pMem, size_t size);
@@ -47,7 +45,6 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 #define Memory_CloneObject(pSource) \
 	Memory_Clone(pSource, sizeof(*(pSource)))
 
-#import "Module.h"
 #import "String.h"
 #import "ExceptionManager.h"
 

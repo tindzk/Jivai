@@ -93,8 +93,6 @@ typedef struct {
 	bool inChunk;
 } HTTP_Client;
 
-extern size_t Modules_HTTP_Client;
-
 void HTTP_Client0(ExceptionManager *e);
 overload void HTTP_Client_Init(HTTP_Client *this);
 overload void HTTP_Client_Init(HTTP_Client *this, String host);

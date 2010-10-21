@@ -1,12 +1,8 @@
 #import "Typography.h"
 
-size_t Modules_Typography;
-
 static ExceptionManager *exc;
 
 void Typography0(ExceptionManager *e) {
-	Modules_Typography = Module_Register(String("Typography"));
-
 	exc = e;
 }
 

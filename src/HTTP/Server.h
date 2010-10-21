@@ -20,8 +20,6 @@ enum {
 	excUnknownContentType
 };
 
-extern size_t Modules_HTTP_Server;
-
 typedef void (* HTTP_Server_OnRespond)(void *, bool);
 
 typedef enum {

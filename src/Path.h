@@ -1,7 +1,6 @@
 #import <errno.h>
 
 #import "Time.h"
-#import "Module.h"
 #import "Kernel.h"
 #import "String.h"
 #import "Exception.h"
@@ -16,8 +15,6 @@
 #ifndef AT_SYMLINK_NOFOLLOW
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
-
-extern size_t Modules_Path;
 
 enum {
 	excCreationFailed = excOffset,

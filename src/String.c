@@ -1,12 +1,8 @@
 #import "String.h"
 
-size_t Modules_String;
-
 static ExceptionManager *exc;
 
 void String0(ExceptionManager *e) {
-	Modules_String = Module_Register(String("String"));
-
 	exc = e;
 }
 

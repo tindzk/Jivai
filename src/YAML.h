@@ -47,8 +47,6 @@ typedef struct {
 	size_t depthWidth;
 } YAML;
 
-extern size_t Modules_YAML;
-
 void YAML0(ExceptionManager *e);
 
 void YAML_Init(YAML *this, size_t depthWidth, StreamInterface *stream, void *context);

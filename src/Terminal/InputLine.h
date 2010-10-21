@@ -11,8 +11,6 @@ enum {
 	excCommandExceedsAllowedLength = excOffset
 };
 
-extern size_t Modules_Terminal_InputLine;
-
 typedef void (* Terminal_InputLine_OnKeyUp)(void *);
 typedef void (* Terminal_InputLine_OnKeyDown)(void *);
 typedef void (* Terminal_InputLine_OnKeyLeft)(void *);

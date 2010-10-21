@@ -13,8 +13,6 @@ enum {
 	excCannotOpenDirectory = excOffset
 };
 
-extern size_t Modules_Directory;
-
 typedef struct {
 	unsigned long inode;
 	unsigned long offset;

@@ -1,13 +1,8 @@
 #import "SocketConnection.h"
 
-size_t Modules_SocketConnection;
-
 static ExceptionManager *exc;
 
 void SocketConnection0(ExceptionManager *e) {
-	Modules_SocketConnection =
-		Module_Register(String("SocketConnection"));
-
 	exc = e;
 }
 

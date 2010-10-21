@@ -1,13 +1,8 @@
 #import "Query.h"
 
-size_t Modules_HTTP_Query;
-
 static ExceptionManager *exc;
 
 void HTTP_Query0(ExceptionManager *e) {
-	Modules_HTTP_Query =
-		Module_Register(String("HTTP.Query"));
-
 	exc = e;
 }
 

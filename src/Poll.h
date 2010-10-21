@@ -37,8 +37,6 @@ enum {
 	excUnknownFileDescriptor
 };
 
-extern size_t Modules_Poll;
-
 void Poll0(ExceptionManager *e);
 
 void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context);

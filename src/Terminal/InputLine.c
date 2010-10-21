@@ -1,13 +1,8 @@
 #import "InputLine.h"
 
-size_t Modules_Terminal_InputLine;
-
 static ExceptionManager *exc;
 
 void Terminal_InputLine0(ExceptionManager *e) {
-	Modules_Terminal_InputLine =
-		Module_Register(String("Terminal.InputLine"));
-
 	exc = e;
 }
 

@@ -7,8 +7,6 @@
 #undef self
 #define self Integer
 
-extern size_t Modules_Integer;
-
 enum {
 	excNumberTooBig = excOffset
 };

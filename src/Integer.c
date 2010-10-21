@@ -1,12 +1,8 @@
 #import "Integer.h"
 
-size_t Modules_Integer;
-
 static ExceptionManager *exc;
 
 void Integer0(ExceptionManager *e) {
-	Modules_Integer = Module_Register(String("Integer"));
-
 	exc = e;
 }
 

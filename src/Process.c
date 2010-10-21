@@ -25,13 +25,9 @@
  * This file is based upon vmchecker/testing/pa/tracker.c by Claudiu Gheorghe.
  */
 
-size_t Modules_Process;
-
 static ExceptionManager *exc;
 
 void Process0(ExceptionManager *e) {
-	Modules_Process = Module_Register(String("Process"));
-
 	exc = e;
 }
 

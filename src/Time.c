@@ -1,12 +1,8 @@
 #import "Time.h"
 
-size_t Modules_Time;
-
 static ExceptionManager *exc;
 
 void Time0(ExceptionManager *e) {
-	Modules_Time = Module_Register(String("Time"));
-
 	exc = e;
 }
 

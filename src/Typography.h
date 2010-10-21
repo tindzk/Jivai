@@ -5,8 +5,6 @@
 #undef self
 #define self Typography
 
-extern size_t Modules_Typography;
-
 typedef struct {
 	String value;
 } Typography_Text;
