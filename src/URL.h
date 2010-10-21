@@ -1,4 +1,5 @@
 #import "String.h"
+#import "Integer.h"
 
 typedef struct {
 	String scheme;

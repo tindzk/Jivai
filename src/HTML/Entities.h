@@ -1,4 +1,6 @@
+#import "../Hex.h"
 #import "../String.h"
+#import "../Integer.h"
 #import "../Unicode.h"
 
 #ifndef HTML_Entities_GrowthFactor

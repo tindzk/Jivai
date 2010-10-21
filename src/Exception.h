@@ -126,7 +126,6 @@ void Exception_Print(Exception *e, size_t code);
 		ExceptionManager_Pop(__exc_mgr); \
 	} else if (ExceptionManager_Pop(__exc_mgr), false) { }
 
-
 #define catch(module, code) \
 	else if (e == Modules_##module + code)
 
