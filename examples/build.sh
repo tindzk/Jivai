@@ -11,6 +11,7 @@ fi
 ../../Jivai-Utils/jutils.bin \
 	build                    \
 	output=build/$1.bin      \
+	manifest=Manifest.h      \
 	main=$1.c                \
 	include=../src           \
 	map=.:build              \

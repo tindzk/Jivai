@@ -29,3 +29,5 @@
 
 /* Log everything by default. */
 #define Logger_DisabledLevels 0
+
+#import "Manifest.h"
