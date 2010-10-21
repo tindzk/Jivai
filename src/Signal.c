@@ -45,37 +45,37 @@ void Signal_Ignore(int signal) {
 }
 
 void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *ucontext) {
-	exc->e.module = Modules_Signal;
+	size_t code;
 
 	if (signal == SIGALRM) {
-		exc->e.code  = excSigAlrm;
+		code = excSigAlrm;
 		exc->e.scode = String("excSigAlrm");
 	} else if (signal == SIGBUS) {
-		exc->e.code  = excSigBus;
+		code = excSigBus;
 		exc->e.scode = String("excSigBus");
 	} else if (signal == SIGFPE) {
-		exc->e.code  = excSigFpe;
+		code = excSigFpe;
 		exc->e.scode = String("excSigFpe");
 	} else if (signal == SIGILL) {
-		exc->e.code  = excSigIll;
+		code = excSigIll;
 		exc->e.scode = String("excSigIll");
 	} else if (signal == SIGINT) {
-		exc->e.code  = excSigInt;
+		code = excSigInt;
 		exc->e.scode = String("excSigInt");
 	} else if (signal == SIGQUIT) {
-		exc->e.code  = excSigQuit;
+		code = excSigQuit;
 		exc->e.scode = String("excSigQuit");
 	} else if (signal == SIGSEGV) {
-		exc->e.code  = excSigSegv;
+		code = excSigSegv;
 		exc->e.scode = String("excSigSegv");
 	} else if (signal == SIGTERM) {
-		exc->e.code  = excSigTerm;
+		code = excSigTerm;
 		exc->e.scode = String("excSigTerm");
 	} else if (signal == SIGPIPE) {
-		exc->e.code  = excSigPipe;
+		code = excSigPipe;
 		exc->e.scode = String("excSigPipe");
 	} else {
-		exc->e.code  = excUnknown;
+		code = excUnknown;
 		exc->e.scode = String("excUnknown");
 	}
 
@@ -96,5 +96,5 @@ void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *uconte
 	exc->e.func = String(__func__);
 #endif
 
-	ExceptionManager_Raise(exc);
+	ExceptionManager_Raise(exc, Modules_Signal + code);
 }

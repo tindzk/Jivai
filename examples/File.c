@@ -12,9 +12,9 @@ int main(void) {
 
 	try (&exc) {
 		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
-	} clean catch (Modules_File, excNotFound, e) {
+	} clean catch (Modules_File, excNotFound) {
 		String_Print(String("File not found.\n"));
-		return ExitStatus_Failure;
+		excReturn ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;

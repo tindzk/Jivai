@@ -52,11 +52,11 @@ int main(void) {
 		while (!context.interrupt) {
 			Terminal_InputLine_Process(&line);
 		}
-	} clean catchAny(e) {
-		Exception_Print(e);
+	} clean catchAny {
+		ExceptionManager_Print(&exc, e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(e->trace, e->traceItems);
+		Backtrace_PrintTrace(exc.e.trace, exc.e.traceItems);
 #endif
 
 		res = ExitStatus_Failure;

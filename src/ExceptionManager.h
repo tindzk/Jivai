@@ -16,10 +16,12 @@ typedef struct {
 } ExceptionManager;
 
 void ExceptionManager_Init(ExceptionManager *this);
-void ExceptionManager_Raise(ExceptionManager *this);
+void ExceptionManager_Raise(ExceptionManager *this, size_t code);
 void ExceptionManager_Push(ExceptionManager *this,
 	 ExceptionManager_Record *_record);
 void ExceptionManager_Pop(ExceptionManager *this);
+Exception* ExceptionManager_GetMeta(ExceptionManager *this);
+void ExceptionManager_Print(ExceptionManager *this, size_t code);
 
 #if Exception_Safety
 #define ExceptionManager_Check(this)                        \
@@ -39,15 +41,14 @@ void ExceptionManager_Pop(ExceptionManager *this);
 
 #define ExceptionManager_SetException(this, c) \
 	Exception_SetTrace((this)->e);             \
-	Exception_SetModule((this)->e);            \
 	Exception_SetOrigin((this)->e);            \
-	Exception_SetCode((this)->e, c)            \
+	Exception_SetCode((this)->e, c);
 
-#define throw(this, e)                          \
-	do {                                        \
-		ExceptionManager_Check(this);           \
-		ExceptionManager_SetException(this, e); \
-		ExceptionManager_Raise(this);           \
+#define throw(this, e)                               \
+	do {                                             \
+		ExceptionManager_Check(this);                \
+		ExceptionManager_SetException(this, e);      \
+		ExceptionManager_Raise(this, CurModule + e); \
 	} while(0)
 
 #define try(this)                                 \
@@ -60,40 +61,36 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	bool __exc_ignore_finally = false;            \
 	__label__ __exc_finally;                      \
 	void *__exc_return_ptr = && __exc_done;       \
-	if (setjmp(__exc_mgr->cur->jmpBuffer) == 0) {
+	size_t e = setjmp(__exc_mgr->cur->jmpBuffer); \
+	if (e == 0) {                                 \
 
 #define clean                            \
 		ExceptionManager_Pop(__exc_mgr); \
-	} else if (ExceptionManager_Pop(__exc_mgr), false) {
+	} else if (ExceptionManager_Pop(__exc_mgr), false) { }
 
-#define catch(_module, _code, _e)               \
-	} else if (__exc_mgr->e.module == _module   \
-			&& __exc_mgr->e.code   == _code)    \
-	{                                           \
-		__unused Exception *_e = &__exc_mgr->e;
 
-#define catchModule(_module, _e)                 \
-	} else if (__exc_mgr->e.module == _module) { \
-		__unused Exception *_e = &__exc_mgr->e;
+#define catch(module, code) \
+	else if (e == Modules_##module + code)
 
-#define catchAny(_e)                            \
-	} else if (true) {                          \
-		__unused Exception *_e = &__exc_mgr->e;
+#define catchModule(module) \
+	else if (e >= Modules_##module && e < Modules_##module + Manifest_GapSize)
 
-#define finally                  \
-	} else {                     \
-		__exc_rethrow = true;    \
-	}                            \
-	__exc_finally:               \
-	if (!__exc_ignore_finally) {
+#define catchAny \
+	else if (true)
 
-#define tryEnd                             \
-	}                                      \
-	if (__exc_rethrow) {                   \
-		ExceptionManager_Raise(__exc_mgr); \
-	}                                      \
-	goto *__exc_return_ptr;                \
-	__exc_done: if(1) { }                  \
+#define finally                \
+	else {                     \
+		__exc_rethrow = true;  \
+	}                          \
+	__exc_finally:             \
+	if (!__exc_ignore_finally)
+
+#define tryEnd                                \
+	if (__exc_rethrow) {                      \
+		ExceptionManager_Raise(__exc_mgr, e); \
+	}                                         \
+	goto *__exc_return_ptr;                   \
+	__exc_done: if(1) { }                     \
 } do { } while(0)
 
 /* Use the current line number for a unique label. */
@@ -124,8 +121,8 @@ void ExceptionManager_Pop(ExceptionManager *this);
 	__exc_goto_finally \
 	goto
 
-/* Reuses current exception by overwriting its contents. */
-#define excThrow(this, e)                   \
-	ExceptionManager_SetException(this, e); \
-	__exc_rethrow = true;                   \
+#define excThrow(this, code)                   \
+	e = CurModule + code;                      \
+	ExceptionManager_SetException(this, code); \
+	__exc_rethrow = true;                      \
 	goto __exc_finally

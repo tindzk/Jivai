@@ -3,6 +3,7 @@
 #import <Path.h>
 #import <File.h>
 #import <Signal.h>
+#import <Integer.h>
 #import <Typography.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
@@ -72,14 +73,14 @@ int main(__unused int argc, __unused char *argv[]) {
 		PrintTree(Typography_GetRoot(&tyo), 0);
 
 		Typography_Destroy(&tyo);
-	} clean catchAny(e) {
-		Exception_Print(e);
+	} clean catchAny {
+		ExceptionManager_Print(&exc, e);
 
 #if Exception_SaveTrace
 		Backtrace_PrintTrace(e->trace, e->traceItems);
 #endif
 
-		return ExitStatus_Failure;
+		excReturn ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;

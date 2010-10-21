@@ -74,9 +74,9 @@ static Connection_Status ClientListener_OnData(ClientListener *this, Client *cli
 			status = pull
 				? this->connection->pull(conn)
 				: this->connection->push(conn);
-		} clean catch(Modules_SocketConnection, excNotConnected, e) {
+		} clean catch(SocketConnection, excNotConnected) {
 			status = Connection_Status_Close;
-		} catch(Modules_SocketConnection, excConnectionReset, e) {
+		} catch(SocketConnection, excConnectionReset) {
 			status = Connection_Status_Close;
 		} finally {
 

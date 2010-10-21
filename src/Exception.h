@@ -38,13 +38,14 @@ enum {
 	excOffset
 };
 
+/* This structure contains more detailed information about the most
+ * recently thrown exception. The exception itself is only supplied
+ * in a numerical code via longjmp(). See ExceptionManager_Raise().
+ */
 typedef struct {
 #if Exception_SaveOrigin
 	String func;
 #endif
-
-	size_t module;
-	size_t code;
 
 	String scode;
 
@@ -54,7 +55,7 @@ typedef struct {
 #endif
 } Exception;
 
-void Exception_Print(Exception *e);
+void Exception_Print(Exception *e, size_t code);
 
 #if Exception_SaveOrigin
 #define Exception_SetOrigin(e) \
@@ -77,10 +78,4 @@ void Exception_Print(Exception *e);
 #endif
 
 #define Exception_SetCode(e, c) \
-	do {                        \
-		(e).code  = c;          \
-		(e).scode = String(#c); \
-	} while(0)
-
-#define Exception_SetModule(e) \
-	(e).module = underscoredConcat(Modules, self)
+	(e).scode = String(#c)

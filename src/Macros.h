@@ -42,6 +42,9 @@
 #define call(method, ...) \
 	ref(method)($this, ## __VA_ARGS__)
 
+#define CurModule \
+	underscoredConcat(Modules, self)
+
 #define InstanceName(name) \
 	simpleConcat(name, Instance)
 

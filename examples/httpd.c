@@ -286,7 +286,7 @@ bool startServer(Server *server, ClientListener *listener) {
 		Server_Init(server, events, true, 8080);
 		String_Print(String("Server started.\n"));
 		excReturn true;
-	} clean catch (Modules_Socket, excAddressInUse, e) {
+	} clean catch(Socket, excAddressInUse) {
 		String_Print(String("The address is already in use!\n"));
 		excReturn false;
 	} finally {
@@ -322,13 +322,13 @@ int main(void) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch (Modules_Signal, excSigInt, e) {
+	} clean catch(Signal, excSigInt) {
 		String_Print(String("Server shutdown.\n"));
-	} catchAny (e) {
-		Exception_Print(e);
+	} catchAny {
+		ExceptionManager_Print(&exc, e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(e->trace, e->traceItems);
+		Backtrace_PrintTrace(exc.e.trace, exc.e.traceItems);
 #endif
 
 		excReturn ExitStatus_Failure;

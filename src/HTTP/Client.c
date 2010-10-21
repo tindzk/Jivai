@@ -316,7 +316,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 				throw(exc, excBufferTooSmall);
 			}
 		}
-	} clean catch(Modules_SocketConnection, excConnectionReset, e) {
+	} clean catch(SocketConnection, excConnectionReset) {
 		this->closed = true;
 		excThrow(exc, excConnectionReset);
 	} finally {
@@ -347,7 +347,7 @@ static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 		}
 
 		this->resp.len += len;
-	} clean catch(Modules_SocketConnection, excConnectionReset, e) {
+	} clean catch(SocketConnection, excConnectionReset) {
 		this->closed = true;
 		excThrow(exc, excConnectionReset);
 	} finally {
@@ -524,7 +524,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 			res->len   += read;
 			this->read += read;
-		} clean catch(Modules_SocketConnection, excConnectionReset, e) {
+		} clean catch(SocketConnection, excConnectionReset) {
 			this->closed = true;
 
 			if (this->total == -1) {
