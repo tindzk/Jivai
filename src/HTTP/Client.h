@@ -3,8 +3,8 @@
 #import "../Array.h"
 #import "../String.h"
 #import "../Socket.h"
+#import "../Exception.h"
 #import "../SocketConnection.h"
-#import "../ExceptionManager.h"
 
 #undef self
 #define self HTTP_Client

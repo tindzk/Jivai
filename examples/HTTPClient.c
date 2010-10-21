@@ -15,7 +15,7 @@ bool HTTP_Client_Receive(SocketConnection *conn, String *resp) {
 		}
 
 		resp->len += len;
-	} clean catch (Modules_SocketConnection, excConnectionReset, e) {
+	} clean catch (SocketConnection, excConnectionReset) {
 		excReturn false;
 	} finally {
 

@@ -2,7 +2,7 @@
 #import <netdb.h>
 
 #import "String.h"
-#import "ExceptionManager.h"
+#import "Exception.h"
 
 #undef self
 #define self NetworkAddress
@@ -16,7 +16,7 @@ typedef struct {
 	unsigned short port;
 } NetworkAddress;
 
-void NetworkAddress0(ExceptionManager *e);
+void NetworkAddress0(void *e);
 
 struct in_addr NetworkAddress_ResolveHost(String hostname);
 String NetworkAddress_ToString(NetworkAddress addr);

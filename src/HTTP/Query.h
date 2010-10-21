@@ -1,6 +1,7 @@
 #import "../Hex.h"
 #import "../HTTP.h"
 #import "../String.h"
+#import "../Exception.h"
 
 #undef self
 #define self HTTP_Query

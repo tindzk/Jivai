@@ -2,7 +2,7 @@
 #import <limits.h>
 
 #import "String.h"
-#import "ExceptionManager.h"
+#import "Exception.h"
 
 #undef self
 #define self Integer

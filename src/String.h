@@ -3,6 +3,7 @@
 #import "VarArg.h"
 #import "BitMask.h"
 #import "Compiler.h"
+#import "Exceptions.h"
 
 #ifndef String_SmartAlign
 #define String_SmartAlign 1
@@ -21,11 +22,9 @@ enum {
 };
 
 #import "Char.h"
-#import "Kernel.h"
-#import "Exception.h"
-#import "ExceptionManager.h"
-#import "Memory.h"
 #import "Array.h"
+#import "Kernel.h"
+#import "Memory.h"
 
 Array_Define(String, StringArray);
 
@@ -37,8 +36,7 @@ enum {
 	excBufferOverflow
 };
 
-void String0(ExceptionManager *e);
-
+void String0(void *e);
 String HeapString(size_t len);
 String BufString(char *buf, size_t len);
 void String_Destroy(String *this);

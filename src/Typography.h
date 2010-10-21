@@ -1,5 +1,6 @@
 #import "Tree.h"
 #import "String.h"
+#import "Exception.h"
 #import "StreamInterface.h"
 
 #undef self

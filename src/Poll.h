@@ -6,6 +6,7 @@
 #import "Kernel.h"
 #import "String.h"
 #import "Memory.h"
+#import "Exception.h"
 
 #undef self
 #define self Poll

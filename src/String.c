@@ -1,8 +1,9 @@
 #import "String.h"
+#import "Exception.h"
 
 static ExceptionManager *exc;
 
-void String0(ExceptionManager *e) {
+void String0(void *e) {
 	exc = e;
 }
 

@@ -3,6 +3,7 @@
 #import <string.h>
 
 #import "Types.h"
+#import "Exceptions.h"
 
 #undef self
 #define self Memory
@@ -19,6 +20,13 @@
 #define Memory_OutOfMemoryChecks 0
 #endif
 
+enum {
+	excNullPointer = excOffset,
+	excOutOfBounds,
+	excOutOfMemory
+};
+
+void Memory0(void *e);
 void* Memory_Alloc(size_t size);
 void Memory_FreePtr(void *pMem);
 void* Memory_Realloc(void *pMem, size_t size);
@@ -44,14 +52,3 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 
 #define Memory_CloneObject(pSource) \
 	Memory_Clone(pSource, sizeof(*(pSource)))
-
-#import "String.h"
-#import "ExceptionManager.h"
-
-enum {
-	excNullPointer = excOffset,
-	excOutOfBounds,
-	excOutOfMemory
-};
-
-void Memory0(ExceptionManager *e);

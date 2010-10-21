@@ -1,4 +1,5 @@
 #import "String.h"
+#import "Exception.h"
 
 /*
  * This is a regular expression library that implements a subset of

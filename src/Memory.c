@@ -1,8 +1,9 @@
 #import "Memory.h"
+#import "Exception.h"
 
 static ExceptionManager *exc;
 
-void Memory0(ExceptionManager *e) {
+void Memory0(void *e) {
 	exc = e;
 }
 

@@ -1,5 +1,4 @@
-#import "String.h"
-#import "ExceptionManager.h"
+#import "Exception.h"
 
 inline void ExceptionManager_Init(ExceptionManager *this) {
 	this->cur = NULL;

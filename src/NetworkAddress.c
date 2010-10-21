@@ -2,7 +2,7 @@
 
 static ExceptionManager *exc;
 
-void NetworkAddress0(ExceptionManager *e) {
+void NetworkAddress0(void *e) {
 	exc = e;
 }
 
