@@ -36,6 +36,9 @@
 
 #define $(s) String(s)
 
+#define NullString \
+	(String) { 0, 0, NULL, false }
+
 #define ref(name) \
 	underscoredConcat(self, name)
 
