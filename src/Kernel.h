@@ -118,7 +118,7 @@ typedef enum {
 
 ssize_t Kernel_open(String path, int flags, int mode);
 bool Kernel_close(ssize_t fd);
-void Kernel_exit(int status);
+void noReturn Kernel_exit(int status);
 ssize_t Kernel_read(ssize_t fd, char *buf, size_t len);
 ssize_t Kernel_write(ssize_t fd, char *buf, size_t len);
 ssize_t Kernel_getdents(ssize_t fd, char *buf, size_t len);

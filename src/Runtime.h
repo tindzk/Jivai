@@ -1,3 +1,3 @@
 #import "Kernel.h"
 
-void Runtime_Exit(ExitStatus status);
+void noReturn Runtime_Exit(ExitStatus status);

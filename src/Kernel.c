@@ -8,7 +8,7 @@ bool Kernel_close(ssize_t fd) {
 	return syscall(__NR_close, fd) == 0;
 }
 
-void Kernel_exit(int status) {
+void noReturn Kernel_exit(int status) {
 	syscall(__NR_exit, status);
 }
 
