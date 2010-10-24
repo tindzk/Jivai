@@ -156,4 +156,4 @@ bool Kernel_connect(ssize_t fd, void *addr, size_t size);
 ssize_t Kernel_accept(ssize_t fd, void *addr, void *len);
 ssize_t Kernel_recv(ssize_t fd, void *buf, size_t len, int flags);
 ssize_t Kernel_send(ssize_t fd, void *buf, size_t len, int flags);
-ssize_t Kernel_sendfile64(int out, int in, u64 *offset, size_t len);
+ssize_t Kernel_sendfile64(ssize_t out, ssize_t in, u64 *offset, size_t len);
