@@ -27,3 +27,9 @@
 
 #define overload \
 	__attribute__((overloadable))
+
+#define __constructor \
+	__attribute__((constructor))
+
+#define __destructor \
+	__attribute__((destructor))
