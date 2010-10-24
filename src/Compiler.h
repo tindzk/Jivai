@@ -22,5 +22,8 @@
 #define alwaysInline \
 	__attribute__((always_inline))
 
+#define transparentUnion \
+	__attribute__((transparent_union))
+
 #define overload \
 	__attribute__((overloadable))

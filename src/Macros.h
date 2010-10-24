@@ -78,14 +78,13 @@
 		return (GenericInstance) { .object = instance.object };                           \
 	}
 
-#define class(name)              \
-	typedef struct name name;    \
-	typedef union {              \
-		struct name *object;     \
-		GenericInstance generic; \
-		void *ptr;               \
-	} InstanceName(name);        \
-	BasicInstance(name)          \
+#define class(name)                        \
+	typedef struct name name;              \
+	typedef union {                        \
+		struct name *object;               \
+		GenericInstance generic;           \
+	} InstanceName(name) transparentUnion; \
+	BasicInstance(name)                    \
 	struct name
 
 /* This cannot be included in Class() as sizeof() is needed and the
@@ -97,7 +96,7 @@
 		return (InstanceName(name)) &obj;                                                     \
 	}                                                                                         \
 	static inline InstanceName(name) underscoredConcat(name, New)(void) {                     \
-		return (InstanceName(name)) Memory_Alloc(sizeof(name));                               \
+		return (InstanceName(name)) (name *) Memory_Alloc(sizeof(name));                               \
 	}                                                                                         \
 	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) {           \
 		Memory_Free(instance.object);                                                         \
