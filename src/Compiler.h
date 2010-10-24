@@ -13,6 +13,12 @@
 #define __unused \
 	__attribute__((unused))
 
+#define noReturn \
+	__attribute__((noreturn))
+
+#define __malloc \
+	__attribute__((malloc))
+
 #define alwaysInline \
 	__attribute__((always_inline))
 
