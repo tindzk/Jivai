@@ -96,7 +96,7 @@
 		return (InstanceName(name)) &obj;                                                     \
 	}                                                                                         \
 	static inline InstanceName(name) underscoredConcat(name, New)(void) {                     \
-		return (InstanceName(name)) (name *) Memory_Alloc(sizeof(name));                               \
+		return (InstanceName(name)) (name *) Memory_Alloc(sizeof(name));                      \
 	}                                                                                         \
 	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) {           \
 		Memory_Free(instance.object);                                                         \
