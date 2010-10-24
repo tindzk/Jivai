@@ -1,4 +1,5 @@
 #import <String.h>
+#import <Exception.h>
 
 ExceptionManager exc;
 
@@ -29,7 +30,7 @@ int main(void) {
 
 	try (&exc) {
 		func1();
-	} clean catch(Modules_Example, excCustomException) {
+	} clean catch(Example, excCustomException) {
 		String_Print(String("CustomException caught.\n"));
 
 #if Exception_SaveTrace
