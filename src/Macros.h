@@ -116,6 +116,13 @@
 		return instance;                                             \
 	}
 
+#define SingletonDestructor(name)                   \
+	static void __destructor dtor(void) {           \
+		InstanceName(self) instance =               \
+			underscoredConcat(name, GetInstance)(); \
+		underscoredConcat(name, Destroy)(instance); \
+	}
+
 #define DefineCallback(name, ret, ...)                          \
 	typedef union name {                                        \
 		GenericCallback generic;                                \
