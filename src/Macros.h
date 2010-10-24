@@ -123,7 +123,7 @@
 			GenericInstance context;                            \
 			ret (*cb)(GenericInstance context, ## __VA_ARGS__); \
 		};                                                      \
-	} name;
+	} name transparentUnion;
 
 #define callback(var, ...) \
 	(var).cb((var).context, ## __VA_ARGS__)
