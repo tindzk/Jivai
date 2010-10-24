@@ -7,7 +7,7 @@ void Memory0(void *e) {
 	exc = e;
 }
 
-void* Memory_Alloc(size_t size) {
+void* __malloc Memory_Alloc(size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, excOutOfBounds);
@@ -35,7 +35,7 @@ void Memory_FreePtr(void *pMem) {
 	free(pMem);
 }
 
-void* Memory_Realloc(void *pMem, size_t size) {
+void* __malloc Memory_Realloc(void *pMem, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, excOutOfBounds);
@@ -75,7 +75,7 @@ void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len)
 	memcpy(pDest, pSource, len);
 }
 
-void* Memory_Clone(void *pSource, size_t size) {
+void* __malloc Memory_Clone(void *pSource, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0 || size > SIZE_MAX) {
 		throw(exc, excOutOfBounds);
