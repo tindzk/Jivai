@@ -135,19 +135,20 @@ void Exception_Print(Exception *e, size_t code);
 #define catchAny \
 	else if (true)
 
-#define finally                \
-	else {                     \
-		__exc_rethrow = true;  \
-	}                          \
-	__exc_finally:             \
-	if (!__exc_ignore_finally)
+#define finally                  \
+	else {                       \
+		__exc_rethrow = true;    \
+	}                            \
+	__exc_finally:               \
+	if (!__exc_ignore_finally) {
 
-#define tryEnd                                \
-	if (__exc_rethrow) {                      \
-		ExceptionManager_Raise(__exc_mgr, e); \
-	}                                         \
-	goto *__exc_return_ptr;                   \
-	__exc_done: if(1) { }                     \
+#define tryEnd                                    \
+		if (__exc_rethrow) {                      \
+			ExceptionManager_Raise(__exc_mgr, e); \
+		}                                         \
+		goto *__exc_return_ptr;                   \
+	}                                             \
+	__exc_done: if (1) { }                        \
 } do { } while(0)
 
 /* Use the current line number for a unique label. */
@@ -159,7 +160,6 @@ void Exception_Print(Exception *e, size_t code);
 	__exc_return_ptr = && __exc_label; \
 	goto __exc_finally;                \
 	__exc_label:                       \
-	__exc_return_ptr = && __exc_done;  \
 	__exc_ignore_finally = true;
 
 #define excBreak       \
