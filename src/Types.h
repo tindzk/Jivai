@@ -39,7 +39,7 @@ typedef unsigned long long u64;
 typedef void Generic;
 
 typedef struct {
-	void *object;
+	Generic *object;
 } GenericInstance;
 
 BasicInstance(Generic)
