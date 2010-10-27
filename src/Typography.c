@@ -1,4 +1,5 @@
 #import "Typography.h"
+#import <App.h>
 
 static ExceptionManager *exc;
 
@@ -6,53 +7,53 @@ void Typography0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Typography_Init(Typography *this, StreamInterface *stream, void *context) {
+def(void, Init, StreamInterface *stream, void *context) {
 	this->line = 0;
 
 	this->stream  = stream;
 	this->context = context;
 
-	Tree_Init(&this->tree, (void *) &Typography_DestroyNode);
+	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 }
 
-void Typography_Destroy(Typography *this) {
+def(void, Destroy) {
 	Tree_Destroy(&this->tree);
 }
 
-void Typography_DestroyNode(Typography_Node *node) {
-	if (node->type == Typography_NodeType_Item) {
-		Typography_Item *item = (Typography_Item *) &node->data;
+void ref(DestroyNode)(ref(Node) *node) {
+	if (node->type == ref(NodeType_Item)) {
+		ref(Item) *item = (ref(Item) *) &node->data;
 
 		String_Destroy(&item->name);
 		String_Destroy(&item->options);
-	} else if (node->type == Typography_NodeType_Text) {
-		Typography_Text *text = (Typography_Text *) &node->data;
+	} else if (node->type == ref(NodeType_Text)) {
+		ref(Text) *text = (ref(Text) *) &node->data;
 
 		String_Destroy(&text->value);
 	}
 }
 
-Typography_Node* Typography_GetRoot(Typography *this) {
-	return (Typography_Node *) &this->tree.root;
+def(ref(Node) *, GetRoot) {
+	return (ref(Node) *) &this->tree.root;
 }
 
-static void Typography_Flush(Typography *this, String *value) {
+static def(void, Flush, String *value) {
 	if (value->len > 0) {
-		Typography_Node *node = Tree_AddCustomNode(this->node,
-			sizeof(Typography_Node)
-		  + sizeof(Typography_Text));
+		ref(Node) *node = Tree_AddCustomNode(this->node,
+			sizeof(ref(Node))
+		  + sizeof(ref(Text)));
 
-		node->type = Typography_NodeType_Text;
+		node->type = ref(NodeType_Text);
 		node->line = this->line;
 
-		Typography_Text *text = (Typography_Text *) &node->data;
+		ref(Text) *text = (ref(Text) *) &node->data;
 		text->value = String_Clone(*value);
 
 		value->len  = 0;
 	}
 }
 
-static void Typography_Read(Typography *this, size_t st) {
+static def(void, Read, size_t st) {
 	char cur  = '\0';
 	char prev = '\0';
 	char next = '\0';
@@ -84,7 +85,7 @@ static void Typography_Read(Typography *this, size_t st) {
 					prevstate = NONE;
 					state     = POINT;
 
-					Typography_Flush(this, &value);
+					call(Flush, &value);
 				} else {
 					String_Append(&value, cur);
 				}
@@ -104,16 +105,16 @@ static void Typography_Read(Typography *this, size_t st) {
 				} else if (cur == '[') {
 					state = OPTIONS;
 				} else if (cur == '{') {
-					Typography_Flush(this, &value);
+					call(Flush, &value);
 
 					this->node = Tree_AddCustomNode(this->node,
-						sizeof(Typography_Node)
-					  + sizeof(Typography_Item));
+						sizeof(ref(Node))
+					  + sizeof(ref(Item)));
 
-					this->node->type = Typography_NodeType_Item;
+					this->node->type = ref(NodeType_Item);
 					this->node->line = this->line;
 
-					Typography_Item *item = (Typography_Item *) &this->node->data;
+					ref(Item) *item = (ref(Item) *) &this->node->data;
 
 					item->name    = String_Clone(String_Trim(name));
 					item->options = String_Clone(options);
@@ -121,7 +122,7 @@ static void Typography_Read(Typography *this, size_t st) {
 					options.len = 0;
 					name.len    = 0;
 
-					Typography_Read(this, BLOCK);
+					call(Read, BLOCK);
 
 					state = prevstate;
 				} else if (cur != '\\') {
@@ -144,7 +145,7 @@ static void Typography_Read(Typography *this, size_t st) {
 
 					String_Append(&value, cur);
 				} else if (cur == '}') {
-					Typography_Flush(this, &value);
+					call(Flush, &value);
 
 					if (this->node->parent == NULL) {
 						throw(exc, excIllegalNesting);
@@ -181,7 +182,7 @@ static void Typography_Read(Typography *this, size_t st) {
 		prev = cur;
 	}
 
-	Typography_Flush(this, &value);
+	call(Flush, &value);
 
 out:
 	String_Destroy(&options);
@@ -189,9 +190,9 @@ out:
 	String_Destroy(&name);
 }
 
-void Typography_Parse(Typography *this) {
+def(void, Parse) {
 	Tree_Reset(&this->tree);
-	this->node = (Typography_Node *) &this->tree.root;
+	this->node = (ref(Node) *) &this->tree.root;
 
-	Typography_Read(this, 0);
+	call(Read, 0);
 }

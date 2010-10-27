@@ -8,25 +8,25 @@
 
 typedef struct {
 	String value;
-} Typography_Text;
+} ref(Text);
 
 typedef struct {
 	String name;
 	String options;
-} Typography_Item;
+} ref(Item);
 
-typedef struct _Typography_Node {
-	Tree_Define(_Typography_Node);
+record(ref(Node)) {
+	Tree_Define(ref(Node));
 
 	size_t line;
 
 	enum {
-		Typography_NodeType_Item,
-		Typography_NodeType_Text
+		ref(NodeType_Item),
+		ref(NodeType_Text)
 	} type;
 
 	char data[0];
-} Typography_Node;
+};
 
 #define Typography_Text(node) \
 	((Typography_Text *) &(node)->data)
@@ -34,19 +34,21 @@ typedef struct _Typography_Node {
 #define Typography_Item(node) \
 	((Typography_Item *) &(node)->data)
 
-typedef struct {
+class(self) {
 	StreamInterface *stream;
 	void *context;
 
 	size_t line;
 
 	Tree tree;
-	Typography_Node *node;
-} Typography;
+	ref(Node) *node;
+};
+
+ExtendClass(self);
 
 void Typography0(ExceptionManager *e);
-void Typography_Init(Typography *this, StreamInterface *stream, void *context);
-void Typography_Destroy(Typography *this);
-void Typography_DestroyNode(Typography_Node *node);
-Typography_Node* Typography_GetRoot(Typography *this);
-void Typography_Parse(Typography *this);
+def(void, Init, StreamInterface *stream, void *context);
+def(void, Destroy);
+void ref(DestroyNode)(ref(Node) *node);
+def(ref(Node) *, GetRoot);
+def(void, Parse);
