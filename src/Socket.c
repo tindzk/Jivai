@@ -1,4 +1,5 @@
 #import "Socket.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,16 +7,16 @@ void Socket0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Socket_Init(Socket *this, Socket_Protocol protocol) {
+def(void, Init, ref(Protocol) protocol) {
 	this->fd       = -1;
 	this->unused   = true;
 	this->protocol = protocol;
 
-	int style = (protocol == Socket_Protocol_TCP)
+	int style = (protocol == ref(Protocol_TCP))
 		? SOCK_STREAM
 		: SOCK_DGRAM;
 
-	int proto = (protocol == Socket_Protocol_TCP)
+	int proto = (protocol == ref(Protocol_TCP))
 		? IPPROTO_TCP
 		: IPPROTO_UDP;
 
@@ -24,7 +25,7 @@ void Socket_Init(Socket *this, Socket_Protocol protocol) {
 	}
 }
 
-void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
+def(void, SetNonBlockingFlag, bool enable) {
 	int flags = Kernel_fcntl(this->fd, FcntlMode_GetStatus, 0);
 
 	if (flags == -1) {
@@ -42,7 +43,7 @@ void Socket_SetNonBlockingFlag(Socket *this, bool enable) {
 	}
 }
 
-void Socket_SetCloexecFlag(Socket *this, bool enable) {
+def(void, SetCloexecFlag, bool enable) {
 	int flags = Kernel_fcntl(this->fd, FcntlMode_GetDescriptorFlags, 0);
 
 	if (flags == -1) {
@@ -60,7 +61,7 @@ void Socket_SetCloexecFlag(Socket *this, bool enable) {
 	}
 }
 
-void Socket_SetReusableFlag(Socket *this, bool enable) {
+def(void, SetReusableFlag, bool enable) {
 	int val = enable;
 
 	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val))) {
@@ -68,7 +69,7 @@ void Socket_SetReusableFlag(Socket *this, bool enable) {
 	}
 }
 
-void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
+def(void, Listen, unsigned short port, int maxconns) {
 	struct sockaddr_in addr;
 
 	addr.sin_family = PF_INET;
@@ -90,7 +91,7 @@ void Socket_Listen(Socket *this, unsigned short port, int maxconns) {
 	}
 }
 
-void Socket_SetLinger(Socket *this) {
+def(void, SetLinger) {
 	struct linger ling;
 
 	ling.l_onoff  = 1;
@@ -101,7 +102,7 @@ void Socket_SetLinger(Socket *this) {
 	}
 }
 
-SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short port) {
+def(SocketConnection, Connect, String hostname, unsigned short port) {
 	struct sockaddr_in addr;
 
 	addr.sin_family = PF_INET;
@@ -109,8 +110,8 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 	addr.sin_port   = htons(port);
 
 	if (!this->unused) {
-		Socket_Destroy(this);
-		Socket_Init(this, this->protocol);
+		call(Destroy);
+		call(Init, this->protocol);
 	}
 
 	if (!Kernel_connect(this->fd, &addr, sizeof(addr))) {
@@ -133,7 +134,7 @@ SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short po
 	return conn;
 }
 
-SocketConnection Socket_Accept(Socket *this) {
+def(SocketConnection, Accept) {
 	struct sockaddr_in remote;
 	socklen_t socklen = sizeof(remote);
 
@@ -153,7 +154,7 @@ SocketConnection Socket_Accept(Socket *this) {
 	return conn;
 }
 
-void Socket_Destroy(Socket *this) {
+def(void, Destroy) {
 	Kernel_shutdown(this->fd, SHUT_RDWR);
 	Kernel_close(this->fd);
 }

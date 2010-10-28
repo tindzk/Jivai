@@ -9,10 +9,10 @@
 #undef self
 #define self Socket
 
-typedef enum {
-	Socket_Protocol_TCP,
-	Socket_Protocol_UDP
-} Socket_Protocol;
+set(ref(Protocol)) {
+	ref(Protocol_TCP),
+	ref(Protocol_UDP)
+};
 
 enum {
 	excAcceptFailed = excOffset,
@@ -24,20 +24,20 @@ enum {
 	excSocketFailed
 };
 
-typedef struct {
+class(self) {
 	ssize_t fd;
 	bool unused;
 	Socket_Protocol protocol;
-} Socket;
+};
 
 void Socket0(ExceptionManager *e);
 
-void Socket_Init(Socket *this, Socket_Protocol protocol);
-void Socket_SetNonBlockingFlag(Socket *this, bool enable);
-void Socket_SetCloexecFlag(Socket *this, bool enable);
-void Socket_SetReusableFlag(Socket *this, bool enable);
-void Socket_Listen(Socket *this, unsigned short port, int maxconns);
-void Socket_SetLinger(Socket *this);
-SocketConnection Socket_Connect(Socket *this, String hostname, unsigned short port);
-SocketConnection Socket_Accept(Socket *this);
-void Socket_Destroy(Socket *this);
+def(void, Init, ref(Protocol) protocol);
+def(void, SetNonBlockingFlag, bool enable);
+def(void, SetCloexecFlag, bool enable);
+def(void, SetReusableFlag, bool enable);
+def(void, Listen, unsigned short port, int maxconns);
+def(void, SetLinger);
+def(SocketConnection, Connect, String hostname, unsigned short port);
+def(SocketConnection, Accept);
+def(void, Destroy);
