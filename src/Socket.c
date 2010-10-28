@@ -136,7 +136,7 @@ def(SocketConnection, Connect, String hostname, unsigned short port) {
 
 def(SocketConnection, Accept) {
 	struct sockaddr_in remote;
-	socklen_t socklen = sizeof(remote);
+	int socklen = sizeof(remote);
 
 	SocketConnection conn;
 

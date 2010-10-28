@@ -149,7 +149,7 @@ ssize_t Kernel_socket(int namespace, int style, int protocol) {
 #endif
 }
 
-bool Kernel_setsockopt(ssize_t fd, int level, int option, void *value, size_t size) {
+bool Kernel_setsockopt(ssize_t fd, int level, int option, const void *value, int size) {
 #if defined(__NR_setsockopt)
 	return syscall(__NR_setsockopt, fd, level, option, value, size) == 0;
 #else
@@ -194,7 +194,7 @@ bool Kernel_connect(ssize_t fd, void *addr, size_t size) {
 #endif
 }
 
-ssize_t Kernel_accept(ssize_t fd, void *addr, void *len) {
+ssize_t Kernel_accept(ssize_t fd, void *addr, int *len) {
 #if defined(__NR_accept)
 	return syscall(__NR_accept, fd, addr, len);
 #else
