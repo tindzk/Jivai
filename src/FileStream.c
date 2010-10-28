@@ -2,11 +2,11 @@
 
 /* Clang does not support pointers to overloaded C functions. */
 size_t FileStream_Read(FileStream *this, void *buf, size_t len) {
-	return File_Read(this, buf, len);
+	return File_Read(File_FromObject(this), buf, len);
 }
 
 size_t FileStream_Write(FileStream *this, void *buf, size_t len) {
-	return File_Write(this, buf, len);
+	return File_Write(File_FromObject(this), buf, len);
 }
 
 bool FileStream_IsEof(__unused FileStream *this) {

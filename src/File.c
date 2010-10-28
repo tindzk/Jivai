@@ -1,26 +1,27 @@
 #import "File.h"
+#import "App.h"
 
-static File _File_StdIn = {
+static self stdIn = {
 	.fd       = FileNo_StdIn,
 	.readable = true,
 	.writable = false
 };
 
-static File _File_StdOut = {
+static self stdOut = {
 	.fd       = FileNo_StdOut,
 	.readable = false,
 	.writable = true
 };
 
-static File _File_StdErr = {
+static self stdErr = {
 	.fd       = FileNo_StdErr,
 	.readable = false,
 	.writable = true
 };
 
-File *File_StdIn  = &_File_StdIn;
-File *File_StdOut = &_File_StdOut;
-File *File_StdErr = &_File_StdErr;
+self* ref(StdIn)  = &stdIn;
+self* ref(StdOut) = &stdOut;
+self* ref(StdErr) = &stdErr;
 
 static ExceptionManager *exc;
 
@@ -28,7 +29,7 @@ void File0(ExceptionManager *e) {
 	exc = e;
 }
 
-void File_Open(File *this, String path, int mode) {
+def(void, Open, String path, int mode) {
 	errno = 0;
 
 	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
@@ -64,17 +65,17 @@ void File_Open(File *this, String path, int mode) {
 	}
 }
 
-void File_Close(File *this) {
+def(void, Close) {
 	Kernel_close(this->fd);
 }
 
-void File_SetXattr(File *this, String name, String value) {
+def(void, SetXattr, String name, String value) {
 	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
 		throw(exc, excSettingAttributeFailed);
 	}
 }
 
-overload String File_GetXattr(File *this, String name) {
+overload def(String, GetXattr, String name) {
 	errno = 0;
 
 	ssize_t size = Kernel_fgetxattr(this->fd, name, NULL, 0);
@@ -98,7 +99,7 @@ overload String File_GetXattr(File *this, String name) {
 	return res;
 }
 
-overload void File_GetXattr(File *this, String name, String *value) {
+overload def(void, GetXattr, String name, String *value) {
 	errno = 0;
 
 	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, value->size);
@@ -116,7 +117,7 @@ overload void File_GetXattr(File *this, String name, String *value) {
 	value->len = size;
 }
 
-overload void File_Truncate(File *this, u64 length) {
+overload def(void, Truncate, u64 length) {
 	errno = 0;
 
 	if (!Kernel_ftruncate64(this->fd, length)) {
@@ -132,11 +133,11 @@ overload void File_Truncate(File *this, u64 length) {
 	}
 }
 
-overload void File_Truncate(File *this) {
-	File_Truncate(this, 0);
+overload def(void, Truncate) {
+	call(Truncate, 0);
 }
 
-Stat64 File_GetStat(File *this) {
+def(Stat64, GetStat) {
 	errno = 0;
 
 	Stat64 attr;
@@ -154,11 +155,11 @@ Stat64 File_GetStat(File *this) {
 	return attr;
 }
 
-u64 File_GetSize(File *this) {
-	return File_GetStat(this).size;
+def(u64, GetSize) {
+	return call(GetStat).size;
 }
 
-overload size_t File_Read(File *this, void *buf, size_t len) {
+overload def(size_t, Read, void *buf, size_t len) {
 	if (!this->readable) {
 		throw(exc, excNotReadable);
 	}
@@ -180,11 +181,11 @@ overload size_t File_Read(File *this, void *buf, size_t len) {
 	return res;
 }
 
-inline overload void File_Read(File *this, String *res) {
-	res->len = File_Read(this, res->buf, res->size);
+inline overload def(void, Read, String *res) {
+	res->len = call(Read, res->buf, res->size);
 }
 
-overload size_t File_Write(File *this, void *buf, size_t len) {
+overload def(size_t, Write, void *buf, size_t len) {
 	if (!this->writable) {
 		throw(exc, excNotWritable);
 	}
@@ -206,11 +207,11 @@ overload size_t File_Write(File *this, void *buf, size_t len) {
 	return res;
 }
 
-overload size_t File_Write(File *this, String s) {
-	return File_Write(this, s.buf, s.len);
+overload def(size_t, Write, String s) {
+	return call(Write, s.buf, s.len);
 }
 
-u64 File_Seek(File *this, u64 offset, File_SeekType whence) {
+def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	if (!this->readable) {
 		throw(exc, excNotReadable);
 	}
@@ -232,18 +233,19 @@ u64 File_Seek(File *this, u64 offset, File_SeekType whence) {
 	return pos;
 }
 
-u64 File_Tell(File *this) {
-	return File_Seek(this, 0L, File_SeekType_Cur);
+def(u64, Tell) {
+	return call(Seek, 0L, ref(SeekType_Cur));
 }
 
-void File_GetContents(String path, String *res) {
+void ref(GetContents)(String path, String *res) {
 	File file;
-	File_Open(&file, path, FileStatus_ReadOnly);
+	ref(Open)(&file, path, FileStatus_ReadOnly);
 
 	size_t len = 0;
 
 	do {
-		len = File_Read(&file,
+		len = ref(Read)(
+			File_FromObject(&file),
 			res->buf  + res->len,
 			res->size - res->len);
 
