@@ -112,11 +112,11 @@ bool Kernel_fstat64(ssize_t fd, Stat64 *attr) {
 	return syscall(__NR_fstat64, fd, attr) == 0;
 }
 
-bool Kernel_truncate64(String path, size_t len) {
+bool Kernel_truncate64(String path, u64 len) {
 	return syscall(__NR_truncate64, String_ToNul(path), len) == 0;
 }
 
-bool Kernel_ftruncate64(ssize_t fd, size_t len) {
+bool Kernel_ftruncate64(ssize_t fd, u64 len) {
 	return syscall(__NR_ftruncate64, fd, len) == 0;
 }
 
