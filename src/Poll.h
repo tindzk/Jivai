@@ -20,14 +20,11 @@
 #define Poll_Events 4096
 #endif
 
-typedef void (* ref(OnEvent))(void *, int, void *);
+DefineCallback(ref(OnEvent), void, int events, void *ptr);
 
 class(self) {
 	ssize_t fd;
-
 	struct epoll_event events[ref(Events)];
-
-	void *context;
 	ref(OnEvent) onEvent;
 };
 
@@ -40,7 +37,7 @@ enum {
 
 void Poll0(ExceptionManager *e);
 
-def(void, Init, ref(OnEvent) onEvent, void *context);
+def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
 def(void, AddEvent, void *ptr, ssize_t fd, int events);
 def(void, ModifyEvent, void *ptr, ssize_t fd, int events);

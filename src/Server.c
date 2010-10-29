@@ -8,7 +8,7 @@ void Server0(ExceptionManager *e) {
 }
 
 def(void, Init, ref(Events) events, bool edgeTriggered, unsigned short port) {
-	Poll_Init(&this->poll, (void *) ref(OnEvent), this);
+	Poll_Init(&this->poll, Callback(this, ref(OnEvent)));
 	this->events = events;
 
 	this->edgeTriggered = edgeTriggered;

@@ -7,7 +7,7 @@ void Poll0(ExceptionManager *e) {
 	exc = e;
 }
 
-def(void, Init, ref(OnEvent) onEvent, void *context) {
+def(void, Init, ref(OnEvent) onEvent) {
 	if ((this->fd = Kernel_epoll_create(ref(Events))) == -1) {
 		throw(exc, excUnknownError);
 	}
@@ -20,7 +20,6 @@ def(void, Init, ref(OnEvent) onEvent, void *context) {
 	}
 
 	this->onEvent = onEvent;
-	this->context = context;
 }
 
 def(void, Destroy) {
@@ -99,8 +98,7 @@ def(size_t, Process, int timeout) {
 	}
 
 	for (size_t i = 0; i < (size_t) nfds; i++) {
-		this->onEvent(
-			this->context,
+		callback(this->onEvent,
 			this->events[i].events,
 			this->events[i].data.ptr);
 	}
