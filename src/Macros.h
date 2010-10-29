@@ -108,10 +108,10 @@
 	}
 
 #define SingletonPrototype(name) \
-	Instance(name) underscoredConcat(name, GetInstance)(void);
+	Instance(name) underscoredConcat(name, GetInstance)(void)
 
 #define Singleton(name, ...)                                         \
-	Instance(name) underscoredConcat(name, GetInstance)(void) {      \
+	SingletonPrototype(name) {                                       \
 		static name object;                                          \
 		static Instance(name) instance;                              \
 		if (underscoredConcat(name, IsNull)(instance)) {             \
