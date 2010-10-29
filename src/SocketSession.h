@@ -16,8 +16,8 @@ typedef enum {
 	SocketSession_OperationType_File
 } SocketSession_OperationType;
 
-typedef struct _SocketSession {
-	Connection_Define(_SocketSession);
+typedef struct {
+	Connection base;
 
 	void *context;
 	SocketConnection *conn;

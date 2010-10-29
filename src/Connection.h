@@ -1,17 +1,17 @@
 #import "Client.h"
 #import "DoublyLinkedList.h"
 
-typedef enum {
-	Connection_Status_Close = 0,
-	Connection_Status_Open
-} Connection_Status;
+#undef self
+#define self Connection
 
-#define Connection_Define(name) \
-	Client *client;             \
-	DoublyLinkedList_DeclareRef(name)
+set(ref(Status)) {
+	ref(Status_Close),
+	ref(Status_Open)
+};
 
-typedef struct _Connection {
-	Connection_Define(_Connection);
-} Connection;
+record(self) {
+	Client *client;
+	DoublyLinkedList_DeclareRef(self);
+};
 
-DoublyLinkedList_DeclareList(Connection, Connections);
+DoublyLinkedList_DeclareList(self, Connections);

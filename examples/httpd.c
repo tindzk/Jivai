@@ -240,8 +240,8 @@ Connection_Status Request_Respond(Request *this) {
 // HttpConnection
 // --------------
 
-typedef struct _HttpConnection {
-	Connection_Define(_HttpConnection);
+typedef struct {
+	Connection base;
 	Request request;
 } HttpConnection;
 
