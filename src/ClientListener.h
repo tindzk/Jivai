@@ -3,18 +3,21 @@
 #import "Connection.h"
 #import "ConnectionInterface.h"
 
-typedef struct {
+#undef self
+#define self ClientListener
+
+class(self) {
 	Connections         connections;
 	ConnectionInterface *connection;
-} ClientListener;
+};
 
 void ClientListener0(ExceptionManager *e);
-void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_Events *events);
-void ClientListener_OnInit(ClientListener *this);
-void ClientListener_OnDestroy(ClientListener *this);
-bool ClientListener_OnConnect(__unused ClientListener *this);
-void ClientListener_OnAccept(ClientListener *this, Client *client);
-void ClientListener_OnDisconnect(ClientListener *this, Client *client);
-static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull);
-Connection_Status ClientListener_OnPull(ClientListener *this, Client *client);
-Connection_Status ClientListener_OnPush(ClientListener *this, Client *client);
+
+def(void, Init, ConnectionInterface *itf, Server_Events *events);
+def(void, OnInit);
+def(void, OnDestroy);
+def(bool, OnConnect);
+def(void, OnAccept, Client *client);
+def(void, OnDisconnect, Client *client);
+def(Connection_Status, OnPull, Client *client);
+def(Connection_Status, OnPush, Client *client);

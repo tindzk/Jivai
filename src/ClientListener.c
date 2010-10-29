@@ -1,4 +1,5 @@
 #import "ClientListener.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,23 +7,23 @@ void ClientListener0(ExceptionManager *e) {
 	exc = e;
 }
 
-void ClientListener_Init(ClientListener *this, ConnectionInterface *itf, Server_Events *events) {
+def(void, Init, ConnectionInterface *itf, Server_Events *events) {
 	this->connection           = itf;
 	events->context            = this;
-	events->onInit             = (void *) &ClientListener_OnInit;
-	events->onDestroy          = (void *) &ClientListener_OnDestroy;
-	events->onClientConnect    = (void *) &ClientListener_OnConnect;
-	events->onClientAccept     = (void *) &ClientListener_OnAccept;
-	events->onPull             = (void *) &ClientListener_OnPull;
-	events->onPush             = (void *) &ClientListener_OnPush;
-	events->onClientDisconnect = (void *) &ClientListener_OnDisconnect;
+	events->onInit             = (void *) ref(OnInit);
+	events->onDestroy          = (void *) ref(OnDestroy);
+	events->onClientConnect    = (void *) ref(OnConnect);
+	events->onClientAccept     = (void *) ref(OnAccept);
+	events->onPull             = (void *) ref(OnPull);
+	events->onPush             = (void *) ref(OnPush);
+	events->onClientDisconnect = (void *) ref(OnDisconnect);
 }
 
-void ClientListener_OnInit(ClientListener *this) {
+def(void, OnInit) {
 	DoublyLinkedList_Init(&this->connections);
 }
 
-void ClientListener_OnDestroy(ClientListener *this) {
+def(void, OnDestroy) {
 	/* Shut down all remaining connections. */
 	void (^destroy)(Connection *) = ^(Connection *conn) {
 		this->connection->destroy(conn);
@@ -33,11 +34,11 @@ void ClientListener_OnDestroy(ClientListener *this) {
 	DoublyLinkedList_Destroy(&this->connections, destroy);
 }
 
-bool ClientListener_OnConnect(__unused ClientListener *this) {
+def(bool, OnConnect) {
 	return true;
 }
 
-void ClientListener_OnAccept(ClientListener *this, Client *client) {
+def(void, OnAccept, Client *client) {
 	Connection *conn = this->connection->new();
 
 	this->connection->init(conn, client->conn);
@@ -55,7 +56,7 @@ void ClientListener_OnAccept(ClientListener *this, Client *client) {
 	DoublyLinkedList_InsertEnd(&this->connections, conn);
 }
 
-void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
+def(void, OnDisconnect, Client *client) {
 	if (client->data != NULL) {
 		Connection *conn = client->data;
 		this->connection->destroy(conn);
@@ -64,7 +65,7 @@ void ClientListener_OnDisconnect(ClientListener *this, Client *client) {
 	}
 }
 
-static Connection_Status ClientListener_OnData(ClientListener *this, Client *client, bool pull) {
+static def(Connection_Status, OnData, Client *client, bool pull) {
 	Connection_Status status = Connection_Status_Open;
 
 	if (client->data != NULL) {
@@ -94,10 +95,10 @@ static Connection_Status ClientListener_OnData(ClientListener *this, Client *cli
 	return status;
 }
 
-Connection_Status ClientListener_OnPull(ClientListener *this, Client *client) {
-	return ClientListener_OnData(this, client, true);
+def(Connection_Status, OnPull, Client *client) {
+	return call(OnData, client, true);
 }
 
-Connection_Status ClientListener_OnPush(ClientListener *this, Client *client) {
-	return ClientListener_OnData(this, client, false);
+def(Connection_Status, OnPush, Client *client) {
+	return call(OnData, client, false);
 }
