@@ -39,7 +39,7 @@ def(bool, OnConnect) {
 }
 
 def(void, OnAccept, Client *client) {
-	Connection *conn = this->connection->new();
+	Connection *conn = Memory_Alloc(this->connection->size);
 
 	this->connection->init(conn, client->conn);
 
