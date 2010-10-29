@@ -50,70 +50,70 @@
 #define CurModule \
 	underscoredConcat(Modules, self)
 
-#define InstanceName(name) \
+#define Instance(name) \
 	simpleConcat(name, Instance)
 
 #define Impl(name) \
 	simpleConcat(name, Impl)
 
 #define def(ret, method, ...) \
-	ret ref(method)(__unused InstanceName(self) $this, ## __VA_ARGS__)
+	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)
 
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
 
-#define BasicInstance(name)                                                               \
-	static inline InstanceName(name) underscoredConcat(name, FromObject)(name *object) {  \
-		return (InstanceName(name)) { .object = object };                                 \
-	}                                                                                     \
-	static inline name* underscoredConcat(name, GetObject)(InstanceName(name) instance) { \
-		return instance.object;                                                           \
-	}                                                                                     \
-	static inline InstanceName(name) underscoredConcat(name, Null)() {                    \
-		return (InstanceName(name)) { .object = NULL };                                   \
-	}                                                                                     \
-	static inline bool underscoredConcat(name, IsNull)(InstanceName(name) instance) {     \
-		return instance.object == NULL;                                                   \
-	}                                                                                     \
-	static inline bool underscoredConcat(name, Equals)(InstanceName(name) a, InstanceName(name) b) { \
-		return a.object == b.object;                                                      \
-	}                                                                                     \
-	static inline GenericInstance underscoredConcat(name, ToGeneric)(InstanceName(name) instance) { \
-		return (GenericInstance) { .object = instance.object };                           \
+#define BasicInstance(name)                                                                     \
+	static inline Instance(name) underscoredConcat(name, FromObject)(name *object) {            \
+		return (Instance(name)) { .object = object };                                           \
+	}                                                                                           \
+	static inline name* underscoredConcat(name, GetObject)(Instance(name) instance) {           \
+		return instance.object;                                                                 \
+	}                                                                                           \
+	static inline Instance(name) underscoredConcat(name, Null)() {                              \
+		return (Instance(name)) { .object = NULL };                                             \
+	}                                                                                           \
+	static inline bool underscoredConcat(name, IsNull)(Instance(name) instance) {               \
+		return instance.object == NULL;                                                         \
+	}                                                                                           \
+	static inline bool underscoredConcat(name, Equals)(Instance(name) a, Instance(name) b) {    \
+		return a.object == b.object;                                                            \
+	}                                                                                           \
+	static inline GenericInstance underscoredConcat(name, ToGeneric)(Instance(name) instance) { \
+		return (GenericInstance) { .object = instance.object };                                 \
 	}
 
-#define class(name)                        \
-	typedef struct name name;              \
-	typedef union {                        \
-		struct name *object;               \
-		GenericInstance generic;           \
-	} InstanceName(name) transparentUnion; \
-	BasicInstance(name)                    \
+#define class(name)                    \
+	typedef struct name name;          \
+	typedef union {                    \
+		struct name *object;           \
+		GenericInstance generic;       \
+	} Instance(name) transparentUnion; \
+	BasicInstance(name)                \
 	struct name
 
 /* This cannot be included in class() as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass(name)                                                                     \
-	static __unused alwaysInline InstanceName(name) underscoredConcat(name, NewStack)(void) { \
-		name obj;                                                                             \
-		return (InstanceName(name)) &obj;                                                     \
-	}                                                                                         \
-	static inline InstanceName(name) underscoredConcat(name, New)(void) {                     \
-		return (InstanceName(name)) (name *) Memory_Alloc(sizeof(name));                      \
-	}                                                                                         \
-	static inline void underscoredConcat(name, Free)(InstanceName(name) instance) {           \
-		Memory_Free(instance.object);                                                         \
+#define ExtendClass(name)                                                                 \
+	static __unused alwaysInline Instance(name) underscoredConcat(name, NewStack)(void) { \
+		name obj;                                                                         \
+		return (Instance(name)) &obj;                                                     \
+	}                                                                                     \
+	static inline Instance(name) underscoredConcat(name, New)(void) {                     \
+		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                      \
+	}                                                                                     \
+	static inline void underscoredConcat(name, Free)(Instance(name) instance) {           \
+		Memory_Free(instance.object);                                                     \
 	}
 
 #define SingletonPrototype(name) \
-	InstanceName(name) underscoredConcat(name, GetInstance)(void);
+	Instance(name) underscoredConcat(name, GetInstance)(void);
 
 #define Singleton(name, ...)                                         \
-	InstanceName(name) underscoredConcat(name, GetInstance)(void) {  \
+	Instance(name) underscoredConcat(name, GetInstance)(void) {      \
 		static name object;                                          \
-		static InstanceName(name) instance;                          \
+		static Instance(name) instance;                              \
 		if (underscoredConcat(name, IsNull)(instance)) {             \
 			instance = underscoredConcat(name, FromObject)(&object); \
 			underscoredConcat(name, Init)(instance, ## __VA_ARGS__); \
@@ -123,7 +123,7 @@
 
 #define SingletonDestructor(name)                   \
 	static void __destructor dtor(void) {           \
-		InstanceName(self) instance =               \
+		Instance(self) instance =                   \
 			underscoredConcat(name, GetInstance)(); \
 		underscoredConcat(name, Destroy)(instance); \
 	}
