@@ -20,7 +20,7 @@ def(ssize_t, GetFd) {
 def(void, Accept, Socket *socket) {
 	SocketConnection conn = Socket_Accept(socket);
 
-	this->conn = Memory_CloneObject(&conn);
+	this->conn = Memory_CloneObject(conn);
 
 	this->conn->corking     = true;
 	this->conn->nonblocking = true;

@@ -51,5 +51,5 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 #define Memory_CopyObject(pDest, pSource) \
 	Memory_Copy(pDest, pSource, sizeof(*(pSource)))
 
-#define Memory_CloneObject(pSource) \
-	Memory_Clone(pSource, sizeof(*(pSource)))
+#define Memory_CloneObject(obj) \
+	Memory_Clone(&(obj), sizeof(obj))
