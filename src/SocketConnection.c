@@ -1,4 +1,5 @@
 #import "SocketConnection.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,14 +7,14 @@ void SocketConnection0(ExceptionManager *e) {
 	exc = e;
 }
 
-void SocketConnection_Flush(SocketConnection *this) {
+def(void, Flush) {
 	if (this->corking) {
 		int state = 0;
 		Kernel_setsockopt(this->fd, IPPROTO_TCP, TCP_CORK, &state, sizeof(state));
 	}
 }
 
-ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
+def(ssize_t, Read, void *buf, size_t len) {
 	int flags = this->nonblocking ? MSG_DONTWAIT : 0;
 
 	errno = 0;
@@ -39,7 +40,7 @@ ssize_t SocketConnection_Read(SocketConnection *this, void *buf, size_t len) {
 	return res;
 }
 
-bool SocketConnection_SendFile(SocketConnection *this, File *file, u64 *offset, size_t len) {
+def(bool, SendFile, File *file, u64 *offset, size_t len) {
 	if (this->nonblocking) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus,
 			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)
@@ -49,8 +50,8 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, u64 *offset, 
 	}
 
 	while (len > 0) {
-		size_t write = (len > SocketConnection_ChunkSize)
-			? SocketConnection_ChunkSize
+		size_t write = (len > ref(ChunkSize))
+			? ref(ChunkSize)
 			: len;
 
 		ssize_t res;
@@ -86,7 +87,7 @@ bool SocketConnection_SendFile(SocketConnection *this, File *file, u64 *offset, 
 	return true;
 }
 
-ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
+def(ssize_t, Write, void *buf, size_t len) {
 	int flags = MSG_NOSIGNAL;
 
 	if (this->corking) {
@@ -118,7 +119,7 @@ ssize_t SocketConnection_Write(SocketConnection *this, void *buf, size_t len) {
 	return res;
 }
 
-void SocketConnection_Close(SocketConnection *this) {
+def(void, Close) {
 	if (this->closable) {
 		Kernel_shutdown(this->fd, SHUT_RDWR);
 		Kernel_close(this->fd);
