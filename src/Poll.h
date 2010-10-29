@@ -20,16 +20,16 @@
 #define Poll_Events 4096
 #endif
 
-typedef void (* Poll_OnEvent)(void *, int, void *);
+typedef void (* ref(OnEvent))(void *, int, void *);
 
-typedef struct {
+class(self) {
 	ssize_t fd;
 
-	struct epoll_event events[Poll_Events];
+	struct epoll_event events[ref(Events)];
 
 	void *context;
-	Poll_OnEvent onEvent;
-} Poll;
+	ref(OnEvent) onEvent;
+};
 
 enum {
 	excFileDescriptorAlreadyAdded = excOffset,
@@ -40,9 +40,9 @@ enum {
 
 void Poll0(ExceptionManager *e);
 
-void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context);
-void Poll_Destroy(Poll *this);
-void Poll_AddEvent(Poll *this, void *ptr, ssize_t fd, int events);
-void Poll_ModifyEvent(Poll *this, void *ptr, ssize_t fd, int events);
-void Poll_DeleteEvent(Poll *this, int fd);
-size_t Poll_Process(Poll *this, int timeout);
+def(void, Init, ref(OnEvent) onEvent, void *context);
+def(void, Destroy);
+def(void, AddEvent, void *ptr, ssize_t fd, int events);
+def(void, ModifyEvent, void *ptr, ssize_t fd, int events);
+def(void, DeleteEvent, int fd);
+def(size_t, Process, int timeout);

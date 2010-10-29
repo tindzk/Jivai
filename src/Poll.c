@@ -1,4 +1,5 @@
 #import "Poll.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,8 +7,8 @@ void Poll0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context) {
-	if ((this->fd = Kernel_epoll_create(Poll_Events)) == -1) {
+def(void, Init, ref(OnEvent) onEvent, void *context) {
+	if ((this->fd = Kernel_epoll_create(ref(Events))) == -1) {
 		throw(exc, excUnknownError);
 	}
 
@@ -22,11 +23,11 @@ void Poll_Init(Poll *this, Poll_OnEvent onEvent, void *context) {
 	this->context = context;
 }
 
-void Poll_Destroy(Poll *this) {
+def(void, Destroy) {
 	Kernel_close(this->fd);
 }
 
-void Poll_AddEvent(Poll *this, void *ptr, ssize_t fd, int events) {
+def(void, AddEvent, void *ptr, ssize_t fd, int events) {
 	struct epoll_event ev = {0, {0}};
 
 	ev.events = events;
@@ -47,7 +48,7 @@ void Poll_AddEvent(Poll *this, void *ptr, ssize_t fd, int events) {
 	}
 }
 
-void Poll_ModifyEvent(Poll *this, void *ptr, ssize_t fd, int events) {
+def(void, ModifyEvent, void *ptr, ssize_t fd, int events) {
 	struct epoll_event ev = {0, {0}};
 
 	ev.events = events;
@@ -68,7 +69,7 @@ void Poll_ModifyEvent(Poll *this, void *ptr, ssize_t fd, int events) {
 	}
 }
 
-void Poll_DeleteEvent(Poll *this, int fd) {
+def(void, DeleteEvent, int fd) {
 	errno = 0;
 
 	if (Kernel_epoll_ctl(this->fd, EPOLL_CTL_DEL, fd, NULL)) {
@@ -84,12 +85,12 @@ void Poll_DeleteEvent(Poll *this, int fd) {
 	}
 }
 
-size_t Poll_Process(Poll *this, int timeout) {
+def(size_t, Process, int timeout) {
 	errno = 0;
 
 	ssize_t nfds;
 
-	if ((nfds = Kernel_epoll_wait(this->fd, this->events, Poll_Events, timeout)) == -1) {
+	if ((nfds = Kernel_epoll_wait(this->fd, this->events, ref(Events), timeout)) == -1) {
 		if (errno == EBADF) {
 			throw(exc, excInvalidFileDescriptor);
 		} else {
