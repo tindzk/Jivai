@@ -8,37 +8,40 @@
 #define Server_ConnectionLimit 1024
 #endif
 
-typedef void (* Server_OnInit)(void *);
-typedef void (* Server_OnDestroy)(void *);
-typedef bool (* Server_OnClientConnect)(void *);
-typedef void (* Server_OnClientAccept)(void *, Client *);
-typedef Connection_Status (* Server_OnClientData)(void *, Client *);
-typedef void (* Server_OnClientDisconnect)(void *, Client *);
+#undef self
+#define self Server
 
-typedef struct {
+typedef void (* ref(OnInit))(void *);
+typedef void (* ref(OnDestroy))(void *);
+typedef bool (* ref(OnClientConnect))(void *);
+typedef void (* ref(OnClientAccept))(void *, Client *);
+typedef Connection_Status (* ref(OnClientData))(void *, Client *);
+typedef void (* ref(OnClientDisconnect))(void *, Client *);
+
+record(ref(Events)) {
 	void *context;
 
-	Server_OnInit             onInit;
-	Server_OnInit             onDestroy;
-	Server_OnClientConnect    onClientConnect;
-	Server_OnClientAccept     onClientAccept;
-	Server_OnClientData       onPull;
-	Server_OnClientData       onPush;
-	Server_OnClientDisconnect onClientDisconnect;
-} Server_Events;
+	ref(OnInit)             onInit;
+	ref(OnInit)             onDestroy;
+	ref(OnClientConnect)    onClientConnect;
+	ref(OnClientAccept)     onClientAccept;
+	ref(OnClientData)       onPull;
+	ref(OnClientData)       onPush;
+	ref(OnClientDisconnect) onClientDisconnect;
+};
 
-typedef struct {
-	bool          edgeTriggered;
-	Poll          poll;
-	Socket        socket;
-	Server_Events events;
-} Server;
+class(self) {
+	bool        edgeTriggered;
+	Poll        poll;
+	Socket      socket;
+	ref(Events) events;
+};
 
 void Server0(ExceptionManager *e);
 
-void Server_Init(Server *this, Server_Events events, bool edgeTriggered, unsigned short port);
-void Server_Destroy(Server *this);
-void Server_Process(Server *this);
-void Server_DestroyClient(Server *this, Client *client);
-void Server_AcceptClient(Server *this);
-void Server_OnEvent(Server *this, int events, Client *client);
+def(void, Init, ref(Events) events, bool edgeTriggered, unsigned short port);
+def(void, Destroy);
+def(void, Process);
+def(void, DestroyClient, Client *client);
+def(void, AcceptClient);
+def(void, OnEvent, int events, Client *client);

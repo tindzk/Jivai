@@ -1,4 +1,5 @@
 #import "Server.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,8 +7,8 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Server_Init(Server *this, Server_Events events, bool edgeTriggered, unsigned short port) {
-	Poll_Init(&this->poll, (void *) &Server_OnEvent, this);
+def(void, Init, ref(Events) events, bool edgeTriggered, unsigned short port) {
+	Poll_Init(&this->poll, (void *) ref(OnEvent), this);
 	this->events = events;
 
 	this->edgeTriggered = edgeTriggered;
@@ -18,7 +19,7 @@ void Server_Init(Server *this, Server_Events events, bool edgeTriggered, unsigne
 	Socket_SetReusableFlag   (&this->socket, true);
 	Socket_SetNonBlockingFlag(&this->socket, true);
 
-	Socket_Listen(&this->socket, port, Server_ConnectionLimit);
+	Socket_Listen(&this->socket, port, ref(ConnectionLimit));
 
 	/* Add the server socket to epoll. */
 	Poll_AddEvent(&this->poll, NULL, this->socket.fd,
@@ -29,23 +30,23 @@ void Server_Init(Server *this, Server_Events events, bool edgeTriggered, unsigne
 	this->events.onInit(this->events.context);
 }
 
-void Server_Destroy(Server *this) {
+def(void, Destroy) {
 	Socket_Destroy(&this->socket);
 	Poll_Destroy(&this->poll);
 
 	this->events.onDestroy(this->events.context);
 }
 
-void Server_Process(Server *this) {
+def(void, Process) {
 	Poll_Process(&this->poll, -1);
 }
 
-void Server_DestroyClient(Server *this, Client *client) {
+def(void, DestroyClient, Client *client) {
 	this->events.onClientDisconnect(this->events.context, client);
 	Client_Destroy(client);
 }
 
-void Server_AcceptClient(Server *this) {
+def(void, AcceptClient) {
 	Client *client = Client_New();
 
 	Client_Accept(client, &this->socket);
@@ -72,12 +73,12 @@ void Server_AcceptClient(Server *this) {
 	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
 }
 
-void Server_OnEvent(Server *this, int events, Client *client) {
+def(void, OnEvent, int events, Client *client) {
 	if (client == NULL && BitMask_Has(events, EPOLLIN)) {
 		/* Incoming connection. */
 
 		if (this->events.onClientConnect(this->events.context)) {
-			Server_AcceptClient(this);
+			call(AcceptClient);
 		} else {
 			/* This is necessary, else the same event will occur
 			 * again the next time epoll_wait() gets called.
@@ -104,6 +105,6 @@ void Server_OnEvent(Server *this, int events, Client *client) {
 
 	if (client != NULL && BitMask_Has(events, EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
 		/* Error occured or connection hung up. */
-		Server_DestroyClient(this, client);
+		call(DestroyClient, client);
 	}
 }
