@@ -1,3 +1,5 @@
+#import "Compiler.h"
+
 /* Currently local labels are not supported by Clang.
  *
  * Therefore there cannot be more than one exception

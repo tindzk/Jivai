@@ -38,11 +38,11 @@ typedef unsigned long long u64;
 
 typedef void Generic;
 
-typedef struct {
+typedef union {
 	Generic *object;
-} GenericInstance;
+} GenericInstance transparentUnion;
 
-BasicInstance(Generic)
+BasicInstance(Generic);
 
 /* Inline functions cannot be used as Memory's methods are not available yet. */
 #define Generic_New(size) (GenericInstance) { .object = Memory_Alloc(size) }
