@@ -7,13 +7,13 @@
 
 ExceptionManager exc;
 
-void OnLogMessage(__unused void *ptr, String msg, Logger_Level level, String file, int line) {
-	String slevel = Logger_LevelToString(level);
+void onLogMessage(__unused void *ptr, String msg, Logger_Level level, String file, int line) {
+	String slevel = Logger_ResolveLevel(level);
 	String sline  = Integer_ToString(line);
 
 	String tmp;
 	String_Print(tmp = String_Format(
-		String("[%] % (%:%)\n"),
+		$("[%] % (%:%)\n"),
 		slevel, msg, file, sline));
 
 	String_Destroy(&tmp);
@@ -27,7 +27,7 @@ int main(void) {
 	Logger logger;
 
 	/* Log everything. */
-	Logger_Init(&logger, &OnLogMessage, NULL,
+	Logger_Init(&logger, Callback(NULL, onLogMessage),
 		Logger_Level_Fatal |
 		Logger_Level_Crit  |
 		Logger_Level_Error |
@@ -36,24 +36,24 @@ int main(void) {
 		Logger_Level_Debug |
 		Logger_Level_Trace);
 
-	Logger_Log(&logger, Logger_Level_Info, String("Application started."));
+	Logger_Log(&logger, Logger_Level_Info, $("Application started."));
 
 	/* Will not be shown because the application is compiled without
 	 * debug messages. Hence, enabling the flag Logger_Level_Debug
 	 * won't change anything. */
-	Logger_Log(&logger, Logger_Level_Debug, String("Ignored message."));
+	Logger_Log(&logger, Logger_Level_Debug, $("Ignored message."));
 
 	/* Print a trace message. */
-	Logger_Log(&logger, Logger_Level_Trace, String("Trace message 1."));
+	Logger_Log(&logger, Logger_Level_Trace, $("Trace message 1."));
 
 	/* Now disable trace messages. */
 	BitMask_Clear(logger.levels, Logger_Level_Trace);
 
 	/* This will not be shown. */
-	Logger_Log(&logger, Logger_Level_Trace, String("Trace message 2."));
+	Logger_Log(&logger, Logger_Level_Trace, $("Trace message 2."));
 
 	/* Logging formatted messages is possible, too. */
-	Logger_Log(&logger, Logger_Level_Info, String("Stopping %..."), String("application"));
+	Logger_Log(&logger, Logger_Level_Info, $("Stopping %..."), $("application"));
 
 	return ExitStatus_Success;
 }

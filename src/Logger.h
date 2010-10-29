@@ -1,40 +1,41 @@
-#import "String.h"
 #import "Bit.h"
+#import "String.h"
 #import "BitMask.h"
+
+#undef self
+#define self Logger
 
 #ifndef Logger_DisabledLevels
 #define Logger_DisabledLevels 0
 #endif
 
-typedef enum {
-	Logger_Level_Fatal = Bit(0),
-	Logger_Level_Crit  = Bit(1),
-	Logger_Level_Error = Bit(2),
-	Logger_Level_Warn  = Bit(3),
-	Logger_Level_Info  = Bit(4),
-	Logger_Level_Debug = Bit(5),
-	Logger_Level_Trace = Bit(6),
-	Logger_Level_Count = 7
-} Logger_Level;
+set(ref(Level)) {
+	ref(Level_Fatal) = Bit(0),
+	ref(Level_Crit)  = Bit(1),
+	ref(Level_Error) = Bit(2),
+	ref(Level_Warn)  = Bit(3),
+	ref(Level_Info)  = Bit(4),
+	ref(Level_Debug) = Bit(5),
+	ref(Level_Trace) = Bit(6),
+	ref(Level_Count) = 7
+};
 
-typedef void (* Logger_Printer)(void *, String, Logger_Level, String, int);
+DefineCallback(Logger_Printer, void, String msg, ref(Level) level, String file, int line);
 
-typedef struct {
-	void *context;
-	Logger_Printer printer;
-
+class(self) {
+	ref(Printer) printer;
 	int levels;
-} Logger;
+};
 
-void Logger_Init(Logger *this, Logger_Printer printer, void *context, int levels);
-bool Logger_IsEnabled(Logger *this, Logger_Level level);
-String Logger_LevelToString(Logger_Level level);
+def(void, Init, ref(Printer) printer, int levels);
+def(bool, IsEnabled, ref(Level) level);
+String ref(ResolveLevel)(ref(Level) level);
 
 #define Logger_Log(this, level, fmt, ...)                      \
 	do {                                                       \
 		if (Logger_IsEnabled(this, level)) {                   \
 			String __fmt = String_Format(fmt, ## __VA_ARGS__); \
-			(this)->printer((this)->context,                   \
+			callback((this)->printer,                          \
 				__fmt, level, String(__FILE__), __LINE__);     \
 			Memory_Free(__fmt.buf);                            \
 		}                                                      \

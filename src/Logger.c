@@ -1,40 +1,40 @@
 #import "Logger.h"
+#import "App.h"
 
-void Logger_Init(Logger *this, Logger_Printer printer, void *context, int levels) {
+def(void, Init, ref(Printer) printer, int levels) {
 	this->printer = printer;
-	this->context = context;
 	this->levels  = levels;
 }
 
-inline bool Logger_IsEnabled(Logger *this, Logger_Level level) {
+inline def(bool, IsEnabled, ref(Level) level) {
 	return !BitMask_Has(Logger_DisabledLevels, level)
 		 && BitMask_Has(this->levels, level);
 }
 
-String Logger_LevelToString(Logger_Level level) {
+String ref(ResolveLevel)(ref(Level) level) {
 	switch (level) {
-		case Logger_Level_Fatal:
-			return String("Fatal");
+		case ref(Level_Fatal):
+			return $("Fatal");
 
-		case Logger_Level_Crit:
-			return String("Crit");
+		case ref(Level_Crit):
+			return $("Crit");
 
-		case Logger_Level_Error:
-			return String("Error");
+		case ref(Level_Error):
+			return $("Error");
 
-		case Logger_Level_Warn:
-			return String("Warn");
+		case ref(Level_Warn):
+			return $("Warn");
 
-		case Logger_Level_Info:
-			return String("Info");
+		case ref(Level_Info):
+			return $("Info");
 
-		case Logger_Level_Debug:
-			return String("Debug");
+		case ref(Level_Debug):
+			return $("Debug");
 
-		case Logger_Level_Trace:
-			return String("Trace");
+		case ref(Level_Trace):
+			return $("Trace");
 
 		default:
-			return String("Unknown");
+			return $("Unknown");
 	}
 }
