@@ -4,47 +4,48 @@
 #import "SocketConnection.h"
 #import "ConnectionInterface.h"
 
-typedef void (* SocketSession_OnDone)(void *, void *);
+#undef self
+#define self SocketSession
 
 enum {
 	excNotIdle = excOffset
 };
 
-typedef enum {
-	SocketSession_OperationType_Idle,
-	SocketSession_OperationType_Buffer,
-	SocketSession_OperationType_File
-} SocketSession_OperationType;
+set(ref(OperationType)) {
+	ref(OperationType_Idle),
+	ref(OperationType_Buffer),
+	ref(OperationType_File)
+};
 
-typedef struct {
-	Connection base;
+DefineCallback(ref(OnDone), void, void *);
 
-	void *context;
+class(self) {
 	SocketConnection *conn;
 
 	struct {
-		SocketSession_OperationType type;
+		ref(OperationType) type;
 
 		union {
 			struct {
 				size_t offset;
-				String buffer;
-				SocketSession_OnDone onDone;
+				String s;
+				ref(OnDone) onDone;
 			} buffer;
 
 			struct {
-				File    file;
-				u64     offset;
-				size_t  length;
-				SocketSession_OnDone onDone;
+				File file;
+				u64  offset;
+				u64  length;
+				ref(OnDone) onDone;
 			} file;
-		} u;
-	} operation;
-} SocketSession;
+		};
+	} op;
+};
 
 void SocketSession0(ExceptionManager *e);
-void SocketSession_Init(SocketSession *this, SocketConnection *conn, void *context);
-void SocketSession_Write(SocketSession *this, String s, SocketSession_OnDone onDone);
-void SocketSession_SendFile(SocketSession *this, File file, size_t length, SocketSession_OnDone onDone);
-void SocketSession_Continue(SocketSession *this);
-bool SocketSession_IsIdle(SocketSession *this);
+
+def(void, Init, SocketConnection *conn);
+def(void, Write, String s, ref(OnDone) onDone);
+def(void, SendFile, File file, size_t length, ref(OnDone) onDone);
+def(void, Continue);
+def(bool, IsIdle);
