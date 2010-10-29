@@ -89,7 +89,7 @@
 	BasicInstance(name)                    \
 	struct name
 
-/* This cannot be included in Class() as sizeof() is needed and the
+/* This cannot be included in class() as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
 #define ExtendClass(name)                                                                     \
