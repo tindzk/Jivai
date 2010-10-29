@@ -42,8 +42,12 @@ void Terminal_Destroy(Terminal *this) {
 	tcsetattr(FileNo_StdIn, 0, &this->oldTermios);
 }
 
+void Terminal_Write(Terminal *this, String s) {
+	File_Write(File_FromObject(this->out), s);
+}
+
 void Terminal_ResetVT100(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Normal);
+	Terminal_Write(this, Terminal_VT100_Normal);
 
 	this->style = (Terminal_Style) {0, 0};
 }
@@ -52,69 +56,69 @@ void Terminal_ResetVT100(Terminal *this) {
 void Terminal_SetVT100Color(Terminal *this, int color) {
 	switch (color & Terminal_Color_ForegroundMask) {
 		case Terminal_Color_ForegroundBlack:
-			File_Write(this->out, Terminal_VT100_Foreground_Black);
+			Terminal_Write(this, Terminal_VT100_Foreground_Black);
 			break;
 
 		case Terminal_Color_ForegroundRed:
-			File_Write(this->out, Terminal_VT100_Foreground_Red);
+			Terminal_Write(this, Terminal_VT100_Foreground_Red);
 			break;
 
 		case Terminal_Color_ForegroundGreen:
-			File_Write(this->out, Terminal_VT100_Foreground_Green);
+			Terminal_Write(this, Terminal_VT100_Foreground_Green);
 			break;
 
 		case Terminal_Color_ForegroundYellow:
-			File_Write(this->out, Terminal_VT100_Foreground_Yellow);
+			Terminal_Write(this, Terminal_VT100_Foreground_Yellow);
 			break;
 
 		case Terminal_Color_ForegroundBlue:
-			File_Write(this->out, Terminal_VT100_Foreground_Blue);
+			Terminal_Write(this, Terminal_VT100_Foreground_Blue);
 			break;
 
 		case Terminal_Color_ForegroundMagenta:
-			File_Write(this->out, Terminal_VT100_Foreground_Magenta);
+			Terminal_Write(this, Terminal_VT100_Foreground_Magenta);
 			break;
 
 		case Terminal_Color_ForegroundCyan:
-			File_Write(this->out, Terminal_VT100_Foreground_Cyan);
+			Terminal_Write(this, Terminal_VT100_Foreground_Cyan);
 			break;
 
 		case Terminal_Color_ForegroundWhite:
-			File_Write(this->out, Terminal_VT100_Foreground_White);
+			Terminal_Write(this, Terminal_VT100_Foreground_White);
 			break;
 	}
 
 	switch (color & Terminal_Color_BackgroundMask) {
 		case Terminal_Color_BackgroundBlack:
-			File_Write(this->out, Terminal_VT100_Background_Black);
+			Terminal_Write(this, Terminal_VT100_Background_Black);
 			break;
 
 		case Terminal_Color_BackgroundRed:
-			File_Write(this->out, Terminal_VT100_Background_Red);
+			Terminal_Write(this, Terminal_VT100_Background_Red);
 			break;
 
 		case Terminal_Color_BackgroundGreen:
-			File_Write(this->out, Terminal_VT100_Background_Green);
+			Terminal_Write(this, Terminal_VT100_Background_Green);
 			break;
 
 		case Terminal_Color_BackgroundYellow:
-			File_Write(this->out, Terminal_VT100_Background_Yellow);
+			Terminal_Write(this, Terminal_VT100_Background_Yellow);
 			break;
 
 		case Terminal_Color_BackgroundBlue:
-			File_Write(this->out, Terminal_VT100_Background_Blue);
+			Terminal_Write(this, Terminal_VT100_Background_Blue);
 			break;
 
 		case Terminal_Color_BackgroundMagenta:
-			File_Write(this->out, Terminal_VT100_Background_Magenta);
+			Terminal_Write(this, Terminal_VT100_Background_Magenta);
 			break;
 
 		case Terminal_Color_BackgroundCyan:
-			File_Write(this->out, Terminal_VT100_Background_Cyan);
+			Terminal_Write(this, Terminal_VT100_Background_Cyan);
 			break;
 
 		case Terminal_Color_BackgroundWhite:
-			File_Write(this->out, Terminal_VT100_Background_White);
+			Terminal_Write(this, Terminal_VT100_Background_White);
 			break;
 	}
 
@@ -123,19 +127,19 @@ void Terminal_SetVT100Color(Terminal *this, int color) {
 
 void Terminal_SetVT100Font(Terminal *this, int font) {
 	if (BitMask_Has(font, Terminal_Font_Bold)) {
-		File_Write(this->out, Terminal_VT100_Bold);
+		Terminal_Write(this, Terminal_VT100_Bold);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Italics)) {
-		File_Write(this->out, Terminal_VT100_Italics);
+		Terminal_Write(this, Terminal_VT100_Italics);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Underline)) {
-		File_Write(this->out, Terminal_VT100_Underline);
+		Terminal_Write(this, Terminal_VT100_Underline);
 	}
 
 	if (BitMask_Has(font, Terminal_Font_Blink)) {
-		File_Write(this->out, Terminal_VT100_Blink);
+		Terminal_Write(this, Terminal_VT100_Blink);
 	}
 
 	this->style.font = font;
@@ -206,7 +210,7 @@ overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 	}
 
 	/* Write the text into the stream. */
-	File_Write(this->out, s);
+	Terminal_Write(this, s);
 
 	/* Restore the normal color state for the stream. */
 	if (this->isVT100) {
@@ -215,20 +219,20 @@ overload void Terminal_Print(Terminal *this, int color, int font, String s) {
 }
 
 overload void Terminal_Print(Terminal *this, String s) {
-	File_Write(this->out, s);
+	Terminal_Write(this, s);
 }
 
 overload void Terminal_Print(Terminal *this, char c) {
-	File_Write(this->out, &c, 1);
+	File_Write(File_FromObject(this->out), &c, 1);
 }
 
 overload void Terminal_DeleteLine(Terminal *this, size_t n) {
 	if (n == 1) {
-		File_Write(this->out, Terminal_VT100_Delete_Line);
+		Terminal_Write(this, Terminal_VT100_Delete_Line);
 	} else {
-		File_Write(this->out, String("\33["));
-		File_Write(this->out, Integer_ToString(n));
-		File_Write(this->out, String("M"));
+		Terminal_Write(this, String("\33["));
+		Terminal_Write(this, Integer_ToString(n));
+		Terminal_Write(this, String("M"));
 	}
 }
 
@@ -237,74 +241,74 @@ inline overload void Terminal_DeleteLine(Terminal *this) {
 }
 
 void Terminal_DeleteUntilEol(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Delete_UntilEol);
+	Terminal_Write(this, Terminal_VT100_Delete_UntilEol);
 }
 
 void Terminal_MoveHome(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Cursor_Home);
+	Terminal_Write(this, Terminal_VT100_Cursor_Home);
 }
 
 void Terminal_MoveUp(Terminal *this, size_t n) {
 	if (n == 1) {
-		File_Write(this->out, Terminal_VT100_Cursor_Up);
+		Terminal_Write(this, Terminal_VT100_Cursor_Up);
 	} else {
-		File_Write(this->out, String("\33["));
-		File_Write(this->out, Integer_ToString(n));
-		File_Write(this->out, String("A"));
+		Terminal_Write(this, String("\33["));
+		Terminal_Write(this, Integer_ToString(n));
+		Terminal_Write(this, String("A"));
 	}
 }
 
 void Terminal_MoveDown(Terminal *this, size_t n) {
 	if (n == 1) {
-		File_Write(this->out, Terminal_VT100_Cursor_Down);
+		Terminal_Write(this, Terminal_VT100_Cursor_Down);
 	} else {
-		File_Write(this->out, String("\33["));
-		File_Write(this->out, Integer_ToString(n));
-		File_Write(this->out, String("B"));
+		Terminal_Write(this, String("\33["));
+		Terminal_Write(this, Integer_ToString(n));
+		Terminal_Write(this, String("B"));
 	}
 }
 
 void Terminal_MoveLeft(Terminal *this, size_t n) {
 	if (n == 1) {
-		File_Write(this->out, Terminal_VT100_Cursor_Left);
+		Terminal_Write(this, Terminal_VT100_Cursor_Left);
 	} else {
-		File_Write(this->out, String("\33["));
-		File_Write(this->out, Integer_ToString(n));
-		File_Write(this->out, String("D"));
+		Terminal_Write(this, String("\33["));
+		Terminal_Write(this, Integer_ToString(n));
+		Terminal_Write(this, String("D"));
 	}
 }
 
 void Terminal_MoveRight(Terminal *this, size_t n) {
 	if (n > 0) {
 		if (n == 1) {
-			File_Write(this->out, Terminal_VT100_Cursor_Right);
+			Terminal_Write(this, Terminal_VT100_Cursor_Right);
 		} else {
-			File_Write(this->out, String("\33["));
-			File_Write(this->out, Integer_ToString(n));
-			File_Write(this->out, String("C"));
+			Terminal_Write(this, String("\33["));
+			Terminal_Write(this, Integer_ToString(n));
+			Terminal_Write(this, String("C"));
 		}
 	}
 }
 
 void Terminal_HideCursor(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Cursor_Hide);
+	Terminal_Write(this, Terminal_VT100_Cursor_Hide);
 }
 
 void Terminal_ShowCursor(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Cursor_Show);
+	Terminal_Write(this, Terminal_VT100_Cursor_Show);
 }
 
 void Terminal_SaveCursor(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Cursor_Save);
+	Terminal_Write(this, Terminal_VT100_Cursor_Save);
 }
 
 void Terminal_RestoreCursor(Terminal *this) {
-	File_Write(this->out, Terminal_VT100_Cursor_Restore);
+	Terminal_Write(this, Terminal_VT100_Cursor_Restore);
 }
 
 char Terminal_ReadChar(Terminal *this) {
 	char c = '\0';
-	File_Read(this->in, &c, 1);
+	File_Read(File_FromObject(this->in), &c, 1);
 	return c;
 }
 

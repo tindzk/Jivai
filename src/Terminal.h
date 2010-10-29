@@ -139,6 +139,7 @@ void Terminal0(ExceptionManager *e);
 void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100);
 void Terminal_Configure(Terminal *this, bool echo, bool signal);
 void Terminal_Destroy(Terminal *this);
+void Terminal_Write(Terminal *this, String s);
 void Terminal_ResetVT100(Terminal *this);
 void Terminal_SetVT100Color(Terminal *this, int color);
 void Terminal_SetVT100Font(Terminal *this, int font);
