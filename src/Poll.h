@@ -20,7 +20,7 @@
 #define Poll_Events 4096
 #endif
 
-DefineCallback(ref(OnEvent), void, int events, void *ptr);
+DefineCallback(ref(OnEvent), void, int events, GenericInstance inst);
 
 class(self) {
 	ssize_t fd;
@@ -39,7 +39,7 @@ void Poll0(ExceptionManager *e);
 
 def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
-def(void, AddEvent, void *ptr, ssize_t fd, int events);
-def(void, ModifyEvent, void *ptr, ssize_t fd, int events);
+def(void, AddEvent, GenericInstance inst, ssize_t fd, int events);
+def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events);
 def(void, DeleteEvent, int fd);
 def(size_t, Process, int timeout);

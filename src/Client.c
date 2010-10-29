@@ -1,28 +1,27 @@
 #import "Client.h"
+#import "App.h"
 
-Client* Client_New(void) {
-	Client *client = New(Client);
-
-	client->conn = NULL;
-	client->data = NULL;
-
-	return client;
+def(void, Init) {
+	this->conn = NULL;
+	this->data = NULL;
 }
 
-void Client_Destroy(Client *client) {
-	if (client->conn != NULL) {
-		SocketConnection_Close(client->conn);
-		Memory_Free(client->conn);
+def(void, Destroy) {
+	if (this->conn != NULL) {
+		SocketConnection_Close(this->conn);
+		Memory_Free(this->conn);
 	}
-
-	Memory_Free(client);
 }
 
-void Client_Accept(Client *client, Socket *socket) {
+def(ssize_t, GetFd) {
+	return this->conn->fd;
+}
+
+def(void, Accept, Socket *socket) {
 	SocketConnection conn = Socket_Accept(socket);
 
-	client->conn = Memory_CloneObject(&conn);
+	this->conn = Memory_CloneObject(&conn);
 
-	client->conn->corking     = true;
-	client->conn->nonblocking = true;
+	this->conn->corking     = true;
+	this->conn->nonblocking = true;
 }

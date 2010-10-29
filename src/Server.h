@@ -27,6 +27,6 @@ def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericI
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);
 def(void, Process);
-def(void, DestroyClient, Client *client);
+def(void, DestroyClient, ClientInstance client);
 def(void, AcceptClient);
-def(void, OnEvent, int events, Client *client);
+def(void, OnEvent, int events, ClientInstance client);

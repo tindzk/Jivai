@@ -47,14 +47,17 @@ def(void, Process) {
 	Poll_Process(&this->poll, -1);
 }
 
-def(void, DestroyClient, Client *client) {
+def(void, DestroyClient, ClientInstance client) {
 	this->listener->onClientDisconnect(this->context, client);
+
 	Client_Destroy(client);
+	Client_Free(client);
 }
 
 def(void, AcceptClient) {
-	Client *client = Client_New();
+	ClientInstance client = Client_New();
 
+	Client_Init(client);
 	Client_Accept(client, &this->socket);
 
 	this->listener->onClientAccept(this->context, client);
@@ -76,11 +79,14 @@ def(void, AcceptClient) {
 		BitMask_Set(flags, EPOLLOUT);
 	}
 
-	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
+	Poll_AddEvent(&this->poll,
+		Client_ToGeneric(client),
+		Client_GetFd(client),
+		flags);
 }
 
-def(void, OnEvent, int events, Client *client) {
-	if (client == NULL && BitMask_Has(events, EPOLLIN)) {
+def(void, OnEvent, int events, ClientInstance client) {
+	if (Client_IsNull(client) && BitMask_Has(events, EPOLLIN)) {
 		/* Incoming connection. */
 
 		if (this->listener->onClientConnect(this->context)) {
@@ -95,21 +101,21 @@ def(void, OnEvent, int events, Client *client) {
 		}
 	}
 
-	if (client != NULL && BitMask_Has(events, EPOLLIN)) {
+	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLIN)) {
 		/* Receiving data from client. */
 		if (!this->listener->onPush(this->context, client)) {
-			client = NULL;
+			client = Client_Null();
 		}
 	}
 
-	if (client != NULL && BitMask_Has(events, EPOLLOUT)) {
+	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLOUT)) {
 		/* Client requests data. */
 		if (!this->listener->onPull(this->context, client)) {
-			client = NULL;
+			client = Client_Null();
 		}
 	}
 
-	if (client != NULL && BitMask_Has(events, EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
+	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
 		/* Error occured or connection hung up. */
 		call(DestroyClient, client);
 	}

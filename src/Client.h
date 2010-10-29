@@ -1,10 +1,16 @@
 #import "Socket.h"
 
-typedef struct {
+#undef self
+#define self Client
+
+class(self) {
 	SocketConnection *conn;
 	void *data;
-} Client;
+};
 
-Client* Client_New(void);
-void Client_Destroy(Client *client);
-void Client_Accept(Client *client, Socket *socket);
+ExtendClass(self);
+
+def(void, Init);
+def(void, Destroy);
+def(ssize_t, GetFd);
+def(void, Accept, Socket *socket);
