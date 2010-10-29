@@ -7,11 +7,13 @@ void Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-def(void, Init, ref(Events) events, bool edgeTriggered, unsigned short port) {
-	Poll_Init(&this->poll, Callback(this, ref(OnEvent)));
-	this->events = events;
+def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context) {
+	this->context  = context;
+	this->listener = listener;
 
-	this->edgeTriggered = edgeTriggered;
+	this->edgeTriggered = true;
+
+	Poll_Init(&this->poll, Callback(this, ref(OnEvent)));
 
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 
@@ -27,14 +29,18 @@ def(void, Init, ref(Events) events, bool edgeTriggered, unsigned short port) {
 		EPOLLHUP |
 		EPOLLERR);
 
-	this->events.onInit(this->events.context);
+	this->listener->onInit(this->context);
 }
 
 def(void, Destroy) {
 	Socket_Destroy(&this->socket);
 	Poll_Destroy(&this->poll);
 
-	this->events.onDestroy(this->events.context);
+	this->listener->onDestroy(this->context);
+}
+
+def(void, SetEdgeTriggered, bool value) {
+	this->edgeTriggered = value;
 }
 
 def(void, Process) {
@@ -42,7 +48,7 @@ def(void, Process) {
 }
 
 def(void, DestroyClient, Client *client) {
-	this->events.onClientDisconnect(this->events.context, client);
+	this->listener->onClientDisconnect(this->context, client);
 	Client_Destroy(client);
 }
 
@@ -51,7 +57,7 @@ def(void, AcceptClient) {
 
 	Client_Accept(client, &this->socket);
 
-	this->events.onClientAccept(this->events.context, client);
+	this->listener->onClientAccept(this->context, client);
 
 	int flags =
 		EPOLLERR |
@@ -62,11 +68,11 @@ def(void, AcceptClient) {
 		BitMask_Set(flags, EPOLLET);
 	}
 
-	if (this->events.onPush != NULL) {
+	if (this->listener->onPush != NULL) {
 		BitMask_Set(flags, EPOLLIN);
 	}
 
-	if (this->events.onPull != NULL) {
+	if (this->listener->onPull != NULL) {
 		BitMask_Set(flags, EPOLLOUT);
 	}
 
@@ -77,7 +83,7 @@ def(void, OnEvent, int events, Client *client) {
 	if (client == NULL && BitMask_Has(events, EPOLLIN)) {
 		/* Incoming connection. */
 
-		if (this->events.onClientConnect(this->events.context)) {
+		if (this->listener->onClientConnect(this->context)) {
 			call(AcceptClient);
 		} else {
 			/* This is necessary, else the same event will occur
@@ -91,14 +97,14 @@ def(void, OnEvent, int events, Client *client) {
 
 	if (client != NULL && BitMask_Has(events, EPOLLIN)) {
 		/* Receiving data from client. */
-		if (!this->events.onPush(this->events.context, client)) {
+		if (!this->listener->onPush(this->context, client)) {
 			client = NULL;
 		}
 	}
 
 	if (client != NULL && BitMask_Has(events, EPOLLOUT)) {
 		/* Client requests data. */
-		if (!this->events.onPull(this->events.context, client)) {
+		if (!this->listener->onPull(this->context, client)) {
 			client = NULL;
 		}
 	}

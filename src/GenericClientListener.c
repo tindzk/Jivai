@@ -1,22 +1,14 @@
-#import "ClientListener.h"
+#import "GenericClientListener.h"
 #import "App.h"
 
 static ExceptionManager *exc;
 
-void ClientListener0(ExceptionManager *e) {
+void GenericClientListener0(ExceptionManager *e) {
 	exc = e;
 }
 
-def(void, Init, ConnectionInterface *itf, Server_Events *events) {
-	this->connection           = itf;
-	events->context            = this;
-	events->onInit             = (void *) ref(OnInit);
-	events->onDestroy          = (void *) ref(OnDestroy);
-	events->onClientConnect    = (void *) ref(OnConnect);
-	events->onClientAccept     = (void *) ref(OnAccept);
-	events->onPull             = (void *) ref(OnPull);
-	events->onPush             = (void *) ref(OnPush);
-	events->onClientDisconnect = (void *) ref(OnDisconnect);
+def(void, Init, ConnectionInterface *conn) {
+	this->connection = conn;
 }
 
 def(void, OnInit) {
@@ -85,7 +77,7 @@ static def(Connection_Status, OnData, Client *client, bool pull) {
 
 		if (status == Connection_Status_Close) {
 			/* Destroy all data associated with the client. */
-			ClientListener_OnDisconnect(this, client);
+			call(OnDisconnect, client);
 
 			/* Close the connection. */
 			Client_Destroy(client);
@@ -102,3 +94,13 @@ def(Connection_Status, OnPull, Client *client) {
 def(Connection_Status, OnPush, Client *client) {
 	return call(OnData, client, false);
 }
+
+ClientListenerInterface Impl(self) = {
+	.onInit             = (void *) ref(OnInit),
+	.onDestroy          = (void *) ref(OnDestroy),
+	.onClientConnect    = (void *) ref(OnConnect),
+	.onClientAccept     = (void *) ref(OnAccept),
+	.onPull             = (void *) ref(OnPull),
+	.onPush             = (void *) ref(OnPush),
+	.onClientDisconnect = (void *) ref(OnDisconnect)
+};

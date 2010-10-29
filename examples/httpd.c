@@ -19,10 +19,10 @@
 #import <Connection.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
-#import <ClientListener.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
 #import <ConnectionInterface.h>
+#import <GenericClientListener.h>
 
 ExceptionManager exc;
 
@@ -265,8 +265,8 @@ Connection_Status HttpConnection_Pull(HttpConnection *this) {
 	return Request_Respond(&this->request);
 }
 
-ConnectionInterface HttpConnection_Methods = {
-	.new     = (void *) HttpConnection_New,
+ConnectionInterface Impl(HttpConnection) = {
+	.size    = sizeof(HttpConnection),
 	.init    = (void *) HttpConnection_Init,
 	.destroy = (void *) HttpConnection_Destroy,
 	.push    = (void *) HttpConnection_Push,
@@ -277,13 +277,9 @@ ConnectionInterface HttpConnection_Methods = {
 // main
 // ----
 
-bool startServer(Server *server, ClientListener *listener) {
-	Server_Events events;
-
-	ClientListener_Init(listener, &HttpConnection_Methods, &events);
-
+bool startServer(Server *server, GenericClientListener *listener) {
 	try (&exc) {
-		Server_Init(server, events, true, 8080);
+		Server_Init(server, 8080, &GenericClientListenerImpl, listener);
 		String_Print(String("Server started.\n"));
 		excReturn true;
 	} clean catch(Socket, excAddressInUse) {
@@ -308,11 +304,13 @@ int main(void) {
 	HTTP_Query0(&exc);
 	HTTP_Header0(&exc);
 	HTTP_Server0(&exc);
-	ClientListener0(&exc);
 	SocketConnection0(&exc);
+	GenericClientListener0(&exc);
 
-	Server         server;
-	ClientListener listener;
+	GenericClientListener listener;
+	GenericClientListener_Init(&listener, &HttpConnectionImpl);
+
+	Server server;
 
 	if (!startServer(&server, &listener)) {
 		return ExitStatus_Failure;

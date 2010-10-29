@@ -20,6 +20,7 @@
 #import <Signal.h>
 #import <Server.h>
 #import <Socket.h>
+#import <Integer.h>
 #import <SocketConnection.h>
 
 ExceptionManager exc;
@@ -136,6 +137,16 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 	return Connection_Status_Open;
 }
 
+ClientListenerInterface Impl(CustomClientListener) = {
+	.onInit             = (void *) CustomClientListener_OnInit,
+	.onDestroy          = (void *) CustomClientListener_OnDestroy,
+	.onClientConnect    = (void *) CustomClientListener_OnConnect,
+	.onClientAccept     = (void *) CustomClientListener_OnAccept,
+	.onClientDisconnect = (void *) CustomClientListener_OnDisconnect,
+	.onPush             = (void *) CustomClientListener_OnData,
+	.onPull             = NULL
+};
+
 // ----
 // main
 // ----
@@ -151,27 +162,18 @@ int main(void) {
 	SocketConnection0(&exc);
 
 	Server server;
-	Server_Events events;
 	CustomClientListener listener;
 
-	events.context = &listener;
-
-	events.onInit             = (void *) &CustomClientListener_OnInit;
-	events.onDestroy          = (void *) &CustomClientListener_OnDestroy;
-	events.onClientConnect    = (void *) &CustomClientListener_OnConnect;
-	events.onClientAccept     = (void *) &CustomClientListener_OnAccept;
-	events.onClientDisconnect = (void *) &CustomClientListener_OnDisconnect;
-	events.onPush             = (void *) &CustomClientListener_OnData;
-	events.onPull             = NULL;
-
 	try (&exc) {
-		Server_Init(&server, events, false, 1337);
+		Server_Init(&server, 1337, &CustomClientListenerImpl, &listener);
+		Server_SetEdgeTriggered(&server, false);
+
 		String_Print(String("Server started.\n"));
 
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch (Modules_Signal, excSigInt, e) {
+	} clean catch (Signal, excSigInt) {
 		String_Print(String("Server shutdown.\n"));
 	} finally {
 		Server_Destroy(&server);
