@@ -72,7 +72,7 @@ int main(void) {
 
 	} tryEnd;
 
-	BufferedStream_Init(&stream, &FileStream_Methods, &file);
+	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tree tree;
@@ -80,7 +80,7 @@ int main(void) {
 
 	HTML_Tokenizer html;
 	HTML_Tokenizer_Init(&html, (void *) &HTML_Tree_ProcessToken, &tree);
-	HTML_Tokenizer_ProcessStream(&html, &BufferedStream_Methods, &stream);
+	HTML_Tokenizer_ProcessStream(&html, &BufferedStreamImpl, &stream);
 	HTML_Tokenizer_Destroy(&html);
 
 	HTML_Tree_Node *node = HTML_Tree_GetRoot(&tree);

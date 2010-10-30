@@ -14,13 +14,13 @@ int main(void) {
 
 	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
 
-	BufferedStream_Init(&stream, &FileStream_Methods, &file);
+	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	String s = StackString(5);
 
 	do {
-		s.len = BufferedStream_Methods.read(&stream, s.buf, s.size);
+		s.len = BufferedStreamImpl.read(&stream, s.buf, s.size);
 		String_Print(s);
 	} while (s.len > 0);
 

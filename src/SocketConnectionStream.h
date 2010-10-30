@@ -8,4 +8,4 @@
 
 bool SocketConnectionStream_IsEof(SocketConnectionStream *this);
 
-extern StreamInterface SocketConnectionStream_Methods;
+extern StreamInterface SocketConnectionStreamImpl;

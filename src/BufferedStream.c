@@ -144,7 +144,7 @@ void BufferedStream_Close(BufferedStream *this) {
 	this->stream->close(this->data);
 }
 
-StreamInterface BufferedStream_Methods = {
+StreamInterface BufferedStreamImpl = {
 	.read  = (void *) BufferedStream_Read,
 	.write = (void *) BufferedStream_Write,
 	.close = (void *) BufferedStream_Close,

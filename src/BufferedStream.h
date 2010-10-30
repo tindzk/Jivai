@@ -25,4 +25,4 @@ String BufferedStream_Flush(BufferedStream *this);
 void BufferedStream_Reset(BufferedStream *this);
 void BufferedStream_Close(BufferedStream *this);
 
-extern StreamInterface BufferedStream_Methods;
+extern StreamInterface BufferedStreamImpl;

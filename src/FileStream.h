@@ -9,4 +9,4 @@ size_t FileStream_Read(FileStream *this, void *buf, size_t len);
 size_t FileStream_Write(FileStream *this, void *buf, size_t len);
 bool FileStream_IsEof(__unused FileStream *this);
 
-extern StreamInterface FileStream_Methods;
+extern StreamInterface FileStreamImpl;

@@ -49,10 +49,10 @@ int main(void) {
 
 	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
 
-	BufferedStream_Init(&stream, &FileStream_Methods, &file);
+	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	YAML_Init(&yml, 4, &BufferedStream_Methods, &stream);
+	YAML_Init(&yml, 4, &BufferedStreamImpl, &stream);
 	YAML_Parse(&yml);
 
 	/* There shouldn't be any characters left in the buffer. */

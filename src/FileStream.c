@@ -13,7 +13,7 @@ bool FileStream_IsEof(__unused FileStream *this) {
 	return false;
 }
 
-StreamInterface FileStream_Methods = {
+StreamInterface FileStreamImpl = {
 	.read  = (void *) FileStream_Read,
 	.write = (void *) FileStream_Write,
 	.close = (void *) FileStream_Close,

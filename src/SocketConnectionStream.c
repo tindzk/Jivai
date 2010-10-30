@@ -4,7 +4,7 @@ bool SocketConnectionStream_IsEof(__unused SocketConnectionStream *this) {
 	return false;
 }
 
-StreamInterface SocketConnectionStream_Methods = {
+StreamInterface SocketConnectionStreamImpl = {
 	.read  = (void *) SocketConnectionStream_Read,
 	.write = (void *) SocketConnectionStream_Write,
 	.close = (void *) SocketConnectionStream_Close,

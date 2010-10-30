@@ -54,19 +54,19 @@ int main(void) {
 
 	try (&exc) {
 		FileStream_Open(&file, String("HTMLTokenizer.html"), FileStatus_ReadOnly);
-	} clean catch (Modules_File, excNotFound, e) {
+	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));
 		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
 
-	BufferedStream_Init(&stream, &FileStream_Methods, &file);
+	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tokenizer html;
 	HTML_Tokenizer_Init(&html, &OnToken, NULL);
-	HTML_Tokenizer_ProcessStream(&html, &BufferedStream_Methods, &stream);
+	HTML_Tokenizer_ProcessStream(&html, &BufferedStreamImpl, &stream);
 	HTML_Tokenizer_Destroy(&html);
 
 	BufferedStream_Close(&stream);

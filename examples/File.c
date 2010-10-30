@@ -1,4 +1,5 @@
 #import <File.h>
+#import <Integer.h>
 
 ExceptionManager exc;
 
@@ -12,7 +13,7 @@ int main(void) {
 
 	try (&exc) {
 		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
-	} clean catch (Modules_File, excNotFound) {
+	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));
 		excReturn ExitStatus_Failure;
 	} finally {
@@ -22,7 +23,7 @@ int main(void) {
 	String s = StackString(5);
 
 	do {
-		s.len = File_Read(&file, s.buf, s.size);
+		s.len = File_Read(File_FromObject(&file), s.buf, s.size);
 		String_Print(s);
 	} while (s.len > 0);
 

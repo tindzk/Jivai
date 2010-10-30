@@ -12,4 +12,4 @@ size_t StringStream_Write(StringStream *this, void *buf, size_t len);
 void StringStream_Close(__unused StringStream *this);
 bool StringStream_IsEof(StringStream *this);
 
-extern StreamInterface StringStream_Methods;
+extern StreamInterface StringStreamImpl;

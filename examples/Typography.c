@@ -63,11 +63,11 @@ int main(__unused int argc, __unused char *argv[]) {
 		String("Typography.tyo"),
 		FileStatus_ReadOnly);
 
-	BufferedStream_Init(&stream, &FileStream_Methods, &file);
+	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	try (&exc) {
-		Typography_Init(&tyo, &BufferedStream_Methods, &stream);
+		Typography_Init(&tyo, &BufferedStreamImpl, &stream);
 		Typography_Parse(&tyo);
 
 		PrintTree(Typography_GetRoot(&tyo), 0);

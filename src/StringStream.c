@@ -32,7 +32,7 @@ bool StringStream_IsEof(StringStream *this) {
 	return (size_t) this->offset == this->str->len;
 }
 
-StreamInterface StringStream_Methods = {
+StreamInterface StringStreamImpl = {
 	.read  = (void *) StringStream_Read,
 	.write = (void *) StringStream_Write,
 	.close = (void *) StringStream_Close,
