@@ -50,7 +50,7 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 				sizeof(ref(Node)) + size);
 		} else {
 			this->node = Tree_AddCustomNode(
-				this->node->nodes[this->node->len - 1],
+				this->node->buf[this->node->len - 1],
 				sizeof(ref(Node)) + size);
 		}
 
@@ -120,7 +120,7 @@ def(void, Parse) {
 
 	Tree_Reset(&this->tree);
 
-	this->node = (ref(Node) *) &this->tree.root;
+	this->node  = (ref(Node) *) &this->tree.root;
 	this->depth = 0;
 	this->line  = 0;
 

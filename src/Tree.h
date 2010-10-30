@@ -8,7 +8,7 @@
 	size_t len;            \
                            \
 	/* Children nodes. */  \
-	struct type **nodes;   \
+	struct type **buf;     \
                            \
 	/* Parent nodes. */    \
 	struct type *parent

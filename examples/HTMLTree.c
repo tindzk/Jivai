@@ -65,7 +65,7 @@ int main(void) {
 
 	try (&exc) {
 		FileStream_Open(&file, String("HTMLTree.html"), FileStatus_ReadOnly);
-	} clean catch (Modules_File, excNotFound, e) {
+	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));
 		return ExitStatus_Failure;
 	} finally {

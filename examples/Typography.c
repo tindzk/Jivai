@@ -39,7 +39,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	String_Print(String("\n"));
 
 	for (size_t i = 0; i < node->len; i++) {
-		PrintTree(node->nodes[i], depth + 1);
+		PrintTree(node->buf[i], depth + 1);
 	}
 }
 
