@@ -1,33 +1,34 @@
 #import "Tree.h"
+#import "App.h"
 
-void Tree_Init(Tree *this, Tree_DestroyNode destroyNode) {
+def(void, Init, ref(DestroyNode) destroyNode) {
 	this->destroyNode = destroyNode;
 
-	this->root.len = 0;
-	this->root.nodes = NULL;
+	this->root.len    = 0;
+	this->root.nodes  = NULL;
 	this->root.parent = NULL;
 }
 
-void Tree_Destroy(Tree *this) {
-	Tree_FreeNodes(this, &this->root);
+def(void, Destroy) {
+	call(FreeNodes, &this->root);
 }
 
-void Tree_Reset(Tree *this) {
-	Tree_FreeNodes(this, &this->root);
+def(void, Reset) {
+	call(FreeNodes, &this->root);
 
-	this->root.len = 0;
-	this->root.nodes = NULL;
+	this->root.len    = 0;
+	this->root.nodes  = NULL;
 	this->root.parent = NULL;
 }
 
-void Tree_FreeNodes(Tree *this, Tree_Node *node) {
+def(void, FreeNodes, ref(Node) *node) {
 	if (node->len == 0) {
 		return;
 	}
 
 	for (size_t i = 0; i < node->len; i++) {
 		this->destroyNode(node->nodes[i]);
-		Tree_FreeNodes(this, node->nodes[i]);
+		call(FreeNodes, node->nodes[i]);
 		Memory_Free(node->nodes[i]);
 	}
 
@@ -35,21 +36,21 @@ void Tree_FreeNodes(Tree *this, Tree_Node *node) {
 	node->len = 0;
 }
 
-void* Tree_AddCustomNode(void *ptrNode, size_t size) {
-	Tree_Node *node = ptrNode;
+void* ref(AddCustomNode)(void *ptrNode, size_t size) {
+	ref(Node) *node = ptrNode;
 
 	if (node->len == 0) {
-		node->nodes = New(Tree_Node *);
+		node->nodes = New(ref(Node) *);
 	} else {
 		node->nodes = Memory_Realloc(
 			node->nodes,
-			(node->len + 1) * sizeof(Tree_Node *));
+			(node->len + 1) * sizeof(ref(Node) *));
 	}
 
-	Tree_Node *res = node->nodes[node->len] = Memory_Alloc(size);
+	ref(Node) *res = node->nodes[node->len] = Memory_Alloc(size);
 
-	res->len = 0;
-	res->nodes = NULL;
+	res->len    = 0;
+	res->nodes  = NULL;
 	res->parent = node;
 
 	node->len++;

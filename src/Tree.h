@@ -1,5 +1,8 @@
 #import "Memory.h"
 
+#undef self
+#define self Tree
+
 #define Tree_Define(type)  \
 	/* Number of nodes. */ \
 	size_t len;            \
@@ -10,22 +13,22 @@
 	/* Parent nodes. */    \
 	struct type *parent
 
-typedef struct _Tree_Node {
-	Tree_Define(_Tree_Node);
-} Tree_Node;
+record(ref(Node)) {
+	Tree_Define(ref(Node));
+};
 
-typedef void (* Tree_DestroyNode)(Tree_Node *);
+typedef void (* ref(DestroyNode))(ref(Node) *);
 
-typedef struct {
-	Tree_Node root;
-	Tree_DestroyNode destroyNode;
-} Tree;
+class(self) {
+	ref(Node) root;
+	ref(DestroyNode) destroyNode;
+};
 
-void Tree_Init(Tree *this, Tree_DestroyNode destroyNode);
-void Tree_Destroy(Tree *this);
-void Tree_Reset(Tree *this);
-void Tree_FreeNodes(Tree *this, Tree_Node *node);
-void* Tree_AddCustomNode(void *ptrNode, size_t size);
+def(void, Init, ref(DestroyNode) destroyNode);
+def(void, Destroy);
+def(void, Reset);
+def(void, FreeNodes, ref(Node) *node);
+void* ref(AddCustomNode)(void *ptrNode, size_t size);
 
 #define Tree_AddNode(node) \
 	Tree_AddCustomNode(node, sizeof(typeof(*(node))))
