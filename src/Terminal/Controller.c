@@ -19,7 +19,7 @@ static void Terminal_Controller_PrintFmt(Terminal_Controller *this, String s, Va
 
 static void Terminal_Controller_Print(Terminal_Controller *this, Typography_Node *node, VarArg *argptr) {
 	for (size_t i = 0; i < node->len; i++) {
-		Typography_Node *child = node->nodes[i];
+		Typography_Node *child = node->buf[i];
 
 		if (child->type == Typography_NodeType_Text) {
 			Terminal_Controller_PrintFmt(this, Typography_Text(child)->value, argptr);
