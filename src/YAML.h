@@ -6,27 +6,40 @@
 #undef self
 #define self YAML
 
-typedef enum {
-	YAML_NodeType_Node,
-	YAML_NodeType_Section,
-	YAML_NodeType_Item
-} YAML_NodeType;
+set(ref(NodeType)) {
+	ref(NodeType_Node),
+	ref(NodeType_Section),
+	ref(NodeType_Item)
+};
 
-typedef struct {
+record(ref(Section)) {
 	String name;
-} YAML_Section;
+};
 
-typedef struct {
+record(ref(Item)) {
 	String key;
 	String value;
-} YAML_Item;
+};
 
-typedef struct _YAML_Node {
-	Tree_Define(_YAML_Node);
+record(ref(Node)) {
+	Tree_Define(ref(Node));
 
-	YAML_NodeType type;
+	ref(NodeType) type;
 	char data[0];
-} YAML_Node;
+};
+
+class(self) {
+	StreamInterface *stream;
+	void *context;
+
+	size_t line;
+
+	Tree tree;
+	ref(Node) *node;
+
+	size_t depth;
+	size_t depthWidth;
+};
 
 #define YAML_Section(node) \
 	((YAML_Section *) &(node)->data)
@@ -34,27 +47,14 @@ typedef struct _YAML_Node {
 #define YAML_Item(node) \
 	((YAML_Item *) &(node)->data)
 
-typedef struct {
-	StreamInterface *stream;
-	void *context;
-
-	size_t line;
-
-	Tree tree;
-	YAML_Node *node;
-
-	size_t depth;
-	size_t depthWidth;
-} YAML;
-
 void YAML0(ExceptionManager *e);
 
-void YAML_Init(YAML *this, size_t depthWidth, StreamInterface *stream, void *context);
-void YAML_Destroy(YAML *this);
-void YAML_DestroyNode(YAML_Node *node);
-YAML_Node* YAML_GetRoot(YAML *this);
-size_t YAML_GetLine(YAML *this);
-void* YAML_Store(YAML *this, size_t depth, YAML_NodeType type, size_t size);
-void YAML_AddSection(YAML *this, size_t depth, String s);
-void YAML_AddItem(YAML *this, size_t depth, String key, String value);
-void YAML_Parse(YAML *this);
+def(void, Init, size_t depthWidth, StreamInterface *stream, void *context);
+def(void, Destroy);
+void ref(DestroyNode)(ref(Node) *node);
+def(ref(Node) *, GetRoot);
+def(size_t, GetLine);
+def(void *, Store, size_t depth, ref(NodeType) type, size_t size);
+def(void, AddSection, size_t depth, String s);
+def(void, AddItem, size_t depth, String key, String value);
+def(void, Parse);
