@@ -6,18 +6,18 @@ void Signal0(ExceptionManager *e) {
 	exc = e;
 
 	/* Register these signals as exceptions. */
-	Signal_Register(SIGALRM, Signal_OnSignal);
-	Signal_Register(SIGBUS,  Signal_OnSignal);
-	Signal_Register(SIGFPE,  Signal_OnSignal);
-	Signal_Register(SIGILL,  Signal_OnSignal);
-	Signal_Register(SIGINT,  Signal_OnSignal);
-	Signal_Register(SIGQUIT, Signal_OnSignal);
-	Signal_Register(SIGSEGV, Signal_OnSignal);
-	Signal_Register(SIGTERM, Signal_OnSignal);
-	Signal_Register(SIGPIPE, Signal_OnSignal);
+	Signal_Register(SIGALRM, ref(OnSignal));
+	Signal_Register(SIGBUS,  ref(OnSignal));
+	Signal_Register(SIGFPE,  ref(OnSignal));
+	Signal_Register(SIGILL,  ref(OnSignal));
+	Signal_Register(SIGINT,  ref(OnSignal));
+	Signal_Register(SIGQUIT, ref(OnSignal));
+	Signal_Register(SIGSEGV, ref(OnSignal));
+	Signal_Register(SIGTERM, ref(OnSignal));
+	Signal_Register(SIGPIPE, ref(OnSignal));
 }
 
-void Signal_Register(int signal, void (*cb)(int, siginfo_t *, void *)) {
+sdef(void, Register, int signal, void (*cb)(int, siginfo_t *, void *)) {
 	struct sigaction sigact;
 
 	sigemptyset(&sigact.sa_mask);
@@ -31,7 +31,7 @@ void Signal_Register(int signal, void (*cb)(int, siginfo_t *, void *)) {
 	}
 }
 
-void Signal_Ignore(int signal) {
+sdef(void, Ignore, int signal) {
 	struct sigaction sigact;
 
 	sigemptyset(&sigact.sa_mask);
@@ -44,7 +44,7 @@ void Signal_Ignore(int signal) {
 	}
 }
 
-void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *ucontext) {
+sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *ucontext) {
 	size_t code;
 
 	if (signal == SIGALRM) {
@@ -83,7 +83,7 @@ void Signal_OnSignal(int signal, __unused siginfo_t *info, __unused void *uconte
 	exc->e.traceItems = Backtrace_GetTrace(exc->e.trace, Exception_TraceSize);
 
 	/* Overwrite the first trace item with the address from which the signal was raised. */
-	sig_ucontext_t *uc = (sig_ucontext_t *) ucontext;
+	ref(UserContext) *uc = (ref(UserContext) *) ucontext;
 
 	#if defined(__i386__)
 		exc->e.trace[0] = (void *) uc->uc_mcontext.eip;
