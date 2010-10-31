@@ -65,6 +65,16 @@
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
 
+/* Iterate over arrays and tree nodes using pointer arithmetic. As
+ * we don't declare an index variable, this macro can be nested
+ * safely.
+ */
+#define foreach(name, arr)                            \
+	for (                                             \
+		typeof((arr)->buf[0]) *name = &(arr)->buf[0]; \
+		cur < &(arr)->buf[(arr)->len];                \
+		cur += (&(arr)->buf[1] - &(arr)->buf[0]))
+
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
