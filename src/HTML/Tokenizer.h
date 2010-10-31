@@ -4,30 +4,32 @@
 #import "../String.h"
 #import "../StreamInterface.h"
 
-typedef enum {
-	HTML_Tokenizer_TokenType_Value,
-	HTML_Tokenizer_TokenType_TagStart,
-	HTML_Tokenizer_TokenType_TagEnd,
-	HTML_Tokenizer_TokenType_Comment,
-	HTML_Tokenizer_TokenType_AttrName,
-	HTML_Tokenizer_TokenType_AttrValue,
-	HTML_Tokenizer_TokenType_Option
-} HTML_Tokenizer_TokenType;
+#undef self
+#define self HTML_Tokenizer
 
-typedef enum {
-	HTML_Tokenizer_State_Tag       = Bit(0),
-	HTML_Tokenizer_State_TagName   = Bit(1),
-	HTML_Tokenizer_State_AttrName  = Bit(2),
-	HTML_Tokenizer_State_AttrValue = Bit(3),
-	HTML_Tokenizer_State_Quote     = Bit(4),
-	HTML_Tokenizer_State_Comment   = Bit(5)
-} HTML_Tokenizer_State;
+set(ref(TokenType)) {
+	ref(TokenType_Value),
+	ref(TokenType_TagStart),
+	ref(TokenType_TagEnd),
+	ref(TokenType_Comment),
+	ref(TokenType_AttrName),
+	ref(TokenType_AttrValue),
+	ref(TokenType_Option)
+};
 
-typedef void (*HTML_Tokenizer_OnToken)(void *, HTML_Tokenizer_TokenType, String);
+set(ref(State)) {
+	ref(State_Tag)       = Bit(0),
+	ref(State_TagName)   = Bit(1),
+	ref(State_AttrName)  = Bit(2),
+	ref(State_AttrValue) = Bit(3),
+	ref(State_Quote)     = Bit(4),
+	ref(State_Comment)   = Bit(5)
+};
 
-typedef struct {
-	HTML_Tokenizer_OnToken onToken;
-	void *context;
+DefineCallback(ref(OnToken), void, ref(TokenType), String);
+
+class(self) {
+	ref(OnToken) onToken;
 
 	String buf;
 	String curToken;
@@ -36,12 +38,12 @@ typedef struct {
 	char last;
 
 	int state;
-} HTML_Tokenizer;
+};
 
-void HTML_Tokenizer_Init(HTML_Tokenizer *this, HTML_Tokenizer_OnToken onToken, void *context);
-void HTML_Tokenizer_Destroy(HTML_Tokenizer *this);
-void HTML_Tokenizer_Reset(HTML_Tokenizer *this);
-void HTML_Tokenizer_ProcessChar(HTML_Tokenizer *this, char c);
-void HTML_Tokenizer_ProcessString(HTML_Tokenizer *this, String s);
-void HTML_Tokenizer_ProcessStream(HTML_Tokenizer *this, StreamInterface *stream, void *context);
-void HTML_Tokenizer_Poll(HTML_Tokenizer *this);
+def(void, Init, ref(OnToken) onToken);
+def(void, Destroy);
+def(void, Reset);
+def(void, ProcessChar, char c);
+def(void, Poll);
+overload def(void, Process, String s);
+overload def(void, Process, StreamInterface *stream, void *context);

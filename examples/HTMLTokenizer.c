@@ -65,8 +65,9 @@ int main(void) {
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tokenizer html;
-	HTML_Tokenizer_Init(&html, &OnToken, NULL);
-	HTML_Tokenizer_ProcessStream(&html, &BufferedStreamImpl, &stream);
+	HTML_Tokenizer_Init(&html, Callback(NULL, &OnToken));
+	HTML_Tokenizer_Process(HTML_Tokenizer_FromObject(&html),
+		&BufferedStreamImpl, &stream);
 	HTML_Tokenizer_Destroy(&html);
 
 	BufferedStream_Close(&stream);
