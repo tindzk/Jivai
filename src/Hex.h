@@ -4,6 +4,9 @@
 #import "String.h"
 #import "Compiler.h"
 
-String Hex_ToString(u64 hex);
-overload int Hex_ToInteger(char c);
-overload long Hex_ToInteger(String s);
+#undef self
+#define self Hex
+
+sdef(String, ToString, u64 hex);
+overload sdef(int, ToInteger, char c);
+overload sdef(long, ToInteger, String s);

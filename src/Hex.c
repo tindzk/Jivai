@@ -1,6 +1,6 @@
 #import "Hex.h"
 
-String Hex_ToString(u64 hex) {
+sdef(String, ToString, u64 hex) {
 	static char symbols[] = "0123456789abcdef";
 
 	String res = HeapString(6);
@@ -19,7 +19,7 @@ String Hex_ToString(u64 hex) {
 	return res;
 }
 
-overload int Hex_ToInteger(char c) {
+overload sdef(int, ToInteger, char c) {
 	if ('a' <= c && c <= 'f') {
 		return c - 'a' + 10;
 	} else if ('A' <= c && c <= 'F') {
@@ -31,14 +31,14 @@ overload int Hex_ToInteger(char c) {
 	}
 }
 
-overload long Hex_ToInteger(String s) {
+overload sdef(long, ToInteger, String s) {
 	int  total      = 0;
 	long multiplier = 1;
 
 	ssize_t i = s.len - 1;
 
 	do {
-		int digit = Hex_ToInteger(s.buf[i]);
+		int digit = scall(ToInteger, s.buf[i]);
 
 		if (digit == -1) {
 			return -1;
