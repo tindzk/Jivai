@@ -20,7 +20,7 @@ set(ref(Level)) {
 	ref(Level_Count) = 7
 };
 
-DefineCallback(Logger_Printer, void, String msg, ref(Level) level, String file, int line);
+DefineCallback(ref(Printer), void, String msg, ref(Level) level, String file, int line);
 
 class(self) {
 	ref(Printer) printer;
