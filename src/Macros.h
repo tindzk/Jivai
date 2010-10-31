@@ -47,6 +47,9 @@
 #define call(method, ...) \
 	ref(method)($this, ## __VA_ARGS__)
 
+#define scall(method, ...) \
+	ref(method)(__VA_ARGS__)
+
 #define CurModule \
 	underscoredConcat(Modules, self)
 
