@@ -1,3 +1,6 @@
 #import "String.h"
 
-void HTML_Unescape(String *html);
+#undef self
+#define self HTML
+
+sdef(void, Unescape, String *html);

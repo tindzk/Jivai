@@ -1,6 +1,6 @@
 #import "HTML.h"
 
-void HTML_Unescape(String *html) {
+sdef(void, Unescape, String *html) {
 	if (html->len == 0) {
 		return;
 	}
