@@ -59,6 +59,9 @@
 #define def(ret, method, ...) \
 	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)
 
+#define sdef(ret, method, ...) \
+	ret ref(method)(__VA_ARGS__)
+
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
