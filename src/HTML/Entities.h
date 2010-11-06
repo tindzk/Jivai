@@ -7,6 +7,9 @@
 #define HTML_Entities_GrowthFactor 1.3
 #endif
 
-String HTML_Entities_Decode(String s);
-overload void HTML_Entities_Encode(String s, String *out);
-overload String HTML_Entities_Encode(String s);
+#undef self
+#define self HTML_Entities
+
+sdef(String, Decode, String s);
+overload sdef(void, Encode, String s, String *out);
+overload sdef(String, Encode, String s);

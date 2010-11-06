@@ -259,7 +259,7 @@ static struct {
 	{ String("zwnj"), 8204 }
 };
 
-String HTML_Entities_Decode(String s) {
+sdef(String, Decode, String s) {
 	String res = HeapString(s.len);
 
 	bool ampersand = false;
@@ -327,7 +327,7 @@ String HTML_Entities_Decode(String s) {
     return res;
 }
 
-overload void HTML_Entities_Encode(String s, String *out) {
+overload sdef(void, Encode, String s, String *out) {
 	for (size_t i = 0; i < s.len; i++) {
 		switch (s.buf[i]) {
 			case '&':
@@ -356,7 +356,7 @@ overload void HTML_Entities_Encode(String s, String *out) {
 	}
 }
 
-overload String HTML_Entities_Encode(String s) {
+overload sdef(String, Encode, String s) {
 	String res = HeapString(s.len * HTML_Entities_GrowthFactor);
 	HTML_Entities_Encode(s, &res);
 
