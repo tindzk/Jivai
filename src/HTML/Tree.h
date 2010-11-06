@@ -10,39 +10,39 @@
 #undef self
 #define self HTML_Tree
 
-typedef struct {
+record(ref(Attr)) {
 	String name;
 	String value;
-} HTML_Tree_Attr;
+};
 
-typedef struct _HTML_Tree_Node {
-	Tree_Define(_HTML_Tree_Node);
+record(ref(Node)) {
+	Tree_Define(ref(Node));
 
 	enum {
-		HTML_Tree_NodeType_Value,
-		HTML_Tree_NodeType_Tag
+		ref(NodeType_Value),
+		ref(NodeType_Tag)
 	} type;
 
 	String value;
 
-	Array(HTML_Tree_Attr, *attrs);
-} HTML_Tree_Node;
+	Array(ref(Attr), *attrs);
+};
 
-typedef struct {
+class(self) {
 	Tree tree;
-	HTML_Tree_Node *node;
+	ref(Node) *node;
 
 	size_t depth;
-} HTML_Tree;
+};
 
 void HTML_Tree0(ExceptionManager *e);
 
-void HTML_Tree_Init(HTML_Tree *this);
-void HTML_Tree_Destroy(HTML_Tree *this);
-void HTML_Tree_DestroyNode(HTML_Tree_Node *node);
-HTML_Tree_Node* HTML_Tree_GetRoot(HTML_Tree *this);
-void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, String value);
-HTML_Tree_Attr* HTML_Tree_GetAttr(HTML_Tree_Node *node, String name);
-HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...);
-HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...);
-void HTML_Tree_Foreach(HTML_Tree_Node *node, void (^cb)(HTML_Tree_Node *));
+def(void, Init);
+def(void, Destroy);
+sdef(void, DestroyNode, ref(Node) *node);
+def(ref(Node) *, GetRoot);
+def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value);
+sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name);
+sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...);
+sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...);
+sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *));

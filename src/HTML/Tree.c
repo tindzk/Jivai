@@ -1,4 +1,5 @@
 #import "Tree.h"
+#import "../App.h"
 
 static ExceptionManager *exc;
 
@@ -6,22 +7,22 @@ void HTML_Tree0(ExceptionManager *e) {
 	exc = e;
 }
 
-void HTML_Tree_Init(HTML_Tree *this) {
-	Tree_Init(&this->tree, (void *) &HTML_Tree_DestroyNode);
+def(void, Init) {
+	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 
-	this->node = (HTML_Tree_Node *) &this->tree.root;
+	this->node  = (ref(Node) *) &this->tree.root;
 	this->depth = 0;
 }
 
-void HTML_Tree_Destroy(HTML_Tree *this) {
+def(void, Destroy) {
 	Tree_Destroy(&this->tree);
 }
 
-void HTML_Tree_DestroyNode(HTML_Tree_Node *node) {
+sdef(void, DestroyNode, ref(Node) *node) {
 	String_Destroy(&node->value);
 
-	if (node->type == HTML_Tree_NodeType_Tag) {
-		Array_Foreach(node->attrs, ^(HTML_Tree_Attr *item) {
+	if (node->type == ref(NodeType_Tag)) {
+		Array_Foreach(node->attrs, ^(ref(Attr) *item) {
 			String_Destroy(&item->name);
 			String_Destroy(&item->value);
 		});
@@ -30,11 +31,11 @@ void HTML_Tree_DestroyNode(HTML_Tree_Node *node) {
 	}
 }
 
-HTML_Tree_Node* HTML_Tree_GetRoot(HTML_Tree *this) {
-	return (HTML_Tree_Node *) &this->tree.root;
+def(ref(Node) *, GetRoot) {
+	return (ref(Node) *) &this->tree.root;
 }
 
-void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, String value) {
+def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
 			throw(exc, excIllegalNesting);
@@ -47,33 +48,33 @@ void HTML_Tree_ProcessToken(HTML_Tree *this, HTML_Tokenizer_TokenType type, Stri
 		this->node = Tree_AddNode(this->node);
 
 		this->node->value = String_Clone(value);
-		this->node->type  = HTML_Tree_NodeType_Tag;
+		this->node->type  = ref(NodeType_Tag);
 
 		Array_Init(this->node->attrs, 0);
 
 		this->depth++;
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
-		HTML_Tree_Node *node = Tree_AddNode(this->node);
+		ref(Node) *node = Tree_AddNode(this->node);
 
-		node->type  = HTML_Tree_NodeType_Value;
+		node->type  = ref(NodeType_Value);
 		node->value = HTML_Entities_Decode(value);
 		node->attrs = NULL;
 	} else if (type == HTML_Tokenizer_TokenType_AttrName
 			|| type == HTML_Tokenizer_TokenType_Option) {
-		HTML_Tree_Attr item;
+		ref(Attr) item;
 
 		item.name  = String_Clone(value);
 		item.value = HeapString(0);
 
 		Array_Push(this->node->attrs, item);
 	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
-		HTML_Tree_Attr *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
+		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
 		attr->value = String_Clone(value);
 	}
 }
 
-HTML_Tree_Attr* HTML_Tree_GetAttr(HTML_Tree_Node *node, String name) {
-	if (node->type == HTML_Tree_NodeType_Tag) {
+sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name) {
+	if (node->type == ref(NodeType_Tag)) {
 		for (size_t i = 0; i < node->attrs->len; i++) {
 			if (String_Equals(node->attrs->buf[i].name, name)) {
 				return &node->attrs->buf[i];
@@ -84,7 +85,7 @@ HTML_Tree_Attr* HTML_Tree_GetAttr(HTML_Tree_Node *node, String name) {
 	return NULL;
 }
 
-HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
+sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 	String *s;
 	bool found;
 	VarArg argptr;
@@ -101,7 +102,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
 		found = false;
 
 		for (size_t i = 0; i < node->len; i++) {
-			if (node->buf[i]->type == HTML_Tree_NodeType_Tag) {
+			if (node->buf[i]->type == ref(NodeType_Tag)) {
 				if (String_Equals(*s, node->buf[i]->value)) {
 					node = node->buf[i];
 					found = true;
@@ -122,7 +123,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByNames(HTML_Tree_Node *node, ...) {
 		: NULL;
 }
 
-HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...) {
+sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...) {
 	int id;
 	VarArg argptr;
 	bool found = true;
@@ -149,7 +150,7 @@ HTML_Tree_Node* HTML_Tree_GetNodeByIds(HTML_Tree_Node *node, ...) {
 		: NULL;
 }
 
-void HTML_Tree_Foreach(HTML_Tree_Node *node, void (^cb)(HTML_Tree_Node *)) {
+sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *)) {
 	for (size_t i = 0; i < node->len; i++) {
 		cb(node->buf[i]);
 	}
