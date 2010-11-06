@@ -11,11 +11,6 @@ typedef struct {
 
 Array_Define(Item, ItemArray);
 
-void DestroyItem(Item *item) {
-	String_Destroy(&item->field1);
-	String_Destroy(&item->field2);
-}
-
 int main(void) {
 	ExceptionManager_Init(&exc);
 
@@ -48,7 +43,10 @@ int main(void) {
 			arr->buf[i].field2);
 	}
 
-	Array_Foreach(arr, DestroyItem);
+	foreach (item, arr) {
+		String_Destroy(&item->field1);
+		String_Destroy(&item->field2);
+	}
 
 	ItemArray_Free(arr);
 

@@ -39,7 +39,10 @@ void Process_Init(Process *this, String cmd) {
 void Process_Destroy(Process *this) {
 	String_Destroy(&this->cmd);
 
-	Array_Foreach(this->params, String_Destroy);
+	foreach (param, this->params) {
+		String_Destroy(param);
+	}
+
 	Array_Destroy(this->params);
 }
 

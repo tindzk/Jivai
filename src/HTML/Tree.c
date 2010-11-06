@@ -22,10 +22,10 @@ sdef(void, DestroyNode, ref(Node) *node) {
 	String_Destroy(&node->value);
 
 	if (node->type == ref(NodeType_Tag)) {
-		Array_Foreach(node->attrs, ^(ref(Attr) *item) {
+		foreach (item, node->attrs) {
 			String_Destroy(&item->name);
 			String_Destroy(&item->value);
-		});
+		}
 
 		Array_Destroy(node->attrs);
 	}
