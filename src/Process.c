@@ -1,4 +1,5 @@
 #import "Process.h"
+#import "App.h"
 
 /*
  * Copyright (C) 2008-2010 vmchecker authors and contributors.
@@ -31,12 +32,12 @@ void Process0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Process_Init(Process *this, String cmd) {
+def(void, Init, String cmd) {
 	this->cmd = String_Clone(cmd);
 	Array_Init(this->params, 0);
 }
 
-void Process_Destroy(Process *this) {
+def(void, Destroy) {
 	String_Destroy(&this->cmd);
 
 	foreach (param, this->params) {
@@ -46,11 +47,11 @@ void Process_Destroy(Process *this) {
 	Array_Destroy(this->params);
 }
 
-void Process_AddParameter(Process *this, String param) {
+def(void, AddParameter, String param) {
 	Array_Push(this->params, String_Clone(param));
 }
 
-String Process_GetCommandLine(Process *this) {
+def(String, GetCommandLine) {
 	String out = HeapString(128);
 
 	String_Append(&out, this->cmd);
@@ -64,7 +65,7 @@ String Process_GetCommandLine(Process *this) {
 	return out;
 }
 
-overload int Process_Spawn(Process *this, float *time) {
+overload def(int, Spawn, float *time) {
 	char *argv[this->params->len + 1];
 
 	argv[0] = String_ToNulHeap(this->cmd);
@@ -122,6 +123,6 @@ overload int Process_Spawn(Process *this, float *time) {
 	return ret;
 }
 
-overload int Process_Spawn(Process *this) {
-	return Process_Spawn(this, NULL);
+overload def(int, Spawn) {
+	return call(Spawn, NULL);
 }

@@ -15,14 +15,16 @@ enum {
 
 extern char **environ;
 
-typedef struct {
+class(self) {
 	String cmd;
 	StringArray *params;
-} Process;
+};
 
-void Process_Init(Process *this, String cmd);
-void Process_Destroy(Process *this);
-void Process_AddParameter(Process *this, String param);
-String Process_GetCommandLine(Process *this);
-overload int Process_Spawn(Process *this, float *time);
-overload int Process_Spawn(Process *this);
+ExtendClass(self);
+
+def(void, Init, String cmd);
+def(void, Destroy);
+def(void, AddParameter, String param);
+def(String, GetCommandLine);
+overload def(int, Spawn, float *time);
+overload def(int, Spawn);
