@@ -72,8 +72,8 @@
 #define foreach(name, arr)                            \
 	for (                                             \
 		typeof((arr)->buf[0]) *name = &(arr)->buf[0]; \
-		cur < &(arr)->buf[(arr)->len];                \
-		cur += (&(arr)->buf[1] - &(arr)->buf[0]))
+		name < &(arr)->buf[(arr)->len];               \
+		name += (&(arr)->buf[1] - &(arr)->buf[0]))
 
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
