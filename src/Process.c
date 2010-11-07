@@ -59,7 +59,10 @@ def(String, GetCommandLine) {
 
 	for (size_t i = 0; i < this->params->len; i++) {
 		String_Append(&out, this->params->buf[i]);
-		String_Append(&out, ' ');
+
+		if (i != this->params->len - 1) {
+			String_Append(&out, ' ');
+		}
 	}
 
 	return out;
