@@ -6,12 +6,32 @@ void DateTime0(ExceptionManager *e) {
 	exc = e;
 }
 
-void DateTime_Init(DateTime *this) {
-	Date_Init(&this->date);
-	Time_Init(&this->time);
+sdef(self, Empty) {
+	self res;
+
+	res.date = Date_Empty();
+	res.time = Time_Empty();
+
+	return res;
 }
 
-short DateTime_Compare(DateTime a, DateTime b) {
+inline sdef(self, GetUnixEpoch) {
+	return (DateTime) {
+		.date = {
+			.year  = 1970,
+			.month = 1,
+			.day   = 1
+		},
+
+		.time = {
+			.hour   = 0,
+			.minute = 0,
+			.second = 0
+		}
+	};
+}
+
+sdef(short, Compare, self a, self b) {
 	short date = Date_Compare(a.date, b.date);
 
 	if (date != 0) {
@@ -21,13 +41,13 @@ short DateTime_Compare(DateTime a, DateTime b) {
 	return Time_Compare(a.time, b.time);
 }
 
-inline bool DateTime_Equals(DateTime a, DateTime b) {
+inline sdef(bool, Equals, self a, self b) {
 	return Date_Equals(a.date, b.date)
 		&& Time_Equals(a.time, b.time);
 }
 
-DateTime DateTime_FromUnixEpoch(u64 time) {
-	DateTime res;
+sdef(self, FromUnixEpoch, u64 time) {
+	self res;
 
 	res.date.year = (int)(time / Date_SecondsYear);
 	time -= (int)(res.date.year * Date_SecondsYear);
@@ -67,12 +87,12 @@ DateTime DateTime_FromUnixEpoch(u64 time) {
 	return res;
 }
 
-u64 DateTime_ToUnixEpoch(DateTime *this) {
-	if (this->date.year < 1970) {
+sdef(u64, ToUnixEpoch, self dateTime) {
+	if (dateTime.date.year < 1970) {
 		throw(exc, excYearLower1970);
 	}
 
-	short years = this->date.year - 1970;
+	short years = dateTime.date.year - 1970;
 
 	/* Days since 1970. */
 	int days = years * 365;
@@ -81,23 +101,23 @@ u64 DateTime_ToUnixEpoch(DateTime *this) {
 	days += (years + 1) / 4;
 
 	/* Add one extra day when the year is a leap year and the January is already over. */
-	if (this->date.month > 1) {
-		if (Date_IsLeapYear(this->date.year)) {
+	if (dateTime.date.month > 1) {
+		if (Date_IsLeapYear(dateTime.date.year)) {
 			days++;
 		}
 	}
 
 	/* Add number of days up until the end of the current month. */
-	days += Date_DaysPerMonth[this->date.month - 1] + this->date.day - 1;
+	days += Date_DaysPerMonth[dateTime.date.month - 1] + dateTime.date.day - 1;
 
-	u64 hours   = days    * 24 + this->time.hour;
-	u64 minutes = hours   * 60 + this->time.minute;
-	u64 seconds = minutes * 60 + this->time.second;
+	u64 hours   = days    * 24 + dateTime.time.hour;
+	u64 minutes = hours   * 60 + dateTime.time.minute;
+	u64 seconds = minutes * 60 + dateTime.time.second;
 
 	return seconds;
 }
 
-DateTime DateTime_GetCurrent(void) {
+sdef(self, GetCurrent) {
 	Time_UnixEpoch time = Time_GetCurrentUnixTime();
-	return DateTime_FromUnixEpoch(time.sec);
+	return scall(FromUnixEpoch, time.sec);
 }

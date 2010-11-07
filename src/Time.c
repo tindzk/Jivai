@@ -6,13 +6,17 @@ void Time0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Time_Init(Time *this) {
-	this->hour   = 0;
-	this->minute = 0;
-	this->second = 0;
+sdef(self, Empty) {
+	self res;
+
+	res.hour   = 0;
+	res.minute = 0;
+	res.second = 0;
+
+	return res;
 }
 
-short Time_Compare(Time a, Time b) {
+sdef(short, Compare, self a, self b) {
 	short hour = Integer_Compare(a.hour, b.hour);
 
 	if (hour != 0) {
@@ -28,12 +32,12 @@ short Time_Compare(Time a, Time b) {
 	return Integer_Compare(a.second, b.second);
 }
 
-inline bool Time_Equals(Time a, Time b) {
-	return Time_Compare(a, b) == 0;
+inline sdef(bool, Equals, self a, self b) {
+	return scall(Compare, a, b) == 0;
 }
 
-Time_UnixEpoch Time_GetCurrentUnixTime(void) {
-	Time_UnixEpoch time;
+sdef(ref(UnixEpoch), GetCurrentUnixTime) {
+	ref(UnixEpoch) time;
 
 	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {
 		throw(exc, excGetTimeOfDayFailed);

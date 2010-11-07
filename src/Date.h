@@ -1,47 +1,52 @@
 #import "Integer.h"
 
-typedef struct {
+#undef self
+#define self Date
+
+record(self) {
 	uint16_t year;
 	uint8_t  month;
 	uint8_t  day;
-} Date;
+};
 
-typedef enum {
-	Date_Month_Unset = 0,
-	Date_Month_January,
-	Date_Month_Februray,
-	Date_Month_March,
-	Date_Month_April,
-	Date_Month_May,
-	Date_Month_June,
-	Date_Month_July,
-	Date_Month_August,
-	Date_Month_September,
-	Date_Month_October,
-	Date_Month_November,
-	Date_Month_December
-} Date_Month;
+set(ref(Month)) {
+	ref(Month_Unset) = 0,
+	ref(Month_January),
+	ref(Month_Februray),
+	ref(Month_March),
+	ref(Month_April),
+	ref(Month_May),
+	ref(Month_June),
+	ref(Month_July),
+	ref(Month_August),
+	ref(Month_September),
+	ref(Month_October),
+	ref(Month_November),
+	ref(Month_December)
+};
 
-typedef enum {
-	Date_WeekDay_Sunday = 0,
-	Date_WeekDay_Monday,
-	Date_WeekDay_Tuesday,
-	Date_WeekDay_Wednesday,
-	Date_WeekDay_Thursday,
-	Date_WeekDay_Friday,
-	Date_WeekDay_Saturday,
-	Date_WeekDay_Unset
-} Date_WeekDay;
+set(ref(WeekDay)) {
+	ref(WeekDay_Sunday) = 0,
+	ref(WeekDay_Monday),
+	ref(WeekDay_Tuesday),
+	ref(WeekDay_Wednesday),
+	ref(WeekDay_Thursday),
+	ref(WeekDay_Friday),
+	ref(WeekDay_Saturday),
+	ref(WeekDay_Unset)
+};
 
-#define Date_SecondsMinute (60)
-#define Date_SecondsHour   (Date_SecondsMinute *  60)
-#define Date_SecondsDay    (Date_SecondsHour   *  24)
-#define Date_SecondsYear   (Date_SecondsDay    * 365)
+enum {
+	ref(SecondsMinute) = 60,
+	ref(SecondsHour)   = ref(SecondsMinute) *  60,
+	ref(SecondsDay)    = ref(SecondsHour)   *  24,
+	ref(SecondsYear)   = ref(SecondsDay)    * 365
+};
 
-const short Date_DaysPerMonth[13];
+const short ref(DaysPerMonth)[13];
 
-void Date_Init(Date *this);
-bool Date_IsLeapYear(int year);
-short Date_Compare(Date a, Date b);
-bool Date_Equals(Date a, Date b);
-short Date_GetWeekDay(Date date);
+sdef(self, Empty);
+sdef(bool, IsLeapYear, int year);
+sdef(short, Compare, self a, self b);
+sdef(bool, Equals, self a, self b);
+sdef(short, GetWeekDay, self date);

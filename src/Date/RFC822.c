@@ -29,8 +29,8 @@ static const String months[] = {
 };
 
 void Date_RFC822_Init(Date_RFC822 *this) {
-	Date_Init(&this->date);
-	Time_Init(&this->time);
+	this->date = Date_Empty();
+	this->time = Time_Empty();
 
 	this->weekday = Date_WeekDay_Unset;
 }
@@ -45,8 +45,8 @@ Date_RFC822 Date_RFC822_Parse(String s) {
 	Date_RFC822 res;
 
 	if (!Pattern_Match(&regex, s, Pattern_Result(NULL, &weekday, &day, &month, &year, &hour, &minute, &second))) {
-		res.date    = DateTime_UnixEpoch.date;
-		res.time    = DateTime_UnixEpoch.time;
+		res.date    = DateTime_GetUnixEpoch().date;
+		res.time    = DateTime_GetUnixEpoch().time;
 		res.weekday = Date_WeekDay_Unset;
 
 		goto out;

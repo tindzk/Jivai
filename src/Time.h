@@ -13,14 +13,15 @@ enum {
 	excGetTimeOfDayFailed = excOffset
 };
 
-typedef struct {
+record(self) {
 	uint8_t hour;
 	uint8_t minute;
 	uint8_t second;
-} Time;
+};
 
 void Time0(ExceptionManager *e);
-void Time_Init(Time *this);
-short Time_Compare(Time a, Time b);
-bool Time_Equals(Time a, Time b);
-Time_UnixEpoch Time_GetCurrentUnixTime(void);
+
+sdef(self, Empty);
+sdef(short, Compare, self a, self b);
+sdef(bool, Equals, self a, self b);
+sdef(ref(UnixEpoch), GetCurrentUnixTime);
