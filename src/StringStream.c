@@ -2,7 +2,7 @@
 
 void StringStream_Init(StringStream *this, String *s) {
 	this->str    = s;
-	this->offset = -1;
+	this->offset = 0;
 }
 
 size_t StringStream_Read(StringStream *this, void *buf, size_t len) {
@@ -29,7 +29,7 @@ void StringStream_Close(__unused StringStream *this) {
 }
 
 bool StringStream_IsEof(StringStream *this) {
-	return (size_t) this->offset == this->str->len;
+	return this->offset >= this->str->len;
 }
 
 StreamInterface StringStreamImpl = {

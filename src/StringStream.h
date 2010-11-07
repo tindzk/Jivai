@@ -3,7 +3,7 @@
 
 typedef struct {
 	String *str;
-	ssize_t offset;
+	size_t offset;
 } StringStream;
 
 void StringStream_Init(StringStream *this, String *s);
