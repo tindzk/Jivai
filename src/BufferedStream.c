@@ -1,6 +1,7 @@
 #import "BufferedStream.h"
+#import "App.h"
 
-void BufferedStream_Init(BufferedStream *this, StreamInterface *stream, void *data) {
+def(void, Init, StreamInterface *stream, void *data) {
 	this->stream = stream;
 	this->data  = data;
 
@@ -12,12 +13,12 @@ void BufferedStream_Init(BufferedStream *this, StreamInterface *stream, void *da
 	this->inbufThreshold = 0;
 }
 
-void BufferedStream_Destroy(BufferedStream *this) {
+def(void, Destroy) {
 	String_Destroy(&this->inbuf);
 	String_Destroy(&this->outbuf);
 }
 
-void BufferedStream_SetInputBuffer(BufferedStream *this, size_t size, size_t threshold) {
+def(void, SetInputBuffer, size_t size, size_t threshold) {
 	if (this->inbuf.size == 0) {
 		this->inbuf = HeapString(size);
 	} else {
@@ -27,7 +28,7 @@ void BufferedStream_SetInputBuffer(BufferedStream *this, size_t size, size_t thr
 	this->inbufThreshold = threshold;
 }
 
-void BufferedStream_SetOutputBuffer(BufferedStream *this, size_t size) {
+def(void, SetOutputBuffer, size_t size) {
 	if (this->outbuf.size == 0) {
 		this->outbuf = HeapString(size);
 	} else {
@@ -35,11 +36,11 @@ void BufferedStream_SetOutputBuffer(BufferedStream *this, size_t size) {
 	}
 }
 
-bool BufferedStream_IsEof(BufferedStream *this) {
+def(bool, IsEof) {
 	return this->inbuf.len == 0 && this->eof;
 }
 
-size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
+def(size_t, Read, void *buf, size_t len) {
 	if (len == 0) {
 		return 0;
 	}
@@ -83,7 +84,7 @@ size_t BufferedStream_Read(BufferedStream *this, void *buf, size_t len) {
 	return copied;
 }
 
-size_t BufferedStream_Write(BufferedStream *this, void *buf, size_t len) {
+def(size_t, Write, void *buf, size_t len) {
 	if (len == 0) {
 		return 0;
 	}
@@ -115,7 +116,7 @@ size_t BufferedStream_Write(BufferedStream *this, void *buf, size_t len) {
 	return len;
 }
 
-String BufferedStream_Flush(BufferedStream *this) {
+def(String, Flush) {
 	String res = StackString(0);
 
 	if (this->inbuf.len > 0) {
@@ -132,21 +133,21 @@ String BufferedStream_Flush(BufferedStream *this) {
 	return res;
 }
 
-void BufferedStream_Reset(BufferedStream *this) {
+def(void, Reset) {
 	this->eof = false;
 
 	this->inbuf.len  = 0;
 	this->outbuf.len = 0;
 }
 
-void BufferedStream_Close(BufferedStream *this) {
+def(void, Close) {
 	BufferedStream_Flush(this);
 	this->stream->close(this->data);
 }
 
-StreamInterface BufferedStreamImpl = {
-	.read  = (void *) BufferedStream_Read,
-	.write = (void *) BufferedStream_Write,
-	.close = (void *) BufferedStream_Close,
-	.isEof = (void *) BufferedStream_IsEof
+StreamInterface Impl(self) = {
+	.read  = (void *) ref(Read),
+	.write = (void *) ref(Write),
+	.close = (void *) ref(Close),
+	.isEof = (void *) ref(IsEof)
 };
