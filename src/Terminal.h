@@ -53,73 +53,73 @@ enum {
 #define Terminal_VT100_Delete_Line         String("\33[2K")
 #define Terminal_VT100_Delete_UntilEol     String("\33[K")
 
-typedef enum {
+set(ref(Color)) {
 	/* Normal text. */
-	Terminal_Color_Normal = 0,
+	ref(Color_Normal) = 0,
 
 	/* Foreground colors. */
-	Terminal_Color_ForegroundBlack   = 0x1,
-	Terminal_Color_ForegroundRed     = 0x2,
-	Terminal_Color_ForegroundGreen   = 0x3,
-	Terminal_Color_ForegroundYellow  = 0x4,
-	Terminal_Color_ForegroundBlue    = 0x5,
-	Terminal_Color_ForegroundMagenta = 0x6,
-	Terminal_Color_ForegroundCyan    = 0x7,
-	Terminal_Color_ForegroundWhite   = 0x8,
-	Terminal_Color_ForegroundMask    = 0xF,
+	ref(Color_ForegroundBlack)   = 0x1,
+	ref(Color_ForegroundRed)     = 0x2,
+	ref(Color_ForegroundGreen)   = 0x3,
+	ref(Color_ForegroundYellow)  = 0x4,
+	ref(Color_ForegroundBlue)    = 0x5,
+	ref(Color_ForegroundMagenta) = 0x6,
+	ref(Color_ForegroundCyan)    = 0x7,
+	ref(Color_ForegroundWhite)   = 0x8,
+	ref(Color_ForegroundMask)    = 0xF,
 
 	/* Background colors. */
-	Terminal_Color_BackgroundBlack   = 0x10,
-	Terminal_Color_BackgroundRed     = 0x20,
-	Terminal_Color_BackgroundGreen   = 0x30,
-	Terminal_Color_BackgroundYellow  = 0x40,
-	Terminal_Color_BackgroundBlue    = 0x50,
-	Terminal_Color_BackgroundMagenta = 0x60,
-	Terminal_Color_BackgroundCyan    = 0x70,
-	Terminal_Color_BackgroundWhite   = 0x80,
-	Terminal_Color_BackgroundMask    = 0xF0
-} Terminal_Color;
+	ref(Color_BackgroundBlack)   = 0x10,
+	ref(Color_BackgroundRed)     = 0x20,
+	ref(Color_BackgroundGreen)   = 0x30,
+	ref(Color_BackgroundYellow)  = 0x40,
+	ref(Color_BackgroundBlue)    = 0x50,
+	ref(Color_BackgroundMagenta) = 0x60,
+	ref(Color_BackgroundCyan)    = 0x70,
+	ref(Color_BackgroundWhite)   = 0x80,
+	ref(Color_BackgroundMask)    = 0xF0
+};
 
-typedef enum {
+set(ref(Font)) {
 	/* Font attributes. */
-	Terminal_Font_Normal    = 0,
-	Terminal_Font_Bold      = Bit(0),
-	Terminal_Font_Italics   = Bit(1),
-	Terminal_Font_Underline = Bit(2),
-	Terminal_Font_Blink     = Bit(3)
-} Terminal_Font;
+	ref(Font_Normal)    = 0,
+	ref(Font_Bold)      = Bit(0),
+	ref(Font_Italics)   = Bit(1),
+	ref(Font_Underline) = Bit(2),
+	ref(Font_Blink)     = Bit(3)
+};
 
-typedef enum {
-	Terminal_KeyType_Up,
-	Terminal_KeyType_Down,
-	Terminal_KeyType_Left,
-	Terminal_KeyType_Right,
+set(ref(KeyType)) {
+	ref(KeyType_Up),
+	ref(KeyType_Down),
+	ref(KeyType_Left),
+	ref(KeyType_Right),
 
-	Terminal_KeyType_Backspace,
-	Terminal_KeyType_Delete,
+	ref(KeyType_Backspace),
+	ref(KeyType_Delete),
 
-	Terminal_KeyType_Home,
-	Terminal_KeyType_End,
+	ref(KeyType_Home),
+	ref(KeyType_End),
 
-	Terminal_KeyType_Unknown
-} Terminal_KeyType;
+	ref(KeyType_Unknown)
+};
 
-typedef struct {
+record(ref(Key)) {
 	char c;
 	Terminal_KeyType t;
-} Terminal_Key;
+};
 
-typedef struct {
+record(ref(Size)) {
 	unsigned short cols;
 	unsigned short rows;
-} Terminal_Size;
+};
 
-typedef struct {
+record(ref(Style)) {
 	int color;
 	int font;
-} Terminal_Style;
+};
 
-typedef struct {
+class(self) {
 	File *in;
 	File *out;
 
@@ -128,39 +128,41 @@ typedef struct {
 	struct termios oldTermios;
 	struct termios curTermios;
 
-	Terminal_Style style;
-} Terminal;
+	ref(Style) style;
+};
 
 #define CTRLKEY(x) \
 	((x) - 96)
 
 void Terminal0(ExceptionManager *e);
 
-void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100);
-void Terminal_Configure(Terminal *this, bool echo, bool signal);
-void Terminal_Destroy(Terminal *this);
-void Terminal_Write(Terminal *this, String s);
-void Terminal_ResetVT100(Terminal *this);
-void Terminal_SetVT100Color(Terminal *this, int color);
-void Terminal_SetVT100Font(Terminal *this, int font);
-Terminal_Style Terminal_GetStyle(Terminal *this);
-void Terminal_Restore(Terminal *this, Terminal_Style style);
-size_t Terminal_ResolveColorName(String name, bool bg);
-Terminal_Size Terminal_GetSize(void);
-overload void Terminal_Print(Terminal *this, int color, int font, String s);
-overload void Terminal_Print(Terminal *this, String s);
-overload void Terminal_Print(Terminal *this, char c);
-overload void Terminal_DeleteLine(Terminal *this, size_t n);
-overload void Terminal_DeleteLine(Terminal *this);
-void Terminal_DeleteUntilEol(Terminal *this);
-void Terminal_MoveHome(Terminal *this);
-void Terminal_MoveUp(Terminal *this, size_t n);
-void Terminal_MoveDown(Terminal *this, size_t n);
-void Terminal_MoveLeft(Terminal *this, size_t n);
-void Terminal_MoveRight(Terminal *this, size_t n);
-char Terminal_ReadChar(Terminal *this);
-void Terminal_HideCursor(Terminal *this);
-void Terminal_ShowCursor(Terminal *this);
-void Terminal_SaveCursor(Terminal *this);
-void Terminal_RestoreCursor(Terminal *this);
-Terminal_Key Terminal_ReadKey(Terminal *this);
+def(void, Init, File *in, File *out, bool assumeVT100);
+def(void, Configure, bool echo, bool signal);
+def(void, Destroy);
+def(void, Write, String s);
+def(void, ResetVT100);
+def(void, SetVT100Color, int color);
+def(void, SetVT100Font, int font);
+def(ref(Style), GetStyle);
+def(void, Restore, ref(Style) style);
+sdef(size_t, ResolveColorName, String name, bool bg);
+sdef(ref(Size), GetSize);
+overload def(void, Print, int color, int font, String s);
+overload def(void, Print, String s);
+overload def(void, Print, char c);
+def(void, DeleteLine, size_t n);
+def(void, DeleteUntilEol);
+def(void, MoveHome);
+def(void, MoveUp, size_t n);
+def(void, MoveDown, size_t n);
+def(void, MoveLeft, size_t n);
+def(void, MoveRight, size_t n);
+def(void, HideCursor);
+def(void, ShowCursor);
+def(void, SaveCursor);
+def(void, RestoreCursor);
+def(char, ReadChar);
+def(ref(Key), ReadKey);
+
+#define Terminal_Print(obj, ...) \
+	Terminal_Print(Terminal_FromObject(obj), ## __VA_ARGS__)

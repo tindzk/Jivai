@@ -1,4 +1,7 @@
 #import "Terminal.h"
+#import "App.h"
+
+#undef Terminal_Print
 
 static ExceptionManager *exc;
 
@@ -6,7 +9,7 @@ void Terminal0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100) {
+def(void, Init, File *in, File *out, bool assumeVT100) {
 	this->in  = in;
 	this->out = out;
 
@@ -16,10 +19,10 @@ void Terminal_Init(Terminal *this, File *in, File *out, bool assumeVT100) {
 
 	this->curTermios = this->oldTermios;
 
-	this->style = (Terminal_Style) {0, 0};
+	this->style = (ref(Style)) {0, 0};
 }
 
-void Terminal_Configure(Terminal *this, bool echo, bool signal) {
+def(void, Configure, bool echo, bool signal) {
 	if (echo) {
 		BitMask_Set(this->curTermios.c_lflag, ECHO);
 	} else {
@@ -38,146 +41,146 @@ void Terminal_Configure(Terminal *this, bool echo, bool signal) {
 	tcsetattr(FileNo_StdIn, TCSAFLUSH, &this->curTermios);
 }
 
-void Terminal_Destroy(Terminal *this) {
+def(void, Destroy) {
 	tcsetattr(FileNo_StdIn, 0, &this->oldTermios);
 }
 
-void Terminal_Write(Terminal *this, String s) {
+def(void, Write, String s) {
 	File_Write(File_FromObject(this->out), s);
 }
 
-void Terminal_ResetVT100(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Normal);
+def(void, ResetVT100) {
+	call(Write, ref(VT100_Normal));
 
-	this->style = (Terminal_Style) {0, 0};
+	this->style = (ref(Style)) {0, 0};
 }
 
 /* Write VT100 escape sequences to the stream for the given color. */
-void Terminal_SetVT100Color(Terminal *this, int color) {
-	switch (color & Terminal_Color_ForegroundMask) {
-		case Terminal_Color_ForegroundBlack:
-			Terminal_Write(this, Terminal_VT100_Foreground_Black);
+def(void, SetVT100Color, int color) {
+	switch (color & ref(Color_ForegroundMask)) {
+		case ref(Color_ForegroundBlack):
+			call(Write, ref(VT100_Foreground_Black));
 			break;
 
-		case Terminal_Color_ForegroundRed:
-			Terminal_Write(this, Terminal_VT100_Foreground_Red);
+		case ref(Color_ForegroundRed):
+			call(Write, ref(VT100_Foreground_Red));
 			break;
 
-		case Terminal_Color_ForegroundGreen:
-			Terminal_Write(this, Terminal_VT100_Foreground_Green);
+		case ref(Color_ForegroundGreen):
+			call(Write, ref(VT100_Foreground_Green));
 			break;
 
-		case Terminal_Color_ForegroundYellow:
-			Terminal_Write(this, Terminal_VT100_Foreground_Yellow);
+		case ref(Color_ForegroundYellow):
+			call(Write, ref(VT100_Foreground_Yellow));
 			break;
 
-		case Terminal_Color_ForegroundBlue:
-			Terminal_Write(this, Terminal_VT100_Foreground_Blue);
+		case ref(Color_ForegroundBlue):
+			call(Write, ref(VT100_Foreground_Blue));
 			break;
 
-		case Terminal_Color_ForegroundMagenta:
-			Terminal_Write(this, Terminal_VT100_Foreground_Magenta);
+		case ref(Color_ForegroundMagenta):
+			call(Write, ref(VT100_Foreground_Magenta));
 			break;
 
-		case Terminal_Color_ForegroundCyan:
-			Terminal_Write(this, Terminal_VT100_Foreground_Cyan);
+		case ref(Color_ForegroundCyan):
+			call(Write, ref(VT100_Foreground_Cyan));
 			break;
 
-		case Terminal_Color_ForegroundWhite:
-			Terminal_Write(this, Terminal_VT100_Foreground_White);
+		case ref(Color_ForegroundWhite):
+			call(Write, ref(VT100_Foreground_White));
 			break;
 	}
 
-	switch (color & Terminal_Color_BackgroundMask) {
-		case Terminal_Color_BackgroundBlack:
-			Terminal_Write(this, Terminal_VT100_Background_Black);
+	switch (color & ref(Color_BackgroundMask)) {
+		case ref(Color_BackgroundBlack):
+			call(Write, ref(VT100_Background_Black));
 			break;
 
-		case Terminal_Color_BackgroundRed:
-			Terminal_Write(this, Terminal_VT100_Background_Red);
+		case ref(Color_BackgroundRed):
+			call(Write, ref(VT100_Background_Red));
 			break;
 
-		case Terminal_Color_BackgroundGreen:
-			Terminal_Write(this, Terminal_VT100_Background_Green);
+		case ref(Color_BackgroundGreen):
+			call(Write, ref(VT100_Background_Green));
 			break;
 
-		case Terminal_Color_BackgroundYellow:
-			Terminal_Write(this, Terminal_VT100_Background_Yellow);
+		case ref(Color_BackgroundYellow):
+			call(Write, ref(VT100_Background_Yellow));
 			break;
 
-		case Terminal_Color_BackgroundBlue:
-			Terminal_Write(this, Terminal_VT100_Background_Blue);
+		case ref(Color_BackgroundBlue):
+			call(Write, ref(VT100_Background_Blue));
 			break;
 
-		case Terminal_Color_BackgroundMagenta:
-			Terminal_Write(this, Terminal_VT100_Background_Magenta);
+		case ref(Color_BackgroundMagenta):
+			call(Write, ref(VT100_Background_Magenta));
 			break;
 
-		case Terminal_Color_BackgroundCyan:
-			Terminal_Write(this, Terminal_VT100_Background_Cyan);
+		case ref(Color_BackgroundCyan):
+			call(Write, ref(VT100_Background_Cyan));
 			break;
 
-		case Terminal_Color_BackgroundWhite:
-			Terminal_Write(this, Terminal_VT100_Background_White);
+		case ref(Color_BackgroundWhite):
+			call(Write, ref(VT100_Background_White));
 			break;
 	}
 
 	this->style.color = color;
 }
 
-void Terminal_SetVT100Font(Terminal *this, int font) {
-	if (BitMask_Has(font, Terminal_Font_Bold)) {
-		Terminal_Write(this, Terminal_VT100_Bold);
+def(void, SetVT100Font, int font) {
+	if (BitMask_Has(font, ref(Font_Bold))) {
+		call(Write, ref(VT100_Bold));
 	}
 
-	if (BitMask_Has(font, Terminal_Font_Italics)) {
-		Terminal_Write(this, Terminal_VT100_Italics);
+	if (BitMask_Has(font, ref(Font_Italics))) {
+		call(Write, ref(VT100_Italics));
 	}
 
-	if (BitMask_Has(font, Terminal_Font_Underline)) {
-		Terminal_Write(this, Terminal_VT100_Underline);
+	if (BitMask_Has(font, ref(Font_Underline))) {
+		call(Write, ref(VT100_Underline));
 	}
 
-	if (BitMask_Has(font, Terminal_Font_Blink)) {
-		Terminal_Write(this, Terminal_VT100_Blink);
+	if (BitMask_Has(font, ref(Font_Blink))) {
+		call(Write, ref(VT100_Blink));
 	}
 
 	this->style.font = font;
 }
 
-Terminal_Style Terminal_GetStyle(Terminal *this) {
+def(ref(Style), GetStyle) {
 	return this->style;
 }
 
-void Terminal_Restore(Terminal *this, Terminal_Style style) {
+def(void, Restore, ref(Style) style) {
 	if (this->style.color != style.color
 	 || this->style.font  != style.font) {
-		Terminal_ResetVT100(this);
+		call(ResetVT100);
 
-		Terminal_SetVT100Font (this, style.font);
-		Terminal_SetVT100Color(this, style.color);
+		call(SetVT100Font,  style.font);
+		call(SetVT100Color, style.color);
 	}
 }
 
-size_t Terminal_ResolveColorName(String name, bool bg) {
+sdef(size_t, ResolveColorName, String name, bool bg) {
 	int color = 0;
 
 	if (String_Equals(name, String("black"))) {
-		color = Terminal_Color_ForegroundBlack;
+		color = ref(Color_ForegroundBlack);
 	} else if (String_Equals(name, String("red"))) {
-		color = Terminal_Color_ForegroundRed;
+		color = ref(Color_ForegroundRed);
 	} else if (String_Equals(name, String("green"))) {
-		color = Terminal_Color_ForegroundGreen;
+		color = ref(Color_ForegroundGreen);
 	} else if (String_Equals(name, String("yellow"))) {
-		color = Terminal_Color_ForegroundYellow;
+		color = ref(Color_ForegroundYellow);
 	} else if (String_Equals(name, String("blue"))) {
-		color = Terminal_Color_ForegroundBlue;
+		color = ref(Color_ForegroundBlue);
 	} else if (String_Equals(name, String("magenta"))) {
-		color = Terminal_Color_ForegroundMagenta;
+		color = ref(Color_ForegroundMagenta);
 	} else if (String_Equals(name, String("cyan"))) {
-		color = Terminal_Color_ForegroundCyan;
+		color = ref(Color_ForegroundCyan);
 	} else if (String_Equals(name, String("white"))) {
-		color = Terminal_Color_ForegroundWhite;
+		color = ref(Color_ForegroundWhite);
 	}
 
 	if (bg) {
@@ -187,10 +190,10 @@ size_t Terminal_ResolveColorName(String name, bool bg) {
 	return color;
 }
 
-Terminal_Size Terminal_GetSize(void) {
+sdef(ref(Size), GetSize) {
 	struct winsize size;
 
-	Terminal_Size res;
+	ref(Size) res;
 
 	if (ioctl(FileNo_StdIn, TIOCGWINSZ, &size) == 0) {
 		res.cols = size.ws_col;
@@ -202,153 +205,149 @@ Terminal_Size Terminal_GetSize(void) {
 	return res;
 }
 
-overload void Terminal_Print(Terminal *this, int color, int font, String s) {
+overload def(void, Print, int color, int font, String s) {
 	/* Setup the stream with the given color if possible. */
 	if (this->isVT100) {
-		Terminal_SetVT100Font (this, font);
-		Terminal_SetVT100Color(this, color);
+		call(SetVT100Font,  font);
+		call(SetVT100Color, color);
 	}
 
 	/* Write the text into the stream. */
-	Terminal_Write(this, s);
+	call(Write, s);
 
 	/* Restore the normal color state for the stream. */
 	if (this->isVT100) {
-		Terminal_ResetVT100(this);
+		call(ResetVT100);
 	}
 }
 
-overload void Terminal_Print(Terminal *this, String s) {
-	Terminal_Write(this, s);
+overload def(void, Print, String s) {
+	call(Write, s);
 }
 
-overload void Terminal_Print(Terminal *this, char c) {
+overload def(void, Print, char c) {
 	File_Write(File_FromObject(this->out), &c, 1);
 }
 
-overload void Terminal_DeleteLine(Terminal *this, size_t n) {
+def(void, DeleteLine, size_t n) {
 	if (n == 1) {
-		Terminal_Write(this, Terminal_VT100_Delete_Line);
+		call(Write, ref(VT100_Delete_Line));
 	} else {
-		Terminal_Write(this, String("\33["));
-		Terminal_Write(this, Integer_ToString(n));
-		Terminal_Write(this, String("M"));
+		call(Write, String("\33["));
+		call(Write, Integer_ToString(n));
+		call(Write, String("M"));
 	}
 }
 
-inline overload void Terminal_DeleteLine(Terminal *this) {
-	Terminal_DeleteLine(this, 1);
+def(void, DeleteUntilEol) {
+	call(Write, ref(VT100_Delete_UntilEol));
 }
 
-void Terminal_DeleteUntilEol(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Delete_UntilEol);
+def(void, MoveHome) {
+	call(Write, ref(VT100_Cursor_Home));
 }
 
-void Terminal_MoveHome(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Cursor_Home);
-}
-
-void Terminal_MoveUp(Terminal *this, size_t n) {
+def(void, MoveUp, size_t n) {
 	if (n == 1) {
-		Terminal_Write(this, Terminal_VT100_Cursor_Up);
+		call(Write, ref(VT100_Cursor_Up));
 	} else {
-		Terminal_Write(this, String("\33["));
-		Terminal_Write(this, Integer_ToString(n));
-		Terminal_Write(this, String("A"));
+		call(Write, String("\33["));
+		call(Write, Integer_ToString(n));
+		call(Write, String("A"));
 	}
 }
 
-void Terminal_MoveDown(Terminal *this, size_t n) {
+def(void, MoveDown, size_t n) {
 	if (n == 1) {
-		Terminal_Write(this, Terminal_VT100_Cursor_Down);
+		call(Write, ref(VT100_Cursor_Down));
 	} else {
-		Terminal_Write(this, String("\33["));
-		Terminal_Write(this, Integer_ToString(n));
-		Terminal_Write(this, String("B"));
+		call(Write, String("\33["));
+		call(Write, Integer_ToString(n));
+		call(Write, String("B"));
 	}
 }
 
-void Terminal_MoveLeft(Terminal *this, size_t n) {
+def(void, MoveLeft, size_t n) {
 	if (n == 1) {
-		Terminal_Write(this, Terminal_VT100_Cursor_Left);
+		call(Write, ref(VT100_Cursor_Left));
 	} else {
-		Terminal_Write(this, String("\33["));
-		Terminal_Write(this, Integer_ToString(n));
-		Terminal_Write(this, String("D"));
+		call(Write, String("\33["));
+		call(Write, Integer_ToString(n));
+		call(Write, String("D"));
 	}
 }
 
-void Terminal_MoveRight(Terminal *this, size_t n) {
+def(void, MoveRight, size_t n) {
 	if (n > 0) {
 		if (n == 1) {
-			Terminal_Write(this, Terminal_VT100_Cursor_Right);
+			call(Write, ref(VT100_Cursor_Right));
 		} else {
-			Terminal_Write(this, String("\33["));
-			Terminal_Write(this, Integer_ToString(n));
-			Terminal_Write(this, String("C"));
+			call(Write, String("\33["));
+			call(Write, Integer_ToString(n));
+			call(Write, String("C"));
 		}
 	}
 }
 
-void Terminal_HideCursor(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Cursor_Hide);
+def(void, HideCursor) {
+	call(Write, ref(VT100_Cursor_Hide));
 }
 
-void Terminal_ShowCursor(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Cursor_Show);
+def(void, ShowCursor) {
+	call(Write, ref(VT100_Cursor_Show));
 }
 
-void Terminal_SaveCursor(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Cursor_Save);
+def(void, SaveCursor) {
+	call(Write, ref(VT100_Cursor_Save));
 }
 
-void Terminal_RestoreCursor(Terminal *this) {
-	Terminal_Write(this, Terminal_VT100_Cursor_Restore);
+def(void, RestoreCursor) {
+	call(Write, ref(VT100_Cursor_Restore));
 }
 
-char Terminal_ReadChar(Terminal *this) {
+def(char, ReadChar) {
 	char c = '\0';
 	File_Read(File_FromObject(this->in), &c, 1);
 	return c;
 }
 
-Terminal_Key Terminal_ReadKey(Terminal *this) {
-	Terminal_Key key;
+def(ref(Key), ReadKey) {
+	ref(Key) key;
 
-	key.c = Terminal_ReadChar(this);
-	key.t = Terminal_KeyType_Unknown;
+	key.c = call(ReadChar);
+	key.t = ref(KeyType_Unknown);
 
 	if (key.c == '\177') {
-		key.t = Terminal_KeyType_Backspace;
+		key.t = ref(KeyType_Backspace);
 	} else if (key.c == '\033') {
-		char k = Terminal_ReadChar(this);
+		char k = call(ReadChar);
 
 		if (k == '[') {
-			char k2 = Terminal_ReadChar(this);
+			char k2 = call(ReadChar);
 
 			if (k2 == 'A') {
-				key.t = Terminal_KeyType_Down;
+				key.t = ref(KeyType_Down);
 			} else if (k2 == 'B') {
-				key.t = Terminal_KeyType_Up;
+				key.t = ref(KeyType_Up);
 			} else if (k2 == 'C') {
-				key.t = Terminal_KeyType_Right;
+				key.t = ref(KeyType_Right);
 			} else if (k2 == 'D') {
-				key.t = Terminal_KeyType_Left;
+				key.t = ref(KeyType_Left);
 			} else if (k2 == '3') {
-				Terminal_ReadChar(this);
-				key.t = Terminal_KeyType_Delete;
+				call(ReadChar);
+				key.t = ref(KeyType_Delete);
 			} else if (k2 == 'H' || k2 == '7') {
 				if (k2 == '7') {
-					Terminal_ReadChar(this);
+					call(ReadChar);
 				}
 
-				key.t = Terminal_KeyType_Home;
+				key.t = ref(KeyType_Home);
 			} else if (k2 == 'F' || k2 == '8') {
 				if (k2 == '8') {
-					Terminal_ReadChar(this);
+					call(ReadChar);
 				}
 
-				key.t = Terminal_KeyType_End;
+				key.t = ref(KeyType_End);
 			}
 		}
 	}
