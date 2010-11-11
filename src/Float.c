@@ -20,4 +20,17 @@ void Float_ToStringBuf(float num, double precision, String *out) {
 
 		m--;
 	}
+
+	/* Add missing zeros. */
+	ssize_t digits = 0;
+
+	for (; precision > 0 && precision < 1; digits++) {
+		precision *= 10;
+	}
+
+	digits -= m * -1;
+
+	for (; digits >= 0; digits--) {
+		String_Append(out, '0');
+	}
 }
