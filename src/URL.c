@@ -1,7 +1,15 @@
 #import "URL.h"
 
-URL_Parts URL_Parse(String url) {
-	URL_Parts res;
+set(ref(State)) {
+	ref(State_Scheme),
+	ref(State_Host),
+	ref(State_Port),
+	ref(State_Path),
+	ref(State_Fragment)
+};
+
+sdef(ref(Parts), Parse, String url) {
+	ref(Parts) res;
 
 	res.scheme   = HeapString(0);
 	res.host     = HeapString(0);
@@ -11,57 +19,57 @@ URL_Parts URL_Parse(String url) {
 
 	String_Append(&res.path, '/');
 
-	URL_State state = URL_State_Scheme;
+	ref(State) state = ref(State_Scheme);
 
 	String buf = HeapString(256);
 
 	for (size_t i = 0; i < url.len; i++) {
 		switch (state) {
-			case URL_State_Scheme:
+			case ref(State_Scheme):
 				if (String_EndsWith(buf, String("://"))) {
 					String_Copy(&res.scheme, buf, 0, -3);
 					buf.len = 0;
 
-					state = URL_State_Host;
+					state = ref(State_Host);
 				}
 
 				break;
 
-			case URL_State_Host:
+			case ref(State_Host):
 				if (String_EndsWith(buf, String(":"))) {
-					state = URL_State_Port;
+					state = ref(State_Port);
 				} else if (String_EndsWith(buf, String("/"))) {
-					state = URL_State_Path;
+					state = ref(State_Path);
 				}
 
-				if (state != URL_State_Host) {
+				if (state != ref(State_Host)) {
 					String_Copy(&res.host, buf, 0, -1);
 					buf.len = 0;
 				}
 
 				break;
 
-			case URL_State_Port:
+			case ref(State_Port):
 				if (String_EndsWith(buf, String("/"))) {
 					res.port = (short) Integer_ParseString(buf);
 					buf.len = 0;
 
-					state = URL_State_Path;
+					state = ref(State_Path);
 				}
 
 				break;
 
-			case URL_State_Path:
+			case ref(State_Path):
 				if (String_EndsWith(buf, String("#"))) {
 					String_Append(&res.path,
 						String_Slice(buf, 0, -1));
-					state = URL_State_Fragment;
+					state = ref(State_Fragment);
 					buf.len = 0;
 				}
 
 				break;
 
-			case URL_State_Fragment:
+			case ref(State_Fragment):
 				break;
 		}
 
@@ -69,9 +77,9 @@ URL_Parts URL_Parse(String url) {
 	}
 
 	if (buf.len > 0) {
-		if (state == URL_State_Path) {
+		if (state == ref(State_Path)) {
 			String_Append(&res.path, buf);
-		} else if (state == URL_State_Fragment) {
+		} else if (state == ref(State_Fragment)) {
 			String_Append(&res.fragment, buf);
 		}
 	}
@@ -81,9 +89,9 @@ URL_Parts URL_Parse(String url) {
 	return res;
 }
 
-void URL_Parts_Destroy(URL_Parts *this) {
-	String_Destroy(&this->scheme);
-	String_Destroy(&this->host);
-	String_Destroy(&this->path);
-	String_Destroy(&this->fragment);
+sdef(void, Parts_Destroy, ref(Parts) *parts) {
+	String_Destroy(&parts->scheme);
+	String_Destroy(&parts->host);
+	String_Destroy(&parts->path);
+	String_Destroy(&parts->fragment);
 }
