@@ -38,25 +38,25 @@ typedef struct {
 #endif
 } Exception;
 
-typedef struct _ExceptionManager_Record {
-	struct _ExceptionManager_Record *prev; /* Linked list. */
-	jmp_buf jmpBuffer;
-} ExceptionManager_Record;
+#undef self
+#define self ExceptionManager
 
-typedef struct {
+record(ref(Record)) {
+	struct ref(Record) *prev; /* Linked list. */
+	jmp_buf jmpBuffer;
+};
+
+class(self) {
 	ExceptionManager_Record *cur;
 	Exception e;
-} ExceptionManager;
+};
 
-void ExceptionManager_Init(ExceptionManager *this);
-void ExceptionManager_Raise(ExceptionManager *this, size_t code);
-void ExceptionManager_Push(ExceptionManager *this,
-	 ExceptionManager_Record *_record);
-void ExceptionManager_Pop(ExceptionManager *this);
-Exception* ExceptionManager_GetMeta(ExceptionManager *this);
-void ExceptionManager_Print(ExceptionManager *this, size_t code);
-
-void Exception_Print(Exception *e, size_t code);
+def(void, Init);
+def(void, Raise, size_t code);
+def(void, Push, ref(Record) *_record);
+def(void, Pop);
+def(Exception *, GetMeta);
+def(void, Print, size_t code);
 
 #if Exception_SaveOrigin
 #define Exception_SetOrigin(e) \
