@@ -1,15 +1,18 @@
 #import "String.h"
 #import "StreamInterface.h"
 
-typedef struct {
+#undef self
+#define self StringStream
+
+class(self) {
 	String *str;
 	size_t offset;
-} StringStream;
+};
 
-void StringStream_Init(StringStream *this, String *s);
-size_t StringStream_Read(StringStream *this, void *buf, size_t len);
-size_t StringStream_Write(StringStream *this, void *buf, size_t len);
-void StringStream_Close(__unused StringStream *this);
-bool StringStream_IsEof(StringStream *this);
+def(void, Init, String *s);
+def(size_t, Read, void *buf, size_t len);
+def(size_t, Write, __unused void *buf, __unused size_t len);
+def(void, Close);
+def(bool, IsEof);
 
-extern StreamInterface StringStreamImpl;
+StreamInterface Impl(self);

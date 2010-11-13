@@ -1,11 +1,12 @@
 #import "StringStream.h"
+#import "App.h"
 
-void StringStream_Init(StringStream *this, String *s) {
+def(void, Init, String *s) {
 	this->str    = s;
 	this->offset = 0;
 }
 
-size_t StringStream_Read(StringStream *this, void *buf, size_t len) {
+def(size_t, Read, void *buf, size_t len) {
 	size_t bytes = len;
 
 	if (bytes > this->str->len - this->offset) {
@@ -20,21 +21,21 @@ size_t StringStream_Read(StringStream *this, void *buf, size_t len) {
 	return bytes;
 }
 
-size_t StringStream_Write(__unused StringStream *this, __unused void *buf, __unused size_t len) {
+def(size_t, Write, __unused void *buf, __unused size_t len) {
 	return 0;
 }
 
-void StringStream_Close(__unused StringStream *this) {
+def(void, Close) {
 
 }
 
-bool StringStream_IsEof(StringStream *this) {
+def(bool, IsEof) {
 	return this->offset >= this->str->len;
 }
 
-StreamInterface StringStreamImpl = {
-	.read  = (void *) StringStream_Read,
-	.write = (void *) StringStream_Write,
-	.close = (void *) StringStream_Close,
-	.isEof = (void *) StringStream_IsEof
+StreamInterface Impl(self) = {
+	.read  = (void *) ref(Read),
+	.write = (void *) ref(Write),
+	.close = (void *) ref(Close),
+	.isEof = (void *) ref(IsEof)
 };
