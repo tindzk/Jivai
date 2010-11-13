@@ -7,12 +7,7 @@ void Typography0(ExceptionManager *e) {
 	exc = e;
 }
 
-def(void, Init, StreamInterface *stream, void *context) {
-	this->line = 0;
-
-	this->stream  = stream;
-	this->context = context;
-
+def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 }
 
@@ -190,7 +185,12 @@ out:
 	String_Destroy(&name);
 }
 
-def(void, Parse) {
+def(void, Parse, StreamInterface *stream, void *context) {
+	this->line = 0;
+
+	this->stream  = stream;
+	this->context = context;
+
 	Tree_Reset(&this->tree);
 	this->node = (ref(Node) *) &this->tree.root;
 

@@ -47,8 +47,8 @@ class(self) {
 ExtendClass(self);
 
 void Typography0(ExceptionManager *e);
-def(void, Init, StreamInterface *stream, void *context);
+def(void, Init);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);
 def(ref(Node) *, GetRoot);
-def(void, Parse);
+def(void, Parse, StreamInterface *stream, void *context);
