@@ -65,6 +65,12 @@
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
 
+#define Constructor \
+	static void __constructor ctor(void)
+
+#define Destructor \
+	static void __destructor dtor(void)
+
 /* Iterate over arrays and tree nodes using pointer arithmetic. As
  * we don't declare an index variable, this macro can be nested
  * safely.
