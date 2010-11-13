@@ -25,7 +25,7 @@ set(FileDescriptorFlags) {
 	FileDescriptorFlags_CloseOnExec = 1
 };
 
-typedef enum {
+set(FileStatus) {
 	FileStatus_ReadOnly  = 00,
 	FileStatus_WriteOnly = 01,
 	FileStatus_ReadWrite = 02,
@@ -35,9 +35,9 @@ typedef enum {
 	FileStatus_Create    = 0100,
 	FileStatus_NonBlock  = 04000,
 	FileStatus_Truncate  = 01000
-} FileStatus;
+};
 
-typedef enum {
+set(FileMode) {
 	FileMode_Mask        = 0170000,
 	FileMode_Directory   = 0040000,
 	FileMode_CharDevice  = 0020000,
@@ -46,15 +46,15 @@ typedef enum {
 	FileMode_FIFO        = 0010000,
 	FileMode_Symlink     = 0120000,
 	FileMode_Socket      = 0140000
-} FileModes;
+};
 
-typedef enum {
+set(FileAttribute) {
 	FileAttribute_Sticky         = 01000,
 	FileAttribute_ExecuteAsUser  = 04000,
 	FileAttribute_ExecuteAsGroup = 02000
-} FileAttributes;
+};
 
-typedef enum {
+set(Permission) {
 	Permission_OwnerMask    = 00700,
 	Permission_OwnerRead    = 0400,
 	Permission_OwnerWrite   = 0200,
@@ -69,14 +69,14 @@ typedef enum {
 	Permission_OthersRead    = 00004,
 	Permission_OthersWrite   = 00002,
 	Permission_OthersExecute = 00001
-} Permissions;
+};
 
-typedef struct {
+record(Time_UnixEpoch) {
 	time_t sec;
 	long   nsec;
-} Time_UnixEpoch;
+};
 
-typedef struct {
+record(Stat) {
 	__dev_t device;
 	unsigned short int __pad1;
 	__ino_t inode;
@@ -92,9 +92,9 @@ typedef struct {
 	Time_UnixEpoch atime;
 	Time_UnixEpoch mtime;
 	Time_UnixEpoch ctime;
-} Stat;
+};
 
-typedef struct {
+record(Stat64) {
 	__dev_t device;
 	unsigned int __pad1;
 	__ino_t __inode;
@@ -111,18 +111,18 @@ typedef struct {
 	Time_UnixEpoch mtime;
 	Time_UnixEpoch ctime;
 	__ino64_t inode;
-} Stat64;
+};
 
-typedef enum {
+set(FileNo) {
 	FileNo_StdIn  = 0,
 	FileNo_StdOut = 1,
 	FileNo_StdErr = 2
-} FileNo;
+};
 
-typedef enum {
+set(ExitStatus) {
 	ExitStatus_Success = 0,
 	ExitStatus_Failure = 1
-} ExitStatus;
+};
 
 set(EpollCtl) {
 	EpollCtl_Add    = 1,
