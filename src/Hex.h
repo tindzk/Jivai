@@ -1,8 +1,4 @@
-#import <stdint.h>
-
-#import "UniStd.h"
 #import "String.h"
-#import "Compiler.h"
 
 #undef self
 #define self Hex
