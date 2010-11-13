@@ -1,12 +1,13 @@
 #import "SocketConnectionStream.h"
+#import "App.h"
 
-bool SocketConnectionStream_IsEof(__unused SocketConnectionStream *this) {
+def(bool, IsEof) {
 	return false;
 }
 
-StreamInterface SocketConnectionStreamImpl = {
-	.read  = (void *) SocketConnectionStream_Read,
-	.write = (void *) SocketConnectionStream_Write,
-	.close = (void *) SocketConnectionStream_Close,
-	.isEof = (void *) SocketConnectionStream_IsEof,
+StreamInterface Impl(self) = {
+	.read  = (void *) ref(Read),
+	.write = (void *) ref(Write),
+	.close = (void *) ref(Close),
+	.isEof = (void *) ref(IsEof)
 };
