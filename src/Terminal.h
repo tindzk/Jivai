@@ -3,7 +3,6 @@
 #import "Bit.h"
 #import "File.h"
 #import "Macros.h"
-#import "UniStd.h" /* isatty */
 #import "BitMask.h"
 #import "Integer.h"
 #import "Exception.h"

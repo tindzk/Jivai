@@ -9,11 +9,16 @@ void Terminal0(ExceptionManager *e) {
 	exc = e;
 }
 
+sdef(bool, IsTTY, File *file) {
+	struct termios term;
+	return ioctl(file->fd, TCGETS, &term) == 0;
+}
+
 def(void, Init, File *in, File *out, bool assumeVT100) {
 	this->in  = in;
 	this->out = out;
 
-	this->isVT100 = assumeVT100 && isatty(out->fd);
+	this->isVT100 = assumeVT100 && scall(IsTTY, out);
 
 	tcgetattr(FileNo_StdIn, &this->oldTermios);
 
