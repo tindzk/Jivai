@@ -33,22 +33,19 @@ void Process0(ExceptionManager *e) {
 }
 
 def(void, Init, String cmd) {
-	this->cmd = String_Clone(cmd);
-	Array_Init(this->params, 0);
+	this->cmd    = String_Clone(cmd);
+	this->params = StringArray_New(0);
 }
 
 def(void, Destroy) {
 	String_Destroy(&this->cmd);
 
-	foreach (param, this->params) {
-		String_Destroy(param);
-	}
-
-	Array_Destroy(this->params);
+	StringArray_Destroy(this->params);
+	StringArray_Free(this->params);
 }
 
 def(void, AddParameter, String param) {
-	Array_Push(this->params, String_Clone(param));
+	StringArray_Push(&this->params, String_Clone(param));
 }
 
 def(String, GetCommandLine) {
