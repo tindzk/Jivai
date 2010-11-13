@@ -1,6 +1,13 @@
 #import "YAML.h"
 #import "App.h"
 
+set(ref(State)) {
+	ref(State_Comment),
+	ref(State_Key),
+	ref(State_Value),
+	ref(State_Depth)
+};
+
 static ExceptionManager *exc;
 
 void YAML0(ExceptionManager *e) {
@@ -114,9 +121,8 @@ def(void, AddItem, size_t depth, String key, String value) {
 def(void, Parse) {
 	char c;
 
-	enum state_t { COMMENT, KEY, VALUE, DEPTH };
-	enum state_t state = KEY;
-	enum state_t prevstate = state;
+	ref(State) state = ref(State_Key);
+	ref(State) prevState = state;
 
 	Tree_Reset(&this->tree);
 
@@ -135,10 +141,10 @@ def(void, Parse) {
 		bool popChar = false;
 
 		switch (state) {
-			case DEPTH:
+			case ref(State_Depth):
 				if (c == '#') {
-					state = COMMENT;
-					prevstate = DEPTH;
+					state = ref(State_Comment);
+					prevState = ref(State_Depth);
 					whitespaces = 0;
 				} else if (c == ' ') {
 					whitespaces++;
@@ -148,15 +154,15 @@ def(void, Parse) {
 					whitespaces = 0;
 				} else {
 					String_Append(&buf, c);
-					state = KEY;
+					state = ref(State_Key);
 				}
 
 				break;
 
-			case KEY:
+			case ref(State_Key):
 				if (c == '#') {
-					state = COMMENT;
-					prevstate = KEY;
+					state = ref(State_Comment);
+					prevState = ref(State_Key);
 				} else if (buf.len > 0 && buf.buf[buf.len - 1] == ':') {
 					if (c == '\n') {
 						buf.len--; /* Remove the colon. */
@@ -165,16 +171,16 @@ def(void, Parse) {
 						buf.len = 0;
 						whitespaces = 0;
 
-						state = DEPTH;
+						state = ref(State_Depth);
 					} else if (c == '#') {
-						state = COMMENT;
-						prevstate = KEY;
+						state = ref(State_Comment);
+						prevState = ref(State_Key);
 					} else if (c != ' ' && c != '\t') {
 						buf.len--; /* Remove the colon. */
 						String_Copy(&key, buf);
 
 						buf.len = 0;
-						state = VALUE;
+						state = ref(State_Value);
 
 						popChar = true;
 					}
@@ -185,33 +191,33 @@ def(void, Parse) {
 					}
 
 					whitespaces = 0;
-					state = DEPTH;
+					state = ref(State_Depth);
 				} else if (c != ' ' && c != '\t') {
 					String_Append(&buf, c);
 				}
 
 				break;
 
-			case VALUE:
+			case ref(State_Value):
 				if (c == '#') {
-					state = COMMENT;
-					prevstate = VALUE;
+					state = ref(State_Comment);
+					prevState = ref(State_Value);
 				} else if (c == '\n') {
 					String_Trim(&buf);
 					call(AddItem, whitespaces / this->depthWidth, key, buf);
 
 					buf.len = 0;
 					whitespaces = 0;
-					state = DEPTH;
+					state = ref(State_Depth);
 				} else {
 					String_Append(&buf, c);
 				}
 
 				break;
 
-			case COMMENT:
+			case ref(State_Comment):
 				if (c == '\n') {
-					state = prevstate;
+					state = prevState;
 					popChar = true;
 				}
 
