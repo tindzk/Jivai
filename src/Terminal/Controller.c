@@ -65,8 +65,8 @@ void Terminal_Controller_Render(Terminal_Controller *this, String s, ...) {
 	StringStream_Init(&stream, &s);
 
 	Typography tyo;
-	Typography_Init(&tyo, &StringStreamImpl, &stream);
-	Typography_Parse(&tyo);
+	Typography_Init(&tyo);
+	Typography_Parse(&tyo, &StringStreamImpl, &stream);
 
 	VarArg_Start(argptr, s);
 	Terminal_Controller_Print(this, Typography_GetRoot(&tyo), &argptr);
