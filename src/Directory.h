@@ -13,41 +13,41 @@ enum {
 	excCannotOpenDirectory = excOffset
 };
 
-typedef struct {
+record(ref(LinuxEntry)) {
 	unsigned long inode;
 	unsigned long offset;
 	unsigned short reclen;
 	char name[];
-} Directory_LinuxEntry;
+};
 
-typedef struct {
+class(self) {
 	int fd;
-	Directory_LinuxEntry *d;
+	ref(LinuxEntry) *d;
 	int nread;
 	char buf[Directory_BufSize];
 	int bpos;
-} Directory;
+};
 
-typedef enum {
-	Directory_ItemType_Unknown     =  0,
-	Directory_ItemType_FIFO        =  1,
-	Directory_ItemType_CharDevice  =  2,
-	Directory_ItemType_Directory   =  4,
-	Directory_ItemType_BlockDevice =  6,
-	Directory_ItemType_Regular     =  8,
-	Directory_ItemType_Symlink     = 10,
-	Directory_ItemType_Socket      = 12,
-	Directory_ItemType_Whiteout    = 14
-} Directory_ItemType;
+set(ref(ItemType)) {
+	ref(ItemType_Unknown)     =  0,
+	ref(ItemType_FIFO)        =  1,
+	ref(ItemType_CharDevice)  =  2,
+	ref(ItemType_Directory)   =  4,
+	ref(ItemType_BlockDevice) =  6,
+	ref(ItemType_Regular)     =  8,
+	ref(ItemType_Symlink)     = 10,
+	ref(ItemType_Socket)      = 12,
+	ref(ItemType_Whiteout)    = 14
+};
 
-typedef struct {
+record(ref(Entry)) {
 	long inode;
-	Directory_ItemType type;
+	ref(ItemType) type;
 	String name;
-} Directory_Entry;
+};
 
 void Directory0(ExceptionManager *e);
 
-void Directory_Init(Directory *this, String path);
-void Directory_Destroy(Directory *this);
-bool Directory_Read(Directory *this, Directory_Entry *res);
+def(void, Init, String path);
+def(void, Destroy);
+def(bool, Read, ref(Entry) *res);

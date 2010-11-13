@@ -1,4 +1,5 @@
 #import "Directory.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,7 +7,7 @@ void Directory0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Directory_Init(Directory *this, String path) {
+def(void, Init, String path) {
 	this->fd = Kernel_open(path,
 		FileStatus_Directory |
 		FileStatus_ReadOnly, 0);
@@ -18,13 +19,13 @@ void Directory_Init(Directory *this, String path) {
 	this->bpos = 0;
 }
 
-void Directory_Destroy(Directory *this) {
+def(void, Destroy) {
 	Kernel_close(this->fd);
 }
 
-bool Directory_Read(Directory *this, Directory_Entry *res) {
+def(bool, Read, ref(Entry) *res) {
 	if (this->bpos == 0 || this->bpos >= this->nread) {
-		this->nread = Kernel_getdents(this->fd, this->buf, Directory_BufSize);
+		this->nread = Kernel_getdents(this->fd, this->buf, ref(BufSize));
 		this->bpos  = 0;
 
 		if (this->nread == -1) {
@@ -38,7 +39,7 @@ bool Directory_Read(Directory *this, Directory_Entry *res) {
 
 	char *p = this->buf + this->bpos;
 
-	Directory_LinuxEntry *item = (Directory_LinuxEntry *) p;
+	ref(LinuxEntry) *item = (ref(LinuxEntry) *) p;
 
 	res->inode = item->inode;
 	res->type  = *(p + item->reclen - 1);
