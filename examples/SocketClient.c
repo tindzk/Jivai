@@ -1,4 +1,5 @@
 #import <Socket.h>
+#import <Integer.h>
 #import <SocketConnection.h>
 
 ExceptionManager exc;
