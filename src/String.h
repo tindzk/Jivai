@@ -1,6 +1,5 @@
 #import "Bit.h"
 #import "Types.h"
-#import "VarArg.h"
 #import "BitMask.h"
 #import "Compiler.h"
 #import "Exceptions.h"
