@@ -19,7 +19,10 @@ def(void, OnDestroy) {
 	/* Shut down all remaining connections. */
 	void (^destroy)(Connection *) = ^(Connection *conn) {
 		this->connection->destroy(conn);
+
 		Client_Destroy(conn->client);
+		Client_Free(conn->client);
+
 		Memory_Free(conn);
 	};
 
@@ -81,6 +84,8 @@ static def(Connection_Status, OnData, Client *client, bool pull) {
 
 			/* Close the connection. */
 			Client_Destroy(client);
+
+			Client_Free(client);
 		}
 	}
 
