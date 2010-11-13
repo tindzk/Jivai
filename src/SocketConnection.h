@@ -3,7 +3,7 @@
 #import <netinet/tcp.h>
 
 #import "File.h"
-#import "Fcntl.h"
+#import "Kernel.h"
 #import "String.h"
 #import "Exception.h"
 #import "NetworkAddress.h"

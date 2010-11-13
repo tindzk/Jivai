@@ -1,7 +1,7 @@
 #import <errno.h>
 
-#import "Fcntl.h"
 #import "String.h"
+#import "Kernel.h"
 #import "Exception.h"
 #import "NetworkAddress.h"
 #import "SocketConnection.h"

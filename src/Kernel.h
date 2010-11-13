@@ -14,6 +14,17 @@
 #define __NR__llseek     __NR_lseek
 #endif
 
+set(FcntlMode) {
+	FcntlMode_GetDescriptorFlags = 1,
+	FcntlMode_SetDescriptorFlags = 2,
+	FcntlMode_GetStatus          = 3,
+	FcntlMode_SetStatus          = 4
+};
+
+set(FileDescriptorFlags) {
+	FileDescriptorFlags_CloseOnExec = 1
+};
+
 typedef enum {
 	FileStatus_ReadOnly  = 00,
 	FileStatus_WriteOnly = 01,
