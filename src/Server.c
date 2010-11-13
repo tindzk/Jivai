@@ -24,10 +24,10 @@ def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericI
 	Socket_Listen(&this->socket, port, ref(ConnectionLimit));
 
 	/* Add the server socket to epoll. */
-	Poll_AddEvent(&this->poll, NULL, this->socket.fd,
-		EPOLLIN  |
-		EPOLLHUP |
-		EPOLLERR);
+	Poll_AddEvent(&this->poll, Generic_Null(), this->socket.fd,
+		Poll_Events_Error |
+		Poll_Events_Input |
+		Poll_Events_HangUp);
 
 	this->listener->onInit(this->context);
 }
@@ -63,20 +63,20 @@ def(void, AcceptClient) {
 	this->listener->onClientAccept(this->context, client);
 
 	int flags =
-		EPOLLERR |
-		EPOLLHUP |
-		EPOLLRDHUP;
+		Poll_Events_Error  |
+		Poll_Events_HangUp |
+		Poll_Events_PeerHangUp;
 
 	if (this->edgeTriggered) {
-		BitMask_Set(flags, EPOLLET);
+		BitMask_Set(flags, Poll_Events_EdgeTriggered);
 	}
 
 	if (this->listener->onPush != NULL) {
-		BitMask_Set(flags, EPOLLIN);
+		BitMask_Set(flags, Poll_Events_Input);
 	}
 
 	if (this->listener->onPull != NULL) {
-		BitMask_Set(flags, EPOLLOUT);
+		BitMask_Set(flags, Poll_Events_Output);
 	}
 
 	Poll_AddEvent(&this->poll,
@@ -86,7 +86,9 @@ def(void, AcceptClient) {
 }
 
 def(void, OnEvent, int events, ClientInstance client) {
-	if (Client_IsNull(client) && BitMask_Has(events, EPOLLIN)) {
+	if (Client_IsNull(client) &&
+			BitMask_Has(events, Poll_Events_Input))
+	{
 		/* Incoming connection. */
 
 		if (this->listener->onClientConnect(this->context)) {
@@ -101,21 +103,27 @@ def(void, OnEvent, int events, ClientInstance client) {
 		}
 	}
 
-	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLIN)) {
+	if (!Client_IsNull(client) && BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
 		if (!this->listener->onPush(this->context, client)) {
 			client = Client_Null();
 		}
 	}
 
-	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLOUT)) {
+	if (!Client_IsNull(client) &&
+			BitMask_Has(events, Poll_Events_Output))
+	{
 		/* Client requests data. */
 		if (!this->listener->onPull(this->context, client)) {
 			client = Client_Null();
 		}
 	}
 
-	if (!Client_IsNull(client) && BitMask_Has(events, EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
+	if (!Client_IsNull(client) && BitMask_Has(events,
+			Poll_Events_Error  |
+			Poll_Events_HangUp |
+			Poll_Events_PeerHangUp))
+	{
 		/* Error occured or connection hung up. */
 		call(DestroyClient, client);
 	}

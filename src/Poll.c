@@ -8,7 +8,7 @@ void Poll0(ExceptionManager *e) {
 }
 
 def(void, Init, ref(OnEvent) onEvent) {
-	if ((this->fd = Kernel_epoll_create(ref(Events))) == -1) {
+	if ((this->fd = Kernel_epoll_create(ref(NumEvents))) == -1) {
 		throw(exc, excUnknownError);
 	}
 
@@ -27,14 +27,14 @@ def(void, Destroy) {
 }
 
 def(void, AddEvent, GenericInstance inst, ssize_t fd, int events) {
-	struct epoll_event ev = {0, {0}};
+	EpollEvent ev = { 0, {0} };
 
+	ev.ptr    = Generic_GetObject(inst);
 	ev.events = events;
-	ev.data.ptr = Generic_GetObject(inst);
 
 	errno = 0;
 
-	if (!Kernel_epoll_ctl(this->fd, EPOLL_CTL_ADD, fd, &ev)) {
+	if (!Kernel_epoll_ctl(this->fd, EpollCtl_Add, fd, &ev)) {
 		if (errno == EPERM) {
 			throw(exc, excFileDescriptorNotSupported);
 		} else if (errno == EEXIST) {
@@ -48,14 +48,14 @@ def(void, AddEvent, GenericInstance inst, ssize_t fd, int events) {
 }
 
 def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
-	struct epoll_event ev = {0, {0}};
+	EpollEvent ev = { 0, {0} };
 
+	ev.ptr    = Generic_GetObject(inst);
 	ev.events = events;
-	ev.data.ptr = Generic_GetObject(inst);
 
 	errno = 0;
 
-	if (!Kernel_epoll_ctl(this->fd, EPOLL_CTL_MOD, fd, &ev)) {
+	if (!Kernel_epoll_ctl(this->fd, EpollCtl_Modify, fd, &ev)) {
 		if (errno == ENOENT) {
 			throw(exc, excUnknownFileDescriptor);
 		} else if (errno == EPERM) {
@@ -71,7 +71,7 @@ def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
 def(void, DeleteEvent, int fd) {
 	errno = 0;
 
-	if (Kernel_epoll_ctl(this->fd, EPOLL_CTL_DEL, fd, NULL)) {
+	if (Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {
 		if (errno == ENOENT) {
 			throw(exc, excUnknownFileDescriptor);
 		} else if (errno == EPERM) {
@@ -89,7 +89,7 @@ def(size_t, Process, int timeout) {
 
 	ssize_t nfds;
 
-	if ((nfds = Kernel_epoll_wait(this->fd, this->events, ref(Events), timeout)) == -1) {
+	if ((nfds = Kernel_epoll_wait(this->fd, this->events, ref(NumEvents), timeout)) == -1) {
 		if (errno == EBADF) {
 			throw(exc, excInvalidFileDescriptor);
 		} else {
@@ -100,7 +100,7 @@ def(size_t, Process, int timeout) {
 	for (size_t i = 0; i < (size_t) nfds; i++) {
 		callback(this->onEvent,
 			this->events[i].events,
-			this->events[i].data.ptr);
+			this->events[i].ptr);
 	}
 
 	return nfds;

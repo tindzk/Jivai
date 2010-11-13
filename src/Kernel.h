@@ -1,7 +1,6 @@
 #import <linux/net.h>
-#import <sys/epoll.h>
-#import <sys/syscall.h>
 #import <netinet/in.h>
+#import <sys/syscall.h>
 
 #import "Types.h"
 #import "UniStd.h" /* for syscall() */
@@ -114,6 +113,23 @@ typedef enum {
 	ExitStatus_Failure = 1
 } ExitStatus;
 
+set(EpollCtl) {
+	EpollCtl_Add    = 1,
+	EpollCtl_Delete = 2,
+	EpollCtl_Modify = 3
+};
+
+record(EpollEvent) {
+	u32 events;
+
+	union {
+		void *ptr;
+		int fd;
+		u32 u32;
+		u64 u64;
+	};
+};
+
 #import "String.h"
 
 #undef self
@@ -147,8 +163,8 @@ sdef(bool, truncate64, String path, u64 len);
 sdef(bool, ftruncate64, ssize_t fd, u64 len);
 sdef(bool, clock_gettime, int id, Time_UnixEpoch *res);
 sdef(ssize_t, epoll_create, size_t n);
-sdef(bool, epoll_ctl, int epfd, int op, ssize_t fd, struct epoll_event *event);
-sdef(ssize_t, epoll_wait, int epfd, struct epoll_event *events, int maxevents, int timeout);
+sdef(bool, epoll_ctl, int epfd, EpollCtl op, ssize_t fd, EpollEvent *event);
+sdef(ssize_t, epoll_wait, int epfd, EpollEvent *events, int maxevents, int timeout);
 sdef(ssize_t, fcntl, ssize_t fd, int cmd, int arg);
 sdef(ssize_t, socket, int namespace, int style, int protocol);
 sdef(bool, setsockopt, ssize_t fd, int level, int option, const void *value, int size);
