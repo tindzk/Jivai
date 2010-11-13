@@ -156,19 +156,25 @@
 #define callback(var, ...) \
 	(var).cb((var).context, ## __VA_ARGS__)
 
-/* buildBugOnZero(), mustBeArray() and nElems() are taken from Linux
- * kernel 2.6.35.
+#define isType(a, b) \
+	__builtin_types_compatible_p(a, b)
+
+/* staticAssertValue(), mustBeArray() and nElems() are taken from
+ * Linux kernel 2.6.35.
  */
 
 /* See tools/perf/util/include/linux/kernel.h */
-#define buildBugOnZero(e) \
-	(sizeof(struct { int:-!!(e); }))
+#define staticAssertValue(expr) \
+	(sizeof(struct { int:-!(expr); }))
+
+#define staticAssert(expr) \
+	(void) staticAssertValue(expr)
 
 /* See include/linux/compiler-gcc.h
  * &a[0] degrades to a pointer: a different type from an array
  */
-#define mustBeArray(a) \
-	buildBugOnZero(__builtin_types_compatible_p(typeof(a), typeof(&a[0])))
+#define mustBeArray(arr) \
+	staticAssertValue(!isType(typeof(arr), typeof(&arr[0])))
 
 /* See include/linux/kernel.h */
 #define nElems(arr) \
