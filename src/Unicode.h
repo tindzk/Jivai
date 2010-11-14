@@ -1,10 +1,13 @@
 #import "String.h"
 #import "Charset.h"
 
-size_t Unicode_CalcWidth(const char *src);
-size_t Unicode_Next(String s, size_t offset);
-size_t Unicode_Prev(String s, size_t offset);
-overload size_t Unicode_Count(String s, size_t offset, size_t len);
-overload size_t Unicode_Count(String s);
-void Unicode_Shrink(String *s, size_t len);
-void Unicode_ToMultiByte(int c, String *res);
+#undef self
+#define self Unicode
+
+sdef(size_t, CalcWidth, const char *src);
+sdef(size_t, Next, String s, size_t offset);
+sdef(size_t, Prev, String s, size_t offset);
+overload sdef(size_t, Count, String s, size_t offset, size_t len);
+overload sdef(size_t, Count, String s);
+sdef(void, Shrink, String *s, size_t len);
+sdef(void, ToMultiByte, int c, String *res);

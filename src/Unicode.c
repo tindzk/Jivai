@@ -1,7 +1,7 @@
 #import "Unicode.h"
 
 /* Taken from BusyBox (busybox-1.16.1/libbb/unicode.c). */
-size_t Unicode_CalcWidth(const char *src) {
+sdef(size_t, CalcWidth, const char *src) {
 	size_t bytes = 0;
 	unsigned c = (unsigned char) *src;
 
@@ -23,7 +23,7 @@ size_t Unicode_CalcWidth(const char *src) {
 	return bytes;
 }
 
-size_t Unicode_Next(String s, size_t offset) {
+sdef(size_t, Next, String s, size_t offset) {
 	if (offset >= s.len) {
 		return 0;
 	}
@@ -39,7 +39,7 @@ size_t Unicode_Next(String s, size_t offset) {
 	return 0;
 }
 
-size_t Unicode_Prev(String s, size_t offset) {
+sdef(size_t, Prev, String s, size_t offset) {
 	size_t tries = 0;
 	size_t width = 0;
 
@@ -62,7 +62,7 @@ size_t Unicode_Prev(String s, size_t offset) {
 	return width;
 }
 
-overload size_t Unicode_Count(String s, size_t offset, size_t len) {
+overload sdef(size_t, Count, String s, size_t offset, size_t len) {
 	size_t i   = offset;
 	size_t cnt = 0;
 
@@ -80,11 +80,11 @@ overload size_t Unicode_Count(String s, size_t offset, size_t len) {
 	return cnt;
 }
 
-overload size_t Unicode_Count(String s) {
+overload sdef(size_t, Count, String s) {
 	return Unicode_Count(s, 0, s.len);
 }
 
-void Unicode_Shrink(String *s, size_t len) {
+sdef(void, Shrink, String *s, size_t len) {
 	size_t cnt    = 0;
 	size_t offset = 0;
 
@@ -105,7 +105,7 @@ void Unicode_Shrink(String *s, size_t len) {
 	}
 }
 
-void Unicode_ToMultiByte(int c, String *res) {
+sdef(void, ToMultiByte, int c, String *res) {
     if (c <= 0x7F) {
 		res->buf[0] = c;
 		res->len = 1;
