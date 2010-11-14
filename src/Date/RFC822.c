@@ -28,21 +28,25 @@ static const String months[] = {
 	String("Dec")
 };
 
-void Date_RFC822_Init(Date_RFC822 *this) {
-	this->date = Date_Empty();
-	this->time = Time_Empty();
+sdef(self, Empty) {
+	self res;
 
-	this->weekday = Date_WeekDay_Unset;
+	res.date = Date_Empty();
+	res.time = Time_Empty();
+
+	res.weekday = Date_WeekDay_Unset;
+
+	return res;
 }
 
-Date_RFC822 Date_RFC822_Parse(String s) {
+sdef(self, Parse, String s) {
 	String weekday, day, month, year, hour, minute, second;
 
 	Pattern regex;
 	Pattern_Init(&regex);
 	Pattern_Compile(&regex, pattern);
 
-	Date_RFC822 res;
+	self res;
 
 	if (!Pattern_Match(&regex, s, Pattern_Result(NULL, &weekday, &day, &month, &year, &hour, &minute, &second))) {
 		res.date    = DateTime_GetUnixEpoch().date;
@@ -80,31 +84,31 @@ out:
 	return res;
 }
 
-Date_RFC822 Date_RFC822_FromDate(DateTime this) {
-	Date_RFC822 res;
+sdef(self, FromDate, DateTime $this) {
+	self res;
 
-	res.date    = this.date;
-	res.time    = this.time;
-	res.weekday = Date_GetWeekDay(this.date);
+	res.date    = $this.date;
+	res.time    = $this.time;
+	res.weekday = Date_GetWeekDay($this.date);
 
 	return res;
 }
 
-String Date_RFC822_ToString(Date_RFC822 this) {
-	if (this.date.month > 12) {
-		this.date.month = 0;
+sdef(String, ToString, self $this) {
+	if ($this.date.month > 12) {
+		$this.date.month = 0;
 	}
 
 	String tmp1, tmp2, tmp3, tmp4, tmp5;
 
 	String out = String_Format(String("%, % % % %:%:% GMT"),
-		weekdays[this.weekday],
-		tmp1 = Number_Format(this.date.day,    2),
-		months[this.date.month],
-		tmp2 = Number_Format(this.date.year,   4),
-		tmp3 = Number_Format(this.time.hour,   2),
-		tmp4 = Number_Format(this.time.minute, 2),
-		tmp5 = Number_Format(this.time.second, 2));
+		weekdays[$this.weekday],
+		tmp1 = Number_Format($this.date.day,    2),
+		months[$this.date.month],
+		tmp2 = Number_Format($this.date.year,   4),
+		tmp3 = Number_Format($this.time.hour,   2),
+		tmp4 = Number_Format($this.time.minute, 2),
+		tmp5 = Number_Format($this.time.second, 2));
 
 	String_Destroy(&tmp5);
 	String_Destroy(&tmp4);
