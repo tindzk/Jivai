@@ -19,6 +19,33 @@ const short ref(DaysPerMonth)[13] = {
 	(31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31)
 };
 
+const String ref(MonthNames)[13] = {
+	$(""),
+	$("January"),
+	$("Februray"),
+	$("March"),
+	$("April"),
+	$("May"),
+	$("June"),
+	$("July"),
+	$("August"),
+	$("September"),
+	$("October"),
+	$("November"),
+	$("December")
+};
+
+const String ref(WeekDays)[13] = {
+	$("Sunday"),
+	$("Monday"),
+	$("Tuesday"),
+	$("Wednesday"),
+	$("Thursday"),
+	$("Friday"),
+	$("Saturday"),
+	$("")
+};
+
 sdef(self, Empty) {
 	self res;
 
@@ -72,4 +99,28 @@ sdef(short, GetWeekDay, self date) {
 	}
 
 	return (short) (day % 7);
+}
+
+sdef(String, Format, self date) {
+	String month = ref(MonthNames)[date.month];
+
+	String day  = Integer_ToString(date.day);
+	String year = Integer_ToString(date.year);
+
+	String suffix;
+
+	if (date.day == 1) {
+		suffix = $("st");
+	} else if (date.day == 2) {
+		suffix = $("nd");
+	} else if (date.day == 3) {
+		suffix = $("rd");
+	} else {
+		suffix = $("th");
+	}
+
+	String fmt = String_Format($("% %%, %"),
+		month, day, suffix, year);
+
+	return fmt;
 }

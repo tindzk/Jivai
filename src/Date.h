@@ -44,9 +44,12 @@ enum {
 };
 
 const short ref(DaysPerMonth)[13];
+const String ref(MonthNames)[13];
+const String ref(WeekDays)[13];
 
 sdef(self, Empty);
 sdef(bool, IsLeapYear, int year);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(short, GetWeekDay, self date);
+sdef(String, Format, self date);
