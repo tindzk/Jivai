@@ -109,18 +109,22 @@ def(void, Print, size_t code);
 		ExceptionManager_Raise(this, CurModule + e); \
 	} while(0)
 
-#define try(this)                                 \
-{                                                 \
-	ExceptionManager_Check(this);                 \
-	ExceptionManager *__exc_mgr = this;           \
-	ExceptionManager_Push(__exc_mgr,              \
-		StackNew(ExceptionManager_Record));       \
-	bool __exc_rethrow = false;                   \
-	bool __exc_ignore_finally = false;            \
-	__label__ __exc_finally;                      \
-	void *__exc_return_ptr = && __exc_done;       \
-	size_t e = setjmp(__exc_mgr->cur->jmpBuffer); \
-	if (e == 0) {                                 \
+#define try(this)                              \
+{                                              \
+	ExceptionManager_Check(this);              \
+	ExceptionManager *__exc_mgr = this;        \
+	                                           \
+	__label__ __exc_finally;                   \
+	bool __exc_rethrow = false;                \
+	bool __exc_ignore_finally = false;         \
+	void *__exc_return_ptr = && __exc_done;    \
+	                                           \
+	ExceptionManager_Record __exc_record;      \
+	ExceptionManager_Push(__exc_mgr,           \
+		&__exc_record);                        \
+	                                           \
+	size_t e = setjmp(__exc_record.jmpBuffer); \
+	if (e == 0) {                              \
 
 #define clean                            \
 		ExceptionManager_Pop(__exc_mgr); \
