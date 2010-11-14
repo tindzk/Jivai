@@ -70,8 +70,10 @@ inline overload bool Path_IsFile(Stat64 attr) {
 }
 
 overload bool Path_IsDirectory(String path) {
+	bool res = false;
+
 	try (exc) {
-		excReturn Path_GetStat(path).mode & FileMode_Directory;
+		res = Path_GetStat(path).mode & FileMode_Directory;
 	} clean catch(Path, excNonExistentPath) {
 		/* Ignore. */
 	} catch(Path, excNotDirectory) {
@@ -80,7 +82,7 @@ overload bool Path_IsDirectory(String path) {
 
 	} tryEnd;
 
-	return false;
+	return res;
 }
 
 inline overload bool Path_IsDirectory(Stat64 attr) {
