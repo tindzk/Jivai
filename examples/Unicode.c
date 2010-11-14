@@ -1,4 +1,6 @@
+#import <String.h>
 #import <Unicode.h>
+#import <Integer.h>
 
 void printChars(String s) {
 	size_t offset = 0;
@@ -13,10 +15,8 @@ void printChars(String s) {
 			break;
 		}
 
-		String_Print(tmp);
-		String_Print(String(" ("));
-		String_Print(Integer_ToString(tmp.len));
-		String_Print(String(") "));
+		String_FmtPrint($("% (%) "),
+			tmp, Integer_ToString(tmp.len));
 
 		offset += tmp.len;
 	}
@@ -36,10 +36,8 @@ void printCharsReverse(String s) {
 		offset -= tmp.len;
 		tmp.buf = s.buf + offset;
 
-		String_Print(tmp);
-		String_Print(String(" ("));
-		String_Print(Integer_ToString(tmp.len));
-		String_Print(String(") "));
+		String_FmtPrint($("% (%) "),
+			tmp, Integer_ToString(tmp.len));
 	}
 }
 
@@ -48,9 +46,8 @@ int main(void) {
 
 	s = String("ßühiöö");
 
-	String_Print(String("len="));
-	String_Print(Integer_ToString(Unicode_Count(s)));
-	String_Print(String("\n"));
+	String_FmtPrint($("len=%\n"),
+		Integer_ToString(Unicode_Count(s)));
 
 	printChars(s);
 	String_Print(String("\n"));
@@ -60,9 +57,8 @@ int main(void) {
 
 	String_Print(String("\n\n"));
 
-	String_Print(String("len="));
-	String_Print(Integer_ToString(Unicode_Count(s)));
-	String_Print(String("\n"));
+	String_FmtPrint($("len=%\n"),
+		Integer_ToString(Unicode_Count(s)));
 
 	printChars(s);
 	String_Print(String("\n"));
