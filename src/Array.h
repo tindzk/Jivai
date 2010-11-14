@@ -58,9 +58,13 @@
 		Array_Init(res, items);                                      \
 		return res;                                                  \
 	}                                                                \
-	static inline void underscoredConcat(name, Free)(name *this) {   \
-		Array_Destroy(this);                                         \
+	static inline void underscoredConcat(name, Free)                 \
+		(union { name *object } transparentUnion $this)              \
+	{                                                                \
+		Array_Destroy($this.object);                                 \
 	}                                                                \
-	static inline void underscoredConcat(name, Push)(name **this, type data) { \
-		Array_Push(*this, data);                                      \
+	static inline void underscoredConcat(name, Push)                 \
+		(union { name **object } transparentUnion $this, type data)  \
+	{                                                                \
+		Array_Push(*$this.object, data);                             \
 	}
