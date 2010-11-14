@@ -87,7 +87,9 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 				this->events.context,
 				path);
 		} clean finally {
-			String_Destroy(&path);
+			if (path.mutable) {
+				String_Destroy(&path);
+			}
 		} tryEnd;
 	}
 
@@ -217,11 +219,15 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 				try (exc) {
 					HTTP_Header_ParseHeaderLine(this, res);
 				} clean finally {
-					String_Destroy(&res);
+					if (e != 0) {
+						String_Destroy(&res);
+					}
 				} tryEnd;
 			}
 
 			last = i;
 		}
 	}
+
+	String_Destroy(&res);
 }

@@ -28,10 +28,16 @@ inline String BufString(char *buf, size_t len) {
 }
 
 void String_Destroy(String *this) {
+	if (!this->mutable) {
+		throw(exc, excNotMutable);
+	}
+
 	this->len  = 0;
 	this->size = 0;
 
-	if (this->mutable && this->buf != NULL) {
+	this->mutable = false;
+
+	if (this->buf != NULL) {
 		Memory_Free(this->buf);
 	}
 }
