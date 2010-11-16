@@ -22,7 +22,7 @@
 	if (0) lbl: if (1)
 
 #define repeat(n) \
-	for (size_t i = (n); i; i--)
+	for (size_t __repeat_i = (n); __repeat_i; __repeat_i--)
 
 #define _simpleConcat(x, y) \
 	x ## y
