@@ -9,9 +9,8 @@ String Number_Format(float number, size_t decimals) {
 
 	/* n = 10^(decimals-1) */
 	int n = 1;
-	while (decimals > 1) {
+	repeat (decimals - 1) {
 		n *= 10;
-		decimals--;
 	}
 
 	String res = HeapString(Number_BufferSize);
