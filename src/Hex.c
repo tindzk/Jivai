@@ -19,7 +19,7 @@ sdef(String, ToString, u64 hex) {
 	return res;
 }
 
-overload sdef(int, ToInteger, char c) {
+overload sdef(s8, ToInteger, char c) {
 	if ('a' <= c && c <= 'f') {
 		return c - 'a' + 10;
 	} else if ('A' <= c && c <= 'F') {
@@ -31,9 +31,9 @@ overload sdef(int, ToInteger, char c) {
 	}
 }
 
-overload sdef(long, ToInteger, String s) {
-	int  total      = 0;
-	long multiplier = 1;
+overload sdef(s64, ToInteger, String s) {
+	s64 total      = 0;
+	u64 multiplier = 1;
 
 	ssize_t i = s.len - 1;
 

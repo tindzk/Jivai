@@ -221,7 +221,7 @@ size_t HTTP_Client_ParseChunk(String *s) {
 		throw(exc, excMalformedChunk);
 	}
 
-	long len = Hex_ToInteger(String_Slice(*s, 0, pos));
+	s64 len = Hex_ToInteger(String_Slice(*s, 0, pos));
 
 	if (len == -1) {
 		throw(exc, excMalformedChunk);

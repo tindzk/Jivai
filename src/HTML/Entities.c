@@ -282,11 +282,11 @@ sdef(String, Decode, String s) {
 						goto error;
 					}
 
-					s32 c;
+					s16 c;
 					if (entity.buf[1] == 'x') {
 						c = Hex_ToInteger(String_Slice(entity, 2));
 					} else {
-						c = Int32_Parse(String_Slice(entity, 1));
+						c = Int16_Parse(String_Slice(entity, 1));
 					}
 
 					String s = StackString(4);
