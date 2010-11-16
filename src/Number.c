@@ -1,6 +1,6 @@
 #import "Number.h"
 
-String Number_Format(float number, size_t decimals) {
+String Number_Format(s32 number, size_t decimals) {
 	bool isNeg = (number < 0);
 
 	if (isNeg) {
