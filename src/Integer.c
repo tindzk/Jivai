@@ -6,35 +6,28 @@ void Integer0(ExceptionManager *e) {
 	exc = e;
 }
 
-#define DefineParseString(type, name)           \
-	type name(String s) {                       \
-		if (s.len == 0) {                       \
-			return 0;                           \
-		}                                       \
-		size_t i, j, c, digit;                  \
-		type res;                               \
-		c = 0;                                  \
-		res = 0;                                \
-		i = s.len;                              \
-		while (i--) {                           \
-			if (!Char_IsDigit(s.buf[i])) {      \
-				continue;                       \
-			}                                   \
-			digit = Char_ParseDigit(s.buf[i]);  \
-			j = c;                              \
-			while (j--) {                       \
-				digit *= 10;                    \
-			}                                   \
-			if (res + digit > MaxValue(type)) { \
-				throw(exc, excNumberTooBig);    \
-			}                                   \
-			res += digit;                       \
-			c++;                                \
-		}                                       \
-		if (s.buf[0] == '-') {                  \
-			res *= -1;                          \
-		}                                       \
-		return res;                             \
+#define DefineParseString(type, name)                 \
+	type name(String s) {                             \
+		type res = 0;                                 \
+		size_t c = 0;                                 \
+		reverse (i, s.len) {                          \
+			if (!Char_IsDigit(s.buf[i])) {            \
+				continue;                             \
+			}                                         \
+			size_t digit = Char_ParseDigit(s.buf[i]); \
+			repeat (c) {                              \
+				digit *= 10;                          \
+			}                                         \
+			if (res + digit > MaxValue(type)) {       \
+				throw(exc, excNumberTooBig);          \
+			}                                         \
+			res += digit;                             \
+			c++;                                      \
+		}                                             \
+		if (s.len > 0 && s.buf[0] == '-') {           \
+			res *= -1;                                \
+		}                                             \
+		return res;                                   \
 	}
 
 DefineParseString(s32, Integer_ParseString);
