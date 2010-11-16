@@ -65,8 +65,8 @@ void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 	String_FmtPrint(
 		String("Got TCP connection from %:%, fd=%\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
-		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd));
+		Int16_ToString(client->conn->addr.port),
+		Int16_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
 
@@ -82,8 +82,8 @@ void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *clien
 	String_FmtPrint(
 		String("Client %:%, fd=% disconnected\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
-		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd));
+		Int16_ToString(client->conn->addr.port),
+		Int16_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
 
@@ -100,14 +100,14 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 
 	String_FmtPrint(
 		String("Received data from fd=%: '%'\n"),
-		Integer_ToString(client->conn->fd), input);
+		Int16_ToString(client->conn->fd), input);
 
 	if (String_BeginsWith(input, String("info"))) {
 		ClientData *data = client->data;
 
 		String resp = String_Format(
 			String("You have the ID %.\n"),
-			Integer_ToString(data->id));
+			Int32_ToString(data->id));
 
 		SocketConnection_Write(client->conn, resp.buf, resp.len);
 
@@ -115,7 +115,7 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 	} else if (String_BeginsWith(input, String("active"))) {
 		String tmp = String_Format(
 			String("% active connection(s).\n"),
-			Integer_ToString(this->activeConn - 1));
+			Int32_ToString(this->activeConn - 1));
 
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 		String_Destroy(&tmp);

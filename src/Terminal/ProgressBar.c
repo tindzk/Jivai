@@ -73,7 +73,7 @@ void Terminal_ProgressBar_Render(Terminal_ProgressBar *this, size_t percent, Str
 
 	Terminal_Controller_Render(&this->controller,
 		String("%!% [.b{%%}] %\n"),
-		Integer_ToString(percent),
+		Int16_ToString(percent),
 		progress, empty, msg);
 
 	this->lines = 1;

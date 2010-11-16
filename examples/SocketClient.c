@@ -22,7 +22,7 @@ int main(void) {
 		d1 = String_Format(
 			String("Connected to %:%\n\n"),
 			d2 = NetworkAddress_ToString(conn.addr),
-			Integer_ToString(conn.addr.port)));
+			Int16_ToString(conn.addr.port)));
 
 	String_Destroy(&d2);
 	String_Destroy(&d1);

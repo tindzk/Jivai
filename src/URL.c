@@ -51,7 +51,7 @@ sdef(ref(Parts), Parse, String url) {
 
 			case ref(State_Port):
 				if (String_EndsWith(buf, String("/"))) {
-					res.port = (short) Integer_ParseString(buf);
+					res.port = Int16_Parse(buf);
 					buf.len = 0;
 
 					state = ref(State_Path);

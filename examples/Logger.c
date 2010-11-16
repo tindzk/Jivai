@@ -9,7 +9,7 @@ ExceptionManager exc;
 
 void onLogMessage(__unused void *ptr, String msg, Logger_Level level, String file, int line) {
 	String slevel = Logger_ResolveLevel(level);
-	String sline  = Integer_ToString(line);
+	String sline  = Int32_ToString(line);
 
 	String tmp;
 	String_Print(tmp = String_Format(

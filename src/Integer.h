@@ -10,26 +10,46 @@ enum {
 
 void Integer0(ExceptionManager *e);
 
-s32 Integer_ParseString(String s);
-s64 Integer64_ParseString(String s);
+s8  Int8_Parse(String s);
+s16 Int16_Parse(String s);
+s32 Int32_Parse(String s);
+s64 Int64_Parse(String s);
 
-size_t Integer_CountDigits(s32 num);
-size_t Integer64_CountDigits(s64 num);
+size_t Int8_CountDigits(s8 num);
+size_t Int16_CountDigits(s16 num);
+size_t Int32_CountDigits(s32 num);
+size_t Int64_CountDigits(s64 num);
 
-void Integer_ToStringBuf(s32 num, String *buf);
-void Integer64_ToStringBuf(s64 num, String *buf);
+void Int8_ToStringBuf(s8 num, String *buf);
+void Int16_ToStringBuf(s16 num, String *buf);
+void Int32_ToStringBuf(s32 num, String *buf);
+void Int64_ToStringBuf(s64 num, String *buf);
 
-short Integer_Compare(s32 a, s32 b);
-short Integer64_Compare(s64 a, s64 b);
+short Int8_Compare(s8 a, s8 b);
+short Int16_Compare(s16 a, s16 b);
+short Int32_Compare(s32 a, s32 b);
+short Int64_Compare(s64 a, s64 b);
 
-#define Integer_ToString(num) ({           \
-	size_t len = Integer_CountDigits(num); \
-	String str = StackString(len);         \
-	Integer_ToStringBuf(num, &str);        \
+#define Int8_ToString(num) ({           \
+	size_t len = Int8_CountDigits(num); \
+	String str = StackString(len);      \
+	Int8_ToStringBuf(num, &str);        \
 	str; })
 
-#define Integer64_ToString(num) ({           \
-	size_t len = Integer64_CountDigits(num); \
-	String str = StackString(len);           \
-	Integer64_ToStringBuf(num, &str);        \
+#define Int16_ToString(num) ({           \
+	size_t len = Int16_CountDigits(num); \
+	String str = StackString(len);       \
+	Int16_ToStringBuf(num, &str);        \
+	str; })
+
+#define Int32_ToString(num) ({           \
+	size_t len = Int32_CountDigits(num); \
+	String str = StackString(len);       \
+	Int32_ToStringBuf(num, &str);        \
+	str; })
+
+#define Int64_ToString(num) ({           \
+	size_t len = Int64_CountDigits(num); \
+	String str = StackString(len);       \
+	Int64_ToStringBuf(num, &str);        \
 	str; })

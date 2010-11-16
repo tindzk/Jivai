@@ -30,8 +30,10 @@ void Integer0(ExceptionManager *e) {
 		return res;                                   \
 	}
 
-DefineParseString(s32, Integer_ParseString);
-DefineParseString(s64, Integer64_ParseString);
+DefineParseString(s8,  Int8_Parse);
+DefineParseString(s16, Int16_Parse);
+DefineParseString(s32, Int32_Parse);
+DefineParseString(s64, Int64_Parse);
 
 /* To determine the number of digits. */
 #define DefineCountDigits(type, name) \
@@ -44,8 +46,10 @@ DefineParseString(s64, Integer64_ParseString);
 		return digits;                \
 	}
 
-DefineCountDigits(s32, Integer_CountDigits);
-DefineCountDigits(s64, Integer64_CountDigits);
+DefineCountDigits(s8,  Int8_CountDigits);
+DefineCountDigits(s16, Int16_CountDigits);
+DefineCountDigits(s32, Int32_CountDigits);
+DefineCountDigits(s64, Int64_CountDigits);
 
 #define DefineToStringBuf(type, name)                             \
 	void name(type num, String *res) {                            \
@@ -72,8 +76,10 @@ DefineCountDigits(s64, Integer64_CountDigits);
 		} while(orig);                                            \
 	}
 
-DefineToStringBuf(s32, Integer_ToStringBuf);
-DefineToStringBuf(s64, Integer64_ToStringBuf);
+DefineToStringBuf(s8,  Int8_ToStringBuf);
+DefineToStringBuf(s16, Int16_ToStringBuf);
+DefineToStringBuf(s32, Int32_ToStringBuf);
+DefineToStringBuf(s64, Int64_ToStringBuf);
 
 #define DefineCompare(type, name)       \
 	inline short name(type a, type b) { \
@@ -81,5 +87,7 @@ DefineToStringBuf(s64, Integer64_ToStringBuf);
 			 - (a < b);                 \
 	}
 
-DefineCompare(s32, Integer_Compare);
-DefineCompare(s64, Integer64_Compare);
+DefineCompare(s8,  Int8_Compare);
+DefineCompare(s16, Int16_Compare);
+DefineCompare(s32, Int32_Compare);
+DefineCompare(s64, Int64_Compare);

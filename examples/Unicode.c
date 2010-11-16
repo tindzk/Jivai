@@ -16,7 +16,7 @@ void printChars(String s) {
 		}
 
 		String_FmtPrint($("% (%) "),
-			tmp, Integer_ToString(tmp.len));
+			tmp, Int16_ToString(tmp.len));
 
 		offset += tmp.len;
 	}
@@ -37,7 +37,7 @@ void printCharsReverse(String s) {
 		tmp.buf = s.buf + offset;
 
 		String_FmtPrint($("% (%) "),
-			tmp, Integer_ToString(tmp.len));
+			tmp, Int16_ToString(tmp.len));
 	}
 }
 
@@ -47,7 +47,7 @@ int main(void) {
 	s = String("ßühiöö");
 
 	String_FmtPrint($("len=%\n"),
-		Integer_ToString(Unicode_Count(s)));
+		Int16_ToString(Unicode_Count(s)));
 
 	printChars(s);
 	String_Print(String("\n"));
@@ -58,7 +58,7 @@ int main(void) {
 	String_Print(String("\n\n"));
 
 	String_FmtPrint($("len=%\n"),
-		Integer_ToString(Unicode_Count(s)));
+		Int16_ToString(Unicode_Count(s)));
 
 	printChars(s);
 	String_Print(String("\n"));

@@ -28,7 +28,7 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 
 				String_Print(items[i].filename, true);
 				String_Print(String(":"), true);
-				String_Print(Integer_ToString(items[i].line), true);
+				String_Print(Int32_ToString(items[i].line), true);
 			}
 
 			String_Print(String(")"), true);

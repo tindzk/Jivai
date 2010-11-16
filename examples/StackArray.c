@@ -28,8 +28,8 @@ int main(void) {
 		}
 
 		Item item = {
-			String_Clone(Integer_ToString(i)),
-			String_Clone(Integer_ToString(i + 5))
+			String_Clone(Int16_ToString(i)),
+			String_Clone(Int16_ToString(i + 5))
 		};
 
 		StackArray_Push(arr, item, Item);

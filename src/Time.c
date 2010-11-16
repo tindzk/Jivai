@@ -17,19 +17,19 @@ sdef(self, Empty) {
 }
 
 sdef(short, Compare, self a, self b) {
-	short hour = Integer_Compare(a.hour, b.hour);
+	short hour = Int16_Compare(a.hour, b.hour);
 
 	if (hour != 0) {
 		return hour;
 	}
 
-	short minute = Integer_Compare(a.minute, b.minute);
+	short minute = Int16_Compare(a.minute, b.minute);
 
 	if (minute != 0) {
 		return minute;
 	}
 
-	return Integer_Compare(a.second, b.second);
+	return Int16_Compare(a.second, b.second);
 }
 
 inline sdef(bool, Equals, self a, self b) {

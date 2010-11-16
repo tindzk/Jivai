@@ -239,7 +239,7 @@ def(void, DeleteLine, size_t n) {
 		call(Write, ref(VT100_Delete_Line));
 	} else {
 		call(Write, String("\33["));
-		call(Write, Integer_ToString(n));
+		call(Write, Int32_ToString(n));
 		call(Write, String("M"));
 	}
 }
@@ -257,7 +257,7 @@ def(void, MoveUp, size_t n) {
 		call(Write, ref(VT100_Cursor_Up));
 	} else {
 		call(Write, String("\33["));
-		call(Write, Integer_ToString(n));
+		call(Write, Int32_ToString(n));
 		call(Write, String("A"));
 	}
 }
@@ -267,7 +267,7 @@ def(void, MoveDown, size_t n) {
 		call(Write, ref(VT100_Cursor_Down));
 	} else {
 		call(Write, String("\33["));
-		call(Write, Integer_ToString(n));
+		call(Write, Int32_ToString(n));
 		call(Write, String("B"));
 	}
 }
@@ -277,7 +277,7 @@ def(void, MoveLeft, size_t n) {
 		call(Write, ref(VT100_Cursor_Left));
 	} else {
 		call(Write, String("\33["));
-		call(Write, Integer_ToString(n));
+		call(Write, Int32_ToString(n));
 		call(Write, String("D"));
 	}
 }
@@ -288,7 +288,7 @@ def(void, MoveRight, size_t n) {
 			call(Write, ref(VT100_Cursor_Right));
 		} else {
 			call(Write, String("\33["));
-			call(Write, Integer_ToString(n));
+			call(Write, Int32_ToString(n));
 			call(Write, String("C"));
 		}
 	}

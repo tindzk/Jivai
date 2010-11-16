@@ -12,7 +12,7 @@ ExceptionManager exc;
 
 void PrintTree(Typography_Node *node, size_t depth) {
 	String_FmtPrint(String("depth=%"),
-		Integer_ToString(depth));
+		Int16_ToString(depth));
 
 	for (size_t i = 0; i < depth; i++) {
 		String_Print(String("    "));

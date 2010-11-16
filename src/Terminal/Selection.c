@@ -35,7 +35,7 @@ void Terminal_Selection_Add(Terminal_Selection *this, String caption, bool selec
 		: Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
 	chunk.value = String_Format(String("(%) %"),
-		Integer_ToString(Terminal_Buffer_Count(&this->termbuf)),
+		Int32_ToString(Terminal_Buffer_Count(&this->termbuf)),
 		caption);
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);

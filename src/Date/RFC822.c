@@ -56,12 +56,12 @@ sdef(self, Parse, String s) {
 		goto out;
 	}
 
-	res.date.day     = (uint8_t) Integer_ParseString(day);
+	res.date.day     = Int8_Parse(day);
 	res.date.month   = Date_Month_Unset;
-	res.date.year    = (uint16_t) Integer_ParseString(year);
-	res.time.hour    = (uint8_t) Integer_ParseString(hour);
-	res.time.minute  = (uint8_t) Integer_ParseString(minute);
-	res.time.second  = (uint8_t) Integer_ParseString(second);
+	res.date.year    = Int16_Parse(year);
+	res.time.hour    = Int8_Parse(hour);
+	res.time.minute  = Int8_Parse(minute);
+	res.time.second  = Int8_Parse(second);
 	res.weekday      = Date_WeekDay_Unset;
 
 	for (uint8_t i = 0; i < 7; i++) {

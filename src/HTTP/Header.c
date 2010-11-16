@@ -39,7 +39,7 @@ void HTTP_Header_ParseVersion(HTTP_Header *this, String s) {
 }
 
 void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
-	int code = Integer_ParseString(s);
+	s32 code = Int32_Parse(s);
 
 	if (code == 0) {
 		throw(exc, excUnknownStatus);

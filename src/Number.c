@@ -25,7 +25,7 @@ String Number_Format(float number, size_t decimals) {
 		n /= 10;
 	}
 
-	String_Append(&res, Integer_ToString(number));
+	String_Append(&res, Int32_ToString(number));
 
 	return res;
 }

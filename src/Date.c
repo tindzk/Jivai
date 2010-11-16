@@ -65,19 +65,19 @@ sdef(bool, IsLeapYear, int year) {
 }
 
 sdef(short, Compare, self a, self b) {
-	short year = Integer_Compare(a.year, b.year);
+	short year = Int16_Compare(a.year, b.year);
 
 	if (year != 0) {
 		return year;
 	}
 
-	short month = Integer_Compare(a.month, b.month);
+	short month = Int16_Compare(a.month, b.month);
 
 	if (month != 0) {
 		return month;
 	}
 
-	return Integer_Compare(a.day, b.day);
+	return Int16_Compare(a.day, b.day);
 }
 
 inline sdef(bool, Equals, self a, self b) {
@@ -104,8 +104,8 @@ sdef(short, GetWeekDay, self date) {
 sdef(String, Format, self date) {
 	String month = ref(MonthNames)[date.month];
 
-	String day  = Integer_ToString(date.day);
-	String year = Integer_ToString(date.year);
+	String day  = Int32_ToString(date.day);
+	String year = Int32_ToString(date.year);
 
 	String suffix;
 

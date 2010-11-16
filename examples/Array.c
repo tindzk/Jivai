@@ -30,8 +30,8 @@ int main(void) {
 	 */
 	for (size_t i = 0; i < 50; i++) {
 		Item item = {
-			String_Clone(Integer_ToString(i)),
-			String_Clone(Integer_ToString(i + 5))
+			String_Clone(Int32_ToString(i)),
+			String_Clone(Int32_ToString(i + 5))
 		};
 
 		ItemArray_Push(&arr, item);
