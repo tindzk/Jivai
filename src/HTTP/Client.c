@@ -125,7 +125,7 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 			this->chunked = true;
 		}
 	} else if (String_Equals(name, String("content-length"))) {
-		this->total = Integer64_ParseString(value);
+		this->total = Int64_Parse(value);
 	}
 }
 
