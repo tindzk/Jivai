@@ -185,3 +185,31 @@
 /* See include/linux/kernel.h */
 #define nElems(arr) \
 	(sizeof(arr) / sizeof((arr)[0]) + mustBeArray(arr))
+
+/* The following macros were taken from:
+ * http://coverclock.blogspot.com/2008/05/generic-embedded-programming-using-c.html
+ */
+
+#define MinUnsignedValue(type) \
+	((type) 0)
+
+#define MaxUnsignedValue(type) \
+	((type) (~MinUnsignedValue(type)))
+
+#define MinSignedValue(type) \
+	((type) (((type) 1) << ((sizeof(type) * 8) -1)))
+
+#define MaxSignedValue(type) \
+	((type) (~MinSignedValue(type)))
+
+#define MinValue(type) (          \
+	 (MaxUnsignedValue(type) > 0) \
+	  ? MinUnsignedValue(type)    \
+	  : MinSignedValue(type)      \
+)
+
+#define MaxValue(type) (          \
+	 (MaxUnsignedValue(type) > 0) \
+	  ? MaxUnsignedValue(type)    \
+	  : MaxSignedValue(type)      \
+)
