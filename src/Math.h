@@ -5,7 +5,7 @@
 	(__val < 0) ? -__val : __val; \
 })
 
-#define Ceiling(val) ({            \
+#define Ceil(val) ({               \
 	typeof(val) __orig = Abs(val); \
 	int __trunc = (int) __orig;    \
 	(__orig - __trunc) > 0         \
