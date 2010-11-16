@@ -6,7 +6,7 @@ void Path0(ExceptionManager *e) {
 	exc = e;
 }
 
-overload bool Path_Exists(String path, bool follow) {
+overload sdef(bool, Exists, String path, bool follow) {
 	Stat attr;
 
 	if (follow) {
@@ -16,11 +16,11 @@ overload bool Path_Exists(String path, bool follow) {
 	return Kernel_lstat(path, &attr);
 }
 
-inline overload bool Path_Exists(String path) {
-	return Path_Exists(path, false);
+inline overload sdef(bool, Exists, String path) {
+	return scall(Exists, path, false);
 }
 
-String Path_GetCwd(void) {
+sdef(String, GetCwd) {
 	String s = HeapString(512);
 	ssize_t len;
 
@@ -31,7 +31,7 @@ String Path_GetCwd(void) {
 	return s;
 }
 
-Stat64 Path_GetStat(String path) {
+sdef(Stat64, GetStat, String path) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
@@ -57,23 +57,23 @@ Stat64 Path_GetStat(String path) {
 	return attr;
 }
 
-u64 Path_GetSize(String path) {
-	return Path_GetStat(path).size;
+sdef(u64, GetSize, String path) {
+	return scall(GetStat, path).size;
 }
 
-inline overload bool Path_IsFile(String path) {
-	return Path_GetStat(path).mode & FileMode_Regular;
+inline overload sdef(bool, IsFile, String path) {
+	return scall(GetStat, path).mode & FileMode_Regular;
 }
 
-inline overload bool Path_IsFile(Stat64 attr) {
+inline overload sdef(bool, IsFile, Stat64 attr) {
 	return attr.mode & FileMode_Regular;
 }
 
-overload bool Path_IsDirectory(String path) {
+overload sdef(bool, IsDirectory, String path) {
 	bool res = false;
 
 	try (exc) {
-		res = Path_GetStat(path).mode & FileMode_Directory;
+		res = scall(GetStat, path).mode & FileMode_Directory;
 	} clean catch(Path, excNonExistentPath) {
 		/* Ignore. */
 	} catch(Path, excNotDirectory) {
@@ -85,11 +85,11 @@ overload bool Path_IsDirectory(String path) {
 	return res;
 }
 
-inline overload bool Path_IsDirectory(Stat64 attr) {
+inline overload sdef(bool, IsDirectory, Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 
-overload void Path_Truncate(String path, u64 length) {
+overload sdef(void, Truncate, String path, u64 length) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
@@ -111,16 +111,16 @@ overload void Path_Truncate(String path, u64 length) {
 	}
 }
 
-inline overload void Path_Truncate(String path) {
-	Path_Truncate(path, 0);
+inline overload sdef(void, Truncate, String path) {
+	scall(Truncate, path, 0);
 }
 
-overload String Path_GetFilename(String path, bool verify) {
+overload sdef(String, GetFilename, String path, bool verify) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
 
-	if (verify && !Path_IsFile(path)) {
+	if (verify && !scall(IsFile, path)) {
 		return String("");
 	}
 
@@ -139,11 +139,11 @@ overload String Path_GetFilename(String path, bool verify) {
 	return String_Slice(path, pos + 1);
 }
 
-inline overload String Path_GetFilename(String path) {
-	return Path_GetFilename(path, true);
+inline overload sdef(String, GetFilename, String path) {
+	return scall(GetFilename, path, true);
 }
 
-String overload Path_GetDirectory(String path, bool verify) {
+overload sdef(String, GetDirectory, String path, bool verify) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
@@ -156,7 +156,7 @@ String overload Path_GetDirectory(String path, bool verify) {
 		return String_Slice(path, 0, -1);
 	}
 
-	if (verify && Path_IsDirectory(path)) {
+	if (verify && scall(IsDirectory, path)) {
 		path.mutable = false;
 		return path;
 	}
@@ -170,12 +170,12 @@ String overload Path_GetDirectory(String path, bool verify) {
 	return String_Slice(path, 0, pos);
 }
 
-inline overload String Path_GetDirectory(String path) {
-	return Path_GetDirectory(path, true);
+inline overload sdef(String, GetDirectory, String path) {
+	return scall(GetDirectory, path, true);
 }
 
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
-String Path_Resolve(String path) {
+sdef(String, Resolve, String path) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
@@ -186,20 +186,20 @@ String Path_Resolve(String path) {
 		throw(exc, excResolvingFailed);
 	}
 
-	bool isDir = Path_IsDirectory(path);
+	bool isDir = scall(IsDirectory, path);
 
 	String dirpath = !isDir
-		? Path_GetDirectory(path, false)
+		? scall(GetDirectory, path, false)
 		: path;
 
 	String res = HeapString(0);
 
 	if (Kernel_chdir(dirpath)) {
-		res = Path_GetCwd();
+		res = scall(GetCwd);
 
 		if (!isDir) {
 			String_Append(&res, '/');
-			String_Append(&res, Path_GetFilename(path, false));
+			String_Append(&res, scall(GetFilename, path, false));
 		}
 
 		Kernel_fchdir(fd);
@@ -210,7 +210,7 @@ String Path_Resolve(String path) {
 	return res;
 }
 
-overload void Path_Create(String path, int mode, bool recursive) {
+overload sdef(void, Create, String path, int mode, bool recursive) {
 	if (path.len == 0) {
 		throw(exc, excEmptyPath);
 	}
@@ -219,7 +219,7 @@ overload void Path_Create(String path, int mode, bool recursive) {
 		return;
 	}
 
-	if (Path_Exists(path)) {
+	if (scall(Exists, path)) {
 		throw(exc, excAlreadyExists);
 	}
 
@@ -268,8 +268,8 @@ overload void Path_Create(String path, int mode, bool recursive) {
 	}
 }
 
-inline overload void Path_Create(String path, bool recursive) {
-	Path_Create(path,
+inline overload sdef(void, Create, String path, bool recursive) {
+	scall(Create, path,
 		Permission_OwnerRead    |
 		Permission_OwnerWrite   |
 		Permission_OwnerExecute |
@@ -280,15 +280,15 @@ inline overload void Path_Create(String path, bool recursive) {
 		Permission_OthersExecute, recursive);
 }
 
-inline overload void Path_Create(String path, int mode) {
-	Path_Create(path, mode, false);
+inline overload sdef(void, Create, String path, int mode) {
+	scall(Create, path, mode, false);
 }
 
-inline overload void Path_Create(String path) {
-	Path_Create(path, false);
+inline overload sdef(void, Create, String path) {
+	scall(Create, path, false);
 }
 
-void Path_Delete(String path) {
+sdef(void, Delete, String path) {
 	errno = 0;
 
 	if (!Kernel_unlink(path)) {
@@ -306,7 +306,7 @@ void Path_Delete(String path) {
 	}
 }
 
-void Path_DeleteDirectory(String path) {
+sdef(void, DeleteDirectory, String path) {
 	errno = 0;
 
 	if (!Kernel_rmdir(path)) {
@@ -326,7 +326,7 @@ void Path_DeleteDirectory(String path) {
 	}
 }
 
-void Path_ReadLink(String path, String *out) {
+sdef(void, ReadLink, String path, String *out) {
 	errno = 0;
 
 	ssize_t len = Kernel_readlink(path, out->buf, out->size);
@@ -348,7 +348,7 @@ void Path_ReadLink(String path, String *out) {
 	out->len = len;
 }
 
-void Path_Symlink(String path1, String path2) {
+sdef(void, Symlink, String path1, String path2) {
 	errno = 0;
 
 	if (!Kernel_symlink(path1, path2)) {
@@ -360,13 +360,13 @@ void Path_Symlink(String path1, String path2) {
 	}
 }
 
-void Path_SetXattr(String path, String name, String value) {
+sdef(void, SetXattr, String path, String name, String value) {
 	if (!Kernel_setxattr(path, name, value.buf, value.len, 0)) {
 		throw(exc, excSettingAttributeFailed);
 	}
 }
 
-overload String Path_GetXattr(String path, String name) {
+overload sdef(String, GetXattr, String path, String name) {
 	errno = 0;
 
 	ssize_t size = Kernel_getxattr(path, name, NULL, 0);
@@ -390,7 +390,7 @@ overload String Path_GetXattr(String path, String name) {
 	return res;
 }
 
-overload void Path_GetXattr(String path, String name, String *value) {
+overload sdef(void, GetXattr, String path, String name, String *value) {
 	errno = 0;
 
 	ssize_t size = Kernel_getxattr(path, name, value->buf, value->size);
@@ -408,7 +408,7 @@ overload void Path_GetXattr(String path, String name, String *value) {
 	value->len = size;
 }
 
-overload void Path_SetTime(String path, time_t timestamp, long nano, bool followSymlink) {
+overload sdef(void, SetTime, String path, time_t timestamp, long nano, bool followSymlink) {
 	Time_UnixEpoch t;
 
 	t.sec  = timestamp;
@@ -435,10 +435,10 @@ overload void Path_SetTime(String path, time_t timestamp, long nano, bool follow
 	}
 }
 
-inline overload void Path_SetTime(String path, time_t timestamp, bool followSymlink) {
-	Path_SetTime(path, timestamp, 0, followSymlink);
+inline overload sdef(void, SetTime, String path, time_t timestamp, bool followSymlink) {
+	scall(SetTime, path, timestamp, 0, followSymlink);
 }
 
-inline overload void Path_SetTime(String path, time_t timestamp) {
-	Path_SetTime(path, timestamp, 0, false);
+inline overload sdef(void, SetTime, String path, time_t timestamp) {
+	scall(SetTime, path, timestamp, 0, false);
 }
