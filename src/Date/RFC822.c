@@ -64,14 +64,14 @@ sdef(self, Parse, String s) {
 	res.time.second  = Int8_Parse(second);
 	res.weekday      = Date_WeekDay_Unset;
 
-	for (uint8_t i = 0; i < 7; i++) {
+	for (u8 i = 0; i < 7; i++) {
 		if (String_Equals(weekdays[i], weekday)) {
 			res.weekday = i;
 			break;
 		}
 	}
 
-	for (uint8_t i = 1; i <= 12; i++) {
+	for (u8 i = 1; i <= 12; i++) {
 		if (String_Equals(months[i], month)) {
 			res.date.month = i;
 			break;

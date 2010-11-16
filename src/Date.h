@@ -4,9 +4,9 @@
 #define self Date
 
 record(self) {
-	uint16_t year;
-	uint8_t  month;
-	uint8_t  day;
+	u16 year;
+	u8  month;
+	u8  day;
 };
 
 set(ref(Month)) {

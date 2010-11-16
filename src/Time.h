@@ -14,9 +14,9 @@ enum {
 };
 
 record(self) {
-	uint8_t hour;
-	uint8_t minute;
-	uint8_t second;
+	u8 hour;
+	u8 minute;
+	u8 second;
 };
 
 void Time0(ExceptionManager *e);

@@ -92,7 +92,7 @@ void* _Block_Copy(Block_Layout *block) {
 }
 
 void _Block_Release(Block_Layout *block) {
-	int32_t refCount = Block_LatchingDecrInt(&block->flags) & Block_Flags_RefCountMask;
+	s32 refCount = Block_LatchingDecrInt(&block->flags) & Block_Flags_RefCountMask;
 
 	if (block->flags & Block_Flags_IsHeap) {
 		if (refCount == 0) {
