@@ -35,6 +35,11 @@ DefineParseString(s16, Int16_Parse);
 DefineParseString(s32, Int32_Parse);
 DefineParseString(s64, Int64_Parse);
 
+DefineParseString(u8,  UInt8_Parse);
+DefineParseString(u16, UInt16_Parse);
+DefineParseString(u32, UInt32_Parse);
+DefineParseString(u64, UInt64_Parse);
+
 /* To determine the number of digits. */
 #define DefineCountDigits(type, name) \
 	size_t name(type num) {           \
@@ -51,17 +56,22 @@ DefineCountDigits(s16, Int16_CountDigits);
 DefineCountDigits(s32, Int32_CountDigits);
 DefineCountDigits(s64, Int64_CountDigits);
 
+DefineCountDigits(u8,  UInt8_CountDigits);
+DefineCountDigits(u16, UInt16_CountDigits);
+DefineCountDigits(u32, UInt32_CountDigits);
+DefineCountDigits(u64, UInt64_CountDigits);
+
 #define DefineToStringBuf(type, name)                             \
 	void name(type num, String *res) {                            \
 		typeof(num) orig = num;                                   \
 		size_t digit = res->size;                                 \
 		int offset;                                               \
-		if (num < 0) {                                            \
+		if (num == 0 || num > 0) {                                \
+			offset = 0;                                           \
+		} else {                                                  \
 			res->buf[0] = '-';                                    \
 			offset = 1;                                           \
 			orig *= -1;                                           \
-		} else {                                                  \
-			offset = 0;                                           \
 		}                                                         \
 		/* Force new length. */                                   \
 		res->len = offset + digit;                                \
@@ -81,6 +91,11 @@ DefineToStringBuf(s16, Int16_ToStringBuf);
 DefineToStringBuf(s32, Int32_ToStringBuf);
 DefineToStringBuf(s64, Int64_ToStringBuf);
 
+DefineToStringBuf(u8,  UInt8_ToStringBuf);
+DefineToStringBuf(u16, UInt16_ToStringBuf);
+DefineToStringBuf(u32, UInt32_ToStringBuf);
+DefineToStringBuf(u64, UInt64_ToStringBuf);
+
 #define DefineCompare(type, name)       \
 	inline short name(type a, type b) { \
 		return (a > b)                  \
@@ -91,3 +106,8 @@ DefineCompare(s8,  Int8_Compare);
 DefineCompare(s16, Int16_Compare);
 DefineCompare(s32, Int32_Compare);
 DefineCompare(s64, Int64_Compare);
+
+DefineCompare(u8,  UInt8_Compare);
+DefineCompare(u16, UInt16_Compare);
+DefineCompare(u32, UInt32_Compare);
+DefineCompare(u64, UInt64_Compare);
