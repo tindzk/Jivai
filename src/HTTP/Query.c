@@ -1,4 +1,5 @@
 #import "Query.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,17 +7,16 @@ void HTTP_Query0(ExceptionManager *e) {
 	exc = e;
 }
 
-void HTTP_Query_Init(HTTP_Query *this, HTTP_OnParameter onParameter, void *context) {
+def(void, Init, HTTP_OnParameter onParameter) {
 	this->onParameter = onParameter;
-	this->context     = context;
 	this->autoResize  = false;
 }
 
-void HTTP_Query_SetAutoResize(HTTP_Query *this, bool value) {
+def(void, SetAutoResize, bool value) {
 	this->autoResize = value;
 }
 
-size_t HTTP_Query_GetAbsoluteLength(String s) {
+sdef(size_t, GetAbsoluteLength, String s) {
 	size_t cnt = 0;
 
 	for (size_t i = 0; i < s.len; i++) {
@@ -50,7 +50,7 @@ size_t HTTP_Query_GetAbsoluteLength(String s) {
  * http://ftp.ics.uci.edu/pub/ietf/html/rfc1866.txt
  */
 
-void HTTP_Query_Unescape(String src, char *dst, bool isFormUri) {
+sdef(void, Unescape, String src, char *dst, bool isFormUri) {
 	int high, low;
 
 	for (size_t i = 0; i < src.len; i++) {
@@ -77,7 +77,7 @@ void HTTP_Query_Unescape(String src, char *dst, bool isFormUri) {
 	}
 }
 
-void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
+def(void, Decode, String s, bool isFormUri) {
 	String name  = HeapString(0);
 	size_t start = 0;
 
@@ -85,10 +85,10 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 		if (s.buf[i] == '=') {
 			String tmp = String_Slice(s, start, i - start);
 
-			size_t len = HTTP_Query_GetAbsoluteLength(tmp);
+			size_t len = scall(GetAbsoluteLength, tmp);
 			String_Align(&name, len);
 
-			HTTP_Query_Unescape(tmp, name.buf, isFormUri);
+			scall(Unescape, tmp, name.buf, isFormUri);
 			name.len = len;
 
 			start = i + 1;
@@ -106,7 +106,7 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 
 			/* Parameter is an option. */
 			if (name.len == 0) {
-				String *value = this->onParameter(this->context, escaped);
+				String *value = callbackRet(this->onParameter, NULL, escaped);
 
 				if (value != NULL) {
 					value->len = 0;
@@ -115,14 +115,14 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 				goto next;
 			}
 
-			String *value = this->onParameter(this->context, name);
+			String *value = callbackRet(this->onParameter, NULL, name);
 
 			if (value == NULL) {
 				/* Ignore parameter. */
 				goto next;
 			}
 
-			size_t len = HTTP_Query_GetAbsoluteLength(escaped);
+			size_t len = scall(GetAbsoluteLength, escaped);
 
 			if (len > value->size) {
 				if (this->autoResize) {
@@ -133,7 +133,7 @@ void HTTP_Query_Decode(HTTP_Query *this, String s, bool isFormUri) {
 				}
 			}
 
-			HTTP_Query_Unescape(escaped, value->buf, isFormUri);
+			scall(Unescape, escaped, value->buf, isFormUri);
 			value->len = len;
 
 		next:

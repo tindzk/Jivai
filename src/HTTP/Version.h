@@ -1,9 +1,12 @@
 #import "../String.h"
 
-typedef enum {
-	HTTP_Version_1_0,
-	HTTP_Version_1_1,
-	HTTP_Version_Unset
-} HTTP_Version;
+#undef self
+#define self HTTP_Version
 
-HTTP_Version HTTP_Version_FromString(String s);
+set(self) {
+	ref(1_0),
+	ref(1_1),
+	ref(Unset)
+};
+
+sdef(self, FromString, String s);

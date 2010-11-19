@@ -1,4 +1,5 @@
 #import "Header.h"
+#import "App.h"
 
 static ExceptionManager *exc;
 
@@ -6,11 +7,11 @@ void HTTP_Header0(ExceptionManager *e) {
 	exc = e;
 }
 
-void HTTP_Header_Init(HTTP_Header *this, HTTP_Header_Events events) {
+def(void, Init, ref(Events) events) {
 	this->events = events;
 }
 
-void HTTP_Header_ParseMethod(HTTP_Header *this, String s) {
+def(void, ParseMethod, String s) {
 	if (s.len == 0) {
 		throw(exc, excRequestMalformed);
 	}
@@ -21,24 +22,20 @@ void HTTP_Header_ParseMethod(HTTP_Header *this, String s) {
 		throw(exc, excUnknownMethod);
 	}
 
-	if (this->events.onMethod != NULL) {
-		this->events.onMethod(this->events.context, method);
-	}
+	callback(this->events.onMethod, method);
 }
 
-void HTTP_Header_ParseVersion(HTTP_Header *this, String s) {
+def(void, ParseVersion, String s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
 		throw(exc, excUnknownVersion);
 	}
 
-	if (this->events.onVersion != NULL) {
-		this->events.onVersion(this->events.context, version);
-	}
+	callback(this->events.onVersion, version);
 }
 
-void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
+def(void, ParseStatus, String s) {
 	s32 code = Int32_Parse(s);
 
 	if (code == 0) {
@@ -51,19 +48,17 @@ void HTTP_Header_ParseStatus(HTTP_Header *this, String s) {
 		throw(exc, excUnknownStatus);
 	}
 
-	if (this->events.onStatus != NULL) {
-		this->events.onStatus(this->events.context, status);
-	}
+	callback(this->events.onStatus, status);
 }
 
-void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
+def(void, ParseUri, String s) {
 	if (s.len == 0) {
 		throw(exc, excEmptyRequestUri);
 	}
 
 	ssize_t pos = String_Find(s, '?');
 
-	if (this->events.onPath != NULL) {
+	if (hasCallback(this->events.onPath)) {
 		String path =
 			(pos != String_NotFound)
 				? String_Slice(s, 0, pos)
@@ -83,9 +78,7 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 		}
 
 		try (exc) {
-			this->events.onPath(
-				this->events.context,
-				path);
+			callback(this->events.onPath, path);
 		} clean finally {
 			if (path.mutable) {
 				String_Destroy(&path);
@@ -93,22 +86,22 @@ void HTTP_Header_ParseUri(HTTP_Header *this, String s) {
 		} tryEnd;
 	}
 
-	if (this->events.onParameter != NULL) {
+	if (hasCallback(this->events.onParameter)) {
 		if (pos != String_NotFound) {
 			HTTP_Query qry;
-			HTTP_Query_Init(&qry, this->events.onParameter, this->events.context);
+			HTTP_Query_Init(&qry, this->events.onParameter);
 			HTTP_Query_SetAutoResize(&qry, true);
 			HTTP_Query_Decode(&qry, String_Slice(s, pos + 1), false);
 		}
 	}
 }
 
-void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s) {
-	if (this->events.onHeader != NULL) {
+def(void, ParseHeaderLine, String s) {
+	if (hasCallback(this->events.onHeader)) {
 		ssize_t pos;
 
 		if ((pos = String_Find(s, String(": "))) != String_NotFound) {
-			this->events.onHeader(this->events.context,
+			callback(this->events.onHeader,
 				String_Trim(String_Slice(s, 0, pos)),   /* name  */
 				String_Trim(String_Slice(s, pos + 2))); /* value */
 		}
@@ -133,7 +126,7 @@ void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s) {
  *   >0         actual request length, including last \r\n\r\n
  */
 
-ssize_t HTTP_Header_GetLength(String str) {
+sdef(ssize_t, GetLength, String str) {
 	const char *s, *e;
 	ssize_t len = 0;
 
@@ -152,7 +145,7 @@ ssize_t HTTP_Header_GetLength(String str) {
 	return len;
 }
 
-void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
+def(void, Parse, ref(Type) type, String s) {
 	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
@@ -165,7 +158,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		pos1stLine--;
 	}
 
-	if (type == HTTP_Header_Type_Request) {
+	if (type == ref(Type_Request)) {
 		ssize_t posMethod = String_Find(s, ' ');
 
 		if (posMethod == String_NotFound) {
@@ -173,13 +166,13 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		}
 
 		String method = String_Slice(s, 0, posMethod);
-		HTTP_Header_ParseMethod(this, method);
+		call(ParseMethod, method);
 
 		String version = String_Slice(s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
-		HTTP_Header_ParseVersion(this, version);
+		call(ParseVersion, version);
 
 		String path = String_Slice(s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
-		HTTP_Header_ParseUri(this, path);
+		call(ParseUri, path);
 	} else {
 		ssize_t posVersion = String_Find(s, ' ');
 
@@ -188,7 +181,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		}
 
 		String version = String_Slice(s, 0, posVersion);
-		HTTP_Header_ParseVersion(this, version);
+		call(ParseVersion, version);
 
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
@@ -197,7 +190,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 		}
 
 		String code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
-		HTTP_Header_ParseStatus(this, code);
+		call(ParseStatus, code);
 	}
 
 	String res = HeapString(0);
@@ -217,7 +210,7 @@ void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s) {
 				String_Copy(&res, s, last + 1, len);
 
 				try (exc) {
-					HTTP_Header_ParseHeaderLine(this, res);
+					call(ParseHeaderLine, res);
 				} clean finally {
 					if (e != 0) {
 						String_Destroy(&res);

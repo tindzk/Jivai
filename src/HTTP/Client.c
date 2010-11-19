@@ -1,4 +1,10 @@
 #import "Client.h"
+#import "App.h"
+
+#undef HTTP_Client_Init
+#undef HTTP_Client_Open
+#undef HTTP_Client_Request
+#undef HTTP_Client_Read
 
 static ExceptionManager *exc;
 
@@ -6,93 +12,90 @@ void HTTP_Client0(ExceptionManager *e) {
 	exc = e;
 }
 
-overload void HTTP_Client_Init(HTTP_Client *this) {
+overload def(void, Init) {
 	this->closed = true;
 
-	this->resp = HeapString(HTTP_Client_BufferSize);
+	this->resp = HeapString(ref(BufferSize));
 
 	this->host = HeapString(0);
 	this->port = 80;
 
 	this->version = HTTP_Version_1_1;
 
-	this->events.onVersion = NULL;
-	this->events.onHeader  = NULL;
-	this->events.context   = NULL;
+	this->events.onVersion = (HTTP_OnVersion) EmptyCallback();
+	this->events.onHeader  = (HTTP_OnHeader)  EmptyCallback();
 
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 }
 
-overload void HTTP_Client_Init(HTTP_Client *this, String host) {
-	HTTP_Client_Init(this);
+overload def(void, Init, String host) {
+	call(Init);
 
 	this->host = String_Clone(host);
 }
 
-overload void HTTP_Client_Init(HTTP_Client *this, String host, short port) {
-	HTTP_Client_Init(this);
+overload def(void, Init, String host, short port) {
+	call(Init);
 
 	this->host = String_Clone(host);
 	this->port = port;
 }
 
-void HTTP_Client_Destroy(HTTP_Client *this) {
+def(void, Destroy) {
 	String_Destroy(&this->host);
 	String_Destroy(&this->resp);
 
 	if (!this->closed) {
-		HTTP_Client_Close(this);
+		call(Close);
 	}
 
 	Socket_Destroy(&this->socket);
 }
 
-overload void HTTP_Client_SetBufferSize(HTTP_Client *this, size_t size) {
+overload def(void, SetBufferSize, size_t size) {
 	String_Align(&this->resp, size);
 }
 
-void HTTP_Client_SetEvents(HTTP_Client *this, HTTP_Client_Events events) {
+def(void, SetEvents, ref(Events) events) {
 	this->events = events;
 }
 
-void HTTP_Client_SetVersion(HTTP_Client *this, HTTP_Version version) {
+def(void, SetVersion, HTTP_Version version) {
 	this->version = version;
 }
 
-overload void HTTP_Client_Open(HTTP_Client *this) {
+overload def(void, Open) {
 	if (!this->closed) {
-		HTTP_Client_Close(this);
+		call(Close);
 	}
 
 	this->conn = Socket_Connect(&this->socket, this->host, this->port);
 	this->closed = false;
 }
 
-overload void HTTP_Client_Open(HTTP_Client *this, String host) {
+overload def(void, Open, String host) {
 	String_Copy(&this->host, host);
-	HTTP_Client_Open(this);
+	call(Open);
 }
 
-overload void HTTP_Client_Open(HTTP_Client *this, String host, short port) {
+overload def(void, Open, String host, short port) {
 	String_Copy(&this->host, host);
 	this->port = port;
 
-	HTTP_Client_Open(this);
+	call(Open);
 }
 
-void HTTP_Client_Close(HTTP_Client *this) {
+def(void, Close) {
 	this->closed = true;
 	SocketConnection_Close(&this->conn);
 }
 
-void HTTP_Client_OnStatus(HTTP_Client *this, HTTP_Status status) {
+def(void, OnStatus, HTTP_Status status) {
 	this->status = status;
 }
 
-void HTTP_Client_OnVersion(HTTP_Client *this, HTTP_Version version) {
-	if (this->events.onVersion != NULL) {
-		this->events.onVersion(this->events.context, version);
-	}
+def(void, OnVersion, HTTP_Version version) {
+	callback(this->events.onVersion, version);
 
 	if (version == HTTP_Version_1_1) {
 		this->keepAlive = true;
@@ -101,10 +104,8 @@ void HTTP_Client_OnVersion(HTTP_Client *this, HTTP_Version version) {
 	}
 }
 
-void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
-	if (this->events.onHeader != NULL) {
-		this->events.onHeader(this->events.context, name, value);
-	}
+def(void, OnHeader, String name, String value) {
+	callback(this->events.onHeader, name, value);
 
 	/* See HTTP/Server.c for a justification of this hack. */
 	name.mutable  = true;
@@ -129,21 +130,21 @@ void HTTP_Client_OnHeader(HTTP_Client *this, String name, String value) {
 	}
 }
 
-s64 HTTP_Client_GetLength(HTTP_Client *this) {
+def(s64, GetLength) {
 	return this->total;
 }
 
-bool HTTP_Client_IsConnected(HTTP_Client *this) {
+def(bool, IsConnected) {
 	return !this->closed;
 }
 
-void HTTP_Client_Reopen(HTTP_Client *this) {
+def(void, Reopen) {
 	if (this->closed) {
-		HTTP_Client_Open(this);
+		call(Open);
 	}
 }
 
-String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path) {
+def(String, GetRequest, String host, String path) {
 	String res = String_Format(String(
 		"GET % %\r\n"
 		"Host: %\r\n"
@@ -161,13 +162,13 @@ String HTTP_Client_GetRequest(HTTP_Client *this, String host, String path) {
 	return res;
 }
 
-overload void HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *items) {
-	HTTP_Client_Reopen(this);
+overload def(void, Request, ref(HostPaths) *items) {
+	call(Reopen);
 
 	String s = HeapString(items->len * 50);
 
 	for (size_t i = 0; i < items->len; i++) {
-		String tmp = HTTP_Client_GetRequest(this,
+		String tmp = call(GetRequest,
 			items->buf[i].host, items->buf[i].path);
 		String_Append(&s, tmp);
 		String_Destroy(&tmp);
@@ -180,13 +181,13 @@ overload void HTTP_Client_Request(HTTP_Client *this, HTTP_Client_HostPaths *item
 	} tryEnd;
 }
 
-overload void HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
-	HTTP_Client_Reopen(this);
+overload def(void, Request, StringArray paths) {
+	call(Reopen);
 
 	String s = HeapString(paths.len * 50);
 
 	for (size_t i = 0; i < paths.len; i++) {
-		String tmp = HTTP_Client_GetRequest(this, this->host, paths.buf[i]);
+		String tmp = call(GetRequest, this->host, paths.buf[i]);
 		String_Append(&s, tmp);
 		String_Destroy(&tmp);
 	}
@@ -198,10 +199,10 @@ overload void HTTP_Client_Request(HTTP_Client *this, StringArray paths) {
 	} tryEnd;
 }
 
-overload void HTTP_Client_Request(HTTP_Client *this, String host, String path) {
-	HTTP_Client_Reopen(this);
+overload def(void, Request, String host, String path) {
+	call(Reopen);
 
-	String request = HTTP_Client_GetRequest(this, host, path);
+	String request = call(GetRequest, host, path);
 
 	try (exc) {
 		SocketConnection_Write(&this->conn, request.buf, request.len);
@@ -210,11 +211,11 @@ overload void HTTP_Client_Request(HTTP_Client *this, String host, String path) {
 	} tryEnd;
 }
 
-overload void HTTP_Client_Request(HTTP_Client *this, String path) {
-	HTTP_Client_Request(this, this->host, path);
+overload def(void, Request, String path) {
+	call(Request, this->host, path);
 }
 
-size_t HTTP_Client_ParseChunk(String *s) {
+sdef(size_t, ParseChunk, String *s) {
 	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
@@ -232,9 +233,9 @@ size_t HTTP_Client_ParseChunk(String *s) {
 	return len;
 }
 
-void HTTP_Client_ProcessChunk(HTTP_Client *this) {
+def(void, ProcessChunk) {
 	if (this->resp.len > 0) { /* Might already contain bits of the next chunk. */
-		this->total = HTTP_Client_ParseChunk(&this->resp);
+		this->total = scall(ParseChunk, &this->resp);
 
 		if (this->resp.len >= this->total) {
 			/* We got the complete chunk. Perhaps even more than that. */
@@ -245,7 +246,7 @@ void HTTP_Client_ProcessChunk(HTTP_Client *this) {
 	}
 }
 
-HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
+def(HTTP_Status, FetchResponse) {
 	/* Reset the values which were extracted from previous requests' headers. */
 	this->total     = -1;
 	this->chunked   = false;
@@ -277,10 +278,9 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			throw(exc, excResponseMalformed);
 		} else if (requestOffset > 0) { /* The response is complete. */
 			HTTP_Header_Events events;
-			events.context   = this;
-			events.onVersion = (void *) &HTTP_Client_OnVersion;
-			events.onStatus  = (void *) &HTTP_Client_OnStatus;
-			events.onHeader  = (void *) &HTTP_Client_OnHeader;
+			events.onVersion = (HTTP_OnVersion) Callback(this, ref(OnVersion));
+			events.onStatus  = (HTTP_OnStatus)  Callback(this, ref(OnStatus));
+			events.onHeader  = (HTTP_OnHeader)  Callback(this, ref(OnHeader));
 
 			String s = String_Slice(this->resp, 0, requestOffset);
 
@@ -291,8 +291,8 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 			String_Crop(&this->resp, requestOffset);
 
 			/* Some HTTP servers send header and body separately.
-			 * The first chunk is needed, though. Otherwise
-			 * HTTP_Client_Read() will fail right away.
+			 * The first chunk is needed, though. Otherwise Read()
+			 * will fail right away.
 			 */
 			if (this->resp.len == 0 && this->total != 0) {
 				len = SocketConnection_Read(&this->conn,
@@ -325,7 +325,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 
 	if (this->chunked) {
 		this->inChunk = true;
-		HTTP_Client_ProcessChunk(this); /* Sets total and canRead appropriately. */
+		call(ProcessChunk); /* Sets total and canRead appropriately. */
 	} else {
 		this->inChunk = false;
 		this->canRead = this->resp.len;
@@ -336,7 +336,7 @@ HTTP_Status HTTP_Client_FetchResponse(HTTP_Client *this) {
 	return this->status;
 }
 
-static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
+static inline def(void, InternalRead) {
 	try (exc) {
 		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
@@ -355,7 +355,7 @@ static inline void HTTP_Client_InternalRead(HTTP_Client *this) {
 	} tryEnd;
 }
 
-overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
+overload def(bool, Read, String *res) {
 	res->len = 0;
 
 	if (this->closed) {
@@ -369,7 +369,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 		/* `total' is 0 for the final chunk. */
 		if (this->total == 0 || this->read >= this->total) {
 			if (!this->keepAlive) {
-				HTTP_Client_Close(this);
+				call(Close);
 			}
 
 			return false;
@@ -409,7 +409,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 			}
 
 			if (this->resp.len == 0) {
-				HTTP_Client_InternalRead(this);
+				call(InternalRead);
 			}
 
 		retry:
@@ -424,16 +424,16 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 					 * perform the check below.
 					 */
 
-					HTTP_Client_InternalRead(this);
+					call(InternalRead);
 					goto retry;
 				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
 					/* Chunk does not end on CRLF. */
 					throw(exc, excMalformedChunk);
 				} else {
 					/* Don't set this->total and this->read to 0 because
-					 * this will cause the next HTTP_Client_Read() call
-					 * to return true. Just stick with the current values
-					 * even though are not valid anymore.
+					 * this will cause the next Read() call to
+					 * return true. Just stick with the current
+					 * values even though are not valid anymore.
 					 *
 					 * It is possible that `resp' includes only parts of
 					 * the chunk identifier (which indicates the chunk's
@@ -455,7 +455,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 					 * announced, this will never happen.
 					 *
 					 * Ultimately, this even leads to the raise of an
-					 * HTTP_Client_ConnectionResetException exception.
+					 * excConnectionReset exception.
 					 *
 					 * Note that this would only happen to the final
 					 * chunk, because for the others there's always
@@ -476,7 +476,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 						String_Crop(&this->resp, 2);
 						this->inChunk = false;
 					} else {
-						HTTP_Client_InternalRead(this);
+						call(InternalRead);
 						goto retry;
 					}
 				}
@@ -484,7 +484,7 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 
 			/* Sic. Do not merge this with the above if-statement. */
 			if (!this->inChunk) {
-				HTTP_Client_ProcessChunk(this);
+				call(ProcessChunk);
 
 				this->read    = 0;
 				this->inChunk = true;
@@ -550,18 +550,18 @@ overload bool HTTP_Client_Read(HTTP_Client *this, String *res) {
 	return true;
 }
 
-overload String HTTP_Client_Read(HTTP_Client *this, size_t max) {
+overload def(String, Read, size_t max) {
 	String res = HeapString(max);
 
-	String buf = HeapString(HTTP_Client_ReadChunkSize);
+	String buf = HeapString(ref(ReadChunkSize));
 
-	while (HTTP_Client_Read(this, &buf)) {
+	while (call(Read, &buf)) {
 		if (res.len + buf.len > res.size) {
 			/* If the response buffer is full, skip the remaining
 			 * bytes. Otherwise problems will arise when another
 			 * request is waiting to be processed (HTTP pipelining).
-			 * Otherwise, HTTP_Client_FetchResponse() will throw
-			 * an exception claiming it couldn't find any headers.
+			 * Otherwise, FetchResponse() will throw an exception
+			 * claiming it couldn't find any headers.
 			 */
 			continue;
 		}

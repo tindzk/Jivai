@@ -1,11 +1,14 @@
 #import "../String.h"
 
-typedef enum {
-	HTTP_Method_Head,
-	HTTP_Method_Get,
-	HTTP_Method_Post,
-	HTTP_Method_Unset
-} HTTP_Method;
+#undef self
+#define self HTTP_Method
 
-HTTP_Method HTTP_Method_FromString(String s);
-String HTTP_Method_ToString(HTTP_Method method);
+set(self) {
+	ref(Head),
+	ref(Get),
+	ref(Post),
+	ref(Unset)
+};
+
+sdef(self, FromString, String s);
+sdef(String, ToString, self method);

@@ -1,4 +1,5 @@
 #import "Server.h"
+#import "../App.h"
 
 static ExceptionManager *exc;
 
@@ -6,7 +7,7 @@ void HTTP_Server0(ExceptionManager *e) {
 	exc = e;
 }
 
-void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
+def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
 	this->events = events;
 
 	this->headers.boundary = HeapString(0);
@@ -20,28 +21,25 @@ void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnec
 	this->body   = HeapString(0);
 	this->header = HeapString(maxHeaderLength);
 
-	this->state   = HTTP_Server_State_Header;
+	this->state   = ref(State_Header);
 	this->conn    = conn;
 	this->cleanup = false;
 
 	this->headers.persistentConnection = false;
 }
 
-void HTTP_Server_Destroy(HTTP_Server *this) {
+def(void, Destroy) {
 	String_Destroy(&this->header);
 	String_Destroy(&this->body);
 	String_Destroy(&this->headers.boundary);
 }
 
-void HTTP_Server_OnMethod(HTTP_Server *this, HTTP_Method method) {
+def(void, OnMethod, HTTP_Method method) {
 	this->method = method;
-
-	if (this->events.onMethod != NULL) {
-		this->events.onMethod(this->events.context, method);
-	}
+	callback(this->events.onMethod, method);
 }
 
-void HTTP_Server_OnVersion(HTTP_Server *this, HTTP_Version version) {
+def(void, OnVersion, HTTP_Version version) {
 	if (version == HTTP_Version_1_1) {
 		/* By default all connections in HTTP/1.1 are persistent. */
 		this->headers.persistentConnection = true;
@@ -50,29 +48,19 @@ void HTTP_Server_OnVersion(HTTP_Server *this, HTTP_Version version) {
 		this->headers.persistentConnection = false;
 	}
 
-	if (this->events.onVersion != NULL) {
-		this->events.onVersion(this->events.context, version);
-	}
+	callback(this->events.onVersion, version);
 }
 
-void HTTP_Server_OnPath(HTTP_Server *this, String path) {
-	if (this->events.onPath != NULL) {
-		this->events.onPath(this->events.context, path);
-	}
+def(void, OnPath, String path) {
+	callback(this->events.onPath, path);
 }
 
-String* HTTP_Server_OnQueryParameter(HTTP_Server *this, String name) {
-	if (this->events.onQueryParameter != NULL) {
-		return this->events.onQueryParameter(this->events.context, name);
-	}
-
-	return NULL;
+def(String *, OnQueryParameter, String name) {
+	return callbackRet(this->events.onQueryParameter, NULL, name);
 }
 
-void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
-	if (this->events.onHeader != NULL) {
-		this->events.onHeader(this->events.context, name, value);
-	}
+def(void, OnHeader, String name, String value) {
+	callback(this->events.onHeader, name, value);
 
 	/* Generally, manipulating the `mutable' property is not
 	 * advisable but in this case both strings are known to be
@@ -126,7 +114,7 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 					throw(exc, excBodyUnexpected);
 				}
 
-				this->headers.contentLength = Integer64_ParseString(value);
+				this->headers.contentLength = Int64_Parse(value);
 
 				if (this->headers.contentLength > this->maxBodyLength) {
 					throw(exc, excBodyTooLarge);
@@ -136,7 +124,7 @@ void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value) {
 	}
 }
 
-HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
+def(ref(Result), ReadHeader) {
 	if (this->cleanup) {
 		/* Clean up variables from previous requests. */
 		this->headers.contentLength = 0;
@@ -163,7 +151,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 		if (requestOffset == -1) {
 			/* The request is malformed. */
 			this->header.len = 0;
-			return HTTP_Server_Result_Error;
+			return ref(Result_Error);
 		} else if (requestOffset > 0) {
 			/* The request is complete. */
 			break;
@@ -180,7 +168,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 		if (len == -1) {
 			/* This function will be called again when more data is available. */
-			return HTTP_Server_Result_Incomplete;
+			return ref(Result_Incomplete);
 		}
 
 		if (len == 0) {
@@ -197,7 +185,7 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 		if (requestOffset == -1) {
 			/* The request is malformed. */
 			this->header.len = 0;
-			return HTTP_Server_Result_Error;
+			return ref(Result_Error);
 		} else if (requestOffset == 0) {
 			/* The buffer is full, but the request is still incomplete. */
 			throw(exc, excHeaderTooLarge);
@@ -210,12 +198,11 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 	requestOffset -= oldLength - this->header.len; /* ...and update requestOffset accordingly. */
 
 	HTTP_Header_Events events;
-	events.onMethod    = (void *) &HTTP_Server_OnMethod;
-	events.onVersion   = (void *) &HTTP_Server_OnVersion;
-	events.onPath      = (void *) &HTTP_Server_OnPath;
-	events.onParameter = (void *) &HTTP_Server_OnQueryParameter;
-	events.onHeader    = (void *) &HTTP_Server_OnHeader;
-	events.context     = this;
+	events.onMethod    = (HTTP_OnMethod) Callback(this, ref(OnMethod));
+	events.onVersion   = (HTTP_OnVersion) Callback(this, ref(OnVersion));
+	events.onPath      = (HTTP_OnPath) Callback(this, ref(OnPath));
+	events.onParameter = (HTTP_OnParameter) Callback(this, ref(OnQueryParameter));
+	events.onHeader    = (HTTP_OnHeader) Callback(this, ref(OnHeader));
 
 	String s = String_Slice(this->header, 0, requestOffset);
 
@@ -251,14 +238,14 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 			 * without requesting more data from the peer. However,
 			 * as this->headers.contentLength > 0 is still valid
 			 * then, the next request will be handled in
-			 * HTTP_Server_ReadBody() and is assumed to be a body
-			 * instead of headers.
+			 * ReadBody() and is assumed to be a body instead of
+			 * headers.
 			 */
 
 			this->header.len = 0;
 		}
 
-		this->state = HTTP_Server_State_Body;
+		this->state = ref(State_Body);
 	} else {
 		/* The buffer possibly contains the next request. This will
 		 * delete the range 0..requestOffset.
@@ -269,14 +256,14 @@ HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this) {
 
 		String_Crop(&this->header, requestOffset);
 
-		this->state = HTTP_Server_State_Dispatch;
+		this->state = ref(State_Dispatch);
 	}
 
-	return HTTP_Server_Result_Complete;
+	return ref(Result_Complete);
 }
 
-HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
-	/* The next time HTTP_Server_ReadHeader() gets called, some headers
+def(ref(Result), ReadBody) {
+	/* The next time ReadHeader() gets called, some headers
 	 * referring to the current request will be cleared.
 	 */
 	this->cleanup = true;
@@ -291,7 +278,7 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 				this->body.size - this->body.len);
 
 			if (len == -1) {
-				return HTTP_Server_Result_Incomplete;
+				return ref(Result_Incomplete);
 			} else if (len == 0) {
 				break;
 			}
@@ -301,40 +288,40 @@ HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this) {
 
 		try (exc) {
 			/* Handle the form data. */
-			if (this->events.onBodyParameter != NULL) {
+			if (hasCallback(this->events.onBodyParameter)) {
 				HTTP_Query qry;
-				HTTP_Query_Init(&qry, this->events.onBodyParameter, this->events.context);
+				HTTP_Query_Init(&qry, this->events.onBodyParameter);
 				HTTP_Query_SetAutoResize(&qry, true);
 				HTTP_Query_Decode(&qry, this->body, true);
 			}
 		} clean finally {
-			this->state = HTTP_Server_State_Header;
+			this->state = ref(State_Header);
 		} tryEnd;
 	}
 
-	this->state = HTTP_Server_State_Dispatch;
+	this->state = ref(State_Dispatch);
 
-	return HTTP_Server_Result_Complete;
+	return ref(Result_Complete);
 }
 
-bool HTTP_Server_Process(HTTP_Server *this) {
-	HTTP_Server_Result res = HTTP_Server_Result_Error;
+def(bool, Process) {
+	ref(Result) res = ref(Result_Error);
 
-	if (this->state == HTTP_Server_State_Header) {
-		res = HTTP_Server_ReadHeader(this);
-	} else if (this->state == HTTP_Server_State_Body) {
-		res = HTTP_Server_ReadBody(this);
-	} else if (this->state == HTTP_Server_State_Dispatch) {
-		this->events.onRespond(this->events.context, this->headers.persistentConnection);
-		this->state = HTTP_Server_State_Header;
+	if (this->state == ref(State_Header)) {
+		res = call(ReadHeader);
+	} else if (this->state == ref(State_Body)) {
+		res = call(ReadBody);
+	} else if (this->state == ref(State_Dispatch)) {
+		callback(this->events.onRespond, this->headers.persistentConnection);
+		this->state = ref(State_Header);
 		return false;
 	}
 
-	if (res == HTTP_Server_Result_Complete) {
+	if (res == ref(Result_Complete)) {
 		/* Try to handle the next state now. */
-		return HTTP_Server_Process(this);
+		return call(Process);
 	}
 
 	/* Keep the connection open if more data is required. */
-	return res == HTTP_Server_Result_Incomplete;
+	return res == ref(Result_Incomplete);
 }

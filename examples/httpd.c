@@ -129,7 +129,7 @@ void Request_OnRespond(Request *this, bool persistent) {
 			? String("Connection: Keep-Alive")
 			: String("Connection: Close"),
 
-		Integer64_ToString(this->resp.len));
+		Int64_ToString(this->resp.len));
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
 
@@ -169,14 +169,13 @@ void Request_Init(Request *this, SocketConnection *conn) {
 	this->paramTest2 = HeapString(256);
 
 	HTTP_Server_Events events;
-	events.context          = this;
-	events.onHeader         = NULL;
-	events.onVersion        = (void *) &Request_OnHttpVersion;
-	events.onMethod         = (void *) &Request_OnMethod;
-	events.onPath           = (void *) &Request_OnPath;
-	events.onQueryParameter = (void *) &Request_OnQueryParameter;
-	events.onBodyParameter  = (void *) &Request_OnBodyParameter;
-	events.onRespond        = (void *) &Request_OnRespond;
+	events.onHeader         = (HTTP_OnHeader) EmptyCallback();
+	events.onVersion        = (HTTP_OnVersion) Callback(this, Request_OnHttpVersion);
+	events.onMethod         = (HTTP_OnMethod) Callback(this, Request_OnMethod);
+	events.onPath           = (HTTP_OnPath) Callback(this, Request_OnPath);
+	events.onQueryParameter = (HTTP_OnParameter) Callback(this, Request_OnQueryParameter);
+	events.onBodyParameter  = (HTTP_OnParameter) Callback(this, Request_OnBodyParameter);
+	events.onRespond        = (HTTP_Server_OnRespond) Callback(this, Request_OnRespond);
 
 	HTTP_Server_Init(&this->server, events, conn, 2048, 4096);
 }

@@ -20,32 +20,31 @@ enum {
 	excUnknownContentType
 };
 
-typedef void (* HTTP_Server_OnRespond)(void *, bool);
+DefineCallback(ref(OnRespond), void, bool);
 
-typedef enum {
-	HTTP_Server_State_Header,
-	HTTP_Server_State_Body,
-	HTTP_Server_State_Dispatch
-} HTTP_Server_State;
+set(ref(State)) {
+	ref(State_Header),
+	ref(State_Body),
+	ref(State_Dispatch)
+};
 
-typedef enum {
-	HTTP_Server_Result_Incomplete,
-	HTTP_Server_Result_Complete,
-	HTTP_Server_Result_Error
-} HTTP_Server_Result;
+set(ref(Result)) {
+	ref(Result_Incomplete),
+	ref(Result_Complete),
+	ref(Result_Error)
+};
 
-typedef struct {
-	HTTP_OnMethod          onMethod;
-	HTTP_OnVersion         onVersion;
-	HTTP_OnPath            onPath;
-	HTTP_OnHeader          onHeader;
-	HTTP_OnParameter       onBodyParameter;
-	HTTP_OnParameter       onQueryParameter;
-	HTTP_Server_OnRespond  onRespond;
-	void                   *context;
-} HTTP_Server_Events;
+record(ref(Events)) {
+	HTTP_OnMethod    onMethod;
+	HTTP_OnVersion   onVersion;
+	HTTP_OnPath      onPath;
+	HTTP_OnHeader    onHeader;
+	HTTP_OnParameter onBodyParameter;
+	HTTP_OnParameter onQueryParameter;
+	ref(OnRespond)   onRespond;
+};
 
-typedef struct {
+class(self) {
 	bool               cleanup;
 	String             body;
 	String             header;
@@ -53,8 +52,8 @@ typedef struct {
 	u64                maxBodyLength;
 	HTTP_Method        method;
 	SocketConnection   *conn;
-	HTTP_Server_State  state;
-	HTTP_Server_Events events;
+	ref(State)         state;
+	ref(Events)        events;
 
 	struct {
 		HTTP_ContentType contentType;
@@ -62,16 +61,17 @@ typedef struct {
 		bool             persistentConnection;
 		String           boundary;
 	} headers;
-} HTTP_Server;
+};
 
 void HTTP_Server0(ExceptionManager *e);
-void HTTP_Server_Init(HTTP_Server *this, HTTP_Server_Events events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
-void HTTP_Server_Destroy(HTTP_Server *this);
-void HTTP_Server_OnMethod(HTTP_Server *this, HTTP_Method method);
-void HTTP_Server_OnVersion(HTTP_Server *this, HTTP_Version version);
-void HTTP_Server_OnPath(HTTP_Server *this, String path);
-String* HTTP_Server_OnQueryParameter(HTTP_Server *this, String name);
-void HTTP_Server_OnHeader(HTTP_Server *this, String name, String value);
-HTTP_Server_Result HTTP_Server_ReadHeader(HTTP_Server *this);
-HTTP_Server_Result HTTP_Server_ReadBody(HTTP_Server *this);
-bool HTTP_Server_Process(HTTP_Server *this);
+
+def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
+def(void, Destroy);
+def(void, OnMethod, HTTP_Method method);
+def(void, OnVersion, HTTP_Version version);
+def(void, OnPath, String path);
+def(String *, OnQueryParameter, String name);
+def(void, OnHeader, String name, String value);
+def(ref(Result), ReadHeader);
+def(ref(Result), ReadBody);
+def(bool, Process);

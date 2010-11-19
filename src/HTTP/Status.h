@@ -1,69 +1,72 @@
 #import "../String.h"
 
-typedef struct {
-	int code;
+#undef self
+#define self HTTP_Status
+
+record(ref(Item)) {
+	u16 code;
 	String msg;
 	String descr;
-} HTTP_StatusItem;
+};
 
-#define HTTP_StatusItem(code, msg, descr) \
-	{ code, String(msg), String(descr) }
+#define HTTP_Status_Item(code, msg, descr) \
+	{ code, $(msg), $(descr) }
 
-typedef enum {
-	HTTP_Status_Info_Continue = 0,
-	HTTP_Status_Info_SwitchingProtocol,
-	HTTP_Status_Info_Processing,
+set(self) {
+	ref(Info_Continue),
+	ref(Info_SwitchingProtocol),
+	ref(Info_Processing),
 
-	HTTP_Status_Success_Ok,
-	HTTP_Status_Success_Created,
-	HTTP_Status_Success_Accepted,
-	HTTP_Status_Success_NonAuthoritative,
-	HTTP_Status_Success_NoContent,
-	HTTP_Status_Success_ResetContent,
-	HTTP_Status_Success_PartialContent,
-	HTTP_Status_Success_MultiStatus,
+	ref(Success_Ok),
+	ref(Success_Created),
+	ref(Success_Accepted),
+	ref(Success_NonAuthoritative),
+	ref(Success_NoContent),
+	ref(Success_ResetContent),
+	ref(Success_PartialContent),
+	ref(Success_MultiStatus),
 
-	HTTP_Status_Redirection_MultipleChoices,
-	HTTP_Status_Redirection_Permanent,
-	HTTP_Status_Redirection_Found,
-	HTTP_Status_Redirection_SeeOther,
-	HTTP_Status_Redirection_NotModified,
-	HTTP_Status_Redirection_UseProxy,
-	HTTP_Status_Redirection_Temporary,
+	ref(Redirection_MultipleChoices),
+	ref(Redirection_Permanent),
+	ref(Redirection_Found),
+	ref(Redirection_SeeOther),
+	ref(Redirection_NotModified),
+	ref(Redirection_UseProxy),
+	ref(Redirection_Temporary),
 
-	HTTP_Status_ClientError_BadRequest,
-	HTTP_Status_ClientError_Unauthorized,
-	HTTP_Status_ClientError_PaymentRequired,
-	HTTP_Status_ClientError_Forbidden,
-	HTTP_Status_ClientError_NotFound,
-	HTTP_Status_ClientError_MethodNotAllowed,
-	HTTP_Status_ClientError_NotAcceptable,
-	HTTP_Status_ClientError_ProxyAuthentificationRequired,
-	HTTP_Status_ClientError_RequestTimeout,
-	HTTP_Status_ClientError_Conflict,
-	HTTP_Status_ClientError_Gone,
-	HTTP_Status_ClientError_LengthRequired,
-	HTTP_Status_ClientError_PreconditionFailed,
-	HTTP_Status_ClientError_RequestEntityTooLarge,
-	HTTP_Status_ClientError_RequestUriTooLong,
-	HTTP_Status_ClientError_UnsupportedMediaType,
-	HTTP_Status_ClientError_RequestedRangeNotSatisfiable,
-	HTTP_Status_ClientError_ExpectationFailed,
-	HTTP_Status_ClientError_UnprocessableEntity,
-	HTTP_Status_ClientError_Locked,
-	HTTP_Status_ClientError_FailedDependency,
+	ref(ClientError_BadRequest),
+	ref(ClientError_Unauthorized),
+	ref(ClientError_PaymentRequired),
+	ref(ClientError_Forbidden),
+	ref(ClientError_NotFound),
+	ref(ClientError_MethodNotAllowed),
+	ref(ClientError_NotAcceptable),
+	ref(ClientError_ProxyAuthentificationRequired),
+	ref(ClientError_RequestTimeout),
+	ref(ClientError_Conflict),
+	ref(ClientError_Gone),
+	ref(ClientError_LengthRequired),
+	ref(ClientError_PreconditionFailed),
+	ref(ClientError_RequestEntityTooLarge),
+	ref(ClientError_RequestUriTooLong),
+	ref(ClientError_UnsupportedMediaType),
+	ref(ClientError_RequestedRangeNotSatisfiable),
+	ref(ClientError_ExpectationFailed),
+	ref(ClientError_UnprocessableEntity),
+	ref(ClientError_Locked),
+	ref(ClientError_FailedDependency),
 
-	HTTP_Status_ServerError_Internal,
-	HTTP_Status_ServerError_NotImplemented,
-	HTTP_Status_ServerError_BadGateway,
-	HTTP_Status_ServerError_ServiceUnavailable,
-	HTTP_Status_ServerError_GatewayTimeout,
-	HTTP_Status_ServerError_VersionNotSupported,
-	HTTP_Status_ServerError_InsufficientStorage,
+	ref(ServerError_Internal),
+	ref(ServerError_NotImplemented),
+	ref(ServerError_BadGateway),
+	ref(ServerError_ServiceUnavailable),
+	ref(ServerError_GatewayTimeout),
+	ref(ServerError_VersionNotSupported),
+	ref(ServerError_InsufficientStorage),
 
-	HTTP_Status_Length,
-	HTTP_Status_Unset
-} HTTP_Status;
+	ref(Length),
+	ref(Unset)
+};
 
-HTTP_StatusItem HTTP_Status_GetItem(HTTP_Status status);
-HTTP_Status HTTP_Status_GetStatusByCode(int code);
+sdef(ref(Item), GetItem, self status);
+sdef(self, GetStatusByCode, u16 code);

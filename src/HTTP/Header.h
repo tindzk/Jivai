@@ -19,31 +19,31 @@ enum {
 	excUnknownVersion
 };
 
-typedef enum {
-	HTTP_Header_Type_Request,
-	HTTP_Header_Type_Response
-} HTTP_Header_Type;
+set(ref(Type)) {
+	ref(Type_Request),
+	ref(Type_Response)
+};
 
-typedef struct {
+record(ref(Events)) {
 	HTTP_OnParameter onParameter;
 	HTTP_OnVersion   onVersion;
 	HTTP_OnMethod    onMethod;
 	HTTP_OnHeader    onHeader;
 	HTTP_OnStatus    onStatus;
 	HTTP_OnPath      onPath;
-	void             *context;
-} HTTP_Header_Events;
+};
 
-typedef struct {
-	HTTP_Header_Events events;
-} HTTP_Header;
+class(self) {
+	ref(Events) events;
+};
 
 void HTTP_Header0(ExceptionManager *e);
-void HTTP_Header_Init(HTTP_Header *this, HTTP_Header_Events events);
-void HTTP_Header_ParseMethod(HTTP_Header *this, String s);
-void HTTP_Header_ParseVersion(HTTP_Header *this, String s);
-void HTTP_Header_ParseStatus(HTTP_Header *this, String s);
-void HTTP_Header_ParseUri(HTTP_Header *this, String s);
-void HTTP_Header_ParseHeaderLine(HTTP_Header *this, String s);
-ssize_t HTTP_Header_GetLength(String str);
-void HTTP_Header_Parse(HTTP_Header *this, HTTP_Header_Type type, String s);
+
+def(void, Init, ref(Events) events);
+def(void, ParseMethod, String s);
+def(void, ParseVersion, String s);
+def(void, ParseStatus, String s);
+def(void, ParseUri, String s);
+def(void, ParseHeaderLine, String s);
+sdef(ssize_t, GetLength, String str);
+def(void, Parse, ref(Type) type, String s);
