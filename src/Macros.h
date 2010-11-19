@@ -24,6 +24,9 @@
 #define repeat(n) \
 	for (size_t __repeat_i = (n); __repeat_i; __repeat_i--)
 
+#define forward(i, cnt) \
+	for (size_t i = 0; i < (cnt); i++)
+
 #define reverse(i, cnt) \
 	if (cnt) for (size_t i = (cnt); i--;)
 
