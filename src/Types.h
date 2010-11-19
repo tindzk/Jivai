@@ -59,3 +59,10 @@ static inline GenericCallback Callback(GenericInstance context, void *cb) {
 		.cb      = cb
 	};
 }
+
+static inline GenericCallback EmptyCallback(void) {
+	return (GenericCallback) {
+		.context = { NULL },
+		.cb      = NULL
+	};
+}

@@ -162,8 +162,22 @@
 		};                                                      \
 	} name transparentUnion;
 
-#define callback(var, ...) \
+#define hasCallback(var) \
+	((var).cb != NULL)
+
+#define _callback(var, ...) \
 	(var).cb((var).context, ## __VA_ARGS__)
+
+#define callback(var, ...)           \
+	if (hasCallback(var)) {          \
+		_callback(var, __VA_ARGS__); \
+	}
+
+#define callbackRet(var, default, ...) ( \
+	hasCallback(var)                     \
+		? _callback(var, __VA_ARGS__)    \
+		: default                        \
+)
 
 #define isType(a, b) \
 	__builtin_types_compatible_p(a, b)
