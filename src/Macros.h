@@ -216,14 +216,17 @@
 #define MaxSignedValue(type) \
 	((type) (~MinSignedValue(type)))
 
-#define MinValue(type) (          \
-	 (MaxUnsignedValue(type) > 0) \
-	  ? MinUnsignedValue(type)    \
-	  : MinSignedValue(type)      \
+#define isSigned(type) \
+	!(MaxUnsignedValue(type) > 0)
+
+#define MinValue(type) (         \
+	isSigned(type)               \
+		? MinSignedValue(type)   \
+		: MinUnsignedValue(type) \
 )
 
-#define MaxValue(type) (          \
-	 (MaxUnsignedValue(type) > 0) \
-	  ? MaxUnsignedValue(type)    \
-	  : MaxSignedValue(type)      \
+#define MaxValue(type) (         \
+	isSigned(type)               \
+		? MaxSignedValue(type)   \
+		: MaxUnsignedValue(type) \
 )
