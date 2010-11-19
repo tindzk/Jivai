@@ -116,7 +116,7 @@ overload def(void, Request, ref(HostPaths) *items);
 overload def(void, Request, StringArray paths);
 overload def(void, Request, String host, String path);
 overload def(void, Request, String path);
-sdef(size_t, ParseChunk, String *s);
+sdef(s64, ParseChunk, String *s);
 def(void, ProcessChunk);
 def(HTTP_Status, FetchResponse);
 overload def(bool, Read, String *res);

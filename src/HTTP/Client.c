@@ -215,7 +215,7 @@ overload def(void, Request, String path) {
 	call(Request, this->host, path);
 }
 
-sdef(size_t, ParseChunk, String *s) {
+sdef(s64, ParseChunk, String *s) {
 	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
