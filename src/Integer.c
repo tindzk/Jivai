@@ -65,7 +65,7 @@ DefineCountDigits(u64, UInt64_CountDigits);
 	void name(type num, String *res) {                            \
 		typeof(num) orig = num;                                   \
 		size_t digit = res->size;                                 \
-		int offset;                                               \
+		u8 offset;                                                \
 		if (num == 0 || num > 0) {                                \
 			offset = 0;                                           \
 		} else {                                                  \
