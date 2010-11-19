@@ -179,9 +179,6 @@
 		: default                        \
 )
 
-#define isType(a, b) \
-	__builtin_types_compatible_p(a, b)
-
 /* staticAssertValue(), mustBeArray() and nElems() are taken from
  * Linux kernel 2.6.35.
  */

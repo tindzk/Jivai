@@ -34,6 +34,9 @@
 #define __destructor \
 	__attribute__((destructor))
 
+#define isType(a, b) \
+	__builtin_types_compatible_p(a, b)
+
 #define VarArg_Start(v, l) \
 	__builtin_va_start((v), (l))
 
