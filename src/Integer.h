@@ -5,7 +5,8 @@
 #define self Integer
 
 enum {
-	excNumberTooBig = excOffset
+	excNumberTooBig = excOffset,
+	excUnsignedType
 };
 
 void Integer0(ExceptionManager *e);

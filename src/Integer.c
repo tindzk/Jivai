@@ -25,6 +25,9 @@ void Integer0(ExceptionManager *e) {
 			c++;                                      \
 		}                                             \
 		if (s.len > 0 && s.buf[0] == '-') {           \
+			if (!isSigned(type)) {                    \
+				throw(exc, excUnsignedType);          \
+			}                                         \
 			res *= -1;                                \
 		}                                             \
 		return res;                                   \
