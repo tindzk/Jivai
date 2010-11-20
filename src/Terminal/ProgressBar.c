@@ -1,17 +1,20 @@
 #import "ProgressBar.h"
+#import "../App.h"
+
+#undef Terminal_ProgressBar_Init
 
 /* Based upon
  * http://nadiana.com/animated-terminal-progress-bar-in-python */
 
-overload void Terminal_ProgressBar_Init(Terminal_ProgressBar *this, Terminal *term, String block, String empty, size_t width) {
+overload def(void, Init, Terminal *term, String block, String empty, size_t width) {
 	this->term = term;
 
 	this->size = Terminal_GetSize();
 
-	if (width > 0 && width < this->size.cols - Terminal_ProgressBar_Padding) {
+	if (width > 0 && width < this->size.cols - ref(Padding)) {
 		this->width = width;
 	} else {
-		this->width = this->size.cols - Terminal_ProgressBar_Padding;
+		this->width = this->size.cols - ref(Padding);
 	}
 
 	this->block = block;
@@ -21,12 +24,12 @@ overload void Terminal_ProgressBar_Init(Terminal_ProgressBar *this, Terminal *te
 	Terminal_Controller_Init(&this->controller, this->term);
 }
 
-inline overload void Terminal_ProgressBar_Init(Terminal_ProgressBar *this, Terminal *term) {
-	Terminal_ProgressBar_Init(this, term, String("█"), String(" "), 0);
+inline overload def(void, Init, Terminal *term) {
+	call(Init, term, String("█"), String(" "), 0);
 }
 
 /* Clear all printed lines. */
-void Terminal_ProgressBar_Clear(Terminal_ProgressBar *this) {
+def(void, Clear) {
 	if (this->lines > 0) {
 		Terminal_MoveUp(this->term, this->lines);
 		Terminal_DeleteLine(this->term, this->lines);
@@ -35,7 +38,7 @@ void Terminal_ProgressBar_Clear(Terminal_ProgressBar *this) {
 	}
 }
 
-void Terminal_ProgressBar_Render(Terminal_ProgressBar *this, size_t percent, String msg) {
+def(void, Render, size_t percent, String msg) {
 	size_t inlineMsgLen = 0;
 
 	if (msg.len > 0) {
@@ -45,17 +48,17 @@ void Terminal_ProgressBar_Render(Terminal_ProgressBar *this, size_t percent, Str
 
 	size_t barWidth;
 
-	if (inlineMsgLen + this->width + Terminal_ProgressBar_Padding > this->size.cols) {
+	if (inlineMsgLen + this->width + ref(Padding) > this->size.cols) {
 		/* The message is too long to fit in one line. Adjust the
 		 * bar width to fit.
 		 */
-		barWidth = this->size.cols - inlineMsgLen - Terminal_ProgressBar_Padding;
+		barWidth = this->size.cols - inlineMsgLen - ref(Padding);
 	} else {
 		barWidth = this->width;
 	}
 
 	if (this->lines > 0) {
-		Terminal_ProgressBar_Clear(this);
+		call(Clear);
 	}
 
 	size_t width     = (barWidth * percent) / 100;

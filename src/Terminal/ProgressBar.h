@@ -2,11 +2,14 @@
 #import "Controller.h"
 #import "../Terminal.h"
 
+#undef self
+#define self Terminal_ProgressBar
+
 #ifndef Terminal_ProgressBar_Padding
 #define Terminal_ProgressBar_Padding 8
 #endif
 
-typedef struct {
+class(self) {
 	Terminal *term;
 	Terminal_Size size;
 	String block;
@@ -14,9 +17,12 @@ typedef struct {
 	size_t width;
 	size_t lines;
 	Terminal_Controller controller;
-} Terminal_ProgressBar;
+};
 
-overload void Terminal_ProgressBar_Init(Terminal_ProgressBar *this, Terminal *term, String block, String empty, size_t width);
-overload void Terminal_ProgressBar_Init(Terminal_ProgressBar *this, Terminal *term);
-void Terminal_ProgressBar_Clear(Terminal_ProgressBar *this);
-void Terminal_ProgressBar_Render(Terminal_ProgressBar *this, size_t percent, String msg);
+overload def(void, Init, Terminal *term, String block, String empty, size_t width);
+overload def(void, Init, Terminal *term);
+def(void, Clear);
+def(void, Render, size_t percent, String msg);
+
+#define Terminal_ProgressBar_Init(obj, ...) \
+	Terminal_ProgressBar_Init(Terminal_ProgressBar_FromObject(obj), ## __VA_ARGS__)
