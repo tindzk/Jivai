@@ -87,6 +87,12 @@
 		name < &(arr)->buf[(arr)->len];               \
 		name++)
 
+#define getIndex(name, arr) \
+	(size_t) ((arr)->buf + (arr)->len - (name) - 1)
+
+#define isLast(name, arr) \
+	((name) + 1 == (arr)->buf + (arr)->len)
+
 /* Inspired by Nelson Elhage's NEWTYPE() macro.
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
