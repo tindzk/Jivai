@@ -2,9 +2,12 @@
 #import "../Typography.h"
 #import "../StringStream.h"
 
-typedef struct {
-	Terminal *term;
-} Terminal_Controller;
+#undef self
+#define self Terminal_Controller
 
-void Terminal_Controller_Init(Terminal_Controller *this, Terminal *term);
-void Terminal_Controller_Render(Terminal_Controller *this, String s, ...);
+class(self) {
+	Terminal *term;
+};
+
+def(void, Init, Terminal *term);
+def(void, Render, String s, ...);
