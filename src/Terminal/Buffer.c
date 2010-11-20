@@ -1,6 +1,7 @@
 #import "Buffer.h"
+#import "../App.h"
 
-void Terminal_Buffer_Init(Terminal_Buffer *this, Terminal *term, size_t spacing) {
+def(void, Init, Terminal *term, size_t spacing) {
 	this->term    = term;
 	this->spacing = spacing;
 	this->lines   = 0;
@@ -9,8 +10,8 @@ void Terminal_Buffer_Init(Terminal_Buffer *this, Terminal *term, size_t spacing)
 	Array_Init(this->chunks, 0);
 }
 
-void Terminal_Buffer_Destroy(Terminal_Buffer *this) {
-	Terminal_Buffer_Clear(this);
+def(void, Destroy) {
+	call(Clear);
 
 	foreach (chunk, this->chunks) {
 		String_Destroy(&chunk->value);
@@ -19,11 +20,11 @@ void Terminal_Buffer_Destroy(Terminal_Buffer *this) {
 	Array_Destroy(this->chunks);
 }
 
-static size_t Terminal_Buffer_GetCurrentLineLength(Terminal_Buffer *this) {
+static def(size_t, GetCurrentLineLength) {
 	size_t len = 0;
 
 	for (size_t i = 0; i < this->chunks->len; i++) {
-		Terminal_Buffer_Chunk *chunk = &this->chunks->buf[i];
+		ref(Chunk) *chunk = &this->chunks->buf[i];
 
 		if (chunk->line == this->lines) {
 			len += Unicode_Count(chunk->value);
@@ -37,11 +38,11 @@ static size_t Terminal_Buffer_GetCurrentLineLength(Terminal_Buffer *this) {
 	return len;
 }
 
-static size_t Terminal_Buffer_CountChunksOnCurrentLine(Terminal_Buffer *this) {
+static def(size_t, CountChunksOnCurrentLine) {
 	size_t chunks = 0;
 
 	for (size_t i = 0; i < this->chunks->len; i++) {
-		Terminal_Buffer_Chunk *chunk = &this->chunks->buf[i];
+		ref(Chunk) *chunk = &this->chunks->buf[i];
 
 		if (chunk->line == this->lines) {
 			chunks++;
@@ -51,12 +52,12 @@ static size_t Terminal_Buffer_CountChunksOnCurrentLine(Terminal_Buffer *this) {
 	return chunks;
 }
 
-size_t Terminal_Buffer_Count(Terminal_Buffer *this) {
+def(size_t, Count) {
 	return this->chunks->len;
 }
 
-size_t Terminal_Buffer_AddChunk(Terminal_Buffer *this, Terminal_Buffer_Chunk chunk) {
-	size_t len = Terminal_Buffer_GetCurrentLineLength(this);
+def(size_t, AddChunk, ref(Chunk) chunk) {
+	size_t len = call(GetCurrentLineLength);
 
 	size_t width = Unicode_Count(chunk.value);
 
@@ -64,7 +65,7 @@ size_t Terminal_Buffer_AddChunk(Terminal_Buffer *this, Terminal_Buffer_Chunk chu
 		this->lines++;
 		Terminal_Print(this->term, '\n');
 	} else {
-		if (Terminal_Buffer_CountChunksOnCurrentLine(this) > 0) {
+		if (call(CountChunksOnCurrentLine) > 0) {
 			for (size_t i = this->spacing; i > 0; i--) {
 				Terminal_Print(this->term, ' ');
 			}
@@ -90,7 +91,7 @@ size_t Terminal_Buffer_AddChunk(Terminal_Buffer *this, Terminal_Buffer_Chunk chu
 	return this->chunks->len - 1;
 }
 
-void Terminal_Buffer_ChangeAttr(Terminal_Buffer *this, size_t id, int color, int font) {
+def(void, ChangeAttr, size_t id, int color, int font) {
 	if (id >= this->chunks->len) {
 		return;
 	}
@@ -99,7 +100,7 @@ void Terminal_Buffer_ChangeAttr(Terminal_Buffer *this, size_t id, int color, int
 	this->chunks->buf[id].font  = font;
 }
 
-void Terminal_Buffer_ChangeValue(Terminal_Buffer *this, size_t id, String s) {
+def(void, ChangeValue, size_t id, String s) {
 	if (id >= this->chunks->len) {
 		return;
 	}
@@ -107,7 +108,7 @@ void Terminal_Buffer_ChangeValue(Terminal_Buffer *this, size_t id, String s) {
 	String_Copy(&this->chunks->buf[id].value, s);
 }
 
-void Terminal_Buffer_Redraw(Terminal_Buffer *this) {
+def(void, Redraw) {
 	Terminal_Print(this->term,      '\n');
 	Terminal_MoveUp(this->term,     this->lines + 1);
 	Terminal_DeleteLine(this->term, this->lines + 1);
@@ -118,7 +119,7 @@ void Terminal_Buffer_Redraw(Terminal_Buffer *this) {
 	bool first = true;
 
 	for (size_t i = 0; i < this->chunks->len; i++) {
-		Terminal_Buffer_Chunk *chunk = &this->chunks->buf[i];
+		ref(Chunk) *chunk = &this->chunks->buf[i];
 
 		size_t width = Unicode_Count(chunk->value);
 
@@ -155,7 +156,7 @@ void Terminal_Buffer_Redraw(Terminal_Buffer *this) {
 	}
 }
 
-void Terminal_Buffer_Clear(Terminal_Buffer *this) {
+def(void, Clear) {
 	if (this->chunks->len == 0) {
 		return;
 	}

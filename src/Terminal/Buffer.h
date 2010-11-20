@@ -2,26 +2,29 @@
 #import "../Unicode.h"
 #import "../Terminal.h"
 
-typedef struct {
+#undef self
+#define self Terminal_Buffer
+
+record(ref(Chunk)) {
 	String value;
 	int color;
 	int font;
 	size_t line;
-} Terminal_Buffer_Chunk;
+};
 
-typedef struct {
-	Array(Terminal_Buffer_Chunk, *chunks);
+class(self) {
+	Array(ref(Chunk), *chunks);
 	Terminal *term;
 	size_t spacing;
 	size_t lines;
 	size_t max;
-} Terminal_Buffer;
+};
 
-void Terminal_Buffer_Init(Terminal_Buffer *this, Terminal *term, size_t spacing);
-void Terminal_Buffer_Destroy(Terminal_Buffer *this);
-size_t Terminal_Buffer_Count(Terminal_Buffer *this);
-size_t Terminal_Buffer_AddChunk(Terminal_Buffer *this, Terminal_Buffer_Chunk chunk);
-void Terminal_Buffer_ChangeAttr(Terminal_Buffer *this, size_t id, int color, int font);
-void Terminal_Buffer_ChangeValue(Terminal_Buffer *this, size_t id, String s);
-void Terminal_Buffer_Redraw(Terminal_Buffer *this);
-void Terminal_Buffer_Clear(Terminal_Buffer *this);
+def(void, Init, Terminal *term, size_t spacing);
+def(void, Destroy);
+def(size_t, Count);
+def(size_t, AddChunk, ref(Chunk) chunk);
+def(void, ChangeAttr, size_t id, int color, int font);
+def(void, ChangeValue, size_t id, String s);
+def(void, Redraw);
+def(void, Clear);
