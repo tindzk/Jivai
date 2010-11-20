@@ -21,6 +21,9 @@
 #define when(lbl) \
 	if (0) lbl: if (1)
 
+#define range(i, lower, upper) \
+	for (typeof(lower) i = (lower); i <= (upper); i++)
+
 #define repeat(n) \
 	for (size_t __repeat_i = (n); __repeat_i; __repeat_i--)
 
