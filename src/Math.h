@@ -1,8 +1,10 @@
 #import "Macros.h"
 
-#define Abs(val) ({               \
-	typeof(val) __val = (val);    \
-	(__val < 0) ? -__val : __val; \
+#define Abs(val) ({            \
+	typeof(val) __val = (val); \
+	(__val > 0)                \
+		? __val                \
+		: - __val;             \
 })
 
 #define Ceil(val) ({               \
