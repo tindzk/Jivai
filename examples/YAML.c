@@ -55,19 +55,6 @@ int main(void) {
 	YAML_Init(&yml, 4, &BufferedStreamImpl, &stream);
 	YAML_Parse(&yml);
 
-	/* There shouldn't be any characters left in the buffer. */
-	if (BufferedStream_Flush(&stream).len != 0) {
-		String_Print(String("The buffer is not empty.\n"));
-	}
-
-	/* Seek to the beginning and reset the stream. */
-	File_Seek(&file, 0, SEEK_SET);
-	BufferedStream_Reset(&stream);
-
-	/* Parse the file again. No memory should get leaked. (Verify
-	 * with Valgrind.) */
-	YAML_Parse(&yml);
-
 	/* Print the final tree. */
 	PrintTree(YAML_GetRoot(&yml), 0);
 
