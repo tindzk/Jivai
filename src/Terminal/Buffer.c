@@ -23,13 +23,11 @@ def(void, Destroy) {
 static def(size_t, GetCurrentLineLength) {
 	size_t len = 0;
 
-	for (size_t i = 0; i < this->chunks->len; i++) {
-		ref(Chunk) *chunk = &this->chunks->buf[i];
-
+	foreach (chunk, this->chunks) {
 		if (chunk->line == this->lines) {
 			len += Unicode_Count(chunk->value);
 
-			if (i + 1 != this->chunks->len) {
+			if (!isLast(chunk, this->chunks)) {
 				len += this->spacing;
 			}
 		}
@@ -41,9 +39,7 @@ static def(size_t, GetCurrentLineLength) {
 static def(size_t, CountChunksOnCurrentLine) {
 	size_t chunks = 0;
 
-	for (size_t i = 0; i < this->chunks->len; i++) {
-		ref(Chunk) *chunk = &this->chunks->buf[i];
-
+	foreach (chunk, this->chunks) {
 		if (chunk->line == this->lines) {
 			chunks++;
 		}
@@ -66,7 +62,7 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 		Terminal_Print(this->term, '\n');
 	} else {
 		if (call(CountChunksOnCurrentLine) > 0) {
-			for (size_t i = this->spacing; i > 0; i--) {
+			repeat (this->spacing) {
 				Terminal_Print(this->term, ' ');
 			}
 		}
@@ -118,9 +114,7 @@ def(void, Redraw) {
 	size_t len = 0; /* Line length. */
 	bool first = true;
 
-	for (size_t i = 0; i < this->chunks->len; i++) {
-		ref(Chunk) *chunk = &this->chunks->buf[i];
-
+	foreach (chunk, this->chunks) {
 		size_t width = Unicode_Count(chunk->value);
 
 		/* Item width including spacing. */
@@ -138,7 +132,7 @@ def(void, Redraw) {
 			Terminal_Print(this->term, '\n');
 		} else {
 			if (!first) {
-				for (size_t i = this->spacing; i > 0; i--) {
+				repeat (this->spacing) {
 					Terminal_Print(this->term, ' ');
 				}
 			}
@@ -167,7 +161,7 @@ def(void, Clear) {
 
 	this->lines = 0;
 
-	for (ssize_t i = this->chunks->len - 1; i >= 0; i--) {
+	reverse (i, this->chunks->len) {
 		String_Destroy(&this->chunks->buf[i].value);
 	}
 
