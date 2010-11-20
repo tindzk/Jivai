@@ -36,11 +36,11 @@
 #define simpleConcat(x, y) \
 	_simpleConcat(x, y)
 
-#define _underscoredConcat(x, y) \
-	x ## _ ## y
+#define _tripleConcat(x, y, z) \
+	x ## y ## z
 
-#define underscoredConcat(x, y) \
-	_underscoredConcat(x, y)
+#define tripleConcat(x, y, z) \
+	_tripleConcat(x, y, z)
 
 #define $(s) String(s)
 
@@ -48,7 +48,7 @@
 	(String) { 0, 0, NULL, false }
 
 #define ref(name) \
-	underscoredConcat(self, name)
+	tripleConcat(self, _, name)
 
 #define call(method, ...) \
 	ref(method)($this, ## __VA_ARGS__)
@@ -57,7 +57,7 @@
 	ref(method)(__VA_ARGS__)
 
 #define CurModule \
-	underscoredConcat(Modules, self)
+	tripleConcat(Modules, _, self)
 
 #define Instance(name) \
 	simpleConcat(name, Instance)
@@ -91,24 +91,24 @@
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
 
-#define BasicInstance(name)                                                                     \
-	static inline Instance(name) underscoredConcat(name, FromObject)(name *object) {            \
-		return (Instance(name)) { .object = object };                                           \
-	}                                                                                           \
-	static inline name* underscoredConcat(name, GetObject)(Instance(name) instance) {           \
-		return instance.object;                                                                 \
-	}                                                                                           \
-	static inline Instance(name) underscoredConcat(name, Null)() {                              \
-		return (Instance(name)) { .object = NULL };                                             \
-	}                                                                                           \
-	static inline bool underscoredConcat(name, IsNull)(Instance(name) instance) {               \
-		return instance.object == NULL;                                                         \
-	}                                                                                           \
-	static inline bool underscoredConcat(name, Equals)(Instance(name) a, Instance(name) b) {    \
-		return a.object == b.object;                                                            \
-	}                                                                                           \
-	static inline GenericInstance underscoredConcat(name, ToGeneric)(Instance(name) instance) { \
-		return (GenericInstance) { .object = instance.object };                                 \
+#define BasicInstance(name)                                                                   \
+	static inline Instance(name) tripleConcat(name, _, FromObject)(name *object) {            \
+		return (Instance(name)) { .object = object };                                         \
+	}                                                                                         \
+	static inline name* tripleConcat(name, _, GetObject)(Instance(name) instance) {           \
+		return instance.object;                                                               \
+	}                                                                                         \
+	static inline Instance(name) tripleConcat(name, _, Null)() {                              \
+		return (Instance(name)) { .object = NULL };                                           \
+	}                                                                                         \
+	static inline bool tripleConcat(name, _, IsNull)(Instance(name) instance) {               \
+		return instance.object == NULL;                                                       \
+	}                                                                                         \
+	static inline bool tripleConcat(name, _, Equals)(Instance(name) a, Instance(name) b) {    \
+		return a.object == b.object;                                                          \
+	}                                                                                         \
+	static inline GenericInstance tripleConcat(name, _, ToGeneric)(Instance(name) instance) { \
+		return (GenericInstance) { .object = instance.object };                               \
 	}
 
 #define class(name)                    \
@@ -123,37 +123,37 @@
 /* This cannot be included in class() as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass(name)                                                                 \
-	static __unused alwaysInline Instance(name) underscoredConcat(name, NewStack)(void) { \
-		name obj;                                                                         \
-		return (Instance(name)) &obj;                                                     \
-	}                                                                                     \
-	static inline Instance(name) underscoredConcat(name, New)(void) {                     \
-		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                      \
-	}                                                                                     \
-	static inline void underscoredConcat(name, Free)(Instance(name) instance) {           \
-		Memory_Free(instance.object);                                                     \
+#define ExtendClass(name)                                                               \
+	static __unused alwaysInline Instance(name) tripleConcat(name, _, NewStack)(void) { \
+		name obj;                                                                       \
+		return (Instance(name)) &obj;                                                   \
+	}                                                                                   \
+	static inline Instance(name) tripleConcat(name, _, New)(void) {                     \
+		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                    \
+	}                                                                                   \
+	static inline void tripleConcat(name, _, Free)(Instance(name) instance) {           \
+		Memory_Free(instance.object);                                                   \
 	}
 
 #define SingletonPrototype(name) \
-	Instance(name) underscoredConcat(name, GetInstance)(void)
+	Instance(name) tripleConcat(name, _, GetInstance)(void)
 
-#define Singleton(name, ...)                                         \
-	SingletonPrototype(name) {                                       \
-		static name object;                                          \
-		static Instance(name) instance;                              \
-		if (underscoredConcat(name, IsNull)(instance)) {             \
-			instance = underscoredConcat(name, FromObject)(&object); \
-			underscoredConcat(name, Init)(instance, ## __VA_ARGS__); \
-		}                                                            \
-		return instance;                                             \
+#define Singleton(name, ...)                                       \
+	SingletonPrototype(name) {                                     \
+		static name object;                                        \
+		static Instance(name) instance;                            \
+		if (tripleConcat(name, _, IsNull)(instance)) {             \
+			instance = tripleConcat(name, _, FromObject)(&object); \
+			tripleConcat(name, _, Init)(instance, ## __VA_ARGS__); \
+		}                                                          \
+		return instance;                                           \
 	}
 
-#define SingletonDestructor(name)                   \
-	static void __destructor dtor(void) {           \
-		Instance(self) instance =                   \
-			underscoredConcat(name, GetInstance)(); \
-		underscoredConcat(name, Destroy)(instance); \
+#define SingletonDestructor(name)                 \
+	static void __destructor dtor(void) {         \
+		Instance(self) instance =                 \
+			tripleConcat(name, _, GetInstance)(); \
+		tripleConcat(name, _, Destroy)(instance); \
 	}
 
 #define DefineCallback(name, ret, ...)                          \

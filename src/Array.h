@@ -51,20 +51,20 @@
 #define Array_Sort(this, cmp) \
 	qsort((this)->buf, (this)->len, Array_ItemSize(this), (void *) cmp)
 
-#define Array_Define(type, name)                                     \
-	typedef Array(type, name);                                       \
-	static inline name* underscoredConcat(name, New)(size_t items) { \
-		name *res;                                                   \
-		Array_Init(res, items);                                      \
-		return res;                                                  \
-	}                                                                \
-	static inline void underscoredConcat(name, Free)                 \
-		(union { name *object } transparentUnion $this)              \
-	{                                                                \
-		Array_Destroy($this.object);                                 \
-	}                                                                \
-	static inline void underscoredConcat(name, Push)                 \
-		(union { name **object } transparentUnion $this, type data)  \
-	{                                                                \
-		Array_Push(*$this.object, data);                             \
+#define Array_Define(type, name)                                    \
+	typedef Array(type, name);                                      \
+	static inline name* tripleConcat(name, _, New)(size_t items) {  \
+		name *res;                                                  \
+		Array_Init(res, items);                                     \
+		return res;                                                 \
+	}                                                               \
+	static inline void tripleConcat(name, _, Free)                  \
+		(union { name *object } transparentUnion $this)             \
+	{                                                               \
+		Array_Destroy($this.object);                                \
+	}                                                               \
+	static inline void tripleConcat(name, _, Push)                  \
+		(union { name **object } transparentUnion $this, type data) \
+	{                                                               \
+		Array_Push(*$this.object, data);                            \
 	}
