@@ -23,10 +23,12 @@
 enum {
 	excNullPointer = excOffset,
 	excOutOfBounds,
-	excOutOfMemory
+	excOutOfMemory,
+	excOverlapping
 };
 
 void Memory0(void *e);
+bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen);
 void* __malloc Memory_Alloc(size_t size);
 void Memory_FreePtr(void *pMem);
 void* __malloc Memory_Realloc(void *pMem, size_t size);
