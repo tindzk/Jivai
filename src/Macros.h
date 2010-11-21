@@ -180,14 +180,14 @@
 #define _callback(var, ...) \
 	(var).cb((var).context, ## __VA_ARGS__)
 
-#define callback(var, ...)           \
-	if (hasCallback(var)) {          \
-		_callback(var, __VA_ARGS__); \
+#define callback(var, ...)              \
+	if (hasCallback(var)) {             \
+		_callback(var, ## __VA_ARGS__); \
 	}
 
 #define callbackRet(var, default, ...) ( \
 	hasCallback(var)                     \
-		? _callback(var, __VA_ARGS__)    \
+		? _callback(var, ## __VA_ARGS__) \
 		: default                        \
 )
 
