@@ -1,6 +1,7 @@
 #import "Selection.h"
+#import "../App.h"
 
-void Terminal_Selection_Init(Terminal_Selection *this, Terminal *term) {
+def(void, Init, Terminal *term) {
 	this->term = term;
 	this->cur  = 0;
 
@@ -8,12 +9,12 @@ void Terminal_Selection_Init(Terminal_Selection *this, Terminal *term) {
 	Terminal_HideCursor(this->term);
 }
 
-void Terminal_Selection_Destroy(Terminal_Selection *this) {
+def(void, Destroy) {
 	Terminal_ShowCursor(this->term);
 	Terminal_Buffer_Destroy(&this->termbuf);
 }
 
-void Terminal_Selection_OnSelect(Terminal_Selection *this, size_t id) {
+def(void, OnSelect, size_t id) {
 	Terminal_Buffer_ChangeAttr(&this->termbuf, this->cur,
 		Terminal_Color_Normal,
 		Terminal_Font_Normal);
@@ -27,7 +28,7 @@ void Terminal_Selection_OnSelect(Terminal_Selection *this, size_t id) {
 	this->cur = id;
 }
 
-void Terminal_Selection_Add(Terminal_Selection *this, String caption, bool selected) {
+def(void, Add, String caption, bool selected) {
 	Terminal_Buffer_Chunk chunk;
 
 	chunk.color = selected
@@ -41,7 +42,7 @@ void Terminal_Selection_Add(Terminal_Selection *this, String caption, bool selec
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 }
 
-ssize_t Terminal_Selection_GetSel(Terminal_Selection *this) {
+def(ssize_t, GetSel) {
 	while (true) {
 		Terminal_Key key = Terminal_ReadKey(this->term);
 
@@ -49,28 +50,27 @@ ssize_t Terminal_Selection_GetSel(Terminal_Selection *this) {
 			ssize_t new = this->cur - 1;
 
 			if (new >= 0 && (size_t) new < this->termbuf.chunks->len) {
-				Terminal_Selection_OnSelect(this, new);
+				call(OnSelect, new);
 			}
 		} else if (key.t == Terminal_KeyType_Right) {
 			size_t new = this->cur + 1;
 
 			if (new < this->termbuf.chunks->len) {
-				Terminal_Selection_OnSelect(this, new);
+				call(OnSelect, new);
 			}
 		} else if (key.t == Terminal_KeyType_Home) {
 			if (this->termbuf.chunks->len > 0) {
-				Terminal_Selection_OnSelect(this, 0);
+				call(OnSelect, 0);
 			}
 		} else if (key.t == Terminal_KeyType_End) {
 			if (this->termbuf.chunks->len > 0) {
-				Terminal_Selection_OnSelect(this,
-					this->termbuf.chunks->len - 1);
+				call(OnSelect, this->termbuf.chunks->len - 1);
 			}
 		} else if (Char_IsDigit(key.c)) {
 			size_t new = Char_ParseDigit(key.c);
 
 			if (new < this->termbuf.chunks->len) {
-				Terminal_Selection_OnSelect(this, new);
+				call(OnSelect, new);
 			}
 		} else if (key.c == CTRLKEY('c')) {
 			return -1;
