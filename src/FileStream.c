@@ -1,21 +1,30 @@
 #import "FileStream.h"
+#import "App.h"
+
+def(void, Open, String path, int mode) {
+	File_Open(this, path, mode);
+}
+
+def(void, Close) {
+	File_Close(this);
+}
 
 /* Clang does not support pointers to overloaded C functions. */
-size_t FileStream_Read(FileStream *this, void *buf, size_t len) {
+def(size_t, Read, void *buf, size_t len) {
 	return File_Read(File_FromObject(this), buf, len);
 }
 
-size_t FileStream_Write(FileStream *this, void *buf, size_t len) {
+def(size_t, Write, void *buf, size_t len) {
 	return File_Write(File_FromObject(this), buf, len);
 }
 
-bool FileStream_IsEof(__unused FileStream *this) {
+def(bool, IsEof) {
 	return false;
 }
 
-StreamInterface FileStreamImpl = {
-	.read  = (void *) FileStream_Read,
-	.write = (void *) FileStream_Write,
-	.close = (void *) FileStream_Close,
-	.isEof = (void *) FileStream_IsEof
+StreamInterface Impl(self) = {
+	.read  = (void *) ref(Read),
+	.write = (void *) ref(Write),
+	.close = (void *) ref(Close),
+	.isEof = (void *) ref(IsEof)
 };

@@ -1,12 +1,15 @@
 #import "File.h"
 #import "StreamInterface.h"
 
-#define FileStream       File
-#define FileStream_Open  File_Open
-#define FileStream_Close File_Close
+#define FileStreamInstance FileInstance
 
-size_t FileStream_Read(FileStream *this, void *buf, size_t len);
-size_t FileStream_Write(FileStream *this, void *buf, size_t len);
-bool FileStream_IsEof(__unused FileStream *this);
+#undef self
+#define self FileStream
 
-extern StreamInterface FileStreamImpl;
+def(void, Open, String path, int mode);
+def(void, Close);
+def(size_t, Read, void *buf, size_t len);
+def(size_t, Write, void *buf, size_t len);
+def(bool, IsEof);
+
+StreamInterface Impl(self);
