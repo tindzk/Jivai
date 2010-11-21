@@ -1,4 +1,5 @@
 #import "InputLine.h"
+#import "../App.h"
 
 static ExceptionManager *exc;
 
@@ -6,31 +7,30 @@ void Terminal_InputLine0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Terminal_InputLine_Init(Terminal_InputLine *this, Terminal *term) {
+def(void, Init, Terminal *term) {
 	this->term = term;
 
-	this->context    = NULL;
-	this->onKeyUp    = NULL;
-	this->onKeyDown  = NULL;
-	this->onKeyLeft  = NULL;
-	this->onKeyRight = NULL;
-	this->onKeyBack  = NULL;
-	this->onKeyPress = NULL;
-	this->onKeyEnter = NULL;
+	this->onKeyUp    = (ref(OnKeyUp))    EmptyCallback();
+	this->onKeyDown  = (ref(OnKeyDown))  EmptyCallback();
+	this->onKeyLeft  = (ref(OnKeyLeft))  EmptyCallback();
+	this->onKeyRight = (ref(OnKeyRight)) EmptyCallback();
+	this->onKeyBack  = (ref(OnKeyBack))  EmptyCallback();
+	this->onKeyPress = (ref(OnKeyPress)) EmptyCallback();
+	this->onKeyEnter = (ref(OnKeyEnter)) EmptyCallback();
 
 	this->pos  = 0;
 	this->line = HeapString(150);
 }
 
-void Terminal_InputLine_Destroy(Terminal_InputLine *this) {
+def(void, Destroy) {
 	String_Destroy(&this->line);
 }
 
-overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update) {
+overload def(void, ClearLine, bool update) {
 	if (update) {
 		size_t n = Unicode_Count(this->line, 0, this->pos);
 
-		Terminal_InputLine_MoveLeft(this, n);
+		call(MoveLeft, n);
 		Terminal_DeleteUntilEol(this->term);
 	}
 
@@ -38,25 +38,25 @@ overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update
 	this->pos = 0;
 }
 
-overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this) {
-	Terminal_InputLine_ClearLine(this, true);
+overload def(void, ClearLine) {
+	call(ClearLine, true);
 }
 
-void Terminal_InputLine_Print(Terminal_InputLine *this, String s) {
+def(void, Print, String s) {
 	Terminal_Print(this->term, s);
 
 	String_Append(&this->line, s);
 	this->pos += s.len;
 }
 
-void Terminal_InputLine_SetValue(Terminal_InputLine *this, String s) {
+def(void, SetValue, String s) {
 	if (!String_Equals(this->line, s)) {
-		Terminal_InputLine_ClearLine(this);
-		Terminal_InputLine_Print(this, s);
+		call(ClearLine);
+		call(Print, s);
 	}
 }
 
-void Terminal_InputLine_DeletePreceding(Terminal_InputLine *this) {
+def(void, DeletePreceding) {
 	if (this->pos > 0) {
 		Terminal_MoveLeft(this->term, 1);
 		Terminal_DeleteUntilEol(this->term);
@@ -80,27 +80,27 @@ void Terminal_InputLine_DeletePreceding(Terminal_InputLine *this) {
 			String rest = String_Slice(this->line, this->pos);
 			this->line.len = this->pos - width;
 
-			Terminal_InputLine_Print(this, rest);
-			Terminal_InputLine_MoveLeft(this, rest.len);
+			call(Print, rest);
+			call(MoveLeft, rest.len);
 
 			this->pos -= width;
 		}
 	}
 }
 
-void Terminal_InputLine_DeleteSucceeding(Terminal_InputLine *this) {
+def(void, DeleteSucceeding) {
 	if (this->pos < this->line.len) {
 		Terminal_DeleteUntilEol(this->term);
 
 		String rest = String_Slice(this->line, this->pos + 1);
 		this->line.len = this->pos;
 
-		Terminal_InputLine_Print(this, rest);
-		Terminal_InputLine_MoveLeft(this, rest.len);
+		call(Print, rest);
+		call(MoveLeft, rest.len);
 	}
 }
 
-void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n) {
+def(void, MoveRight, size_t n) {
 	if (n > 0) {
 		size_t bytes = 0;
 
@@ -125,7 +125,7 @@ void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n) {
 	}
 }
 
-void Terminal_InputLine_MoveLeft(Terminal_InputLine *this, size_t n) {
+def(void, MoveLeft, size_t n) {
 	if (n > 0) {
 		size_t bytes = 0;
 
@@ -150,53 +150,39 @@ void Terminal_InputLine_MoveLeft(Terminal_InputLine *this, size_t n) {
 	}
 }
 
-void Terminal_InputLine_Process(Terminal_InputLine *this) {
+def(void, Process) {
 	Terminal_Key key = Terminal_ReadKey(this->term);
 
 	if (key.t == Terminal_KeyType_Backspace) {
-		Terminal_InputLine_DeletePreceding(this);
-
-		if (this->onKeyBack != NULL) {
-			this->onKeyBack(this->context);
-		}
+		call(DeletePreceding);
+		callback(this->onKeyBack);
 	} else if (key.t == Terminal_KeyType_Up) {
-		if (this->onKeyUp != NULL) {
-			this->onKeyUp(this->context);
-		}
+		callback(this->onKeyUp);
 	} else if (key.t == Terminal_KeyType_Down) {
-		if (this->onKeyDown != NULL) {
-			this->onKeyDown(this->context);
-		}
+		callback(this->onKeyDown);
 	} else if (key.t == Terminal_KeyType_Right) {
-		Terminal_InputLine_MoveRight(this, 1);
-
-		if (this->onKeyRight != NULL) {
-			this->onKeyRight(this->context);
-		}
+		call(MoveRight, 1);
+		callback(this->onKeyRight);
 	} else if (key.t == Terminal_KeyType_Left) {
-		Terminal_InputLine_MoveLeft(this, 1);
-
-		if (this->onKeyLeft != NULL) {
-			this->onKeyLeft(this->context);
-		}
+		call(MoveLeft, 1);
+		callback(this->onKeyLeft);
 	} else if (key.t == Terminal_KeyType_Delete) {
-		Terminal_InputLine_DeleteSucceeding(this);
+		call(DeleteSucceeding);
 	} else if (key.t == Terminal_KeyType_Home) {
-		Terminal_InputLine_MoveLeft(this, this->pos);
+		call(MoveLeft, this->pos);
 	} else if (key.t == Terminal_KeyType_End) {
-		Terminal_InputLine_MoveRight(this, this->line.len - this->pos);
+		call(MoveRight, this->line.len - this->pos);
 	} else if (key.c == '\n') {
 		Terminal_Print(this->term, String("\n"));
 
-		if (this->onKeyEnter != NULL) {
+		if (hasCallback(this->onKeyEnter)) {
 			String line = String_Disown(this->line);
 
 			this->pos      = 0;
 			this->line.len = 0;
 
-			this->onKeyEnter(this->context, line);
+			callback(this->onKeyEnter, line);
 		}
-
 	} else {
 		String ch;
 		ssize_t len = Unicode_CalcWidth(&key.c);
@@ -213,15 +199,11 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 			}
 		}
 
-		bool handled = false;
-
-		if (this->onKeyPress != NULL) {
-			handled = this->onKeyPress(this->context, ch);
-		}
+		bool handled = callbackRet(this->onKeyPress, false, ch);
 
 		if (!handled) {
 			if (this->pos == this->line.len) { /* EOL */
-				Terminal_InputLine_Print(this, ch);
+				call(Print, ch);
 			} else {
 				String rest =
 					String_Clone(
@@ -230,14 +212,14 @@ void Terminal_InputLine_Process(Terminal_InputLine *this) {
 
 				String_Crop(&this->line, 0, this->pos);
 
-				Terminal_InputLine_Print(this, ch);
-				Terminal_InputLine_Print(this, rest);
+				call(Print, ch);
+				call(Print, rest);
 
 				size_t n = Unicode_Count(this->line,
 					this->line.len - rest.len,
 					rest.len);
 
-				Terminal_InputLine_MoveLeft(this, n);
+				call(MoveLeft, n);
 
 				String_Destroy(&rest);
 			}

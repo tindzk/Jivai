@@ -11,41 +11,39 @@ enum {
 	excCommandExceedsAllowedLength = excOffset
 };
 
-typedef void (* Terminal_InputLine_OnKeyUp)(void *);
-typedef void (* Terminal_InputLine_OnKeyDown)(void *);
-typedef void (* Terminal_InputLine_OnKeyLeft)(void *);
-typedef void (* Terminal_InputLine_OnKeyRight)(void *);
-typedef void (* Terminal_InputLine_OnKeyBack)(void *);
-typedef void (* Terminal_InputLine_OnKeyEnter)(void *, String);
-typedef bool (* Terminal_InputLine_OnKeyPress)(void *, String);
+DefineCallback(ref(OnKeyUp),    void);
+DefineCallback(ref(OnKeyDown),  void);
+DefineCallback(ref(OnKeyLeft),  void);
+DefineCallback(ref(OnKeyRight), void);
+DefineCallback(ref(OnKeyBack),  void);
+DefineCallback(ref(OnKeyEnter), void, String);
+DefineCallback(ref(OnKeyPress), bool, String);
 
-typedef struct {
+class(self) {
 	size_t pos;
 	String line;
 
 	Terminal *term;
 
-	void *context;
-
-	Terminal_InputLine_OnKeyUp onKeyUp;
-	Terminal_InputLine_OnKeyDown onKeyDown;
-	Terminal_InputLine_OnKeyLeft onKeyLeft;
-	Terminal_InputLine_OnKeyRight onKeyRight;
-	Terminal_InputLine_OnKeyBack onKeyBack;
-	Terminal_InputLine_OnKeyEnter onKeyEnter;
-	Terminal_InputLine_OnKeyPress onKeyPress;
-} Terminal_InputLine;
+	ref(OnKeyUp)    onKeyUp;
+	ref(OnKeyDown)  onKeyDown;
+	ref(OnKeyLeft)  onKeyLeft;
+	ref(OnKeyRight) onKeyRight;
+	ref(OnKeyBack)  onKeyBack;
+	ref(OnKeyEnter) onKeyEnter;
+	ref(OnKeyPress) onKeyPress;
+};
 
 void Terminal_InputLine0(ExceptionManager *e);
 
-void Terminal_InputLine_Init(Terminal_InputLine *this, Terminal *term);
-void Terminal_InputLine_Destroy(Terminal_InputLine *this);
-overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this, bool update);
-overload void Terminal_InputLine_ClearLine(Terminal_InputLine *this);
-void Terminal_InputLine_Print(Terminal_InputLine *this, String s);
-void Terminal_InputLine_SetValue(Terminal_InputLine *this, String s);
-void Terminal_InputLine_DeletePreceding(Terminal_InputLine *this);
-void Terminal_InputLine_DeleteSucceeding(Terminal_InputLine *this);
-void Terminal_InputLine_MoveRight(Terminal_InputLine *this, size_t n);
-void Terminal_InputLine_MoveLeft(Terminal_InputLine *this, size_t n);
-void Terminal_InputLine_Process(Terminal_InputLine *this);
+def(void, Init, Terminal *term);
+def(void, Destroy);
+overload def(void, ClearLine, bool update);
+overload def(void, ClearLine);
+def(void, Print, String s);
+def(void, SetValue, String s);
+def(void, DeletePreceding);
+def(void, DeleteSucceeding);
+def(void, MoveRight, size_t n);
+def(void, MoveLeft, size_t n);
+def(void, Process);

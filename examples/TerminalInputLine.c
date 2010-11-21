@@ -1,18 +1,22 @@
 #import <Terminal/InputLine.h>
+#import <App.h>
 
 ExceptionManager exc;
 
-typedef struct {
-	bool interrupt;
-} Context;
+#undef self
+#define self App
 
-void OnKeyEnter(__unused Context *this, String s) {
+class(self) {
+	bool interrupt;
+};
+
+def(void, OnKeyEnter, String s) {
 	String_Print(String("\nBuffer contains: '"));
 	String_Print(s);
 	String_Print(String("'\n"));
 }
 
-bool OnKeyPress(Context *this, String ch) {
+def(bool, OnKeyPress, String ch) {
 	if (ch.buf[0] == CTRLKEY('c')) {
 		String_Print(String("Shutting down...\n"));
 		this->interrupt = true;
@@ -24,6 +28,8 @@ bool OnKeyPress(Context *this, String ch) {
 
 	return false;
 }
+
+#undef self
 
 int main(void) {
 	ExceptionManager_Init(&exc);
@@ -38,18 +44,16 @@ int main(void) {
 	Terminal_InputLine line;
 	Terminal_InputLine_Init(&line, &term);
 
-	Context context;
-	context.interrupt = false;
+	App app;
+	app.interrupt = false;
 
-	line.context = &context;
-
-	line.onKeyPress = (void *) &OnKeyPress;
-	line.onKeyEnter = (void *) &OnKeyEnter;
+	line.onKeyPress = (Terminal_InputLine_OnKeyPress) Callback(&app, App_OnKeyPress);
+	line.onKeyEnter = (Terminal_InputLine_OnKeyEnter) Callback(&app, App_OnKeyEnter);
 
 	int res = ExitStatus_Success;
 
 	try (&exc) {
-		while (!context.interrupt) {
+		while (!app.interrupt) {
 			Terminal_InputLine_Process(&line);
 		}
 	} clean catchAny {
