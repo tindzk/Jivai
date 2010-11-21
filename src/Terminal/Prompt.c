@@ -1,15 +1,16 @@
 #import "Prompt.h"
+#import "../App.h"
 
-void Terminal_Prompt_Init(Terminal_Prompt *this, Terminal *term) {
+def(void, Init, Terminal *term) {
 	this->term = term;
 	Terminal_Buffer_Init(&this->termbuf, term, 1);
 }
 
-void Terminal_Prompt_Destroy(Terminal_Prompt *this) {
+def(void, Destroy) {
 	Terminal_Buffer_Destroy(&this->termbuf);
 }
 
-bool Terminal_Prompt_Ask(Terminal_Prompt *this, String msg) {
+def(bool, Ask, String msg) {
 	Terminal_Buffer_Chunk chunk;
 
 	chunk.color = Terminal_Color_Normal;

@@ -1,10 +1,13 @@
 #import "Buffer.h"
 
-typedef struct {
+#undef self
+#define self Terminal_Prompt
+
+class(self) {
 	Terminal *term;
 	Terminal_Buffer termbuf;
-} Terminal_Prompt;
+};
 
-void Terminal_Prompt_Init(Terminal_Prompt *this, Terminal *term);
-bool Terminal_Prompt_Ask(Terminal_Prompt *this, String msg);
-void Terminal_Prompt_Destroy(Terminal_Prompt *this);
+def(void, Init, Terminal *term);
+def(void, Destroy);
+def(bool, Ask, String msg);
