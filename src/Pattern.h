@@ -74,41 +74,41 @@ enum {
 	excUnknownCommand
 };
 
-typedef enum {
-	Token_End = 0,
-	Token_Branch,
-	Token_Any,
-	Token_Exact,
-	Token_AnyOf,
-	Token_AnyBut,
-	Token_Open,
-	Token_Close,
-	Token_BOL,
-	Token_EOL,
-	Token_Star,
-	Token_Plus,
-	Token_StarQ,
-	Token_PlusQ,
-	Token_QuestionMark,
-	Token_Space,
-	Token_NonSpace,
-	Token_Digit
-} Token;
+set(ref(Token)) {
+	ref(Token_End),
+	ref(Token_Branch),
+	ref(Token_Any),
+	ref(Token_Exact),
+	ref(Token_AnyOf),
+	ref(Token_AnyBut),
+	ref(Token_Open),
+	ref(Token_Close),
+	ref(Token_BOL),
+	ref(Token_EOL),
+	ref(Token_Star),
+	ref(Token_Plus),
+	ref(Token_StarQ),
+	ref(Token_PlusQ),
+	ref(Token_QuestionMark),
+	ref(Token_Space),
+	ref(Token_NonSpace),
+	ref(Token_Digit)
+};
 
 /*
  * Compiled regular expression
  */
-typedef struct {
+class(self) {
 	Array(unsigned char, *code);
 	Array(unsigned char, *data);
 
 	size_t ofs;
 	size_t numCaps; /* Number of bracket pairs. */
-} Pattern;
+};
 
-void Pattern_Init(Pattern *this);
-void Pattern_Destroy(Pattern *this);
-void Pattern_Compile(Pattern *this, String pattern);
+def(void, Init);
+def(void, Destroy);
+def(void, Compile, String pattern);
 
 /*
  * Returns true if there is a match, otherwise false.
@@ -123,4 +123,4 @@ void Pattern_Compile(Pattern *this, String pattern);
 
 #define Pattern_Result(...) (String*[]) { __VA_ARGS__ }
 
-bool Pattern_Match(Pattern *this, String s, String **caps);
+def(bool, Match, String s, String **caps);

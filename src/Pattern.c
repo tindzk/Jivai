@@ -1,4 +1,5 @@
 #import "Pattern.h"
+#import "App.h"
 
 /*
  * Copyright (c) 2004-2005 Sergey Lyubka <valenok@gmail.com>
@@ -18,7 +19,7 @@ void Pattern0(ExceptionManager *e) {
 	exc = e;
 }
 
-void Pattern_Init(Pattern *this) {
+def(void, Init) {
 	Array_Init(this->code, 256);
 	Array_Init(this->data, 256);
 
@@ -26,7 +27,7 @@ void Pattern_Init(Pattern *this) {
 	this->numCaps = 0;
 }
 
-void Pattern_Destroy(Pattern *this) {
+def(void, Destroy) {
 	Array_Destroy(this->code);
 	Array_Destroy(this->data);
 }
@@ -35,7 +36,7 @@ void Pattern_Destroy(Pattern *this) {
 // Compiler
 // --------
 
-static void Pattern_SetJumpOffset(Pattern *this, size_t pc, size_t offset) {
+static def(void, SetJumpOffset, size_t pc, size_t offset) {
 	if (offset >= this->code->len) {
 		throw(exc, excOffsetOverflow);
 	} else if (this->code->len - offset > 0xff) {
@@ -45,19 +46,19 @@ static void Pattern_SetJumpOffset(Pattern *this, size_t pc, size_t offset) {
 	}
 }
 
-static void Pattern_Emit(Pattern *this, int code) {
+static def(void, Emit, int code) {
 	Array_Push(this->code, (unsigned char) code);
 }
 
-static void Pattern_StoreCharInData(Pattern *this, int ch) {
+static def(void, StoreCharInData, int ch) {
 	Array_Push(this->data, (unsigned char) ch);
 }
 
-static size_t Pattern_Exact(Pattern *this, size_t offset, String pattern) {
+static def(size_t, Exact, size_t offset, String pattern) {
 	size_t oldDataSize = this->data->len;
 
 	while (String_Find(metaChars, pattern.buf[offset]) == String_NotFound) {
-		Pattern_StoreCharInData(this, pattern.buf[offset]);
+		call(StoreCharInData, pattern.buf[offset]);
 
 		if (offset == pattern.len - 1) {
 			break;
@@ -66,9 +67,9 @@ static size_t Pattern_Exact(Pattern *this, size_t offset, String pattern) {
 		offset++;
 	}
 
-	Pattern_Emit(this, Token_Exact);
-	Pattern_Emit(this, oldDataSize);
-	Pattern_Emit(this, this->data->len - oldDataSize);
+	call(Emit, ref(Token_Exact));
+	call(Emit, oldDataSize);
+	call(Emit, this->data->len - oldDataSize);
 
 	if (offset == pattern.len - 1) {
 		return offset;
@@ -77,47 +78,47 @@ static size_t Pattern_Exact(Pattern *this, size_t offset, String pattern) {
 	}
 }
 
-static int Pattern_GetEscapeChar(char c) {
+static sdef(int, GetEscapeChar, char c) {
 	switch (c) {
 		case 'n': return '\n';
 		case 'r': return '\r';
 		case 't': return '\t';
 		case '0': return 0;
-		case 'S': return Token_NonSpace << 8;
-		case 's': return Token_Space    << 8;
-		case 'd': return Token_Digit    << 8;
+		case 'S': return ref(Token_NonSpace) << 8;
+		case 's': return ref(Token_Space)    << 8;
+		case 'd': return ref(Token_Digit)    << 8;
 	}
 
 	return c;
 }
 
-static size_t Pattern_AnyOf(Pattern *this, size_t offset, String pattern) {
-	Token op = Token_AnyOf;
+static def(size_t, AnyOf, size_t offset, String pattern) {
+	ref(Token) op = ref(Token_AnyOf);
 	size_t oldDataSize = this->data->len;
 
 	if (pattern.buf[offset] == '^') {
-		op = Token_AnyBut;
+		op = ref(Token_AnyBut);
 		offset++;
 	}
 
 	for (; offset < pattern.len; offset++) {
 		if (pattern.buf[offset] == ']') {
-			Pattern_Emit(this, op);
-			Pattern_Emit(this, oldDataSize);
-			Pattern_Emit(this, this->data->len - oldDataSize);
+			call(Emit, op);
+			call(Emit, oldDataSize);
+			call(Emit, this->data->len - oldDataSize);
 
 			break;
 		} else if (pattern.buf[offset] == '\\') {
-			int esc = Pattern_GetEscapeChar(pattern.buf[offset + 1]);
+			int esc = scall(GetEscapeChar, pattern.buf[offset + 1]);
 
 			if ((esc & 0xff) == 0) {
-				Pattern_StoreCharInData(this, 0);
-				Pattern_StoreCharInData(this, esc >> 8);
+				call(StoreCharInData, 0);
+				call(StoreCharInData, esc >> 8);
 			} else {
-				Pattern_StoreCharInData(this, esc);
+				call(StoreCharInData, esc);
 			}
 		} else {
-			Pattern_StoreCharInData(this, pattern.buf[offset]);
+			call(StoreCharInData, pattern.buf[offset]);
 		}
 	}
 
@@ -128,8 +129,8 @@ static size_t Pattern_AnyOf(Pattern *this, size_t offset, String pattern) {
 	}
 }
 
-static void Pattern_Relocate(Pattern *this, size_t begin, size_t shift) {
-	Pattern_Emit(this, Token_End);
+static def(void, Relocate, size_t begin, size_t shift) {
+	call(Emit, ref(Token_End));
 
 	if (begin + shift           > this->code->size
 	 || this->code->len - begin > this->code->len) {
@@ -144,42 +145,42 @@ static void Pattern_Relocate(Pattern *this, size_t begin, size_t shift) {
 	this->code->len += shift;
 }
 
-static void Pattern_Quantifier(Pattern *this, size_t prev, Token op) {
-	if (this->code->buf[prev] == Token_Exact && this->code->buf[prev + 2] > 1) {
+static def(void, Quantifier, size_t prev, ref(Token) op) {
+	if (this->code->buf[prev] == ref(Token_Exact) && this->code->buf[prev + 2] > 1) {
 		this->code->buf[prev + 2]--;
 
-		Pattern_Emit(this, Token_Exact);
+		call(Emit, ref(Token_Exact));
 
-		Pattern_Emit(this,
+		call(Emit,
 			this->code->buf[prev + 1] +
 			this->code->buf[prev + 2]);
 
-		Pattern_Emit(this, 1);
+		call(Emit, 1);
 
 		prev = this->code->len - 3;
 	}
 
-	Pattern_Relocate(this, prev, 2);
+	call(Relocate, prev, 2);
 	this->code->buf[prev] = (unsigned char) op;
-	Pattern_SetJumpOffset(this, prev + 1, prev);
+	call(SetJumpOffset, prev + 1, prev);
 }
 
-static void Pattern_ExactOneChar(Pattern *this, int ch) {
-	Pattern_Emit(this, Token_Exact);
-	Pattern_Emit(this, this->data->len);
-	Pattern_Emit(this, 1);
+static def(void, ExactOneChar, int ch) {
+	call(Emit, ref(Token_Exact));
+	call(Emit, this->data->len);
+	call(Emit, 1);
 
-	Pattern_StoreCharInData(this, ch);
+	call(StoreCharInData, ch);
 }
 
-static void Pattern_FixUpBranch(Pattern *this, ssize_t fixup) {
+static def(void, FixUpBranch, ssize_t fixup) {
 	if (fixup > 2) {
-		Pattern_Emit(this, Token_End);
-		Pattern_SetJumpOffset(this, fixup, fixup - 2);
+		call(Emit, ref(Token_End));
+		call(SetJumpOffset, fixup, fixup - 2);
 	}
 }
 
-static size_t Pattern_Parse(Pattern *this, size_t offset, String pattern) {
+static def(size_t, Parse, size_t offset, String pattern) {
 	size_t fixup       = 0;
 	size_t level       = this->numCaps;
 	size_t lastOp      = this->code->len;
@@ -187,15 +188,15 @@ static size_t Pattern_Parse(Pattern *this, size_t offset, String pattern) {
 
 	for (; offset < pattern.len; offset++) {
 		if (pattern.buf[offset] == '^') {
-			Pattern_Emit(this, Token_BOL);
+			call(Emit, ref(Token_BOL));
 		} else if (pattern.buf[offset] == '$') {
-			Pattern_Emit(this, Token_EOL);
+			call(Emit, ref(Token_EOL));
 		} else if (pattern.buf[offset] == '.') {
 			lastOp = this->code->len;
-			Pattern_Emit(this, Token_Any);
+			call(Emit, ref(Token_Any));
 		} else if (pattern.buf[offset] == '[') {
 			lastOp = this->code->len;
-			offset = Pattern_AnyOf(this, offset + 1, pattern);
+			offset = call(AnyOf, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ']') {
 				throw(exc, excNoClosingBracket);
@@ -209,31 +210,31 @@ static size_t Pattern_Parse(Pattern *this, size_t offset, String pattern) {
 
 			lastOp = this->code->len;
 
-			int esc = Pattern_GetEscapeChar(pattern.buf[offset]);
+			int esc = scall(GetEscapeChar, pattern.buf[offset]);
 
 			if (esc & 0xff00) {
-				Pattern_Emit(this, esc >> 8);
+				call(Emit, esc >> 8);
 			} else {
-				Pattern_ExactOneChar(this, esc);
+				call(ExactOneChar, esc);
 			}
 		} else if (pattern.buf[offset] == '(') {
 			lastOp = this->code->len;
 
 			size_t capNo = ++this->numCaps;
 
-			Pattern_Emit(this, Token_Open);
-			Pattern_Emit(this, capNo);
+			call(Emit, ref(Token_Open));
+			call(Emit, capNo);
 
-			offset = Pattern_Parse(this, offset + 1, pattern);
+			offset = call(Parse, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ')') {
 				throw(exc, excNoClosingBracket);
 			}
 
-			Pattern_Emit(this, Token_Close);
-			Pattern_Emit(this, capNo);
+			call(Emit, ref(Token_Close));
+			call(Emit, capNo);
 		} else if (pattern.buf[offset] == ')') {
-			Pattern_FixUpBranch(this, fixup);
+			call(FixUpBranch, fixup);
 
 			if (level == 0) {
 				throw(exc, excUnbalancedBrackets);
@@ -243,31 +244,31 @@ static size_t Pattern_Parse(Pattern *this, size_t offset, String pattern) {
 		} else if (pattern.buf[offset] == '+'
 				|| pattern.buf[offset] == '*')
 		{
-			Token op = (pattern.buf[offset] == '*')
-				? Token_Star
-				: Token_Plus;
+			ref(Token) op = (pattern.buf[offset] == '*')
+				? ref(Token_Star)
+				: ref(Token_Plus);
 
 			if (pattern.buf[offset + 1] == '?') {
-				op = (op == Token_Star)
-					? Token_StarQ
-					: Token_PlusQ;
+				op = (op == ref(Token_Star))
+					? ref(Token_StarQ)
+					: ref(Token_PlusQ);
 
 				offset++;
 			}
 
-			Pattern_Quantifier(this, lastOp, op);
+			call(Quantifier, lastOp, op);
 		} else if (pattern.buf[offset] == '?') {
-			Pattern_Quantifier(this, lastOp, Token_QuestionMark);
+			call(Quantifier, lastOp, ref(Token_QuestionMark));
 		} else if (pattern.buf[offset] == '|') {
-			Pattern_FixUpBranch(this, fixup);
-			Pattern_Relocate(this, branchStart, 3);
-			this->code->buf[branchStart] = Token_Branch;
-			Pattern_SetJumpOffset(this, branchStart + 1, branchStart);
+			call(FixUpBranch, fixup);
+			call(Relocate, branchStart, 3);
+			this->code->buf[branchStart] = ref(Token_Branch);
+			call(SetJumpOffset, branchStart + 1, branchStart);
 			fixup = branchStart + 2;
 			this->code->buf[fixup] = 0xff;
 		} else {
 			lastOp = this->code->len;
-			offset = Pattern_Exact(this, offset, pattern);
+			offset = call(Exact, offset, pattern);
 		}
 	}
 
@@ -278,7 +279,7 @@ static size_t Pattern_Parse(Pattern *this, size_t offset, String pattern) {
 	}
 }
 
-void Pattern_Compile(Pattern *this, String pattern) {
+def(void, Compile, String pattern) {
 	if (pattern.len == 0) {
 		throw(exc, excEmptyPattern);
 	}
@@ -287,35 +288,35 @@ void Pattern_Compile(Pattern *this, String pattern) {
 	this->code->len = 0;
 	this->data->len = 0;
 
-	Pattern_Emit(this, Token_Open);
-	Pattern_Emit(this, 0);
+	call(Emit, ref(Token_Open));
+	call(Emit, 0);
 
-	Pattern_Parse(this, 0, pattern);
+	call(Parse, 0, pattern);
 
-	if (this->code->buf[2] == Token_Branch) {
-		Pattern_FixUpBranch(this, 4);
+	if (this->code->buf[2] == ref(Token_Branch)) {
+		call(FixUpBranch, 4);
 	}
 
-	Pattern_Emit(this, Token_Close);
-	Pattern_Emit(this, 0);
+	call(Emit, ref(Token_Close));
+	call(Emit, 0);
 
-	Pattern_Emit(this, Token_End);
+	call(Emit, ref(Token_End));
 }
 
 // -------
 // Matcher
 // -------
 
-static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, String **caps);
+static def(bool, _Match, size_t pc, String s, size_t len, String **caps);
 
-static void Pattern_LoopGreedy(Pattern *this, size_t pc, String s, size_t len) {
+static def(void, LoopGreedy, size_t pc, String s, size_t len) {
 	size_t savedOffset;
 	size_t matchedOffset = this->ofs;
 
-	while (_Pattern_Match(this, pc + 2, s, len, NULL)) {
+	while (call(_Match, pc + 2, s, len, NULL)) {
 		savedOffset = this->ofs;
 
-		if (_Pattern_Match(this, pc + this->code->buf[pc + 1], s, len, NULL)) {
+		if (call(_Match, pc + this->code->buf[pc + 1], s, len, NULL)) {
 			matchedOffset = savedOffset;
 		}
 
@@ -325,13 +326,13 @@ static void Pattern_LoopGreedy(Pattern *this, size_t pc, String s, size_t len) {
 	this->ofs = matchedOffset;
 }
 
-static void Pattern_LoopNonGreedy(Pattern *this, size_t pc, String s, size_t len) {
+static def(void, LoopNonGreedy, size_t pc, String s, size_t len) {
 	size_t savedOffset = this->ofs;
 
-	while (_Pattern_Match(this, pc + 2, s, len, NULL)) {
+	while (call(_Match, pc + 2, s, len, NULL)) {
 		savedOffset = this->ofs;
 
-		if (_Pattern_Match(this, pc + this->code->buf[pc + 1], s, len, NULL)) {
+		if (call(_Match, pc + this->code->buf[pc + 1], s, len, NULL)) {
 			break;
 		}
 	}
@@ -339,7 +340,7 @@ static void Pattern_LoopNonGreedy(Pattern *this, size_t pc, String s, size_t len
 	this->ofs = savedOffset;
 }
 
-static bool Pattern_IsAnyOf(Pattern *this, const unsigned char *p, String s, size_t len) {
+static def(bool, IsAnyOf, const unsigned char *p, String s, size_t len) {
 	int ch = s.buf[this->ofs];
 
 	for (size_t i = 0; i < len; i++) {
@@ -352,7 +353,7 @@ static bool Pattern_IsAnyOf(Pattern *this, const unsigned char *p, String s, siz
 	return false;
 }
 
-static bool Pattern_IsAnyBut(Pattern *this, const unsigned char *p, String s, size_t len) {
+static def(bool, IsAnyBut, const unsigned char *p, String s, size_t len) {
 	int ch = s.buf[this->ofs];
 
 	for (size_t i = 0; i < len; i++) {
@@ -366,30 +367,30 @@ static bool Pattern_IsAnyBut(Pattern *this, const unsigned char *p, String s, si
 	return true;
 }
 
-static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, String **caps) {
+static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 	size_t savedOffset;
 
 	bool res = true;
 
-	while (res && this->code->buf[pc] != Token_End) {
+	while (res && this->code->buf[pc] != ref(Token_End)) {
 		if (pc >= this->code->len) {
 			throw(exc, excOffsetOverflow);
 		}
 
 		switch (this->code->buf[pc]) {
-		case Token_Branch:
+		case ref(Token_Branch):
 			savedOffset = this->ofs;
-			res = _Pattern_Match(this, pc + 3, s, len, caps);
+			res = call(_Match, pc + 3, s, len, caps);
 
 			if (!res) {
 				this->ofs = savedOffset;
-				res = _Pattern_Match(this, pc + this->code->buf[pc + 1], s, len, caps);
+				res = call(_Match, pc + this->code->buf[pc + 1], s, len, caps);
 			}
 
 			pc += this->code->buf[pc + 2];
 			break;
 
-		case Token_Exact:
+		case ref(Token_Exact):
 			res = false;
 
 			size_t dataOffset = this->code->buf[pc + 1];
@@ -410,51 +411,51 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc += 3;
 			break;
 
-		case Token_QuestionMark:
+		case ref(Token_QuestionMark):
 			res = true;
 
 			savedOffset = this->ofs;
 
-			if (!_Pattern_Match(this, pc + 2, s, len, caps)) {
+			if (!call(_Match, pc + 2, s, len, caps)) {
 				this->ofs = savedOffset;
 			}
 
 			pc += this->code->buf[pc + 1];
 			break;
 
-		case Token_Star:
+		case ref(Token_Star):
 			res = true;
-			Pattern_LoopGreedy(this, pc, s, len);
+			call(LoopGreedy, pc, s, len);
 			pc += this->code->buf[pc + 1];
 			break;
 
-		case Token_StarQ:
+		case ref(Token_StarQ):
 			res = true;
-			Pattern_LoopNonGreedy(this, pc, s, len);
+			call(LoopNonGreedy, pc, s, len);
 			pc += this->code->buf[pc + 1];
 			break;
 
-		case Token_Plus:
-			if (!(res = _Pattern_Match(this, pc + 2, s, len, caps))) {
+		case ref(Token_Plus):
+			if (!(res = call(_Match, pc + 2, s, len, caps))) {
 				break;
 			}
 
-			Pattern_LoopGreedy(this, pc, s, len);
+			call(LoopGreedy, pc, s, len);
 			pc += this->code->buf[pc + 1];
 			break;
 
-		case Token_PlusQ:
-			res = _Pattern_Match(this, pc + 2, s, len, caps);
+		case ref(Token_PlusQ):
+			res = call(_Match, pc + 2, s, len, caps);
 
 			if (!res) {
 				break;
 			}
 
-			Pattern_LoopNonGreedy(this, pc, s, len);
+			call(LoopNonGreedy, pc, s, len);
 			pc += this->code->buf[pc + 1];
 			break;
 
-		case Token_Space:
+		case ref(Token_Space):
 			res = false;
 
 			if (this->ofs < len && Char_IsSpace(s.buf[this->ofs])) {
@@ -465,7 +466,7 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc++;
 			break;
 
-		case Token_NonSpace:
+		case ref(Token_NonSpace):
 			res = false;
 
 			if (this->ofs < len && !Char_IsSpace(s.buf[this->ofs])) {
@@ -476,7 +477,7 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc++;
 			break;
 
-		case Token_Digit:
+		case ref(Token_Digit):
 			res = false;
 
 			if (this->ofs < len && Char_IsDigit(s.buf[this->ofs])) {
@@ -487,7 +488,7 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc++;
 			break;
 
-		case Token_Any:
+		case ref(Token_Any):
 			res = false;
 
 			if (this->ofs < len) {
@@ -498,14 +499,14 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc++;
 			break;
 
-		case Token_AnyOf:
+		case ref(Token_AnyOf):
 			res = false;
 
 			if (this->ofs < len) {
 				size_t offset  = this->code->buf[pc + 1];
 				size_t offset2 = this->code->buf[pc + 2];
 
-				res = Pattern_IsAnyOf(this,
+				res = call(IsAnyOf,
 					this->data->buf + offset,
 					s, offset2);
 			}
@@ -513,14 +514,14 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc += 3;
 			break;
 
-		case Token_AnyBut:
+		case ref(Token_AnyBut):
 			res = false;
 
 			if (this->ofs < len) {
 				size_t offset  = this->code->buf[pc + 1];
 				size_t offset2 = this->code->buf[pc + 2];
 
-				res = Pattern_IsAnyBut(this,
+				res = call(IsAnyBut,
 					this->data->buf + offset,
 					s, offset2);
 			}
@@ -529,17 +530,17 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 
 			break;
 
-		case Token_BOL:
+		case ref(Token_BOL):
 			res = (this->ofs == 0);
 			pc++;
 			break;
 
-		case Token_EOL:
+		case ref(Token_EOL):
 			res = (this->ofs == len);
 			pc++;
 			break;
 
-		case Token_Open:
+		case ref(Token_Open):
 			if (caps != NULL) {
 				size_t offset = this->code->buf[pc + 1];
 
@@ -553,7 +554,7 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc += 2;
 			break;
 
-		case Token_Close:
+		case ref(Token_Close):
 			if (caps != NULL) {
 				size_t offset = this->code->buf[pc + 1];
 
@@ -566,7 +567,7 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 			pc += 2;
 			break;
 
-		case Token_End:
+		case ref(Token_End):
 			pc++;
 			break;
 
@@ -578,17 +579,17 @@ static bool _Pattern_Match(Pattern *this, size_t pc, String s, size_t len, Strin
 	return res;
 }
 
-bool Pattern_Match(Pattern *this, String s, String **caps) {
+def(bool, Match, String s, String **caps) {
 	this->ofs = 0;
 
-	if (this->code->buf[2] != Token_BOL) {
+	if (this->code->buf[2] != ref(Token_BOL)) {
 		/* Pattern is anchored (must match from the start). */
-		return _Pattern_Match(this, 0, s, s.len, caps);
+		return call(_Match, 0, s, s.len, caps);
 	} else {
 		for (size_t i = 0; i < s.len; i++) {
 			this->ofs = i;
 
-			if (_Pattern_Match(this, 0, s, s.len, caps)) {
+			if (call(_Match, 0, s, s.len, caps)) {
 				return true;
 			}
 		}
