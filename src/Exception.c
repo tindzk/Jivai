@@ -2,51 +2,53 @@
 #import "App.h"
 
 #undef self
-#define self ExceptionManager
+#define self Exception
 
-inline def(void, Init) {
-	this->cur = NULL;
-}
+ExceptionManager __exc_mgr;
 
-inline def(void, Raise, size_t code) {
-	if (this->cur == NULL) {
-		ExceptionManager_Print(this, code);
+inline sdef(void, Raise, size_t code) {
+	if (__exc_mgr.cur == NULL) {
+		scall(Print, code);
 		Runtime_Exit(ExitStatus_Failure);
 	}
 
-	longjmp(this->cur->jmpBuffer, code);
+	longjmp(__exc_mgr.cur->jmpBuffer, code);
 }
 
-inline def(void, Push, ref(Record) *_record) {
-	_record->prev = this->cur;
-	this->cur = _record;
+inline sdef(void, Push, ref(Buffer) *buf) {
+	buf->prev = __exc_mgr.cur;
+	__exc_mgr.cur = buf;
 }
 
-inline def(void, Pop) {
-	if (this->cur != NULL) {
-		this->cur = this->cur->prev;
+inline sdef(void, Pop) {
+	if (__exc_mgr.cur != NULL) {
+		__exc_mgr.cur = __exc_mgr.cur->prev;
 	}
 }
 
-inline def(Exception *, GetMeta) {
-	return &this->e;
+inline sdef(ref(Record) *, GetMeta) {
+	return &__exc_mgr.e;
 }
 
-def(void, Print, size_t code) {
+sdef(void, Print, size_t code) {
 #if Exception_SaveOrigin
 	String fmt = String_Format(
 		String("Uncaught exception %.% (in %)\n"),
 		String_FromNul(Manifest_ResolveName(code)),
-		this->e.scode,
-		this->e.func);
+		__exc_mgr.e.scode,
+		__exc_mgr.e.func);
 #else
 	String fmt = String_Format(
 		String("Uncaught exception %.%\n"),
 		String_FromNul(Manifest_ResolveName(code)),
-		this->e.scode);
+		__exc_mgr.e.scode);
 #endif
 
 	String_Print(fmt, true);
 
 	String_Destroy(&fmt);
+}
+
+Constructor {
+	__exc_mgr.cur = NULL;
 }

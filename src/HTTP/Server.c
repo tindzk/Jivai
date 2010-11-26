@@ -1,12 +1,6 @@
 #import "Server.h"
 #import "../App.h"
 
-static ExceptionManager *exc;
-
-void HTTP_Server0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
 	this->events = events;
 
@@ -102,22 +96,22 @@ def(void, OnHeader, String name, String value) {
 						String("boundary="));
 
 					if (posBoundary == String_NotFound) {
-						throw(exc, excUnknownContentType);
+						throw(excUnknownContentType);
 					}
 
 					String_Copy(&this->headers.boundary, value, posBoundary + sizeof("boundary=") - 1);
 				} else {
-					throw(exc, excUnknownContentType);
+					throw(excUnknownContentType);
 				}
 			} else if (String_Equals(name, String("content-length"))) {
 				if (this->method != HTTP_Method_Post) {
-					throw(exc, excBodyUnexpected);
+					throw(excBodyUnexpected);
 				}
 
 				this->headers.contentLength = Int64_Parse(value);
 
 				if (this->headers.contentLength > this->maxBodyLength) {
-					throw(exc, excBodyTooLarge);
+					throw(excBodyTooLarge);
 				}
 			}
 		}
@@ -159,7 +153,7 @@ def(ref(Result), ReadHeader) {
 
 		if (this->header.size - this->header.len == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(exc, excHeaderTooLarge);
+			throw(excHeaderTooLarge);
 		}
 
 		ssize_t len = SocketConnection_Read(this->conn,
@@ -188,7 +182,7 @@ def(ref(Result), ReadHeader) {
 			return ref(Result_Error);
 		} else if (requestOffset == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(exc, excHeaderTooLarge);
+			throw(excHeaderTooLarge);
 		}
 	}
 
@@ -286,7 +280,7 @@ def(ref(Result), ReadBody) {
 			this->body.len += len;
 		}
 
-		try (exc) {
+		try {
 			/* Handle the form data. */
 			if (hasCallback(this->events.onBodyParameter)) {
 				HTTP_Query qry;

@@ -1,25 +1,19 @@
 #import "Header.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void HTTP_Header0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, ref(Events) events) {
 	this->events = events;
 }
 
 def(void, ParseMethod, String s) {
 	if (s.len == 0) {
-		throw(exc, excRequestMalformed);
+		throw(excRequestMalformed);
 	}
 
 	HTTP_Method method = HTTP_Method_FromString(s);
 
 	if (method == HTTP_Method_Unset) {
-		throw(exc, excUnknownMethod);
+		throw(excUnknownMethod);
 	}
 
 	callback(this->events.onMethod, method);
@@ -29,7 +23,7 @@ def(void, ParseVersion, String s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
-		throw(exc, excUnknownVersion);
+		throw(excUnknownVersion);
 	}
 
 	callback(this->events.onVersion, version);
@@ -39,13 +33,13 @@ def(void, ParseStatus, String s) {
 	s32 code = Int32_Parse(s);
 
 	if (code == 0) {
-		throw(exc, excUnknownStatus);
+		throw(excUnknownStatus);
 	}
 
 	HTTP_Status status = HTTP_Status_GetStatusByCode(code);
 
 	if (status == HTTP_Status_Unset) {
-		throw(exc, excUnknownStatus);
+		throw(excUnknownStatus);
 	}
 
 	callback(this->events.onStatus, status);
@@ -53,7 +47,7 @@ def(void, ParseStatus, String s) {
 
 def(void, ParseUri, String s) {
 	if (s.len == 0) {
-		throw(exc, excEmptyRequestUri);
+		throw(excEmptyRequestUri);
 	}
 
 	ssize_t pos = String_Find(s, '?');
@@ -77,7 +71,7 @@ def(void, ParseUri, String s) {
 			path = decoded;
 		}
 
-		try (exc) {
+		try {
 			callback(this->events.onPath, path);
 		} clean finally {
 			if (path.mutable) {
@@ -149,7 +143,7 @@ def(void, Parse, ref(Type) type, String s) {
 	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
-		throw(exc, excRequestMalformed);
+		throw(excRequestMalformed);
 	}
 
 	ssize_t pos2ndLine = pos1stLine;
@@ -162,7 +156,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posMethod = String_Find(s, ' ');
 
 		if (posMethod == String_NotFound) {
-			throw(exc, excRequestMalformed);
+			throw(excRequestMalformed);
 		}
 
 		String method = String_Slice(s, 0, posMethod);
@@ -177,7 +171,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posVersion = String_Find(s, ' ');
 
 		if (posVersion == String_NotFound) {
-			throw(exc, excRequestMalformed);
+			throw(excRequestMalformed);
 		}
 
 		String version = String_Slice(s, 0, posVersion);
@@ -186,7 +180,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
 		if (posCode == String_NotFound) {
-			throw(exc, excRequestMalformed);
+			throw(excRequestMalformed);
 		}
 
 		String code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
@@ -209,7 +203,7 @@ def(void, Parse, ref(Type) type, String s) {
 			if (len > 0) {
 				String_Copy(&res, s, last + 1, len);
 
-				try (exc) {
+				try {
 					call(ParseHeaderLine, res);
 				} clean finally {
 					if (e != 0) {

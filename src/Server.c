@@ -1,12 +1,6 @@
 #import "Server.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void Server0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context) {
 	this->context  = context;
 	this->listener = listener;

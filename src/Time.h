@@ -19,8 +19,6 @@ record(self) {
 	u8 second;
 };
 
-void Time0(ExceptionManager *e);
-
 sdef(self, Empty);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);

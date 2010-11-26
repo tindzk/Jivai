@@ -34,8 +34,6 @@ class(self) {
 	ref(OnKeyPress) onKeyPress;
 };
 
-void Terminal_InputLine0(ExceptionManager *e);
-
 def(void, Init, Terminal *term);
 def(void, Destroy);
 overload def(void, ClearLine, bool update);

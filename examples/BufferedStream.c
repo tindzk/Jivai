@@ -1,14 +1,7 @@
 #import <FileStream.h>
 #import <BufferedStream.h>
 
-ExceptionManager exc;
-
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	File0(&exc);
-	String0(&exc);
-
 	File file;
 	BufferedStream stream;
 

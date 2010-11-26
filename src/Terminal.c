@@ -3,12 +3,6 @@
 
 #undef Terminal_Print
 
-static ExceptionManager *exc;
-
-void Terminal0(ExceptionManager *e) {
-	exc = e;
-}
-
 sdef(bool, IsTTY, File *file) {
 	struct termios term;
 	return ioctl(file->fd, TCGETS, &term) == 0;
@@ -204,7 +198,7 @@ sdef(ref(Size), GetSize) {
 		res.cols = size.ws_col;
 		res.rows = size.ws_row;
 	} else {
-		throw(exc, excIoctlFailed);
+		throw(excIoctlFailed);
 	}
 
 	return res;

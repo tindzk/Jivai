@@ -44,8 +44,6 @@ enum {
 	excUnknownFileDescriptor
 };
 
-void Poll0(ExceptionManager *e);
-
 def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
 def(void, AddEvent, GenericInstance inst, ssize_t fd, int events);

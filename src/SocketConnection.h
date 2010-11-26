@@ -31,8 +31,6 @@ class(self) {
 	bool nonblocking;
 };
 
-void SocketConnection0(ExceptionManager *e);
-
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);

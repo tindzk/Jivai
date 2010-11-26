@@ -13,12 +13,6 @@
 
 static const String metaChars = String("|.^$*+?()[\\");
 
-static ExceptionManager *exc;
-
-void Pattern0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init) {
 	Array_Init(this->code, 256);
 	Array_Init(this->data, 256);
@@ -38,9 +32,9 @@ def(void, Destroy) {
 
 static def(void, SetJumpOffset, size_t pc, size_t offset) {
 	if (offset >= this->code->len) {
-		throw(exc, excOffsetOverflow);
+		throw(excOffsetOverflow);
 	} else if (this->code->len - offset > 0xff) {
-		throw(exc, excJumpOffsetTooBig);
+		throw(excJumpOffsetTooBig);
 	} else {
 		this->code->buf[pc] = (unsigned char) (this->code->len - offset);
 	}
@@ -134,7 +128,7 @@ static def(void, Relocate, size_t begin, size_t shift) {
 
 	if (begin + shift           > this->code->size
 	 || this->code->len - begin > this->code->len) {
-		throw(exc, excOffsetOverflow);
+		throw(excOffsetOverflow);
 	}
 
 	Memory_Move(
@@ -199,7 +193,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			offset = call(AnyOf, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ']') {
-				throw(exc, excNoClosingBracket);
+				throw(excNoClosingBracket);
 			}
 		} else if (pattern.buf[offset] == '\\') {
 			offset++;
@@ -228,7 +222,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			offset = call(Parse, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ')') {
-				throw(exc, excNoClosingBracket);
+				throw(excNoClosingBracket);
 			}
 
 			call(Emit, ref(Token_Close));
@@ -237,7 +231,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			call(FixUpBranch, fixup);
 
 			if (level == 0) {
-				throw(exc, excUnbalancedBrackets);
+				throw(excUnbalancedBrackets);
 			}
 
 			return offset;
@@ -281,7 +275,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 
 def(void, Compile, String pattern) {
 	if (pattern.len == 0) {
-		throw(exc, excEmptyPattern);
+		throw(excEmptyPattern);
 	}
 
 	this->numCaps   = 0;
@@ -374,7 +368,7 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 
 	while (res && this->code->buf[pc] != ref(Token_End)) {
 		if (pc >= this->code->len) {
-			throw(exc, excOffsetOverflow);
+			throw(excOffsetOverflow);
 		}
 
 		switch (this->code->buf[pc]) {
@@ -572,7 +566,7 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 			break;
 
 		default:
-			throw(exc, excUnknownCommand);
+			throw(excUnknownCommand);
 		}
 	}
 

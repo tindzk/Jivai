@@ -63,8 +63,6 @@ class(self) {
 	} headers;
 };
 
-void HTTP_Server0(ExceptionManager *e);
-
 def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 def(void, Destroy);
 def(void, OnMethod, HTTP_Method method);

@@ -2,8 +2,6 @@
 #import <FileStream.h>
 #import <BufferedStream.h>
 
-ExceptionManager exc;
-
 void IndentTree(int level) {
 	while (level--) {
 		String_Print(String("  "));
@@ -54,16 +52,10 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	File0(&exc);
-	String0(&exc);
-	Memory0(&exc);
-
 	File file;
 	BufferedStream stream;
 
-	try (&exc) {
+	try {
 		FileStream_Open(&file, String("HTMLTree.html"), FileStatus_ReadOnly);
 	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));

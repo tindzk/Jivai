@@ -1,8 +1,6 @@
 #import <String.h>
 #import <StackArray.h>
 
-ExceptionManager exc;
-
 typedef struct {
 	String field1;
 	String field2;
@@ -14,10 +12,6 @@ void DestroyItem(Item *item) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-
 	StackArray(arr, Item, 100);
 
 	StackArray_Init(arr, Item);

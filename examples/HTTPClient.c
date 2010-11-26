@@ -2,10 +2,8 @@
 #import <Socket.h>
 #import <SocketConnection.h>
 
-ExceptionManager exc;
-
 bool HTTP_Client_Receive(SocketConnection *conn, String *resp) {
-	try (&exc) {
+	try {
 		size_t len = SocketConnection_Read(conn,
 			resp->buf  + resp->len,
 			resp->size - resp->len);
@@ -46,7 +44,7 @@ void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, 
 		path,
 		hostname);
 
-	try (&exc) {
+	try {
 		SocketConnection_Write(&conn, request.buf, request.len);
 	} clean finally {
 		cleanup(&socket, &conn);
@@ -57,12 +55,6 @@ void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, 
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	Socket0(&exc);
-	NetworkAddress0(&exc);
-	SocketConnection0(&exc);
-
 	String resp = HeapString(1024 * 150); // Fetch max. 150 KiB
 
 	HTTP_Client_GetResponse(String("www.kernel.org"), String("/"), 80, &resp);

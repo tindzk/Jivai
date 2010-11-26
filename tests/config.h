@@ -5,11 +5,6 @@
 #define Memory_PointerChecks     1
 #define Memory_OutOfMemoryChecks 0
 
-/* Show an error in case you forgot to initialize a module's
- * exception manager.
- */
-#define Exception_Safety 1
-
 /* Save the file name and line number from which an exception was
  * raised.
  */

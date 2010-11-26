@@ -2,14 +2,7 @@
 #import <Integer.h>
 #import <SocketConnection.h>
 
-ExceptionManager exc;
-
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	Socket0(&exc);
-	NetworkAddress0(&exc);
-
 	Socket socket;
 	Socket_Init(&socket, Socket_Protocol_TCP);
 

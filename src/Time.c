@@ -1,11 +1,5 @@
 #import "Time.h"
 
-static ExceptionManager *exc;
-
-void Time0(ExceptionManager *e) {
-	exc = e;
-}
-
 sdef(self, Empty) {
 	self res;
 
@@ -40,7 +34,7 @@ sdef(ref(UnixEpoch), GetCurrentUnixTime) {
 	ref(UnixEpoch) time;
 
 	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {
-		throw(exc, excGetTimeOfDayFailed);
+		throw(excGetTimeOfDayFailed);
 	}
 
 	return time;

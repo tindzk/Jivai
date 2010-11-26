@@ -23,8 +23,6 @@
 #import <Integer.h>
 #import <SocketConnection.h>
 
-ExceptionManager exc;
-
 // ----------
 // ClientData
 // ----------
@@ -152,19 +150,12 @@ ClientListenerInterface Impl(CustomClientListener) = {
 // ----
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-	Socket0(&exc);
-	Memory0(&exc);
-	Signal0(&exc);
-	Server0(&exc);
-	SocketConnection0(&exc);
+	Signal0();
 
 	Server server;
 	CustomClientListener listener;
 
-	try (&exc) {
+	try {
 		Server_Init(&server, 1337, &CustomClientListenerImpl, &listener);
 		Server_SetEdgeTriggered(&server, false);
 

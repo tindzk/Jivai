@@ -30,7 +30,7 @@ record(ref(UserContext)) {
 	sigset_t          uc_sigmask;
 };
 
-void Signal0(ExceptionManager *e);
+void Signal0(void);
 
 sdef(void, Register, int signal, void (*cb)(int, siginfo_t *, void *));
 sdef(void, Ignore, int signal);

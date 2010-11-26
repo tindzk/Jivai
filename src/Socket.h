@@ -30,8 +30,6 @@ class(self) {
 	Socket_Protocol protocol;
 };
 
-void Socket0(ExceptionManager *e);
-
 def(void, Init, ref(Protocol) protocol);
 def(void, SetNonBlockingFlag, bool enable);
 def(void, SetCloexecFlag, bool enable);

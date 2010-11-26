@@ -1,17 +1,10 @@
 #import <File.h>
 #import <Integer.h>
 
-ExceptionManager exc;
-
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	File0(&exc);
-	String0(&exc);
-
 	File file;
 
-	try (&exc) {
+	try {
 		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
 	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));

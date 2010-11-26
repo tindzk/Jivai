@@ -9,8 +9,6 @@ enum {
 	excUnsignedType
 };
 
-void Integer0(ExceptionManager *e);
-
 s8  Int8_Parse(String s);
 s16 Int16_Parse(String s);
 s32 Int32_Parse(String s);

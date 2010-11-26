@@ -24,6 +24,7 @@ enum {
 #import "Array.h"
 #import "Kernel.h"
 #import "Memory.h"
+#import "Exception.h"
 
 Array_Define(String, StringArray);
 
@@ -35,7 +36,6 @@ enum {
 	excBufferOverflow
 };
 
-void String0(void *e);
 String HeapString(size_t len);
 String BufString(char *buf, size_t len);
 void String_Destroy(String *this);

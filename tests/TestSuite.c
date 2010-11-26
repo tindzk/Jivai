@@ -161,12 +161,6 @@ def(bool, Run) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-	Memory0(&exc);
-	Integer0(&exc);
-
 	return TestSuite_Run(TestSuite_GetInstance())
 		? ExitStatus_Success
 		: ExitStatus_Failure;

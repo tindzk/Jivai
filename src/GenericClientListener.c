@@ -1,12 +1,6 @@
 #import "GenericClientListener.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void GenericClientListener0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, ConnectionInterface *conn) {
 	this->connection = conn;
 }
@@ -66,7 +60,7 @@ static def(Connection_Status, OnData, Client *client, bool pull) {
 	if (client->data != NULL) {
 		Connection *conn = client->data;
 
-		try (exc) {
+		try {
 			status = pull
 				? this->connection->pull(conn)
 				: this->connection->push(conn);

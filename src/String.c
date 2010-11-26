@@ -1,11 +1,7 @@
 #import "String.h"
-#import "Exception.h"
 
-static ExceptionManager *exc;
-
-void String0(void *e) {
-	exc = e;
-}
+#undef self
+#define self String
 
 inline String HeapString(size_t len) {
 	return (String) {
@@ -29,7 +25,7 @@ inline String BufString(char *buf, size_t len) {
 
 void String_Destroy(String *this) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	this->len  = 0;
@@ -67,7 +63,7 @@ inline String String_Disown(String s) {
 
 void String_Resize(String *this, size_t length) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	if (length > 0) {
@@ -113,7 +109,7 @@ void String_Align(String *this, size_t length) {
 
 overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	size_t srcRight;
@@ -131,7 +127,7 @@ overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t s
 	if ((size_t) srcOffset > srcRight
 	 || (size_t) srcOffset > src.len
 	 || srcRight           > src.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	String_Align(this, this->len + srcRight - srcOffset);
@@ -151,7 +147,7 @@ inline overload void String_Copy(String *this, String src, ssize_t srcOffset) {
 
 overload void String_Copy(String *this, String src) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	if (src.len > 0) {
@@ -195,7 +191,7 @@ char String_CharAt(String s, ssize_t offset) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	return s.buf[offset];
@@ -218,7 +214,7 @@ overload String String_Slice(String s, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > s.len
 	 || right           > s.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	out.len     = right - offset;
@@ -239,7 +235,7 @@ inline overload String String_Slice(String s, ssize_t offset) {
 
 overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	size_t right;
@@ -257,7 +253,7 @@ overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > this->len
 	 || right           > this->len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	if (offset > 0) {
@@ -287,7 +283,7 @@ inline overload void String_Crop(String *this, ssize_t offset) {
 
 void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	size_t from;
@@ -301,7 +297,7 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > from
 	 || (size_t) offset > this->len
 	 || from            > this->len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	Memory_Move(
@@ -432,7 +428,7 @@ inline bool String_EndsWith(String s, String needle) {
 
 void String_ToLower(String *this) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -442,7 +438,7 @@ void String_ToLower(String *this) {
 
 void String_ToUpper(String *this) {
 	if (!this->mutable) {
-		throw(exc, excNotMutable);
+		throw(excNotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -512,7 +508,7 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, char c) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	for (ssize_t i = offset; i >= 0; i--) {
@@ -538,7 +534,7 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	size_t cnt = 0;
@@ -580,7 +576,7 @@ overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String ne
 
 	if ((size_t) offset > s.len
 	 || (size_t) right  > s.len) {
-		throw(exc, excBufferOverflow);
+		throw(excBufferOverflow);
 	}
 
 	size_t cnt = 0;

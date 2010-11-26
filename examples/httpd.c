@@ -24,8 +24,6 @@
 #import <ConnectionInterface.h>
 #import <GenericClientListener.h>
 
-ExceptionManager exc;
-
 // -------
 // Request
 // -------
@@ -277,7 +275,7 @@ ConnectionInterface Impl(HttpConnection) = {
 // ----
 
 bool startServer(Server *server, GenericClientListener *listener) {
-	try (&exc) {
+	try {
 		Server_Init(server, 8080, &GenericClientListenerImpl, listener);
 		String_Print(String("Server started.\n"));
 		excReturn true;
@@ -292,19 +290,7 @@ bool startServer(Server *server, GenericClientListener *listener) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	Poll0(&exc);
-	String0(&exc);
-	Socket0(&exc);
-	Memory0(&exc);
-	Signal0(&exc);
-	Server0(&exc);
-	HTTP_Query0(&exc);
-	HTTP_Header0(&exc);
-	HTTP_Server0(&exc);
-	SocketConnection0(&exc);
-	GenericClientListener0(&exc);
+	Signal0();
 
 	GenericClientListener listener;
 	GenericClientListener_Init(&listener, &HttpConnectionImpl);
@@ -315,17 +301,17 @@ int main(void) {
 		return ExitStatus_Failure;
 	}
 
-	try (&exc) {
+	try {
 		while (true) {
 			Server_Process(&server);
 		}
 	} clean catch(Signal, excSigInt) {
 		String_Print(String("Server shutdown.\n"));
 	} catchAny {
-		ExceptionManager_Print(&exc, e);
+		Exception_Print(e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(exc.e.trace, exc.e.traceItems);
+		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
 #endif
 
 		excReturn ExitStatus_Failure;

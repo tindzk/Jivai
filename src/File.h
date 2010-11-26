@@ -36,8 +36,6 @@ extern self* ref(StdIn);
 extern self* ref(StdOut);
 extern self* ref(StdErr);
 
-void File0(ExceptionManager *e);
-
 def(void, Open, String path, int mode);
 def(void, Close);
 def(void, SetXattr, String name, String value);

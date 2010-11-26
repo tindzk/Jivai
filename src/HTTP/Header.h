@@ -37,8 +37,6 @@ class(self) {
 	ref(Events) events;
 };
 
-void HTTP_Header0(ExceptionManager *e);
-
 def(void, Init, ref(Events) events);
 def(void, ParseMethod, String s);
 def(void, ParseVersion, String s);

@@ -1,8 +1,6 @@
 #import <Terminal/InputLine.h>
 #import <App.h>
 
-ExceptionManager exc;
-
 #undef self
 #define self App
 
@@ -32,11 +30,6 @@ def(bool, OnKeyPress, String ch) {
 #undef self
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-	Terminal_InputLine0(&exc);
-
 	Terminal term;
 	Terminal_Init(&term, File_StdIn, File_StdOut, true);
 	Terminal_Configure(&term, false, false);
@@ -52,15 +45,15 @@ int main(void) {
 
 	int res = ExitStatus_Success;
 
-	try (&exc) {
+	try {
 		while (!app.interrupt) {
 			Terminal_InputLine_Process(&line);
 		}
 	} clean catchAny {
-		ExceptionManager_Print(&exc, e);
+		Exception_Print(e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(exc.e.trace, exc.e.traceItems);
+		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
 #endif
 
 		res = ExitStatus_Failure;

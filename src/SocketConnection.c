@@ -1,12 +1,6 @@
 #import "SocketConnection.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void SocketConnection0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Flush) {
 	if (this->corking) {
 		int state = 0;
@@ -25,15 +19,15 @@ def(ssize_t, Read, void *buf, size_t len) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
-			throw(exc, excConnectionReset);
+			throw(excConnectionReset);
 		} else if (errno == ECONNREFUSED) {
-			throw(exc, excConnectionRefused);
+			throw(excConnectionRefused);
 		} else if (errno == ENOTCONN) {
-			throw(exc, excNotConnected);
+			throw(excNotConnected);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 
@@ -45,7 +39,7 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus,
 			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)
 		{
-			throw(exc, excFcntlFailed);
+			throw(excFcntlFailed);
 		}
 	}
 
@@ -65,11 +59,11 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 			if (errno == EAGAIN) {
 				return false;
 			} else if (errno == EBADF) {
-				throw(exc, excInvalidFileDescriptor);
+				throw(excInvalidFileDescriptor);
 			} else if (errno == EINVAL) {
-				throw(exc, excFileDescriptorUnusable);
+				throw(excFileDescriptorUnusable);
 			} else {
-				throw(exc, excUnknownError);
+				throw(excUnknownError);
 			}
 		} else if (res == 0) {
 			break;
@@ -80,7 +74,7 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 
 	if (this->nonblocking) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus, FileStatus_ReadWrite) == -1) {
-			throw(exc, excFcntlFailed);
+			throw(excFcntlFailed);
 		}
 	}
 
@@ -106,13 +100,13 @@ def(ssize_t, Write, void *buf, size_t len) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
-			throw(exc, excConnectionReset);
+			throw(excConnectionReset);
 		} else if (errno == EPIPE || errno == ENOTCONN) {
-			throw(exc, excNotConnected);
+			throw(excNotConnected);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 

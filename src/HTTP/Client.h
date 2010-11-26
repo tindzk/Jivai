@@ -92,8 +92,6 @@ class(self) {
 	bool inChunk;
 };
 
-void HTTP_Client0(ExceptionManager *e);
-
 overload def(void, Init);
 overload def(void, Init, String host);
 overload def(void, Init, String host, short port);

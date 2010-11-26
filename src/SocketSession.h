@@ -42,8 +42,6 @@ class(self) {
 	} op;
 };
 
-void SocketSession0(ExceptionManager *e);
-
 def(void, Init, SocketConnection *conn);
 def(void, Write, String s, ref(OnDone) onDone);
 def(void, SendFile, File file, size_t length, ref(OnDone) onDone);

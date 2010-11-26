@@ -2,8 +2,6 @@
 #import <FileStream.h>
 #import <BufferedStream.h>
 
-ExceptionManager exc;
-
 void PrintTree(YAML_Node *node, int depth) {
 	if (node->type == YAML_NodeType_Section
 	 || node->type == YAML_NodeType_Item) {
@@ -36,13 +34,6 @@ void PrintTree(YAML_Node *node, int depth) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	File0(&exc);
-	YAML0(&exc);
-	String0(&exc);
-	Memory0(&exc);
-
 	YAML yml;
 	File file;
 	BufferedStream stream;

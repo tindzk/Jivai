@@ -8,12 +8,6 @@ set(ref(State)) {
 	ref(State_Depth)
 };
 
-static ExceptionManager *exc;
-
-void YAML0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, size_t depthWidth, StreamInterface *stream, void *context) {
 	this->depthWidth = depthWidth;
 
@@ -69,7 +63,7 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 	} else if (depth < this->depth) {
 		while (this->depth - depth > 0) {
 			if (this->node->parent == NULL) {
-				throw(exc, excIllegalNesting);
+				throw(excIllegalNesting);
 			}
 
 			if (this->node->type == ref(NodeType_Node)) {
@@ -80,7 +74,7 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 		}
 
 		if (this->node->parent == NULL) {
-			throw(exc, excIllegalNesting);
+			throw(excIllegalNesting);
 		}
 
 		if (this->node->parent != NULL) {

@@ -2,8 +2,6 @@
 #import <BufferedStream.h>
 #import <HTML/Tokenizer.h>
 
-ExceptionManager exc;
-
 static size_t depth = 0;
 
 void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
@@ -43,16 +41,10 @@ void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	File0(&exc);
-	String0(&exc);
-	Memory0(&exc);
-
 	File file;
 	BufferedStream stream;
 
-	try (&exc) {
+	try {
 		FileStream_Open(&file, String("HTMLTokenizer.html"), FileStatus_ReadOnly);
 	} clean catch (File, excNotFound) {
 		String_Print(String("File not found.\n"));

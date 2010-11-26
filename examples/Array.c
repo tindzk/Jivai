@@ -2,8 +2,6 @@
 #import <String.h>
 #import <Integer.h>
 
-ExceptionManager exc;
-
 typedef struct {
 	String field1;
 	String field2;
@@ -12,10 +10,6 @@ typedef struct {
 Array_Define(Item, ItemArray);
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-
 	/* Initialize an array allocating memory for 5 elements. You
 	 * can add more than 5 elements, but this involves resizing
 	 * the array (which is done automatically).

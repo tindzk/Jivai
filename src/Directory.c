@@ -1,19 +1,13 @@
 #import "Directory.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void Directory0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, String path) {
 	this->fd = Kernel_open(path,
 		FileStatus_Directory |
 		FileStatus_ReadOnly, 0);
 
 	if (this->fd == -1) {
-		throw(exc, excCannotOpenDirectory);
+		throw(excCannotOpenDirectory);
 	}
 
 	this->bpos = 0;
@@ -29,7 +23,7 @@ def(bool, Read, ref(Entry) *res) {
 		this->bpos  = 0;
 
 		if (this->nread == -1) {
-			throw(exc, excReadingFailed);
+			throw(excReadingFailed);
 		}
 
 		if (this->nread == 0) {

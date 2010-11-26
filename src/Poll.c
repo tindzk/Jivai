@@ -1,22 +1,16 @@
 #import "Poll.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void Poll0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, ref(OnEvent) onEvent) {
 	if ((this->fd = Kernel_epoll_create(ref(NumEvents))) == -1) {
-		throw(exc, excUnknownError);
+		throw(excUnknownError);
 	}
 
 	if (Kernel_fcntl(this->fd,
 		FcntlMode_GetDescriptorFlags,
 		FileDescriptorFlags_CloseOnExec) == -1)
 	{
-		throw(exc, excSettingCloexecFailed);
+		throw(excSettingCloexecFailed);
 	}
 
 	this->onEvent = onEvent;
@@ -36,13 +30,13 @@ def(void, AddEvent, GenericInstance inst, ssize_t fd, int events) {
 
 	if (!Kernel_epoll_ctl(this->fd, EpollCtl_Add, fd, &ev)) {
 		if (errno == EPERM) {
-			throw(exc, excFileDescriptorNotSupported);
+			throw(excFileDescriptorNotSupported);
 		} else if (errno == EEXIST) {
-			throw(exc, excFileDescriptorAlreadyAdded);
+			throw(excFileDescriptorAlreadyAdded);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 }
@@ -57,13 +51,13 @@ def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
 
 	if (!Kernel_epoll_ctl(this->fd, EpollCtl_Modify, fd, &ev)) {
 		if (errno == ENOENT) {
-			throw(exc, excUnknownFileDescriptor);
+			throw(excUnknownFileDescriptor);
 		} else if (errno == EPERM) {
-			throw(exc, excFileDescriptorNotSupported);
+			throw(excFileDescriptorNotSupported);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 }
@@ -73,13 +67,13 @@ def(void, DeleteEvent, int fd) {
 
 	if (Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {
 		if (errno == ENOENT) {
-			throw(exc, excUnknownFileDescriptor);
+			throw(excUnknownFileDescriptor);
 		} else if (errno == EPERM) {
-			throw(exc, excFileDescriptorNotSupported);
+			throw(excFileDescriptorNotSupported);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 }
@@ -91,9 +85,9 @@ def(size_t, Process, int timeout) {
 
 	if ((nfds = Kernel_epoll_wait(this->fd, this->events, ref(NumEvents), timeout)) == -1) {
 		if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excUnknownError);
+			throw(excUnknownError);
 		}
 	}
 

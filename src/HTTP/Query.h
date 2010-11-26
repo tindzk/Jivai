@@ -15,8 +15,6 @@ class(self) {
 	bool autoResize;
 };
 
-void HTTP_Query0(ExceptionManager *e);
-
 def(void, Init, HTTP_OnParameter onParameter);
 def(void, SetAutoResize, bool value);
 sdef(size_t, GetAbsoluteLength, String s);

@@ -1,12 +1,6 @@
 #import "Typography.h"
 #import <App.h>
 
-static ExceptionManager *exc;
-
-void Typography0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 }
@@ -143,7 +137,7 @@ static def(void, Read, size_t st) {
 					call(Flush, &value);
 
 					if (this->node->parent == NULL) {
-						throw(exc, excIllegalNesting);
+						throw(excIllegalNesting);
 					}
 
 					this->node = this->node->parent;

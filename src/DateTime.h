@@ -15,8 +15,6 @@ enum {
 	excYearLower1970 = excOffset
 };
 
-void DateTime0(ExceptionManager *e);
-
 sdef(self, Empty);
 sdef(self, GetUnixEpoch);
 sdef(short, Compare, self a, self b);

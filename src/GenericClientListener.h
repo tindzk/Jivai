@@ -12,8 +12,6 @@ class(self) {
 	ConnectionInterface *connection;
 };
 
-void GenericClientListener0(ExceptionManager *e);
-
 def(void, Init, ConnectionInterface *conn);
 def(void, OnInit);
 def(void, OnDestroy);

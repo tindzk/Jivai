@@ -5,6 +5,9 @@
 #import "String.h"
 #import "Runtime.h"
 
+#undef self
+#define self Exception
+
 #ifndef Exception_SaveOrigin
 #define Exception_SaveOrigin 1
 #endif
@@ -13,19 +16,15 @@
 #define Exception_SaveTrace 0
 #endif
 
-#ifndef Exception_Safety
-#define Exception_Safety 0
-#endif
-
 #ifndef Exception_TraceSize
 #define Exception_TraceSize 15
 #endif
 
 /* This structure contains more detailed information about the most
  * recently thrown exception. The exception itself is only supplied
- * in a numerical code via longjmp(). See ExceptionManager_Raise().
+ * in a numerical code via longjmp(). See Exception_Raise().
  */
-typedef struct {
+record(ref(Record)) {
 #if Exception_SaveOrigin
 	String func;
 #endif
@@ -36,27 +35,26 @@ typedef struct {
 	void *trace[Exception_TraceSize];
 	size_t traceItems;
 #endif
-} Exception;
+};
 
-#undef self
-#define self ExceptionManager
-
-record(ref(Record)) {
-	struct ref(Record) *prev; /* Linked list. */
+record(ref(Buffer)) {
+	struct ref(Buffer) *prev; /* Linked list. */
 	jmp_buf jmpBuffer;
 };
 
-class(self) {
-	ExceptionManager_Record *cur;
-	Exception e;
+class(ExceptionManager) {
+	ref(Buffer) *cur;
+	ref(Record) e;
 };
 
-def(void, Init);
-def(void, Raise, size_t code);
-def(void, Push, ref(Record) *_record);
-def(void, Pop);
-def(Exception *, GetMeta);
-def(void, Print, size_t code);
+ExceptionManager __exc_mgr;
+
+sdef(void, Init);
+sdef(void, Raise, size_t code);
+sdef(void, Push, ref(Buffer) *buf);
+sdef(void, Pop);
+sdef(ref(Record) *, GetMeta);
+sdef(void, Print, size_t code);
 
 #if Exception_SaveOrigin
 #define Exception_SetOrigin(e) \
@@ -81,60 +79,40 @@ def(void, Print, size_t code);
 #define Exception_SetCode(e, c) \
 	(e).scode = String(#c)
 
-#if Exception_Safety
-#define ExceptionManager_Check(this)                        \
-	do {                                                    \
-		if ((this) == NULL) {                               \
-			String_Print(String(                            \
-				"The exception manager in "));              \
-			String_Print(String(__FILE__));                 \
-			String_Print(String(" is not initialized!\n")); \
-			Runtime_Exit(ExitStatus_Failure);               \
-		}                                                   \
-	} while(0)
-#else
-#define ExceptionManager_Check(...) \
-	do { } while (0)
-#endif
+#define Exception_SetException(c)      \
+	Exception_SetTrace(__exc_mgr.e);   \
+	Exception_SetOrigin(__exc_mgr.e);  \
+	Exception_SetCode(__exc_mgr.e, c);
 
-#define ExceptionManager_SetException(this, c) \
-	Exception_SetTrace((this)->e);             \
-	Exception_SetOrigin((this)->e);            \
-	Exception_SetCode((this)->e, c);
-
-#define throw(this, e)                               \
-	do {                                             \
-		ExceptionManager_Check(this);                \
-		ExceptionManager_SetException(this, e);      \
-		ExceptionManager_Raise(this, CurModule + e); \
+#define throw(e)                        \
+	do {                                \
+		Exception_SetException(e);      \
+		Exception_Raise(CurModule + e); \
 	} while(0)
 
-#define try(this)                              \
+#define try                                    \
 {                                              \
-	ExceptionManager_Check(this);              \
-	ExceptionManager *__exc_mgr = this;        \
-	                                           \
 	__label__ __exc_finally;                   \
 	bool __exc_rethrow = false;                \
 	bool __exc_ignore_finally = false;         \
 	void *__exc_return_ptr = && __exc_done;    \
 	                                           \
-	ExceptionManager_Record __exc_record;      \
-	ExceptionManager_Push(__exc_mgr,           \
-		&__exc_record);                        \
+	Exception_Buffer __exc_buffer;             \
+	Exception_Push(&__exc_buffer);             \
 	                                           \
-	size_t e = setjmp(__exc_record.jmpBuffer); \
-	if (e == 0) {                              \
+	size_t e = setjmp(__exc_buffer.jmpBuffer); \
+	if (e == 0) {
 
-#define clean                            \
-		ExceptionManager_Pop(__exc_mgr); \
-	} else if (ExceptionManager_Pop(__exc_mgr), false) { }
+#define clean                              \
+		Exception_Pop();                   \
+	} else if (Exception_Pop(), false) { }
 
 #define catch(module, code) \
 	else if (e == Modules_##module + code)
 
-#define catchModule(module) \
-	else if (e >= Modules_##module && e < Modules_##module + Manifest_GapSize)
+#define catchModule(module)                            \
+	else if (e >= Modules_##module &&                  \
+			 e <  Modules_##module + Manifest_GapSize)
 
 #define catchAny \
 	else if (true)
@@ -146,13 +124,13 @@ def(void, Print, size_t code);
 	__exc_finally:               \
 	if (!__exc_ignore_finally) {
 
-#define tryEnd                                    \
-		if (__exc_rethrow) {                      \
-			ExceptionManager_Raise(__exc_mgr, e); \
-		}                                         \
-		goto *__exc_return_ptr;                   \
-	}                                             \
-	__exc_done: if (1) { }                        \
+#define tryEnd                  \
+		if (__exc_rethrow) {    \
+			Exception_Raise(e); \
+		}                       \
+		goto *__exc_return_ptr; \
+	}                           \
+	__exc_done: if (1) { }      \
 } do { } while(0)
 
 /* Use the current line number for a unique label. */
@@ -182,8 +160,8 @@ def(void, Print, size_t code);
 	__exc_goto_finally \
 	goto
 
-#define excThrow(this, code)                   \
-	e = CurModule + code;                      \
-	ExceptionManager_SetException(this, code); \
-	__exc_rethrow = true;                      \
+#define excThrow(code)            \
+	e = CurModule + code;         \
+	Exception_SetException(code); \
+	__exc_rethrow = true;         \
 	goto __exc_finally

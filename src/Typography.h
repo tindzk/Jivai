@@ -46,7 +46,6 @@ class(self) {
 
 ExtendClass(self);
 
-void Typography0(ExceptionManager *e);
 def(void, Init);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);

@@ -35,8 +35,6 @@ class(self) {
 	size_t depth;
 };
 
-void HTML_Tree0(ExceptionManager *e);
-
 def(void, Init);
 def(void, Destroy);
 sdef(void, DestroyNode, ref(Node) *node);

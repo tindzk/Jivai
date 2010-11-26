@@ -1,11 +1,5 @@
 #import "Integer.h"
 
-static ExceptionManager *exc;
-
-void Integer0(ExceptionManager *e) {
-	exc = e;
-}
-
 #define DefineParseString(type, name)                 \
 	type name(String s) {                             \
 		type res = 0;                                 \
@@ -19,14 +13,14 @@ void Integer0(ExceptionManager *e) {
 				digit *= 10;                          \
 			}                                         \
 			if (res + digit > MaxValue(type)) {       \
-				throw(exc, excNumberTooBig);          \
+				throw(excNumberTooBig);               \
 			}                                         \
 			res += digit;                             \
 			c++;                                      \
 		}                                             \
 		if (s.len > 0 && s.buf[0] == '-') {           \
 			if (!isSigned(type)) {                    \
-				throw(exc, excUnsignedType);          \
+				throw(excUnsignedType);               \
 			}                                         \
 			res *= -1;                                \
 		}                                             \

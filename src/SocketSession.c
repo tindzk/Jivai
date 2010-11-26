@@ -1,12 +1,6 @@
 #import "SocketSession.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void SocketSession0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, SocketConnection *conn) {
 	this->conn    = conn;
 	this->op.type = ref(OperationType_Idle);
@@ -14,7 +8,7 @@ def(void, Init, SocketConnection *conn) {
 
 def(void, Write, String s, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
-		throw(exc, excNotIdle);
+		throw(excNotIdle);
 	}
 
 	if (s.len == 0) {
@@ -33,7 +27,7 @@ def(void, Write, String s, ref(OnDone) onDone) {
 
 def(void, SendFile, File file, size_t length, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
-		throw(exc, excNotIdle);
+		throw(excNotIdle);
 	}
 
 	this->op.type = ref(OperationType_File);

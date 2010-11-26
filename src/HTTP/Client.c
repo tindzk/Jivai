@@ -6,12 +6,6 @@
 #undef HTTP_Client_Request
 #undef HTTP_Client_Read
 
-static ExceptionManager *exc;
-
-void HTTP_Client0(ExceptionManager *e) {
-	exc = e;
-}
-
 overload def(void, Init) {
 	this->closed = true;
 
@@ -174,7 +168,7 @@ overload def(void, Request, ref(HostPaths) *items) {
 		String_Destroy(&tmp);
 	}
 
-	try (exc) {
+	try {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
 	} clean finally {
 		String_Destroy(&s);
@@ -192,7 +186,7 @@ overload def(void, Request, StringArray paths) {
 		String_Destroy(&tmp);
 	}
 
-	try (exc) {
+	try {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
 	} clean finally {
 		String_Destroy(&s);
@@ -204,7 +198,7 @@ overload def(void, Request, String host, String path) {
 
 	String request = call(GetRequest, host, path);
 
-	try (exc) {
+	try {
 		SocketConnection_Write(&this->conn, request.buf, request.len);
 	} clean finally {
 		String_Destroy(&request);
@@ -219,13 +213,13 @@ sdef(s64, ParseChunk, String *s) {
 	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
-		throw(exc, excMalformedChunk);
+		throw(excMalformedChunk);
 	}
 
 	s64 len = Hex_ToInteger(String_Slice(*s, 0, pos));
 
 	if (len == -1) {
-		throw(exc, excMalformedChunk);
+		throw(excMalformedChunk);
 	}
 
 	String_Crop(s, pos + 2);
@@ -253,7 +247,7 @@ def(HTTP_Status, FetchResponse) {
 	this->keepAlive = false;
 	this->resp.len  = 0;
 
-	try (exc) {
+	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
 			this->resp.size - this->resp.len);
@@ -263,7 +257,7 @@ def(HTTP_Status, FetchResponse) {
 		 * For now this module only supports blocking connections.
 		 */
 		if (len == -1) {
-			throw(exc, excConnectionError);
+			throw(excConnectionError);
 		}
 
 		this->resp.len += len;
@@ -275,7 +269,7 @@ def(HTTP_Status, FetchResponse) {
 			this->resp.len = 0;
 			this->closed   = true;
 
-			throw(exc, excResponseMalformed);
+			throw(excResponseMalformed);
 		} else if (requestOffset > 0) { /* The response is complete. */
 			HTTP_Header_Events events;
 			events.onVersion = (HTTP_OnVersion) Callback(this, ref(OnVersion));
@@ -300,7 +294,7 @@ def(HTTP_Status, FetchResponse) {
 					this->resp.size);
 
 				if (len == -1) {
-					throw(exc, excConnectionError);
+					throw(excConnectionError);
 				}
 
 				this->resp.len = len;
@@ -313,12 +307,12 @@ def(HTTP_Status, FetchResponse) {
 				 * responses.
 				 */
 
-				throw(exc, excBufferTooSmall);
+				throw(excBufferTooSmall);
 			}
 		}
 	} clean catch(SocketConnection, excConnectionReset) {
 		this->closed = true;
-		excThrow(exc, excConnectionReset);
+		excThrow(excConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -337,19 +331,19 @@ def(HTTP_Status, FetchResponse) {
 }
 
 static inline def(void, InternalRead) {
-	try (exc) {
+	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf  + this->resp.len,
 			this->resp.size - this->resp.len);
 
 		if (len == -1) {
-			throw(exc, excConnectionError);
+			throw(excConnectionError);
 		}
 
 		this->resp.len += len;
 	} clean catch(SocketConnection, excConnectionReset) {
 		this->closed = true;
-		excThrow(exc, excConnectionReset);
+		excThrow(excConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -428,7 +422,7 @@ overload def(bool, Read, String *res) {
 					goto retry;
 				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
 					/* Chunk does not end on CRLF. */
-					throw(exc, excMalformedChunk);
+					throw(excMalformedChunk);
 				} else {
 					/* Don't set this->total and this->read to 0 because
 					 * this will cause the next Read() call to
@@ -500,7 +494,7 @@ overload def(bool, Read, String *res) {
 
 		ssize_t read = 0;
 
-		try (exc) {
+		try {
 			if (this->chunked) {
 				/* Use the full available space. */
 				size_t length = res->size - res->len;
@@ -519,7 +513,7 @@ overload def(bool, Read, String *res) {
 			}
 
 			if (read == -1) {
-				throw(exc, excConnectionError);
+				throw(excConnectionError);
 			}
 
 			res->len   += read;
@@ -536,7 +530,7 @@ overload def(bool, Read, String *res) {
 
 				excBreak;
 			} else {
-				excThrow(exc, excConnectionReset);
+				excThrow(excConnectionReset);
 			}
 		} finally {
 

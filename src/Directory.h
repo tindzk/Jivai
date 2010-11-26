@@ -46,8 +46,6 @@ record(ref(Entry)) {
 	String name;
 };
 
-void Directory0(ExceptionManager *e);
-
 def(void, Init, String path);
 def(void, Destroy);
 def(bool, Read, ref(Entry) *res);

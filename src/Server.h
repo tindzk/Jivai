@@ -21,8 +21,6 @@ class(self) {
 	ClientListenerInterface *listener;
 };
 
-void Server0(ExceptionManager *e);
-
 def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context);
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);

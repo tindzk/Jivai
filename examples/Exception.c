@@ -1,8 +1,6 @@
 #import <String.h>
 #import <Exception.h>
 
-ExceptionManager exc;
-
 #undef self
 #define self Example
 
@@ -11,7 +9,7 @@ enum {
 };
 
 void func3(void) {
-	throw(&exc, excCustomException);
+	throw(excCustomException);
 }
 
 void func2(void) {
@@ -23,18 +21,13 @@ void func1(void) {
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-	Memory0(&exc);
-
-	try (&exc) {
+	try {
 		func1();
 	} clean catch(Example, excCustomException) {
 		String_Print(String("CustomException caught.\n"));
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(exc.e.trace, exc.e.traceItems);
+		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
 #endif
 	} finally {
 		String_Print(String("finally block.\n"));

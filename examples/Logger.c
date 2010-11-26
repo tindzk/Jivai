@@ -5,8 +5,6 @@
 #undef Logger_DisabledLevels
 #define Logger_DisabledLevels Logger_Level_Debug
 
-ExceptionManager exc;
-
 void onLogMessage(__unused void *ptr, String msg, Logger_Level level, String file, int line) {
 	String slevel = Logger_ResolveLevel(level);
 	String sline  = Int32_ToString(line);
@@ -20,10 +18,6 @@ void onLogMessage(__unused void *ptr, String msg, Logger_Level level, String fil
 }
 
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-
 	Logger logger;
 
 	/* Log everything. */

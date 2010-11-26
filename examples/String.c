@@ -1,13 +1,6 @@
 #import <String.h>
 
-ExceptionManager exc;
-
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	String0(&exc);
-	Memory0(&exc);
-
 	/* Define a string on the stack, i.e. there is no need to
 	 * call String_Destroy() afterwards (although it is allowed).
 	 *

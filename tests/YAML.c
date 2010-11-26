@@ -5,8 +5,6 @@
 #import "TestSuite.h"
 #import "App.h"
 
-extern ExceptionManager exc;
-
 #undef self
 #define self tsYAML
 
@@ -15,11 +13,6 @@ class(self) {
 };
 
 tsRegister("YAML") {
-	File0(&exc);
-	YAML0(&exc);
-	String0(&exc);
-	Memory0(&exc);
-
 	return true;
 }
 

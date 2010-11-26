@@ -1,8 +1,6 @@
 #import "TestSuite.h"
 #import "App.h"
 
-extern ExceptionManager exc;
-
 enum {
 	excCustomException = excOffset
 };
@@ -33,13 +31,13 @@ def(void, Reset) {
 }
 
 def(void, ThrowExc) {
-	throw(&exc, excCustomException);
+	throw(excCustomException);
 }
 
 def(void, Start) {
 	call(Reset);
 
-	try (&exc) {
+	try {
 		this->cntTry++;
 		call(ThrowExc);
 		this->cntTry++; /* Must be ignored. */
@@ -54,7 +52,7 @@ tsCase(Acute, "Finally block with an exception thrown") {
 	/* Just ignore all exceptions. Otherwise the application would
 	 * crash without verifying the test case.
 	 */
-	try (&exc) {
+	try {
 		call(Start);
 		this->cntTry++; /* Must be ignored. */
 	} clean catchAny {
@@ -70,7 +68,7 @@ tsCase(Acute, "Finally block with an exception thrown") {
 def(void, StartSecondTest) {
 	call(Reset);
 
-	try (&exc) {
+	try {
 		this->cntTry++;
 	} clean finally {
 		this->cntFinally++;
@@ -80,7 +78,7 @@ def(void, StartSecondTest) {
 }
 
 tsCase(Acute, "Finally block without an exception thrown") {
-	try (&exc) {
+	try {
 		call(StartSecondTest);
 	} clean catchAny {
 	} finally {
@@ -99,7 +97,7 @@ tsCase(Acute, "Empty exception block") {
 	 * in any errors when run in Valgrind.
 	 */
 
-	try (&exc) {
+	try {
 	} clean finally {
 	} tryEnd;
 }

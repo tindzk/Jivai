@@ -1,12 +1,6 @@
 #import "InputLine.h"
 #import "../App.h"
 
-static ExceptionManager *exc;
-
-void Terminal_InputLine0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, Terminal *term) {
 	this->term = term;
 
@@ -228,7 +222,7 @@ def(void, Process) {
 				this->line.len = 0;
 				this->pos      = 0;
 
-				throw(exc, excCommandExceedsAllowedLength);
+				throw(excCommandExceedsAllowedLength);
 			}
 		}
 	}

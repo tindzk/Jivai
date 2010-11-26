@@ -1,12 +1,6 @@
 #import <Terminal/Prompt.h>
 
-ExceptionManager exc;
-
 int main(void) {
-	ExceptionManager_Init(&exc);
-
-	Terminal0(&exc);
-
 	Terminal term;
 	Terminal_Init(&term, File_StdIn, File_StdOut, true);
 	Terminal_Configure(&term, false, false);

@@ -133,8 +133,6 @@ class(self) {
 #define CTRLKEY(x) \
 	((x) - 96)
 
-void Terminal0(ExceptionManager *e);
-
 def(void, Init, File *in, File *out, bool assumeVT100);
 def(void, Configure, bool echo, bool signal);
 def(void, Destroy);

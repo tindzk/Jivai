@@ -26,12 +26,6 @@
  * This file is based upon vmchecker/testing/pa/tracker.c by Claudiu Gheorghe.
  */
 
-static ExceptionManager *exc;
-
-void Process0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, String cmd) {
 	this->cmd    = String_Clone(cmd);
 	this->params = StringArray_New(0);
@@ -89,7 +83,7 @@ overload def(int, Spawn, float *time) {
 				argv[i] = NULL;
 			}
 
-			throw(exc, excSpawningProcessFailed);
+			throw(excSpawningProcessFailed);
 		}
 
 		_exit(127);
@@ -113,7 +107,7 @@ overload def(int, Spawn, float *time) {
 			argv[i] = NULL;
 		}
 
-		throw(exc, excForkFailed);
+		throw(excForkFailed);
 	}
 
 	for (size_t i = 0; argv[i] != NULL; i++) {

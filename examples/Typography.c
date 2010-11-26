@@ -2,13 +2,10 @@
 
 #import <Path.h>
 #import <File.h>
-#import <Signal.h>
 #import <Integer.h>
 #import <Typography.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
-
-ExceptionManager exc;
 
 void PrintTree(Typography_Node *node, size_t depth) {
 	String_FmtPrint(String("depth=%"),
@@ -44,16 +41,6 @@ void PrintTree(Typography_Node *node, size_t depth) {
 }
 
 int main(__unused int argc, __unused char *argv[]) {
-	ExceptionManager_Init(&exc);
-
-	Path0(&exc);
-	File0(&exc);
-	Memory0(&exc);
-	String0(&exc);
-	Signal0(&exc);
-	Integer0(&exc);
-	Typography0(&exc);
-
 	Typography tyo;
 
 	File file;
@@ -66,18 +53,18 @@ int main(__unused int argc, __unused char *argv[]) {
 	BufferedStream_Init(&stream, &FileStreamImpl, &file);
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	try (&exc) {
-		Typography_Init(&tyo, &BufferedStreamImpl, &stream);
-		Typography_Parse(&tyo);
+	try {
+		Typography_Init(&tyo);
+		Typography_Parse(&tyo, &BufferedStreamImpl, &stream);
 
 		PrintTree(Typography_GetRoot(&tyo), 0);
 
 		Typography_Destroy(&tyo);
 	} clean catchAny {
-		ExceptionManager_Print(&exc, e);
+		Exception_Print(e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(e->trace, e->traceItems);
+		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
 #endif
 
 		excReturn ExitStatus_Failure;

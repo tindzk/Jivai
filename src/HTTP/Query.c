@@ -1,12 +1,6 @@
 #import "Query.h"
 #import "App.h"
 
-static ExceptionManager *exc;
-
-void HTTP_Query0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init, HTTP_OnParameter onParameter) {
 	this->onParameter = onParameter;
 	this->autoResize  = false;
@@ -129,7 +123,7 @@ def(void, Decode, String s, bool isFormUri) {
 					String_Resize(value, len);
 				} else {
 					String_Destroy(&name);
-					throw(exc, excExceedsPermittedLength);
+					throw(excExceedsPermittedLength);
 				}
 			}
 

@@ -47,8 +47,6 @@ class(self) {
 #define YAML_Item(node) \
 	((YAML_Item *) &(node)->data)
 
-void YAML0(ExceptionManager *e);
-
 def(void, Init, size_t depthWidth, StreamInterface *stream, void *context);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);

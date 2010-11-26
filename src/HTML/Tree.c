@@ -1,12 +1,6 @@
 #import "Tree.h"
 #import "../App.h"
 
-static ExceptionManager *exc;
-
-void HTML_Tree0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 
@@ -38,7 +32,7 @@ def(ref(Node) *, GetRoot) {
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
-			throw(exc, excIllegalNesting);
+			throw(excIllegalNesting);
 		}
 
 		this->node = this->node->parent;

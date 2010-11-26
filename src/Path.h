@@ -32,8 +32,6 @@ enum {
 	excSettingTimeFailed
 };
 
-void Path0(ExceptionManager *e);
-
 overload sdef(bool, Exists, String path, bool follow);
 overload sdef(bool, Exists, String path);
 sdef(String, GetCwd);

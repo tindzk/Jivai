@@ -23,26 +23,20 @@ self* ref(StdIn)  = &stdIn;
 self* ref(StdOut) = &stdOut;
 self* ref(StdErr) = &stdErr;
 
-static ExceptionManager *exc;
-
-void File0(ExceptionManager *e) {
-	exc = e;
-}
-
 def(void, Open, String path, int mode) {
 	errno = 0;
 
 	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
 		if (errno == EACCES) {
-			throw(exc, excAccessDenied);
+			throw(excAccessDenied);
 		} else if (errno == ENOENT) {
-			throw(exc, excNotFound);
+			throw(excNotFound);
 		} else if (errno == EISDIR) {
-			throw(exc, excIsDirectory);
+			throw(excIsDirectory);
 		} else if (errno == EEXIST) {
-			throw(exc, excAlreadyExists);
+			throw(excAlreadyExists);
 		} else {
-			throw(exc, excCannotOpenFile);
+			throw(excCannotOpenFile);
 		}
 	}
 
@@ -71,7 +65,7 @@ def(void, Close) {
 
 def(void, SetXattr, String name, String value) {
 	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
-		throw(exc, excSettingAttributeFailed);
+		throw(excSettingAttributeFailed);
 	}
 }
 
@@ -82,16 +76,16 @@ overload def(String, GetXattr, String name) {
 
 	if (size == -1) {
 		if (errno == ENODATA) {
-			throw(exc, excAttributeNonExistent);
+			throw(excAttributeNonExistent);
 		} else {
-			throw(exc, excGettingAttributeFailed);
+			throw(excGettingAttributeFailed);
 		}
 	}
 
 	String res = HeapString(size);
 
 	if (Kernel_fgetxattr(this->fd, name, res.buf, res.size) == -1) {
-		throw(exc, excGettingAttributeFailed);
+		throw(excGettingAttributeFailed);
 	}
 
 	res.len = res.size;
@@ -106,11 +100,11 @@ overload def(void, GetXattr, String name, String *value) {
 
 	if (size == -1) {
 		if (errno == ENODATA) {
-			throw(exc, excAttributeNonExistent);
+			throw(excAttributeNonExistent);
 		} else if (errno == ERANGE) {
-			throw(exc, excBufferTooSmall);
+			throw(excBufferTooSmall);
 		} else {
-			throw(exc, excGettingAttributeFailed);
+			throw(excGettingAttributeFailed);
 		}
 	}
 
@@ -122,13 +116,13 @@ overload def(void, Truncate, u64 length) {
 
 	if (!Kernel_ftruncate64(this->fd, length)) {
 		if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else if (errno == EACCES) {
-			throw(exc, excNotWritable);
+			throw(excNotWritable);
 		} else if (errno == EINVAL) {
-			throw(exc, excInvalidParameter);
+			throw(excInvalidParameter);
 		} else {
-			throw(exc, excTruncatingFailed);
+			throw(excTruncatingFailed);
 		}
 	}
 }
@@ -144,11 +138,11 @@ def(Stat64, GetStat) {
 
 	if (!Kernel_fstat64(this->fd, &attr)) {
 		if (errno == EACCES) {
-			throw(exc, excAccessDenied);
+			throw(excAccessDenied);
 		} else if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else {
-			throw(exc, excStatFailed);
+			throw(excStatFailed);
 		}
 	}
 
@@ -161,7 +155,7 @@ def(u64, GetSize) {
 
 overload def(size_t, Read, void *buf, size_t len) {
 	if (!this->readable) {
-		throw(exc, excNotReadable);
+		throw(excNotReadable);
 	}
 
 	errno = 0;
@@ -170,11 +164,11 @@ overload def(size_t, Read, void *buf, size_t len) {
 
 	if ((res = Kernel_read(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(exc, excReadingInterrupted);
+			throw(excReadingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(exc, excIsDirectory);
+			throw(excIsDirectory);
 		} else {
-			throw(exc, excReadingFailed);
+			throw(excReadingFailed);
 		}
 	}
 
@@ -187,7 +181,7 @@ inline overload def(void, Read, String *res) {
 
 overload def(size_t, Write, void *buf, size_t len) {
 	if (!this->writable) {
-		throw(exc, excNotWritable);
+		throw(excNotWritable);
 	}
 
 	errno = 0;
@@ -196,11 +190,11 @@ overload def(size_t, Write, void *buf, size_t len) {
 
 	if ((res = Kernel_write(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(exc, excWritingInterrupted);
+			throw(excWritingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(exc, excIsDirectory);
+			throw(excIsDirectory);
 		} else {
-			throw(exc, excWritingFailed);
+			throw(excWritingFailed);
 		}
 	}
 
@@ -213,7 +207,7 @@ overload def(size_t, Write, String s) {
 
 def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	if (!this->readable) {
-		throw(exc, excNotReadable);
+		throw(excNotReadable);
 	}
 
 	errno = 0;
@@ -222,11 +216,11 @@ def(u64, Seek, u64 offset, ref(SeekType) whence) {
 
 	if (!Kernel_llseek(this->fd, offset, &pos, whence)) {
 		if (errno == EBADF) {
-			throw(exc, excInvalidFileDescriptor);
+			throw(excInvalidFileDescriptor);
 		} else if (errno == EINVAL) {
-			throw(exc, excInvalidParameter);
+			throw(excInvalidParameter);
 		} else {
-			throw(exc, excSeekingFailed);
+			throw(excSeekingFailed);
 		}
 	}
 
