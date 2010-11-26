@@ -90,6 +90,10 @@ def(void, Continue) {
 	}
 }
 
+inline def(void, Flush) {
+	SocketConnection_Flush(this->conn);
+}
+
 inline def(bool, IsIdle) {
 	return this->op.type == ref(OperationType_Idle);
 }
