@@ -81,6 +81,8 @@ def(void, OnHeader, String name, String value) {
 		}
 
 		Array_Destroy(chunks);
+	} else if (String_Equals(name, String("keep-alive"))) {
+		this->headers.persistentConnection = true;
 	} else {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);
