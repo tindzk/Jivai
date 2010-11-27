@@ -1,5 +1,4 @@
 #import "TestSuite.h"
-#import "App.h"
 
 ExceptionManager exc;
 

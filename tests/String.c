@@ -1,7 +1,6 @@
 #import <String.h>
 
 #import "TestSuite.h"
-#import "App.h"
 
 #undef self
 #define self tsString

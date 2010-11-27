@@ -2,7 +2,6 @@
 #import <Integer.h>
 
 #import "TestSuite.h"
-#import "App.h"
 
 extern ExceptionManager exc;
 

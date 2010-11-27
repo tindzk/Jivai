@@ -3,7 +3,6 @@
 #import <Integer.h>
 
 #import "TestSuite.h"
-#import "App.h"
 
 #undef self
 #define self tsNumber

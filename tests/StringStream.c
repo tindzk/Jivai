@@ -2,7 +2,6 @@
 #import <StringStream.h>
 
 #import "TestSuite.h"
-#import "App.h"
 
 #undef self
 #define self tsStringStream
