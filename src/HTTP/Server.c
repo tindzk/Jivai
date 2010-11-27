@@ -159,13 +159,9 @@ def(ref(Result), ReadHeader) {
 			this->header.buf  + this->header.len,
 			this->header.size - this->header.len);
 
-		if (len == -1) {
+		if (len <= 0) {
 			/* This function will be called again when more data is available. */
 			return ref(Result_Incomplete);
-		}
-
-		if (len == 0) {
-			break;
 		}
 
 		this->header.len += len;
