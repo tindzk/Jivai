@@ -147,54 +147,54 @@ static overload inline short Integer_Compare(u64 a, u64 b) {
 
 #define Int8_ToString(num) ({           \
 	size_t len = Int8_CountDigits(num); \
-	String str = StackString(len);      \
-	Int8_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);     \
+	Int8_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define Int16_ToString(num) ({           \
 	size_t len = Int16_CountDigits(num); \
-	String str = StackString(len);       \
-	Int16_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);      \
+	Int16_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define Int32_ToString(num) ({           \
 	size_t len = Int32_CountDigits(num); \
-	String str = StackString(len);       \
-	Int32_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);      \
+	Int32_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define Int64_ToString(num) ({           \
 	size_t len = Int64_CountDigits(num); \
-	String str = StackString(len);       \
-	Int64_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);      \
+	Int64_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define UInt8_ToString(num) ({           \
 	size_t len = UInt8_CountDigits(num); \
-	String str = StackString(len);       \
-	UInt8_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);      \
+	UInt8_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define UInt16_ToString(num) ({           \
 	size_t len = UInt16_CountDigits(num); \
-	String str = StackString(len);        \
-	UInt16_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);       \
+	UInt16_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define UInt32_ToString(num) ({           \
 	size_t len = UInt32_CountDigits(num); \
-	String str = StackString(len);        \
-	UInt32_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);       \
+	UInt32_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define UInt64_ToString(num) ({           \
 	size_t len = UInt64_CountDigits(num); \
-	String str = StackString(len);        \
-	UInt64_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);       \
+	UInt64_ToStringBuf(num, &_str);       \
+	_str; })
 
 #define Integer_ToString(num) ({           \
 	size_t len = Integer_CountDigits(num); \
-	String str = StackString(len);         \
-	Integer_ToStringBuf(num, &str);        \
-	str; })
+	String _str = StackString(len);        \
+	Integer_ToStringBuf(num, &_str);       \
+	_str; })
