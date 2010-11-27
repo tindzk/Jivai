@@ -1,5 +1,4 @@
 #import "SocketConnectionStream.h"
-#import "App.h"
 
 def(bool, IsEof) {
 	return false;

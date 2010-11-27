@@ -1,5 +1,4 @@
 #import "Pattern.h"
-#import "App.h"
 
 /*
  * Copyright (c) 2004-2005 Sergey Lyubka <valenok@gmail.com>

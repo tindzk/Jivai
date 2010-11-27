@@ -1,5 +1,4 @@
 #import "String.h"
-#import "App.h"
 
 #undef self
 #define self String

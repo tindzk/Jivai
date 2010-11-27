@@ -1,5 +1,4 @@
 #import "Buffer.h"
-#import "../App.h"
 
 def(void, Init, Terminal *term, size_t spacing) {
 	this->term    = term;

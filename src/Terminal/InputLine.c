@@ -1,5 +1,4 @@
 #import "InputLine.h"
-#import "../App.h"
 
 def(void, Init, Terminal *term) {
 	this->term = term;

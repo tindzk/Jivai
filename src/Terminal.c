@@ -1,5 +1,4 @@
 #import "Terminal.h"
-#import "App.h"
 
 #undef Terminal_Print
 

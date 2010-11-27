@@ -1,5 +1,4 @@
 #import "Tree.h"
-#import "App.h"
 
 def(void, Init, ref(DestroyNode) destroyNode) {
 	this->destroyNode = destroyNode;

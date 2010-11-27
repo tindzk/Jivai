@@ -1,5 +1,4 @@
 #import "GenericClientListener.h"
-#import "App.h"
 
 def(void, Init, ConnectionInterface *conn) {
 	this->connection = conn;

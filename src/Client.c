@@ -1,5 +1,4 @@
 #import "Client.h"
-#import "App.h"
 
 def(void, Init) {
 	this->conn = NULL;

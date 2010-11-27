@@ -1,5 +1,4 @@
 #import "SocketSession.h"
-#import "App.h"
 
 def(void, Init, SocketConnection *conn) {
 	this->conn    = conn;

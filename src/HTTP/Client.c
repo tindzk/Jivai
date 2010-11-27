@@ -1,5 +1,4 @@
 #import "Client.h"
-#import "App.h"
 
 #undef HTTP_Client_Init
 #undef HTTP_Client_Open

@@ -1,5 +1,4 @@
 #import "Socket.h"
-#import "App.h"
 
 def(void, Init, ref(Protocol) protocol) {
 	this->fd       = -1;

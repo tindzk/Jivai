@@ -74,6 +74,8 @@
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
 
+#define this $this.object
+
 #define Constructor \
 	static void __constructor ctor(void)
 

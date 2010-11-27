@@ -1,5 +1,4 @@
 #import "Process.h"
-#import "App.h"
 
 /*
  * Copyright (C) 2008-2010 vmchecker authors and contributors.

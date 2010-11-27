@@ -1,5 +1,4 @@
 #import "Query.h"
-#import "App.h"
 
 def(void, Init, HTTP_OnParameter onParameter) {
 	this->onParameter = onParameter;

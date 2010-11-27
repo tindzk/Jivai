@@ -1,5 +1,4 @@
 #import "StringStream.h"
-#import "App.h"
 
 def(void, Init, String *s) {
 	this->str    = s;

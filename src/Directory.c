@@ -1,5 +1,4 @@
 #import "Directory.h"
-#import "App.h"
 
 def(void, Init, String path) {
 	this->fd = Kernel_open(path,

@@ -1,5 +1,4 @@
 #import "Header.h"
-#import "App.h"
 
 def(void, Init, ref(Events) events) {
 	this->events = events;

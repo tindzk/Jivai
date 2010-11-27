@@ -1,5 +1,4 @@
 #import "File.h"
-#import "App.h"
 
 static self stdIn = {
 	.fd       = FileNo_StdIn,

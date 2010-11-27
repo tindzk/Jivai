@@ -1,5 +1,4 @@
 #import "Logger.h"
-#import "App.h"
 
 def(void, Init, ref(Printer) printer, int levels) {
 	this->printer = printer;

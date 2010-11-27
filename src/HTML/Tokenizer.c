@@ -1,5 +1,4 @@
 #import "Tokenizer.h"
-#import "../App.h"
 
 def(void, Init, ref(OnToken) onToken) {
 	this->buf      = HeapString(100);

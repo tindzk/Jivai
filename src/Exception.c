@@ -1,5 +1,4 @@
 #import "Exception.h"
-#import "App.h"
 
 #undef self
 #define self Exception

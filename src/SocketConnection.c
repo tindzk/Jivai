@@ -1,5 +1,4 @@
 #import "SocketConnection.h"
-#import "App.h"
 
 def(void, Flush) {
 	if (this->corking) {

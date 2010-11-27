@@ -1,5 +1,4 @@
 #import "Poll.h"
-#import "App.h"
 
 def(void, Init, ref(OnEvent) onEvent) {
 	if ((this->fd = Kernel_epoll_create(ref(NumEvents))) == -1) {

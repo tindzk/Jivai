@@ -1,5 +1,4 @@
 #import "FileStream.h"
-#import "App.h"
 
 def(void, Open, String path, int mode) {
 	File_Open(this, path, mode);

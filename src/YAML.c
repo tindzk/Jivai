@@ -1,5 +1,4 @@
 #import "YAML.h"
-#import "App.h"
 
 set(ref(State)) {
 	ref(State_Comment),

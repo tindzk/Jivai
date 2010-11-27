@@ -1,5 +1,4 @@
 #import "Typography.h"
-#import <App.h>
 
 def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));

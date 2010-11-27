@@ -1,5 +1,4 @@
 #import "ProgressBar.h"
-#import "../App.h"
 
 #undef Terminal_ProgressBar_Init
 
