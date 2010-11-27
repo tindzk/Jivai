@@ -113,9 +113,6 @@
 	static inline bool tripleConcat(name, _, IsNull)(Instance(name) instance) {               \
 		return instance.object == NULL;                                                       \
 	}                                                                                         \
-	static inline bool tripleConcat(name, _, Equals)(Instance(name) a, Instance(name) b) {    \
-		return a.object == b.object;                                                          \
-	}                                                                                         \
 	static inline GenericInstance tripleConcat(name, _, ToGeneric)(Instance(name) instance) { \
 		return (GenericInstance) { .object = instance.object };                               \
 	}
@@ -132,16 +129,19 @@
 /* This cannot be included in class() as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass(name)                                                               \
-	static __unused alwaysInline Instance(name) tripleConcat(name, _, NewStack)(void) { \
-		name obj;                                                                       \
-		return (Instance(name)) &obj;                                                   \
-	}                                                                                   \
-	static inline Instance(name) tripleConcat(name, _, New)(void) {                     \
-		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                    \
-	}                                                                                   \
-	static inline void tripleConcat(name, _, Free)(Instance(name) instance) {           \
-		Memory_Free(instance.object);                                                   \
+#define ExtendClass(name)                                                                   \
+	static inline bool tripleConcat(name, _, Equals)(Instance(name) a, Instance(name) b) {  \
+		return a.object == b.object;                                                        \
+	}                                                                                       \
+	static __unused alwaysInline Instance(name) tripleConcat(name, _, NewStack)(void) {     \
+		name obj;                                                                           \
+		return (Instance(name)) &obj;                                                       \
+	}                                                                                       \
+	static inline Instance(name) tripleConcat(name, _, New)(void) {                         \
+		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                        \
+	}                                                                                       \
+	static inline void tripleConcat(name, _, Free)(Instance(name) instance) {               \
+		Memory_Free(instance.object);                                                       \
 	}
 
 #define SingletonPrototype(name) \
