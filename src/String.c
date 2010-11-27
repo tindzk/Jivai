@@ -1,10 +1,11 @@
 #import "String.h"
+#import "App.h"
 
 #undef self
 #define self String
 
-inline String HeapString(size_t len) {
-	return (String) {
+inline self HeapString(size_t len) {
+	return (self) {
 		.len  = 0,
 		.size = len,
 		.buf  = (len > 0)
@@ -14,8 +15,8 @@ inline String HeapString(size_t len) {
 	};
 }
 
-inline String BufString(char *buf, size_t len) {
-	return (String) {
+inline self BufString(char *buf, size_t len) {
+	return (self) {
 		.len     = len,
 		.size    = 0,
 		.buf     = buf,
@@ -23,7 +24,7 @@ inline String BufString(char *buf, size_t len) {
 	};
 }
 
-void String_Destroy(String *this) {
+def(void, Destroy) {
 	if (!this->mutable) {
 		throw(excNotMutable);
 	}
@@ -38,11 +39,11 @@ void String_Destroy(String *this) {
 	}
 }
 
-inline String String_FromNul(char *s) {
+inline sdef(self, FromNul, char *s) {
 	return BufString(s, strlen(s));
 }
 
-inline char* String_ToNulBuf(String s, char *buf) {
+inline sdef(char *, ToNulBuf, self s, char *buf) {
 	if (s.len > 0) {
 		Memory_Copy(buf, s.buf, s.len);
 	}
@@ -52,16 +53,16 @@ inline char* String_ToNulBuf(String s, char *buf) {
 	return buf;
 }
 
-inline char* String_ToNulHeap(String s) {
-	return String_ToNulBuf(s, Memory_Alloc(s.len + 1));
+inline sdef(char *, ToNulHeap, self s) {
+	return scall(ToNulBuf, s, Memory_Alloc(s.len + 1));
 }
 
-inline String String_Disown(String s) {
+inline sdef(self, Disown, self s) {
 	s.mutable = false;
 	return s;
 }
 
-void String_Resize(String *this, size_t length) {
+def(void, Resize, size_t length) {
 	if (!this->mutable) {
 		throw(excNotMutable);
 	}
@@ -84,10 +85,10 @@ void String_Resize(String *this, size_t length) {
 	}
 }
 
-void String_Align(String *this, size_t length) {
+def(void, Align, size_t length) {
 	if (length > 0) {
 		if (this->size == 0) {
-			String_Resize(this, length);
+			call(Resize, length);
 		} else if (length > this->size) {
 #if String_SmartAlign
 			/* See also:
@@ -99,16 +100,16 @@ void String_Align(String *this, size_t length) {
 				size <<= 1;
 			} while (size < length);
 
-			String_Resize(this, size);
+			call(Resize, size);
 #else
-			String_Resize(this, length);
+			call(Resize, length);
 #endif
 		}
 	}
 }
 
-overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength) {
-	if (!this->mutable) {
+overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset, ssize_t srcLength) {
+	if (!dest->mutable) {
 		throw(excNotMutable);
 	}
 
@@ -130,44 +131,44 @@ overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t s
 		throw(excBufferOverflow);
 	}
 
-	String_Align(this, this->len + srcRight - srcOffset);
+	scall(Align, dest, dest->len + srcRight - srcOffset);
 
 	if (srcRight - srcOffset > 0) {
-		Memory_Copy(this->buf,
+		Memory_Copy(dest->buf,
 			src.buf  + srcOffset,
 			srcRight - srcOffset);
 	}
 
-	this->len = srcRight - srcOffset;
+	dest->len = srcRight - srcOffset;
 }
 
-inline overload void String_Copy(String *this, String src, ssize_t srcOffset) {
-	String_Copy(this, src, srcOffset, src.len - srcOffset);
+inline overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset) {
+	scall(Copy, dest, src, srcOffset, src.len - srcOffset);
 }
 
-overload void String_Copy(String *this, String src) {
-	if (!this->mutable) {
+overload sdef(void, Copy, self *dest, self src) {
+	if (!dest->mutable) {
 		throw(excNotMutable);
 	}
 
 	if (src.len > 0) {
-		if (this->buf == NULL) {
-			this->buf = Memory_Alloc(src.len);
-		} else if (this->size < src.len) {
-			this->size = src.len;
-			this->buf  = Memory_Realloc(this->buf, src.len);
+		if (dest->buf == NULL) {
+			dest->buf = Memory_Alloc(src.len);
+		} else if (dest->size < src.len) {
+			dest->size = src.len;
+			dest->buf  = Memory_Realloc(dest->buf, src.len);
 		}
 
-		Memory_Copy(this->buf, src.buf, src.len);
-	} else if (this->buf != NULL) {
-		Memory_Free(this->buf);
+		Memory_Copy(dest->buf, src.buf, src.len);
+	} else if (dest->buf != NULL) {
+		Memory_Free(dest->buf);
 	}
 
-	this->len = src.len;
+	dest->len = src.len;
 }
 
-String String_Clone(String s) {
-	String out = HeapString(s.len);
+sdef(self, Clone, self s) {
+	self out = HeapString(s.len);
 
 	if (s.len > 0) {
 		Memory_Copy(out.buf, s.buf, s.len);
@@ -177,7 +178,7 @@ String String_Clone(String s) {
 	return out;
 }
 
-char* String_CloneBuf(String s, char *buf) {
+sdef(char *, CloneBuf, self s, char *buf) {
 	if (s.len > 0) {
 		Memory_Copy(buf, s.buf, s.len);
 	}
@@ -185,7 +186,7 @@ char* String_CloneBuf(String s, char *buf) {
 	return buf;
 }
 
-char String_CharAt(String s, ssize_t offset) {
+sdef(char, CharAt, self s, ssize_t offset) {
 	if (offset < 0) {
 		offset += s.len;
 	}
@@ -197,8 +198,8 @@ char String_CharAt(String s, ssize_t offset) {
 	return s.buf[offset];
 }
 
-overload String String_Slice(String s, ssize_t offset, ssize_t length) {
-	String out;
+overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
+	self out;
 	size_t right;
 
 	if (offset < 0) {
@@ -225,34 +226,34 @@ overload String String_Slice(String s, ssize_t offset, ssize_t length) {
 	return out;
 }
 
-inline overload String String_Slice(String s, ssize_t offset) {
+inline overload sdef(self, Slice, self s, ssize_t offset) {
 	if (offset < 0) {
 		offset += s.len;
 	}
 
-	return String_Slice(s, offset, s.len - offset);
+	return scall(Slice, s, offset, s.len - offset);
 }
 
-overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
-	if (!this->mutable) {
+overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
+	if (!dest->mutable) {
 		throw(excNotMutable);
 	}
 
 	size_t right;
 
 	if (offset < 0) {
-		offset += this->len;
+		offset += dest->len;
 	}
 
 	if (length < 0) {
-		right = length + this->len;
+		right = length + dest->len;
 	} else {
 		right = length + offset;
 	}
 
 	if ((size_t) offset > right
-	 || (size_t) offset > this->len
-	 || right           > this->len) {
+	 || (size_t) offset > dest->len
+	 || right           > dest->len) {
 		throw(excBufferOverflow);
 	}
 
@@ -262,26 +263,26 @@ overload void String_Crop(String *this, ssize_t offset, ssize_t length) {
 			 * overlapping memory areas.
 			 */
 
-			Memory_Move(this->buf,
-				this->buf + offset,
+			Memory_Move(dest->buf,
+				dest->buf + offset,
 				right     - offset);
 		}
 
-		this->len = right - offset;
+		dest->len = right - offset;
 	} else {
-		this->len = right;
+		dest->len = right;
 	}
 }
 
-inline overload void String_Crop(String *this, ssize_t offset) {
+inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += dest->len;
 	}
 
-	String_Crop(this, offset, this->len - offset);
+	scall(Crop, dest, offset, dest->len - offset);
 }
 
-void String_Delete(String *this, ssize_t offset, ssize_t length) {
+def(void, Delete, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
 		throw(excNotMutable);
 	}
@@ -308,47 +309,47 @@ void String_Delete(String *this, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-overload void String_Prepend(String *this, String s) {
-	String tmp = String_Concat(s, *this);
-	String_Copy(this, tmp);
-	String_Destroy(&tmp);
+overload def(void, Prepend, self s) {
+	self tmp = scall(Concat, s, *this);
+	scall(Copy, this, tmp);
+	scall(Destroy, &tmp);
 }
 
-overload void String_Prepend(String *this, char c) {
-	String tmp = HeapString(this->len + 1);
-	String_Append(&tmp, c);
-	String_Append(&tmp, *this);
-	String_Copy(this, tmp);
-	String_Destroy(&tmp);
+overload def(void, Prepend, char c) {
+	self tmp = HeapString(this->len + 1);
+	scall(Append, &tmp, c);
+	scall(Append, &tmp, *this);
+	scall(Copy, this, tmp);
+	scall(Destroy, &tmp);
 }
 
-overload void String_Append(String *this, String s) {
+overload sdef(void, Append, self *dest, self s) {
 	if (s.len == 0) {
 		return;
 	}
 
-	String_Align(this, this->len + s.len);
+	scall(Align, dest, dest->len + s.len);
 
-	Memory_Copy(this->buf + this->len, s.buf, s.len);
+	Memory_Copy(dest->buf + dest->len, s.buf, s.len);
 
-	this->len = this->len + s.len;
+	dest->len = dest->len + s.len;
 }
 
-overload void String_Append(String *this, char c) {
-	String_Align(this, this->len + 1);
-	this->buf[this->len] = c;
-	this->len++;
+overload sdef(void, Append, self *dest, char c) {
+	scall(Align, dest, dest->len + 1);
+	dest->buf[dest->len] = c;
+	dest->len++;
 }
 
-String String_Join(String *first, ...) {
-	String *s;
+sdef(self, Join, self *first, ...) {
+	self *s;
 	VarArg argptr;
 	size_t length = first->len;
 
 	VarArg_Start(argptr, first);
 
 	while (true) {
-		s = VarArg_Get(argptr, String *);
+		s = VarArg_Get(argptr, self *);
 
 		if (s == NULL) {
 			break;
@@ -359,7 +360,7 @@ String String_Join(String *first, ...) {
 
 	VarArg_End(argptr);
 
-	String res = HeapString(length);
+	self res = HeapString(length);
 
 	VarArg_Start(argptr, first);
 
@@ -371,7 +372,7 @@ String String_Join(String *first, ...) {
 			res.len += s->len;
 		}
 
-		s = VarArg_Get(argptr, String *);
+		s = VarArg_Get(argptr, self *);
 
 		if (s == NULL) {
 			break;
@@ -383,11 +384,11 @@ String String_Join(String *first, ...) {
 	return res;
 }
 
-inline bool String_Equals(String s, String needle) {
+inline sdef(bool, Equals, self s, self needle) {
 	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
 }
 
-bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset) {
+sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffset) {
 	if (needle.len == 0) {
 		return true;
 	}
@@ -418,15 +419,15 @@ bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleO
 		needle.len - needleOffset);
 }
 
-inline bool String_BeginsWith(String s, String needle) {
-	return String_RangeEquals(s, 0, needle, 0);
+inline sdef(bool, BeginsWith, self s, self needle) {
+	return scall(RangeEquals, s, 0, needle, 0);
 }
 
-inline bool String_EndsWith(String s, String needle) {
-	return String_RangeEquals(s, s.len - needle.len, needle, 0);
+inline sdef(bool, EndsWith, self s, self needle) {
+	return scall(RangeEquals, s, s.len - needle.len, needle, 0);
 }
 
-void String_ToLower(String *this) {
+def(void, ToLower) {
 	if (!this->mutable) {
 		throw(excNotMutable);
 	}
@@ -436,7 +437,7 @@ void String_ToLower(String *this) {
 	}
 }
 
-void String_ToUpper(String *this) {
+def(void, ToUpper) {
 	if (!this->mutable) {
 		throw(excNotMutable);
 	}
@@ -446,7 +447,7 @@ void String_ToUpper(String *this) {
 	}
 }
 
-overload StringArray* String_Split(String s, size_t offset, char c) {
+overload sdef(StringArray *, Split, self s, size_t offset, char c) {
 	size_t chunks = 1;
 	size_t left, right;
 
@@ -460,23 +461,23 @@ overload StringArray* String_Split(String s, size_t offset, char c) {
 
 	for (left = right = offset; right < s.len; right++) {
 		if (s.buf[right] == c) {
-			res->buf[res->len] = String_Slice(s, left, right - left);
+			res->buf[res->len] = scall(Slice, s, left, right - left);
 			res->len++;
 			left = right + 1;
 		}
 	}
 
-	res->buf[res->len] = String_Slice(s, left, right - left);
+	res->buf[res->len] = scall(Slice, s, left, right - left);
 	res->len++;
 
 	return res;
 }
 
-inline overload StringArray* String_Split(String s, char c) {
-	return String_Split(s, 0, c);
+inline overload sdef(StringArray *, Split, self s, char c) {
+	return scall(Split, s, 0, c);
 }
 
-overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, char c) {
+overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
 	if (offset < 0) {
@@ -495,12 +496,12 @@ overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, char c) {
 		}
 	}
 
-	return String_NotFound;
+	return ref(NotFound);
 }
 
-overload ssize_t String_ReverseFind(String s, ssize_t offset, char c) {
+overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c) {
 	if (s.len == 0) {
-		return String_NotFound;
+		return ref(NotFound);
 	}
 
 	if (offset < 0) {
@@ -517,16 +518,16 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, char c) {
 		}
 	}
 
-	return String_NotFound;
+	return ref(NotFound);
 }
 
-inline overload ssize_t String_ReverseFind(String s, char c) {
-	return String_ReverseFind(s, s.len - 1, c);
+inline overload sdef(ssize_t, ReverseFind, self s, char c) {
+	return scall(ReverseFind, s, s.len - 1, c);
 }
 
-overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle) {
+overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle) {
 	if (s.len == 0) {
-		return String_NotFound;
+		return ref(NotFound);
 	}
 
 	if (offset < 0) {
@@ -554,14 +555,14 @@ overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle) {
 		}
 	}
 
-	return String_NotFound;
+	return ref(NotFound);
 }
 
-inline overload ssize_t String_ReverseFind(String s, String needle) {
-	return String_ReverseFind(s, s.len - 1, needle);
+inline overload sdef(ssize_t, ReverseFind, self s, self needle) {
+	return scall(ReverseFind, s, s.len - 1, needle);
 }
 
-overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String needle) {
+overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle) {
 	size_t right;
 
 	if (offset < 0) {
@@ -596,47 +597,47 @@ overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String ne
 		}
 	}
 
-	return String_NotFound;
+	return ref(NotFound);
 }
 
-inline overload ssize_t String_Find(String s, String needle) {
-	return String_Find(s, 0, s.len, needle);
+inline overload sdef(ssize_t, Find, self s, self needle) {
+	return scall(Find, s, 0, s.len, needle);
 }
 
-inline overload ssize_t String_Find(String s, ssize_t offset, String needle) {
+inline overload sdef(ssize_t, Find, self s, ssize_t offset, self needle) {
 	if (offset < 0) {
 		offset += s.len;
 	}
 
-	return String_Find(s, offset, s.len - offset, needle);
+	return scall(Find, s, offset, s.len - offset, needle);
 }
 
-inline overload ssize_t String_Find(String s, char c) {
-	return String_Find(s, 0, s.len, c);
+inline overload sdef(ssize_t, Find, self s, char c) {
+	return scall(Find, s, 0, s.len, c);
 }
 
-inline overload ssize_t String_Find(String s, ssize_t offset, char c) {
+inline overload sdef(ssize_t, Find, self s, ssize_t offset, char c) {
 	if (offset < 0) {
 		offset += s.len;
 	}
 
-	return String_Find(s, offset, s.len - offset, c);
+	return scall(Find, s, offset, s.len - offset, c);
 }
 
-overload bool String_Contains(String s, String needle) {
-	return String_Find(s, 0, s.len, needle) != String_NotFound;
+overload sdef(bool, Contains, self s, self needle) {
+	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
 }
 
-overload bool String_Contains(String s, char needle) {
-	return String_Find(s, 0, s.len, needle) != String_NotFound;
+overload sdef(bool, Contains, self s, char needle) {
+	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
 }
 
-overload void String_Trim(String *this, short type) {
+overload sdef(void, Trim, self *dest, short type) {
 	size_t i, lpos = 0;
 
-	if (BitMask_Has(type, String_TrimLeft)) {
-		for (i = 0; i < this->len; i++) {
-			if (Char_IsSpace(this->buf[i])) {
+	if (BitMask_Has(type, ref(TrimLeft))) {
+		for (i = 0; i < dest->len; i++) {
+			if (Char_IsSpace(dest->buf[i])) {
 				lpos = i + 1;
 			} else {
 				break;
@@ -644,14 +645,14 @@ overload void String_Trim(String *this, short type) {
 		}
 	}
 
-	if (lpos == this->len) {
-		this->len = 0;
+	if (lpos == dest->len) {
+		dest->len = 0;
 	} else {
-		size_t rpos = this->len;
+		size_t rpos = dest->len;
 
-		if (BitMask_Has(type, String_TrimRight)) {
+		if (BitMask_Has(type, ref(TrimRight))) {
 			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(this->buf[i - 1])) {
+				if (Char_IsSpace(dest->buf[i - 1])) {
 					rpos = i - 1;
 				} else {
 					break;
@@ -659,20 +660,20 @@ overload void String_Trim(String *this, short type) {
 			}
 		}
 
-		String_Crop(this, lpos, rpos - lpos);
+		scall(Crop, dest, lpos, rpos - lpos);
 	}
 }
 
-inline overload void String_Trim(String *this) {
-	String_Trim(this,
-		String_TrimLeft |
-		String_TrimRight);
+inline overload sdef(void, Trim, self *dest) {
+	scall(Trim, dest,
+		ref(TrimLeft) |
+		ref(TrimRight));
 }
 
-overload String String_Trim(String s, short type) {
+overload sdef(self, Trim, self s, short type) {
 	size_t i, lpos = 0;
 
-	if (BitMask_Has(type, String_TrimLeft)) {
+	if (BitMask_Has(type, ref(TrimLeft))) {
 		for (i = 0; i < s.len; i++) {
 			if (Char_IsSpace(s.buf[i])) {
 				lpos = i + 1;
@@ -687,7 +688,7 @@ overload String String_Trim(String s, short type) {
 	} else {
 		size_t rpos = s.len;
 
-		if (BitMask_Has(type, String_TrimRight)) {
+		if (BitMask_Has(type, ref(TrimRight))) {
 			for (i = rpos; i > 0; i--) {
 				if (Char_IsSpace(s.buf[i - 1])) {
 					rpos = i - 1;
@@ -697,29 +698,29 @@ overload String String_Trim(String s, short type) {
 			}
 		}
 
-		return String_Slice(s, lpos, rpos - lpos);
+		return scall(Slice, s, lpos, rpos - lpos);
 	}
 
 	return s;
 }
 
-inline overload String String_Trim(String s) {
-	return String_Trim(s,
-		String_TrimLeft |
-		String_TrimRight);
+inline overload sdef(self, Trim, self s) {
+	return scall(Trim, s,
+		ref(TrimLeft) |
+		ref(TrimRight));
 }
 
-String String_Format(String fmt, ...) {
+sdef(self, Format, self fmt, ...) {
 	size_t length = 0;
 	VarArg argptr;
-	String param;
+	self param;
 
 	VarArg_Start(argptr, fmt);
 
 	for (size_t i = 0; i < fmt.len; i++) {
 		if (fmt.buf[i] == '%') {
 			if (i == 0 || fmt.buf[i - 1] != '!') {
-				length += VarArg_Get(argptr, String).len;
+				length += VarArg_Get(argptr, self).len;
 			}
 		} else {
 			length++;
@@ -728,7 +729,7 @@ String String_Format(String fmt, ...) {
 
 	VarArg_End(argptr);
 
-	String res = HeapString(length);
+	self res = HeapString(length);
 
 	VarArg_Start(argptr, fmt);
 
@@ -737,7 +738,7 @@ String String_Format(String fmt, ...) {
 			res.buf[res.len] = '%';
 			res.len++;
 		} else if (fmt.buf[i] == '%') {
-			param = VarArg_Get(argptr, String);
+			param = VarArg_Get(argptr, self);
 
 			if (param.len > 0) {
 				Memory_Copy(res.buf + res.len, param.buf, param.len);
@@ -754,7 +755,7 @@ String String_Format(String fmt, ...) {
 	return res;
 }
 
-overload ssize_t String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out) {
+overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
@@ -762,28 +763,28 @@ overload ssize_t String_Between(String s, ssize_t offset, String left, String ri
 	}
 
 	if (leftAligned) {
-		if ((posLeft = String_Find(s, offset, left)) == String_NotFound) {
-			return String_NotFound;
+		if ((posLeft = scall(Find, s, offset, left)) == ref(NotFound)) {
+			return ref(NotFound);
 		}
 
 		posLeft += left.len;
 
-		if ((posRight = String_Find(s, posLeft, right)) == String_NotFound) {
-			return String_NotFound;
+		if ((posRight = scall(Find, s, posLeft, right)) == ref(NotFound)) {
+			return ref(NotFound);
 		}
 	} else {
-		if ((posRight = String_Find(s, offset, right)) == String_NotFound) {
-			return String_NotFound;
+		if ((posRight = scall(Find, s, offset, right)) == ref(NotFound)) {
+			return ref(NotFound);
 		}
 
 		if (posRight > 0) {
-			if ((posLeft = String_ReverseFind(s, posRight - 1, left)) == String_NotFound) {
-				return String_NotFound;
+			if ((posLeft = scall(ReverseFind, s, posRight - 1, left)) == ref(NotFound)) {
+				return ref(NotFound);
 			}
 
 			posLeft += left.len;
 		} else {
-			return String_NotFound;
+			return ref(NotFound);
 		}
 	}
 
@@ -792,109 +793,109 @@ overload ssize_t String_Between(String s, ssize_t offset, String left, String ri
 	return posRight + right.len;
 }
 
-inline overload ssize_t String_Between(String s, String left, String right, String *out) {
-	return String_Between(s, 0, left, right, true, out);
+inline overload sdef(ssize_t, Between, self s, self left, self right, self *out) {
+	return scall(Between, s, 0, left, right, true, out);
 }
 
-inline overload ssize_t String_Between(String s, ssize_t offset, String left, String right, String *out) {
-	return String_Between(s, offset, left, right, true, out);
+inline overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, self *out) {
+	return scall(Between, s, offset, left, right, true, out);
 }
 
-inline overload String String_Between(String s, ssize_t offset, String left, String right, bool leftAligned) {
-	String out = StackString(0);
-	String_Between(s, offset, left, right, leftAligned, &out);
+inline overload sdef(self, Between, self s, ssize_t offset, self left, self right, bool leftAligned) {
+	self out = StackString(0);
+	scall(Between, s, offset, left, right, leftAligned, &out);
 	return out;
 }
 
-inline overload String String_Between(String s, ssize_t offset, String left, String right) {
-	String out = StackString(0);
-	String_Between(s, offset, left, right, &out);
+inline overload sdef(self, Between, self s, ssize_t offset, self left, self right) {
+	self out = StackString(0);
+	scall(Between, s, offset, left, right, &out);
 	return out;
 }
 
-inline overload String String_Between(String s, String left, String right, bool leftAligned) {
-	String out = StackString(0);
-	String_Between(s, 0, left, right, leftAligned, &out);
+inline overload sdef(self, Between, self s, self left, self right, bool leftAligned) {
+	self out = StackString(0);
+	scall(Between, s, 0, left, right, leftAligned, &out);
 	return out;
 }
 
-inline overload String String_Between(String s, String left, String right) {
-	String out = StackString(0);
-	String_Between(s, 0, left, right, true, &out);
+inline overload sdef(self, Between, self s, self left, self right) {
+	self out = StackString(0);
+	scall(Between, s, 0, left, right, true, &out);
 	return out;
 }
 
-String String_Cut(String s, String left, String right) {
-	ssize_t posLeft = String_Find(s, left);
+sdef(self, Cut, self s, self left, self right) {
+	ssize_t posLeft = scall(Find, s, left);
 
-	if (posLeft == String_NotFound) {
-		return String("");
+	if (posLeft == ref(NotFound)) {
+		return $("");
 	}
 
-	ssize_t posRight = String_Find(s, posLeft + left.len, right);
+	ssize_t posRight = scall(Find, s, posLeft + left.len, right);
 
-	if (posRight == String_NotFound) {
-		return String("");
+	if (posRight == ref(NotFound)) {
+		return $("");
 	}
 
-	return String_Slice(s, posLeft, posRight - posLeft);
+	return scall(Slice, s, posLeft, posRight - posLeft);
 }
 
-bool String_Filter(String *this, String s1, String s2) {
+def(bool, Filter, self s1, self s2) {
 	ssize_t left, right;
 
-	if ((left = String_Find(*this, s1)) == String_NotFound) {
+	if ((left = scall(Find, *this, s1)) == ref(NotFound)) {
 		return false;
 	}
 
-	String out = HeapString(0);
+	self out = HeapString(0);
 
 	if (left > 0) {
-		out = String_Clone(String_Slice(*this, 0, left - 1));
+		out = scall(Clone, String_Slice(*this, 0, left - 1));
 	}
 
 	left += s1.len;
 
-	if ((right = String_Find(*this, left, s2)) == String_NotFound) {
-		String_Destroy(&out);
+	if ((right = scall(Find, *this, left, s2)) == ref(NotFound)) {
+		scall(Destroy, &out);
 		return false;
 	}
 
-	String_Append(&out, String_Slice(*this, left, right - left));
-	String_Append(&out, String_Slice(*this, right + s2.len));
+	scall(Append, &out, String_Slice(*this, left, right - left));
+	scall(Append, &out, String_Slice(*this, right + s2.len));
 
-	String_Copy(this, out);
+	scall(Copy, this, out);
 
-	String_Destroy(&out);
+	scall(Destroy, &out);
 
 	return true;
 }
 
-bool String_Outside(String *this, String left, String right) {
+def(bool, Outside, self left, self right) {
 	ssize_t posLeft, posRight;
 
-	if ((posLeft = String_Find(*this, left)) == String_NotFound) {
+	if ((posLeft = scall(Find, *this, left)) == ref(NotFound)) {
 		return false;
 	}
 
-	if ((posRight = String_Find(*this, posLeft + left.len, right)) == String_NotFound) {
+	if ((posRight = scall(Find, *this, posLeft + left.len, right)) == ref(NotFound)) {
 		return false;
 	}
 
-	String out = HeapString(posLeft + this->len - posRight - right.len);
+	self out = HeapString(posLeft + this->len - posRight - right.len);
 
-	String_Append(&out, String_Slice(*this, 0, posLeft));
-	String_Append(&out, String_Slice(*this, posRight + right.len));
+	scall(Append, &out, String_Slice(*this, 0, posLeft));
+	scall(Append, &out, String_Slice(*this, posRight + right.len));
 
-	String_Copy(this, out);
+	scall(Copy, this, out);
 
-	String_Destroy(&out);
+	scall(Destroy, &out);
 
 	return true;
 }
 
-overload String String_Concat(String a, String b) {
-	String res = HeapString(a.len + b.len);
+overload sdef(self, Concat, self a, self b) {
+	self res = HeapString(a.len + b.len);
 
 	if (a.len > 0) {
 		Memory_Copy(res.buf, a.buf, a.len);
@@ -909,8 +910,8 @@ overload String String_Concat(String a, String b) {
 	return res;
 }
 
-overload String String_Concat(String s, char c) {
-	String res = HeapString(s.len + 1);
+overload sdef(self, Concat, self s, char c) {
+	self res = HeapString(s.len + 1);
 
 	if (s.len > 0) {
 		Memory_Copy(res.buf, s.buf, s.len);
@@ -923,72 +924,72 @@ overload String String_Concat(String s, char c) {
 	return res;
 }
 
-overload bool String_Replace(String *this, ssize_t offset, String needle, String replacement) {
+overload sdef(bool, Replace, self *dest, ssize_t offset, self needle, self replacement) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += dest->len;
 	}
 
-	ssize_t pos = String_Find(*this, offset, needle);
+	ssize_t pos = scall(Find, *dest, offset, needle);
 
-	if (pos == String_NotFound) {
+	if (pos == ref(NotFound)) {
 		return false;
 	}
 
-	ssize_t len = this->len - needle.len + replacement.len;
+	ssize_t len = dest->len - needle.len + replacement.len;
 
 	if (len < 0) {
 		len = replacement.len;
 	}
 
-	String out = HeapString(len);
+	self out = HeapString(len);
 
-	String_Append(&out, String_Slice(*this, 0, pos));
-	String_Append(&out, replacement);
-	String_Append(&out, String_Slice(*this, pos + needle.len));
+	scall(Append, &out, String_Slice(*dest, 0, pos));
+	scall(Append, &out, replacement);
+	scall(Append, &out, String_Slice(*dest, pos + needle.len));
 
-	String_Copy(this, out);
+	scall(Copy, dest, out);
 
-	String_Destroy(&out);
+	scall(Destroy, &out);
 
 	return true;
 }
 
-inline overload bool String_Replace(String *this, String needle, String replacement) {
-	return String_Replace(this, 0, needle, replacement);
+inline overload sdef(bool, Replace, self *dest, self needle, self replacement) {
+	return scall(Replace, dest, 0, needle, replacement);
 }
 
-inline overload String String_Replace(String s, String needle, String replacement) {
-	String tmp = s;
-	String_Replace(&tmp, 0, needle, replacement);
+inline overload sdef(self, Replace, self s, self needle, self replacement) {
+	self tmp = s;
+	scall(Replace, &tmp, 0, needle, replacement);
 	return tmp;
 }
 
-overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement) {
+overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self replacement) {
 	if (offset < 0) {
-		offset += this->len;
+		offset += dest->len;
 	}
 
-	ssize_t len = this->len - needle.len + replacement.len;
+	ssize_t len = dest->len - needle.len + replacement.len;
 
 	if (len < 0) {
 		len = replacement.len;
 	}
 
 	/* Approximation for one occurence. */
-	String out = HeapString(len);
+	self out = HeapString(len);
 
 	size_t cnt     = 0;
 	size_t lastPos = 0;
 
-	for (size_t i = offset; i < this->len; i++) {
-		if (this->buf[i] == needle.buf[cnt]) {
+	for (size_t i = offset; i < dest->len; i++) {
+		if (dest->buf[i] == needle.buf[cnt]) {
 			cnt++;
 
 			if (cnt == needle.len) {
 				size_t cur = i - needle.len + 1;
 
-				String_Append(&out, String_Slice(*this, lastPos, cur - lastPos));
-				String_Append(&out, replacement);
+				scall(Append, &out, String_Slice(*dest, lastPos, cur - lastPos));
+				scall(Append, &out, replacement);
 
 				lastPos = i + 1;
 				cnt = 0;
@@ -1001,44 +1002,44 @@ overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, Str
 		}
 	}
 
-	String_Append(&out, String_Slice(*this, lastPos));
+	scall(Append, &out, String_Slice(*dest, lastPos));
 
-	String_Copy(this, out);
+	scall(Copy, dest, out);
 
-	String_Destroy(&out);
+	scall(Destroy, &out);
 
 	return lastPos != 0;
 }
 
-inline overload bool String_ReplaceAll(String *this, String needle, String replacement) {
-	return String_ReplaceAll(this, 0, needle, replacement);
+inline overload sdef(bool, ReplaceAll, self *dest, self needle, self replacement) {
+	return scall(ReplaceAll, dest, 0, needle, replacement);
 }
 
-inline overload String String_ReplaceAll(String s, String needle, String replacement) {
-	String tmp = String_Clone(s);
-	String_ReplaceAll(&tmp, 0, needle, replacement);
+inline overload sdef(self, ReplaceAll, self s, self needle, self replacement) {
+	self tmp = scall(Clone, s);
+	scall(ReplaceAll, &tmp, 0, needle, replacement);
 	return tmp;
 }
 
-String String_Consume(String *this, size_t n) {
-	String res = String_Clone(String_Slice(*this, 0, n));
-	String_Crop(this, n);
+def(self, Consume, size_t n) {
+	self res = scall(Clone, String_Slice(*this, 0, n));
+	scall(Crop, this, n);
 	return res;
 }
 
-overload void String_Print(String s, bool err) {
+overload sdef(void, Print, self s, bool err) {
 	if (s.buf != NULL) {
 		Kernel_write(err ? FileNo_StdErr : FileNo_StdOut, s.buf, s.len);
 	}
 }
 
-inline overload void String_Print(String s) {
-	String_Print(s, false);
+inline overload sdef(void, Print, self s) {
+	scall(Print, s, false);
 }
 
 /*
- * String_CompareRight(), String_CompareLeft() and String_NaturalCompare()
- * are based upon Martin Pool's `strnatcmp' library:
+ * CompareRight(), CompareLeft() and NaturalCompare() are based upon
+ * Martin Pool's `strnatcmp' library:
  *
  * strnatcmp.c -- Perform 'natural order' comparisons of strings in C.
  * Copyright (C) 2000, 2004 by Martin Pool <mbp sourcefrog net>
@@ -1060,7 +1061,7 @@ inline overload void String_Print(String s) {
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-short String_CompareRight(String a, String b) {
+sdef(short, CompareRight, self a, self b) {
 	short bias = 0;
 
 	/* The longest run of digits wins.  That aside, the greatest
@@ -1094,7 +1095,7 @@ short String_CompareRight(String a, String b) {
 	return bias;
 }
 
-short String_CompareLeft(String a, String b) {
+sdef(short, CompareLeft, self a, self b) {
 	/* Compare two left-aligned numbers: the first to have a
 	 * different value wins.
 	 */
@@ -1117,7 +1118,7 @@ short String_CompareLeft(String a, String b) {
 	return 0;
 }
 
-overload short String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros) {
+overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpaces, bool skipZeros) {
 	size_t ai = 0;
 	size_t bi = 0;
 
@@ -1139,13 +1140,13 @@ overload short String_NaturalCompare(String a, String b, bool foldcase, bool ski
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
 			short result;
 
-			String __a = String_Slice(a, ai);
-			String __b = String_Slice(b, bi);
+			self __a = scall(Slice, a, ai);
+			self __b = scall(Slice, b, bi);
 
 			if (!skipZeros) {
 				/* Is fractional? */
 				if (a.buf[ai] == '0' || b.buf[bi] == '0') {
-					result = String_CompareLeft(__a, __b);
+					result = scall(CompareLeft, __a, __b);
 
 					if (result != 0) {
 						return result;
@@ -1153,7 +1154,7 @@ overload short String_NaturalCompare(String a, String b, bool foldcase, bool ski
 				}
 			}
 
-			result = String_CompareRight(__a, __b);
+			result = scall(CompareRight, __a, __b);
 
 			if (result != 0) {
 				return result;
@@ -1187,11 +1188,14 @@ overload short String_NaturalCompare(String a, String b, bool foldcase, bool ski
 	}
 }
 
-inline overload short String_NaturalCompare(String a, String b) {
-	return String_NaturalCompare(a, b, true, true, true);
+inline overload sdef(short, NaturalCompare, self a, self b) {
+	return scall(NaturalCompare, a, b, true, true, true);
 }
 
-ssize_t StringArray_Find(StringArray *this, String needle) {
+#undef self
+#define self StringArray
+
+def(ssize_t, Find, String needle) {
 	for (size_t i = 0; i < this->len; i++) {
 		if (String_Equals(this->buf[i], needle)) {
 			return i;
@@ -1201,11 +1205,11 @@ ssize_t StringArray_Find(StringArray *this, String needle) {
 	return -1;
 }
 
-bool StringArray_Contains(StringArray *this, String needle) {
+def(bool, Contains, String needle) {
 	return StringArray_Find(this, needle) != -1;
 }
 
-void StringArray_Destroy(StringArray *this) {
+def(void, Destroy) {
 	for (size_t i = 0; i < this->len; i++) {
 		String_Destroy(&this->buf[i]);
 	}
@@ -1213,7 +1217,7 @@ void StringArray_Destroy(StringArray *this) {
 	this->len = 0;
 }
 
-void StringArray_ToHeap(StringArray *this) {
+def(void, ToHeap) {
 	for (size_t i = 0; i < this->len; i++) {
 		if (!this->buf[i].mutable) {
 			this->buf[i] = String_Clone(this->buf[i]);

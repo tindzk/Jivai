@@ -4,20 +4,24 @@
 #import "Compiler.h"
 #import "Exceptions.h"
 
+#undef self
+#define self String
+
 #ifndef String_SmartAlign
 #define String_SmartAlign 1
 #endif
 
-typedef struct _String {
+class(self) {
 	size_t len;
 	size_t size;
 	char *buf;
 	bool mutable;
-} String;
+};
 
 enum {
-	String_TrimLeft  = Bit(0),
-	String_TrimRight = Bit(1)
+	ref(TrimLeft)  = Bit(0),
+	ref(TrimRight) = Bit(1),
+	ref(NotFound)  = -1
 };
 
 #import "Char.h"
@@ -26,95 +30,99 @@ enum {
 #import "Memory.h"
 #import "Exception.h"
 
-Array_Define(String, StringArray);
-
-#undef self
-#define self String
-
 enum {
 	excNotMutable = excOffset,
 	excBufferOverflow
 };
 
-String HeapString(size_t len);
-String BufString(char *buf, size_t len);
-void String_Destroy(String *this);
-String String_FromNul(char *s);
-char* String_ToNulBuf(String s, char *buf);
-char* String_ToNulHeap(String s);
-String String_Disown(String s);
-void String_Resize(String *this, size_t length);
-void String_Align(String *this, size_t length);
-overload void String_Copy(String *this, String src, ssize_t srcOffset, ssize_t srcLength);
-overload void String_Copy(String *this, String src, ssize_t srcOffset);
-overload void String_Copy(String *this, String src);
-String String_Clone(String s);
-char* String_CloneBuf(String s, char *buf);
-char String_CharAt(String s, ssize_t offset);
-overload String String_Slice(String s, ssize_t offset, ssize_t length);
-overload String String_Slice(String s, ssize_t offset);
-overload void String_Crop(String *this, ssize_t offset, ssize_t length);
-overload void String_Crop(String *this, ssize_t offset);
-void String_Delete(String *this, ssize_t offset, ssize_t length);
-overload void String_Prepend(String *this, String s);
-overload void String_Prepend(String *this, char c);
-overload void String_Append(String *this, String s);
-overload void String_Append(String *this, char c);
-String String_Join(String *first, ...);
-bool String_Equals(String s, String needle);
-bool String_RangeEquals(String s, ssize_t offset, String needle, ssize_t needleOffset);
-bool String_BeginsWith(String s, String needle);
-bool String_EndsWith(String s, String needle);
-void String_ToLower(String *this);
-void String_ToUpper(String *this);
-overload StringArray* String_Split(String s, size_t offset, char c);
-overload StringArray* String_Split(String s, char c);
-overload ssize_t String_ReverseFind(String s, ssize_t offset, char c);
-overload ssize_t String_ReverseFind(String s, char c);
-overload ssize_t String_ReverseFind(String s, ssize_t offset, String needle);
-overload ssize_t String_ReverseFind(String s, String needle);
-overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, char c);
-overload ssize_t String_Find(String s, ssize_t offset, ssize_t length, String needle);
-overload ssize_t String_Find(String s, String needle);
-overload ssize_t String_Find(String s, ssize_t offset, String needle);
-overload ssize_t String_Find(String s, char c);
-overload ssize_t String_Find(String s, ssize_t offset, char c);
-overload bool String_Contains(String s, String needle);
-overload bool String_Contains(String s, char needle);
-overload void String_Trim(String *this, short type);
-overload void String_Trim(String *this);
-overload String String_Trim(String s, short type);
-overload String String_Trim(String s);
-String String_Format(String fmt, ...);
-overload ssize_t String_Between(String s, ssize_t offset, String left, String right, bool leftAligned, String *out);
-overload ssize_t String_Between(String s, String left, String right, String *out);
-overload ssize_t String_Between(String s, ssize_t offset, String left, String right, String *out);
-overload String String_Between(String s, ssize_t offset, String left, String right, bool leftAligned);
-overload String String_Between(String s, ssize_t offset, String left, String right);
-overload String String_Between(String s, String left, String right, bool leftAligned);
-overload String String_Between(String s, String left, String right);
-String String_Cut(String s, String left, String right);
-bool String_Filter(String *this, String s1, String s2);
-bool String_Outside(String *this, String left, String right);
-overload String String_Concat(String a, String b);
-overload String String_Concat(String a, char b);
-overload bool String_Replace(String *this, ssize_t offset, String needle, String replacement);
-overload bool String_Replace(String *this, String needle, String replacement);
-overload String String_Replace(String s, String needle, String replacement);
-overload bool String_ReplaceAll(String *this, ssize_t offset, String needle, String replacement);
-overload bool String_ReplaceAll(String *this, String needle, String replacement);
-overload String String_ReplaceAll(String s, String needle, String replacement);
-String String_Consume(String *this, size_t n);
-overload void String_Print(String s, bool err);
-overload void String_Print(String s);
-overload short String_NaturalCompare(String a, String b, bool foldcase, bool skipSpaces, bool skipZeros);
-overload short String_NaturalCompare(String a, String b);
-ssize_t StringArray_Find(StringArray *this, String needle);
-bool StringArray_Contains(StringArray *this, String needle);
-void StringArray_Destroy(StringArray *this);
-void StringArray_ToHeap(StringArray *this);
+#undef self
+#define self String
 
-#define String_NotFound -1
+Array_Define(self, StringArray);
+
+self HeapString(size_t len);
+self BufString(char *buf, size_t len);
+def(void, Destroy);
+sdef(self, FromNul, char *s);
+sdef(char *, ToNulBuf, self s, char *buf);
+sdef(char *, ToNulHeap, self s);
+sdef(self, Disown, self s);
+def(void, Resize, size_t length);
+def(void, Align, size_t length);
+overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset, ssize_t srcLength);
+overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset);
+overload sdef(void, Copy, self *dest, self src);
+sdef(self, Clone, self s);
+sdef(char *, CloneBuf, self s, char *buf);
+sdef(char, CharAt, self s, ssize_t offset);
+overload sdef(self, Slice, self s, ssize_t offset, ssize_t length);
+overload sdef(self, Slice, self s, ssize_t offset);
+overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length);
+overload sdef(void, Crop, self *dest, ssize_t offset);
+def(void, Delete, ssize_t offset, ssize_t length);
+overload def(void, Prepend, self s);
+overload def(void, Prepend, char c);
+overload sdef(void, Append, self *dest, self s);
+overload sdef(void, Append, self *dest, char c);
+sdef(self, Join, self *first, ...);
+sdef(bool, Equals, self s, self needle);
+sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffset);
+sdef(bool, BeginsWith, self s, self needle);
+sdef(bool, EndsWith, self s, self needle);
+def(void, ToLower);
+def(void, ToUpper);
+overload sdef(StringArray *, Split, self s, size_t offset, char c);
+overload sdef(StringArray *, Split, self s, char c);
+overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, char c);
+overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c);
+overload sdef(ssize_t, ReverseFind, self s, char c);
+overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle);
+overload sdef(ssize_t, ReverseFind, self s, self needle);
+overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle);
+overload sdef(ssize_t, Find, self s, self needle);
+overload sdef(ssize_t, Find, self s, ssize_t offset, self needle);
+overload sdef(ssize_t, Find, self s, char c);
+overload sdef(ssize_t, Find, self s, ssize_t offset, char c);
+overload sdef(bool, Contains, self s, self needle);
+overload sdef(bool, Contains, self s, char needle);
+overload sdef(void, Trim, self *dest, short type);
+overload sdef(void, Trim, self *dest);
+overload sdef(self, Trim, self s, short type);
+overload sdef(self, Trim, self s);
+sdef(self, Format, self fmt, ...);
+overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out);
+overload sdef(ssize_t, Between, self s, self left, self right, self *out);
+overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, self *out);
+overload sdef(self, Between, self s, ssize_t offset, self left, self right, bool leftAligned);
+overload sdef(self, Between, self s, ssize_t offset, self left, self right);
+overload sdef(self, Between, self s, self left, self right, bool leftAligned);
+overload sdef(self, Between, self s, self left, self right);
+sdef(self, Cut, self s, self left, self right);
+def(bool, Filter, self s1, self s2);
+def(bool, Outside, self left, self right);
+overload sdef(self, Concat, self a, self b);
+overload sdef(self, Concat, self s, char c);
+overload sdef(bool, Replace, self *dest, ssize_t offset, self needle, self replacement);
+overload sdef(bool, Replace, self *dest, self needle, self replacement);
+overload sdef(self, Replace, self s, self needle, self replacement);
+overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self replacement);
+overload sdef(bool, ReplaceAll, self *dest, self needle, self replacement);
+overload sdef(self, ReplaceAll, self s, self needle, self replacement);
+def(self, Consume, size_t n);
+overload sdef(void, Print, self s, bool err);
+overload sdef(void, Print, self s);
+sdef(short, CompareRight, self a, self b);
+sdef(short, CompareLeft, self a, self b);
+overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpaces, bool skipZeros);
+overload sdef(short, NaturalCompare, self a, self b);
+
+#undef self
+#define self StringArray
+
+def(ssize_t, Find, String needle);
+def(bool, Contains, String needle);
+def(void, Destroy);
+def(void, ToHeap);
 
 #define String(s) \
 	(String) { sizeof(s) - 1, sizeof(s) - 1, (char *) s, false }
@@ -143,3 +151,6 @@ void StringArray_ToHeap(StringArray *this);
 		String_Append(this, __tmp);     \
 		String_Destroy(&__tmp);         \
 	} while(0)
+
+#undef self
+#define self String
