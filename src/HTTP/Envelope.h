@@ -23,11 +23,13 @@ class(self) {
 def(void, Init);
 def(void, Destroy);
 def(void, SetContentLength, s64 len);
+def(s64, GetContentLength);
 def(void, SetLocation, String url);
 def(void, SetContentType, String contentType);
 def(void, SetCookie, String name, String value);
 def(void, SetVersion, HTTP_Version version);
 def(void, SetStatus, HTTP_Status status);
 def(void, SetPersistent, bool value);
+def(bool, IsPersistent);
 def(void, SetLastModified, DateTime lastModified);
 def(String, GetString);

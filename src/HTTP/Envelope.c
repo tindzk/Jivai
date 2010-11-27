@@ -23,6 +23,10 @@ def(void, SetContentLength, s64 len) {
 	this->contentLength = len;
 }
 
+def(s64, GetContentLength) {
+	return this->contentLength;
+}
+
 def(void, SetLocation, String url) {
 	String_Copy(&this->location, url);
 }
@@ -46,6 +50,10 @@ def(void, SetStatus, HTTP_Status status) {
 
 def(void, SetPersistent, bool value) {
 	this->persistent = value;
+}
+
+def(bool, IsPersistent) {
+	return this->persistent;
 }
 
 def(void, SetLastModified, DateTime lastModified) {
