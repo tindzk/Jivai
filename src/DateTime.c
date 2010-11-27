@@ -9,6 +9,15 @@ sdef(self, Empty) {
 	return res;
 }
 
+sdef(self, FromDate, Date date) {
+	self res;
+
+	res.date = date;
+	res.time = Time_Empty();
+
+	return res;
+}
+
 inline sdef(self, GetUnixEpoch) {
 	return (DateTime) {
 		.date = {
@@ -33,6 +42,15 @@ sdef(short, Compare, self a, self b) {
 	}
 
 	return Time_Compare(a.time, b.time);
+}
+
+sdef(self, Drift, self dateTime, s8 hrs, s8 mins) {
+	u64 secs = scall(ToUnixEpoch, dateTime);
+
+	secs += hrs  * Date_SecondsHour;
+	secs += mins * Date_SecondsMinute;
+
+	return scall(FromUnixEpoch, secs);
 }
 
 inline sdef(bool, Equals, self a, self b) {
