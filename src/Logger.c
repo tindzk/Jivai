@@ -5,11 +5,6 @@ def(void, Init, ref(Printer) printer, int levels) {
 	this->levels  = levels;
 }
 
-inline def(bool, IsEnabled, ref(Level) level) {
-	return !BitMask_Has(Logger_DisabledLevels, level)
-		 && BitMask_Has(this->levels, level);
-}
-
 String ref(ResolveLevel)(ref(Level) level) {
 	switch (level) {
 		case ref(Level_Fatal):

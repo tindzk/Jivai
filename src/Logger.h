@@ -27,8 +27,12 @@ class(self) {
 	int levels;
 };
 
+static inline def(bool, IsEnabled, ref(Level) level) {
+	return !BitMask_Has(Logger_DisabledLevels, level)
+		 && BitMask_Has(this->levels, level);
+}
+
 def(void, Init, ref(Printer) printer, int levels);
-def(bool, IsEnabled, ref(Level) level);
 String ref(ResolveLevel)(ref(Level) level);
 
 #define Logger_Log(this, level, fmt, ...)                      \
