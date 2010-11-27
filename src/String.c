@@ -308,17 +308,17 @@ def(void, Delete, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-overload def(void, Prepend, self s) {
-	self tmp = scall(Concat, s, *this);
-	scall(Copy, this, tmp);
+overload sdef(void, Prepend, self *dest, self s) {
+	self tmp = scall(Concat, s, *dest);
+	scall(Copy, dest, tmp);
 	scall(Destroy, &tmp);
 }
 
-overload def(void, Prepend, char c) {
-	self tmp = HeapString(this->len + 1);
+overload sdef(void, Prepend, self *dest, char c) {
+	self tmp = HeapString(dest->len + 1);
 	scall(Append, &tmp, c);
-	scall(Append, &tmp, *this);
-	scall(Copy, this, tmp);
+	scall(Append, &tmp, *dest);
+	scall(Copy, dest, tmp);
 	scall(Destroy, &tmp);
 }
 
