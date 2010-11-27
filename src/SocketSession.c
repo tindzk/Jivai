@@ -24,7 +24,7 @@ def(void, Write, String s, ref(OnDone) onDone) {
 	call(Continue);
 }
 
-def(void, SendFile, File file, size_t length, ref(OnDone) onDone) {
+def(void, SendFile, File file, u64 length, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
 		throw(excNotIdle);
 	}

@@ -44,7 +44,7 @@ class(self) {
 
 def(void, Init, SocketConnection *conn);
 def(void, Write, String s, ref(OnDone) onDone);
-def(void, SendFile, File file, size_t length, ref(OnDone) onDone);
+def(void, SendFile, File file, u64 length, ref(OnDone) onDone);
 def(void, Continue);
 def(void, Flush);
 def(bool, IsIdle);
