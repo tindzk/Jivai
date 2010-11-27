@@ -84,7 +84,17 @@ out:
 	return res;
 }
 
-sdef(self, FromDate, DateTime $this) {
+sdef(self, FromDate, Date $this) {
+	self res;
+
+	res.date    = $this;
+	res.time    = Time_Empty();
+	res.weekday = Date_GetWeekDay($this);
+
+	return res;
+}
+
+sdef(self, FromDateTime, DateTime $this) {
 	self res;
 
 	res.date    = $this.date;

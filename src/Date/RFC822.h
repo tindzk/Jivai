@@ -17,5 +17,6 @@ record(self) {
 
 sdef(self, Empty);
 sdef(self, Parse, String s);
-sdef(self, FromDate, DateTime $this);
+sdef(self, FromDate, Date $this);
+sdef(self, FromDateTime, DateTime $this);
 sdef(String, ToString, self $this);
