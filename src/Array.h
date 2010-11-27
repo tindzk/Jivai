@@ -53,13 +53,17 @@
 
 #define Array_Define(type, name)                                    \
 	typedef Array(type, name);                                      \
+	typedef union {                                                 \
+		name *object;                                               \
+		GenericInstance generic;                                    \
+	} Instance(name) transparentUnion;                              \
 	static inline name* tripleConcat(name, _, New)(size_t items) {  \
 		name *res;                                                  \
 		Array_Init(res, items);                                     \
 		return res;                                                 \
 	}                                                               \
 	static inline void tripleConcat(name, _, Free)                  \
-		(union { name *object } transparentUnion $this)             \
+		(Instance(name) $this)                                      \
 	{                                                               \
 		Array_Destroy($this.object);                                \
 	}                                                               \
