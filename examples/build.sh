@@ -19,5 +19,5 @@ fi
 	optimlevel=0             \
 	dbgsym=yes               \
 	debug=yes                \
-	inclhdr=config.h         \
+	inclhdr=../config.h      \
 	link=@bfd

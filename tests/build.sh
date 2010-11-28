@@ -13,6 +13,6 @@ mkdir -p build/Jivai
 	optimlevel=0             \
 	dbgsym=yes               \
 	add=*.c                  \
-	inclhdr=config.h         \
+	inclhdr=../config.h      \
 	link=@bfd                \
 	link=@m
