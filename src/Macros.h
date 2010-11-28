@@ -71,6 +71,9 @@
 #define Impl(name) \
 	name##Interface simpleConcat(self, Impl)
 
+#define ImplEx(name) \
+	name##Interface simpleConcat(self, _##name##Impl)
+
 #define def(ret, method, ...) \
 	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)
 
