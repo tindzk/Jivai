@@ -28,7 +28,10 @@
 // Request
 // -------
 
-typedef struct {
+#undef self
+#define self Request
+
+class(self) {
 	bool gotData;
 	bool persistent;
 
@@ -43,17 +46,17 @@ typedef struct {
 
 	String paramTest;
 	String paramTest2;
-} Request;
+};
 
-void Request_OnHttpVersion(Request *this, HTTP_Version version) {
+def(void, OnHttpVersion, HTTP_Version version) {
 	this->version = version;
 }
 
-void Request_OnMethod(Request *this, HTTP_Method method) {
+def(void, OnMethod, HTTP_Method method) {
 	this->method = method;
 }
 
-void Request_OnPath(Request *this, String path) {
+def(void, OnPath, String path) {
 	String_Copy(&this->path, path);
 }
 
@@ -62,7 +65,7 @@ void Request_OnPath(Request *this, String path) {
  * http://localhost:8080/?test=abc&test2=def
  */
 
-String* Request_OnQueryParameter(Request *this, String name) {
+def(String *, OnQueryParameter, String name) {
 	if (String_Equals(name, String("test"))) {
 		/* test's value will be put into this variable. */
 		return &this->paramTest;
@@ -78,11 +81,11 @@ String* Request_OnQueryParameter(Request *this, String name) {
  * Treat body-submitted parameters equally like URL-supplied ones.
  */
 
-String* Request_OnBodyParameter(Request *this, String name) {
-	return Request_OnQueryParameter(this, name);
+def(String *, OnBodyParameter, String name) {
+	return call(OnQueryParameter, name);
 }
 
-void Request_OnRespond(Request *this, bool persistent) {
+def(void, OnRespond, bool persistent) {
 	this->resp.len = 0;
 
 	if (this->method == HTTP_Method_Get) {
@@ -149,7 +152,7 @@ void Request_OnRespond(Request *this, bool persistent) {
 	this->persistent = persistent;
 }
 
-void Request_Init(Request *this, SocketConnection *conn) {
+def(void, Init, SocketConnection *conn) {
 	this->conn       = conn;
 	this->resp       = HeapString(2048);
 	this->method     = HTTP_Method_Get;
@@ -178,7 +181,7 @@ void Request_Init(Request *this, SocketConnection *conn) {
 	HTTP_Server_Init(&this->server, events, conn, 2048, 4096);
 }
 
-void Request_Destroy(Request *this) {
+def(void, Destroy) {
 	HTTP_Server_Destroy(&this->server);
 
 	String_Destroy(&this->resp);
@@ -187,7 +190,7 @@ void Request_Destroy(Request *this) {
 	String_Destroy(&this->paramTest2);
 }
 
-Connection_Status Request_Parse(Request *this) {
+def(Connection_Status, Parse) {
 	this->gotData = true;
 
 	bool incomplete = HTTP_Server_Process(&this->server);
@@ -205,7 +208,7 @@ Connection_Status Request_Parse(Request *this) {
 		: Connection_Status_Close;
 }
 
-Connection_Status Request_Respond(Request *this) {
+def(Connection_Status, Respond) {
 	/* In edge-triggered mode a new connection may start with a
 	 * `pull' request.
 	 *
@@ -237,37 +240,36 @@ Connection_Status Request_Respond(Request *this) {
 // HttpConnection
 // --------------
 
-typedef struct {
+#undef self
+#define self HttpConnection
+
+class(self) {
 	Connection base;
 	Request request;
-} HttpConnection;
+};
 
-HttpConnection* HttpConnection_New(void) {
-	return New(HttpConnection);
-}
-
-void HttpConnection_Init(HttpConnection *this, SocketConnection *conn) {
+def(void, Init, SocketConnection *conn) {
 	Request_Init(&this->request, conn);
 }
 
-void HttpConnection_Destroy(HttpConnection *this) {
+def(void, Destroy) {
 	Request_Destroy(&this->request);
 }
 
-Connection_Status HttpConnection_Push(HttpConnection *this) {
+def(Connection_Status, Push) {
 	return Request_Parse(&this->request);
 }
 
-Connection_Status HttpConnection_Pull(HttpConnection *this) {
+def(Connection_Status, Pull) {
 	return Request_Respond(&this->request);
 }
 
-ConnectionInterface Impl(HttpConnection) = {
-	.size    = sizeof(HttpConnection),
-	.init    = (void *) HttpConnection_Init,
-	.destroy = (void *) HttpConnection_Destroy,
-	.push    = (void *) HttpConnection_Push,
-	.pull    = (void *) HttpConnection_Pull
+ConnectionInterface Impl(self) = {
+	.size    = sizeof(self),
+	.init    = (void *) ref(Init),
+	.destroy = (void *) ref(Destroy),
+	.push    = (void *) ref(Push),
+	.pull    = (void *) ref(Pull)
 };
 
 // ----

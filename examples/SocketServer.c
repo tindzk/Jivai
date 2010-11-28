@@ -27,32 +27,35 @@
 // ClientData
 // ----------
 
-typedef struct {
+record(ClientData) {
 	int id;
-} ClientData;
+};
 
 // --------------------
 // CustomClientListener
 // --------------------
 
-typedef struct {
-	ssize_t activeConn;
-} CustomClientListener;
+#undef self
+#define self CustomClientListener
 
-void CustomClientListener_OnInit(CustomClientListener *this) {
+class(self) {
+	ssize_t activeConn;
+};
+
+def(void, OnInit) {
 	this->activeConn = 0;
 }
 
-void CustomClientListener_OnDestroy(__unused CustomClientListener *this) {
+def(void, OnDestroy) {
 	/* ... */
 }
 
-bool CustomClientListener_OnConnect(CustomClientListener *this) {
+def(bool, OnConnect) {
 	/* Don't allow more than five parallel connections. */
 	return this->activeConn < 5;
 }
 
-void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
+def(void, OnAccept, Client *client) {
 	ClientData *data = New(ClientData);
 	data->id = this->activeConn;
 
@@ -63,8 +66,8 @@ void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 	String_FmtPrint(
 		String("Got TCP connection from %:%, fd=%\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
-		Int16_ToString(client->conn->addr.port),
-		Int16_ToString(client->conn->fd));
+		Integer_ToString(client->conn->addr.port),
+		Integer_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
 
@@ -74,14 +77,14 @@ void CustomClientListener_OnAccept(CustomClientListener *this, Client *client) {
 	this->activeConn++;
 }
 
-void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *client) {
+def(void, OnDisconnect, Client *client) {
 	String tmp;
 
 	String_FmtPrint(
 		String("Client %:%, fd=% disconnected\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
-		Int16_ToString(client->conn->addr.port),
-		Int16_ToString(client->conn->fd));
+		Integer_ToString(client->conn->addr.port),
+		Integer_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
 
@@ -90,7 +93,7 @@ void CustomClientListener_OnDisconnect(CustomClientListener *this, Client *clien
 	this->activeConn--;
 }
 
-Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client *client) {
+def(Connection_Status, OnData, Client *client) {
 	String s = StackString(1024);
 	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
 
@@ -126,7 +129,7 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 		 * does not emit an "OnDisconnect" event either.
 		 */
 
-		CustomClientListener_OnDisconnect(this, client);
+		call(OnDisconnect, client);
 		Client_Destroy(client);
 
 		return Connection_Status_Close;
@@ -135,13 +138,13 @@ Connection_Status CustomClientListener_OnData(CustomClientListener *this, Client
 	return Connection_Status_Open;
 }
 
-ClientListenerInterface Impl(CustomClientListener) = {
-	.onInit             = (void *) CustomClientListener_OnInit,
-	.onDestroy          = (void *) CustomClientListener_OnDestroy,
-	.onClientConnect    = (void *) CustomClientListener_OnConnect,
-	.onClientAccept     = (void *) CustomClientListener_OnAccept,
-	.onClientDisconnect = (void *) CustomClientListener_OnDisconnect,
-	.onPush             = (void *) CustomClientListener_OnData,
+ClientListenerInterface Impl(self) = {
+	.onInit             = (void *) ref(OnInit),
+	.onDestroy          = (void *) ref(OnDestroy),
+	.onClientConnect    = (void *) ref(OnConnect),
+	.onClientAccept     = (void *) ref(OnAccept),
+	.onClientDisconnect = (void *) ref(OnDisconnect),
+	.onPush             = (void *) ref(OnData),
 	.onPull             = NULL
 };
 
