@@ -151,6 +151,3 @@ def(void, ToHeap);
 		String_Append(this, __tmp);     \
 		String_Destroy(&__tmp);         \
 	} while(0)
-
-#undef self
-#define self String
