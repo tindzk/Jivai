@@ -20,8 +20,6 @@ class {
 	StringArray *params;
 };
 
-ExtendClass(self);
-
 def(void, Init, String cmd);
 def(void, Destroy);
 def(void, AddParameter, String param);

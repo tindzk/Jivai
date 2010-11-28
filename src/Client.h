@@ -8,7 +8,7 @@ class {
 	void *data;
 };
 
-ExtendClass(self);
+ExtendClass;
 
 def(void, Init);
 def(void, Destroy);

@@ -131,22 +131,22 @@
 	BasicInstance(self)                \
 	struct self
 
-/* This cannot be included in class() as sizeof() is needed and the
+/* This cannot be included in `class' as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass(name)                                                                   \
-	static inline bool tripleConcat(name, _, Equals)(Instance(name) a, Instance(name) b) {  \
-		return a.object == b.object;                                                        \
-	}                                                                                       \
-	static __unused alwaysInline Instance(name) tripleConcat(name, _, NewStack)(void) {     \
-		name obj;                                                                           \
-		return (Instance(name)) &obj;                                                       \
-	}                                                                                       \
-	static inline Instance(name) tripleConcat(name, _, New)(void) {                         \
-		return (Instance(name)) (name *) Memory_Alloc(sizeof(name));                        \
-	}                                                                                       \
-	static inline void tripleConcat(name, _, Free)(Instance(name) instance) {               \
-		Memory_Free(instance.object);                                                       \
+#define ExtendClass                                                                        \
+	static inline bool tripleConcat(self, _, Equals)(Instance(self) a, Instance(self) b) { \
+		return a.object == b.object;                                                       \
+	}                                                                                      \
+	static __unused alwaysInline Instance(self) tripleConcat(self, _, NewStack)(void) {    \
+		self obj;                                                                          \
+		return (Instance(self)) &obj;                                                      \
+	}                                                                                      \
+	static inline Instance(self) tripleConcat(self, _, New)(void) {                        \
+		return (Instance(self)) (self *) Memory_Alloc(sizeof(self));                       \
+	}                                                                                      \
+	static inline void tripleConcat(self, _, Free)(Instance(self) instance) {              \
+		Memory_Free(instance.object);                                                      \
 	}
 
 #define SingletonPrototype(name) \

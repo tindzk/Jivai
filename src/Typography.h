@@ -44,8 +44,6 @@ class {
 	ref(Node) *node;
 };
 
-ExtendClass(self);
-
 def(void, Init);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);

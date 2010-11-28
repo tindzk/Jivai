@@ -13,8 +13,6 @@ class {
 	bool writable;
 };
 
-ExtendClass(self);
-
 enum {
 	excCannotOpenFile = excOffset,
 	excNotFound,
