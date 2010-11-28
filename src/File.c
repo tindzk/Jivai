@@ -1,5 +1,8 @@
 #import "File.h"
 
+#undef File_Write
+#undef File_Read
+
 static self stdIn = {
 	.fd       = FileNo_StdIn,
 	.readable = true,

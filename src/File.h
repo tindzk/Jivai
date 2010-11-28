@@ -50,3 +50,9 @@ overload def(size_t, Write, String s);
 def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
 void ref(GetContents)(String path, String *res);
+
+#define File_Read(obj, ...) \
+	File_Read(File_FromObject(obj), ## __VA_ARGS__)
+
+#define File_Write(obj, ...) \
+	File_Write(File_FromObject(obj), ## __VA_ARGS__)

@@ -44,7 +44,7 @@ def(void, Destroy) {
 }
 
 def(void, Write, String s) {
-	File_Write(File_FromObject(this->out), s);
+	File_Write(this->out, s);
 }
 
 def(void, ResetVT100) {
@@ -224,7 +224,7 @@ overload def(void, Print, String s) {
 }
 
 overload def(void, Print, char c) {
-	File_Write(File_FromObject(this->out), &c, 1);
+	File_Write(this->out, &c, 1);
 }
 
 def(void, DeleteLine, size_t n) {
@@ -305,7 +305,7 @@ def(void, RestoreCursor) {
 
 def(char, ReadChar) {
 	char c = '\0';
-	File_Read(File_FromObject(this->in), &c, 1);
+	File_Read(this->in, &c, 1);
 	return c;
 }
 
