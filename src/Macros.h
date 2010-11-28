@@ -221,32 +221,36 @@
 	(sizeof(arr) / sizeof((arr)[0]) + mustBeArray(arr))
 
 /* The following macros were taken from:
+ * http://www.fefe.de/intof.html
  * http://coverclock.blogspot.com/2008/05/generic-embedded-programming-using-c.html
  */
 
-#define MinUnsignedValue(type) \
+#define MinUnsigned(type) \
 	((type) 0)
 
-#define MaxUnsignedValue(type) \
-	((type) (~MinUnsignedValue(type)))
+#define MaxUnsigned(type) \
+	((type) (~MinUnsigned(type)))
 
-#define MinSignedValue(type) \
-	((type) (((type) 1) << ((sizeof(type) * 8) -1)))
+#define HalfMaxSigned(type) \
+	((type) 1 << (sizeof(type) * 8 - 2))
 
-#define MaxSignedValue(type) \
-	((type) (~MinSignedValue(type)))
+#define MaxSigned(type) \
+	(HalfMaxSigned(type) - 1 + HalfMaxSigned(type))
+
+#define MinSigned(type) \
+	(-1 - MaxSigned(type))
 
 #define isSigned(type) \
-	!(MaxUnsignedValue(type) > 0)
+	((type) -1 < 1)
 
-#define MinValue(type) (         \
-	isSigned(type)               \
-		? MinSignedValue(type)   \
-		: MinUnsignedValue(type) \
+#define MinValue(type) (    \
+	isSigned(type)          \
+		? MinSigned(type)   \
+		: MinUnsigned(type) \
 )
 
-#define MaxValue(type) (         \
-	isSigned(type)               \
-		? MaxSignedValue(type)   \
-		: MaxUnsignedValue(type) \
+#define MaxValue(type) (    \
+	isSigned(type)          \
+		? MaxSigned(type)   \
+		: MaxUnsigned(type) \
 )
