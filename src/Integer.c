@@ -13,14 +13,14 @@
 				digit *= 10;                          \
 			}                                         \
 			if (res + digit > MaxValue(type)) {       \
-				throw(excNumberTooBig);               \
+				throw(excOverflow);                   \
 			}                                         \
 			res += digit;                             \
 			c++;                                      \
 		}                                             \
 		if (s.len > 0 && s.buf[0] == '-') {           \
 			if (!isSigned(type)) {                    \
-				throw(excUnsignedType);               \
+				throw(excUnderflow);                  \
 			}                                         \
 			res *= -1;                                \
 		}                                             \

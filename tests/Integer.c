@@ -35,7 +35,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		UInt32_Parse($("-1"));
-	} clean catch(Integer, excUnsignedType) {
+	} clean catch(Integer, excUnderflow) {
 		ok = true;
 	} finally {
 

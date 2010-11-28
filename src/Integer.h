@@ -5,8 +5,8 @@
 #define self Integer
 
 enum {
-	excNumberTooBig = excOffset,
-	excUnsignedType
+	excOverflow = excOffset,
+	excUnderflow
 };
 
 s8  Int8_Parse(String s);
