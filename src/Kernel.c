@@ -8,7 +8,7 @@ sdef(bool, close, ssize_t fd) {
 	return syscall(__NR_close, fd) == 0;
 }
 
-noReturn sdef(void, exit, int status) {
+sdef(void, exit, int status) {
 	syscall(__NR_exit, status);
 }
 
