@@ -42,7 +42,7 @@ record(ref(Buffer)) {
 	jmp_buf jmpBuffer;
 };
 
-class(ExceptionManager) {
+record(ExceptionManager) {
 	ref(Buffer) *cur;
 	ref(Record) e;
 };
