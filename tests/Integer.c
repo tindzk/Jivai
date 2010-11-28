@@ -31,17 +31,147 @@ tsCase(Acute, "Parsing Int32") {
 }
 
 tsCase(Acute, "Parsing UInt32") {
-	bool ok = false;
+	bool caught = false;
 
 	try {
 		UInt32_Parse($("-1"));
 	} clean catch(Integer, excUnderflow) {
-		ok = true;
+		caught = true;
 	} finally {
 
 	} tryEnd;
 
-	Assert($("Negative numbers"), ok);
+	Assert($("Detect underflow"), caught);
+}
+
+tsCase(Acute, "Parsing UInt32") {
+	u32 val = 0;
+	bool caught = false;
+
+	try {
+		val = UInt32_Parse($("4294967295"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("No overflow"), !caught);
+	Assert($("Correct number"), val == 4294967295);
+}
+
+tsCase(Acute, "Parsing UInt32") {
+	bool caught = false;
+
+	try {
+		UInt32_Parse($("4294967296"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
+}
+
+tsCase(Acute, "Parsing UInt32") {
+	bool caught = false;
+
+	try {
+		UInt32_Parse($("-42949672960"));
+	} clean catch(Integer, excUnderflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect underflow"), caught);
+}
+
+tsCase(Acute, "Parsing UInt32") {
+	bool caught = false;
+
+	try {
+		UInt32_Parse($("42949672960"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
+}
+
+tsCase(Acute, "Parsing UInt64") {
+	u64 val = 0;
+	bool caught = false;
+
+	try {
+		val = UInt64_Parse($("18446744073709551615"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("No overflow"), !caught);
+	Assert($("Correct value"), val == 18446744073709551615);
+}
+
+tsCase(Acute, "Parsing UInt64") {
+	bool caught = false;
+
+	try {
+		UInt64_Parse($("18446744073709551616"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
+}
+
+tsCase(Acute, "Parsing UInt64") {
+	bool caught = false;
+
+	try {
+		UInt64_Parse($("184467440737095516150"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
+}
+
+tsCase(Acute, "Parsing Int64") {
+	bool caught = false;
+
+	try {
+		Int64_Parse($("-184467440737095516150"));
+	} clean catch(Integer, excUnderflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect underflow"), caught);
+}
+
+tsCase(Acute, "Parsing Int64") {
+	bool caught = false;
+
+	try {
+		Int64_Parse($("184467440737095516150"));
+	} clean catch(Integer, excOverflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
 }
 
 tsCase(Acute, "Int32 conversion") {

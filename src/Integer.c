@@ -1,30 +1,43 @@
 #import "Integer.h"
 
-#define DefineParseString(type, name)                 \
-	type name(String s) {                             \
-		type res = 0;                                 \
-		size_t c = 0;                                 \
-		reverse (i, s.len) {                          \
-			if (!Char_IsDigit(s.buf[i])) {            \
-				continue;                             \
-			}                                         \
-			size_t digit = Char_ParseDigit(s.buf[i]); \
-			repeat (c) {                              \
-				digit *= 10;                          \
-			}                                         \
-			if (res + digit > MaxValue(type)) {       \
-				throw(excOverflow);                   \
-			}                                         \
-			res += digit;                             \
-			c++;                                      \
-		}                                             \
-		if (s.len > 0 && s.buf[0] == '-') {           \
-			if (!isSigned(type)) {                    \
-				throw(excUnderflow);                  \
-			}                                         \
-			res *= -1;                                \
-		}                                             \
-		return res;                                   \
+#define DefineParseString(type, name)                \
+	type name(String s) {                            \
+		type res = 0;                                \
+		size_t c = 0;                                \
+		bool neg = (s.len > 0 && s.buf[0] == '-');   \
+		reverse (i, s.len) {                         \
+			if (!Char_IsDigit(s.buf[i])) {           \
+				continue;                            \
+			}                                        \
+			type digit = Char_ParseDigit(s.buf[i]);  \
+			if (digit) {                             \
+				repeat (c) {                         \
+					if (digit * 10 / 10 != digit) {  \
+						if (neg) {                   \
+							throw(excUnderflow);     \
+						} else {                     \
+							throw(excOverflow);      \
+						}                            \
+					}                                \
+					digit *= 10;                     \
+				}                                    \
+				if (!safeAdd(res, res, digit)) {     \
+					if (neg) {                       \
+						throw(excUnderflow);         \
+					} else {                         \
+						throw(excOverflow);          \
+					}                                \
+				}                                    \
+			}                                        \
+			c++;                                     \
+		}                                            \
+		if (neg) {                                   \
+			if (!isSigned(type)) {                   \
+				throw(excUnderflow);                 \
+			}                                        \
+			res *= -1;                               \
+		}                                            \
+		return res;                                  \
 	}
 
 DefineParseString(s8,  Int8_Parse);
