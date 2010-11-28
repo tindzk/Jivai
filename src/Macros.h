@@ -254,3 +254,23 @@
 		? MaxSigned(type)   \
 		: MaxUnsigned(type) \
 )
+
+#define safeAssign(dest, src) ({        \
+	typeof(src)  _x = (src);            \
+	typeof(dest) _y = _x;               \
+	(_x == _y && ((_x < 1) == (_y < 1)) \
+		? (void) ((dest) = _y), 1       \
+		: 0);                           \
+})
+
+#define safeAdd(c, a, b) ({                 \
+	typeof(a) _a = a;                       \
+	typeof(b) _b = b;                       \
+	(_b < 1)                                \
+		? ((MinValue(typeof(c)) - _b <= _a) \
+			? safeAssign(c, _a + _b)        \
+			: 0)                            \
+		: ((MaxValue(typeof(c)) - _b >= _a) \
+			? safeAssign(c, _a + _b)        \
+			: 0);                           \
+})
