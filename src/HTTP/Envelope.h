@@ -8,7 +8,7 @@
 #undef self
 #define self HTTP_Envelope
 
-class(self) {
+class {
 	s64          contentLength;
 	String       location;
 	String       contentType;

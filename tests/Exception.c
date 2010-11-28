@@ -7,7 +7,7 @@ enum {
 #undef self
 #define self tsException
 
-class(self) {
+class {
 	size_t cntTry;
 	size_t cntEnd;
 	size_t cntFinally;

@@ -28,7 +28,7 @@ record(ref(Node)) {
 	char data[0];
 };
 
-class(self) {
+class {
 	StreamInterface *stream;
 	void *context;
 

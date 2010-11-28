@@ -9,7 +9,7 @@
 #define Terminal_ProgressBar_Padding 8
 #endif
 
-class(self) {
+class {
 	Terminal *term;
 	Terminal_Size size;
 	String block;

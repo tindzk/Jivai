@@ -34,7 +34,7 @@ record(ref(Node)) {
 #define Typography_Item(node) \
 	((Typography_Item *) &(node)->data)
 
-class(self) {
+class {
 	StreamInterface *stream;
 	void *context;
 

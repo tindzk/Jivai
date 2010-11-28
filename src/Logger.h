@@ -22,7 +22,7 @@ set(ref(Level)) {
 
 DefineCallback(ref(Printer), void, String msg, ref(Level) level, String file, int line);
 
-class(self) {
+class {
 	ref(Printer) printer;
 	int levels;
 };

@@ -7,7 +7,7 @@
 #undef self
 #define self File
 
-class(self) {
+class {
 	ssize_t fd;
 	bool readable;
 	bool writable;

@@ -7,7 +7,7 @@
 #undef self
 #define self GenericClientListener
 
-class(self) {
+class {
 	Connections         connections;
 	ConnectionInterface *connection;
 };

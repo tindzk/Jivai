@@ -5,7 +5,7 @@
 #undef self
 #define self BufferedStream
 
-class(self) {
+class {
 	StreamInterface *stream;
 	void *data;
 

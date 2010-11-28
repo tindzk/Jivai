@@ -3,7 +3,7 @@
 #undef self
 #define self App
 
-class(self) {
+class {
 	bool interrupt;
 };
 

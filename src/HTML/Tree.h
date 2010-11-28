@@ -28,7 +28,7 @@ record(ref(Node)) {
 	Array(ref(Attr), *attrs);
 };
 
-class(self) {
+class {
 	Tree tree;
 	ref(Node) *node;
 

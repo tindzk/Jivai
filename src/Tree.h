@@ -19,7 +19,7 @@ record(ref(Node)) {
 
 typedef void (* ref(DestroyNode))(ref(Node) *);
 
-class(self) {
+class {
 	ref(Node) root;
 	ref(DestroyNode) destroyNode;
 };

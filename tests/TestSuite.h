@@ -34,7 +34,7 @@ record(ref(Interface)) {
 
 Array_Define(ref(Interface) *, TestSuites);
 
-class(self) {
+class {
 	Terminal term;
 	Terminal_Controller controller;
 

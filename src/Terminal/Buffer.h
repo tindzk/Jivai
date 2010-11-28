@@ -12,7 +12,7 @@ record(ref(Chunk)) {
 	size_t line;
 };
 
-class(self) {
+class {
 	Array(ref(Chunk), *chunks);
 	Terminal *term;
 	size_t spacing;

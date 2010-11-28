@@ -31,7 +31,7 @@ set(ref(Events)) {
 
 DefineCallback(ref(OnEvent), void, int events, GenericInstance inst);
 
-class(self) {
+class {
 	ssize_t fd;
 	EpollEvent events[ref(NumEvents)];
 	ref(OnEvent) onEvent;

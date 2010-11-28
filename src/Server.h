@@ -12,7 +12,7 @@
 #undef self
 #define self Server
 
-class(self) {
+class {
 	bool   edgeTriggered;
 	Poll   poll;
 	Socket socket;

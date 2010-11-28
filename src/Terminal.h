@@ -118,7 +118,7 @@ record(ref(Style)) {
 	int font;
 };
 
-class(self) {
+class {
 	File *in;
 	File *out;
 

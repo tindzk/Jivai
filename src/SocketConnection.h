@@ -21,7 +21,7 @@ enum {
 	excNotConnected
 };
 
-class(self) {
+class {
 	NetworkAddress addr;
 
 	ssize_t fd;

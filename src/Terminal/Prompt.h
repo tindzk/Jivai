@@ -3,7 +3,7 @@
 #undef self
 #define self Terminal_Prompt
 
-class(self) {
+class {
 	Terminal *term;
 	Terminal_Buffer termbuf;
 };

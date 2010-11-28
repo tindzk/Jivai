@@ -5,7 +5,7 @@
 #undef self
 #define self tsString
 
-class(self) {
+class {
 	String s;
 };
 

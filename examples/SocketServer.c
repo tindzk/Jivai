@@ -38,7 +38,7 @@ record(ClientData) {
 #undef self
 #define self CustomClientListener
 
-class(self) {
+class {
 	ssize_t activeConn;
 };
 

@@ -7,7 +7,7 @@
 #undef self
 #define self tsOverloading
 
-class(self) {
+class {
 	enum {
 		MethodInt8,
 		MethodInt16,

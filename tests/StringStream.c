@@ -6,7 +6,7 @@
 #undef self
 #define self tsStringStream
 
-class(self) {
+class {
 
 };
 

@@ -15,7 +15,7 @@ enum {
 
 extern char **environ;
 
-class(self) {
+class {
 	String cmd;
 	StringArray *params;
 };

@@ -119,14 +119,14 @@
 		return (GenericInstance) { .object = instance.object };                               \
 	}
 
-#define class(name)                    \
-	typedef struct name name;          \
+#define class                          \
+	typedef struct self self;          \
 	typedef union {                    \
-		struct name *object;           \
+		struct self *object;           \
 		GenericInstance generic;       \
-	} Instance(name) transparentUnion; \
-	BasicInstance(name)                \
-	struct name
+	} Instance(self) transparentUnion; \
+	BasicInstance(self)                \
+	struct self
 
 /* This cannot be included in class() as sizeof() is needed and the
  * structure's final size is not yet determinable.

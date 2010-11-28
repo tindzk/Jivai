@@ -98,7 +98,7 @@ set(ref(Token)) {
 /*
  * Compiled regular expression
  */
-class(self) {
+class {
 	Array(unsigned char, *code);
 	Array(unsigned char, *data);
 

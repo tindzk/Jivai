@@ -19,7 +19,7 @@ set(ref(OperationType)) {
 
 DefineCallback(ref(OnDone), void, void *);
 
-class(self) {
+class {
 	SocketConnection *conn;
 
 	struct {

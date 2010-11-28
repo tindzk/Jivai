@@ -5,7 +5,7 @@
 #undef self
 #define self Terminal_Controller
 
-class(self) {
+class {
 	Terminal *term;
 };
 

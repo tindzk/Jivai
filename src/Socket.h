@@ -24,7 +24,7 @@ enum {
 	excSocketFailed
 };
 
-class(self) {
+class {
 	ssize_t fd;
 	bool unused;
 	Socket_Protocol protocol;

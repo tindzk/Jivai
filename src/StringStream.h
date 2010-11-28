@@ -4,7 +4,7 @@
 #undef self
 #define self StringStream
 
-class(self) {
+class {
 	String *str;
 	size_t offset;
 };

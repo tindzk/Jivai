@@ -8,7 +8,7 @@ extern ExceptionManager exc;
 #undef self
 #define self tsInteger
 
-class(self) {
+class {
 
 };
 

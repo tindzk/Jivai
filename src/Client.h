@@ -3,7 +3,7 @@
 #undef self
 #define self Client
 
-class(self) {
+class {
 	SocketConnection *conn;
 	void *data;
 };

@@ -7,7 +7,7 @@
 #undef self
 #define self tsNumber
 
-class(self) {
+class {
 
 };
 

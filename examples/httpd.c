@@ -31,7 +31,7 @@
 #undef self
 #define self Request
 
-class(self) {
+class {
 	bool gotData;
 	bool persistent;
 
@@ -243,7 +243,7 @@ def(Connection_Status, Respond) {
 #undef self
 #define self HttpConnection
 
-class(self) {
+class {
 	Connection base;
 	Request request;
 };

@@ -33,7 +33,7 @@ record(ref(Events)) {
 	HTTP_OnPath      onPath;
 };
 
-class(self) {
+class {
 	ref(Events) events;
 };
 

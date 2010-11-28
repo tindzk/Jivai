@@ -28,7 +28,7 @@ set(ref(State)) {
 
 DefineCallback(ref(OnToken), void, ref(TokenType), String);
 
-class(self) {
+class {
 	ref(OnToken) onToken;
 
 	String buf;

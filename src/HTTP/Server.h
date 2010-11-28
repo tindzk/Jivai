@@ -44,7 +44,7 @@ record(ref(Events)) {
 	ref(OnRespond)   onRespond;
 };
 
-class(self) {
+class {
 	bool               cleanup;
 	String             body;
 	String             header;

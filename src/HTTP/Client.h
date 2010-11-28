@@ -42,7 +42,7 @@ record(ref(HostPath)) {
 
 typedef Array(ref(HostPath), ref(HostPaths));
 
-class(self) {
+class {
 	Socket           socket;
 	SocketConnection conn;
 	String           host;

@@ -10,7 +10,7 @@ enum {
 	excExceedsPermittedLength = excOffset
 };
 
-class(self) {
+class {
 	HTTP_OnParameter onParameter;
 	bool autoResize;
 };

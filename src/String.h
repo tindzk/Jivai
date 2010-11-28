@@ -11,7 +11,7 @@
 #define String_SmartAlign 1
 #endif
 
-class(self) {
+class {
 	size_t len;
 	size_t size;
 	char *buf;

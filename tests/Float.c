@@ -6,7 +6,7 @@
 #undef self
 #define self tsFloat
 
-class(self) {
+class {
 
 };
 

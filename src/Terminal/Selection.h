@@ -3,7 +3,7 @@
 #undef self
 #define self Terminal_Selection
 
-class(self) {
+class {
 	Terminal *term;
 	Terminal_Buffer termbuf;
 	size_t cur;

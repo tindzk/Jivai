@@ -20,7 +20,7 @@ record(ref(LinuxEntry)) {
 	char name[];
 };
 
-class(self) {
+class {
 	int fd;
 	ref(LinuxEntry) *d;
 	int nread;

@@ -19,7 +19,7 @@ DefineCallback(ref(OnKeyBack),  void);
 DefineCallback(ref(OnKeyEnter), void, String);
 DefineCallback(ref(OnKeyPress), bool, String);
 
-class(self) {
+class {
 	size_t pos;
 	String line;
 

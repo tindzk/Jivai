@@ -7,7 +7,7 @@
 #undef self
 #define self tsYAML
 
-class(self) {
+class {
 
 };
 
