@@ -144,7 +144,7 @@ def(void, Close) {
 	this->stream->close(this->data);
 }
 
-StreamInterface Impl(self) = {
+Impl(Stream) = {
 	.read  = (void *) ref(Read),
 	.write = (void *) ref(Write),
 	.close = (void *) ref(Close),

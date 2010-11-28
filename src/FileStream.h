@@ -12,4 +12,4 @@ def(size_t, Read, void *buf, size_t len);
 def(size_t, Write, void *buf, size_t len);
 def(bool, IsEof);
 
-StreamInterface Impl(self);
+extern Impl(Stream);

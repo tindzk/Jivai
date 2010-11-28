@@ -28,4 +28,4 @@ def(String, Flush);
 def(void, Reset);
 def(void, Close);
 
-StreamInterface Impl(self);
+extern Impl(Stream);

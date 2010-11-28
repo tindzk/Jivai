@@ -93,7 +93,7 @@ def(Connection_Status, OnPush, Client *client) {
 	return call(OnData, client, false);
 }
 
-ClientListenerInterface Impl(self) = {
+Impl(ClientListener) = {
 	.onInit             = (void *) ref(OnInit),
 	.onDestroy          = (void *) ref(OnDestroy),
 	.onClientConnect    = (void *) ref(OnConnect),

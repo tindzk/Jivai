@@ -21,4 +21,4 @@ def(void, OnDisconnect, Client *client);
 def(Connection_Status, OnPull, Client *client);
 def(Connection_Status, OnPush, Client *client);
 
-ClientListenerInterface Impl(self);
+extern Impl(ClientListener);

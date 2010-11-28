@@ -32,7 +32,7 @@ def(bool, IsEof) {
 	return this->offset >= this->str->len;
 }
 
-StreamInterface Impl(self) = {
+Impl(Stream) = {
 	.read  = (void *) ref(Read),
 	.write = (void *) ref(Write),
 	.close = (void *) ref(Close),

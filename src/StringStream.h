@@ -15,4 +15,4 @@ def(size_t, Write, __unused void *buf, __unused size_t len);
 def(void, Close);
 def(bool, IsEof);
 
-StreamInterface Impl(self);
+extern Impl(Stream);

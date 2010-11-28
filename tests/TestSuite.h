@@ -25,14 +25,14 @@ record(ref(Method)) {
 	size_t level;
 };
 
-record(ref(Interface)) {
+record(TestSuiteInterface) {
 	String name;
 	size_t size;
 	TestSuite_Method *first;
 	TestSuite_Method *last;
 };
 
-Array_Define(ref(Interface) *, TestSuites);
+Array_Define(TestSuiteInterface *, TestSuites);
 
 class {
 	Terminal term;
@@ -55,7 +55,7 @@ class {
 		.type = TestSuite_MethodType_Run,         \
 		.addr = ref(Run)                          \
 	};                                            \
-	TestSuite_Interface Impl(self) = {            \
+	Impl(TestSuite) = {                           \
 		.name  = String(caption),                 \
 		.size  = sizeof(self),                    \
 		.first = &ref(MethodRun),                 \
@@ -98,11 +98,14 @@ class {
 	};                                          \
 	tsCaseMethod
 
-#define tsFinalize                                                \
-	TestSuite_Method ref(MethodLast) tsSection = { };             \
-	Constructor {                                                 \
-		Impl(self).last = &ref(MethodLast);                       \
-		TestSuite_AddSuite(TestSuite_GetInstance(), &Impl(self)); \
+#define ImplName \
+	simpleConcat(self, Impl)
+
+#define tsFinalize                                              \
+	TestSuite_Method ref(MethodLast) tsSection = { };           \
+	Constructor {                                               \
+		ImplName.last = &ref(MethodLast);                       \
+		TestSuite_AddSuite(TestSuite_GetInstance(), &ImplName); \
 	}
 
 #define Assert(descr, expr) \
@@ -117,5 +120,5 @@ SingletonPrototype(self);
 
 def(void, Init);
 def(void, Destroy);
-def(void, AddSuite, ref(Interface) *suite);
+def(void, AddSuite, TestSuiteInterface *suite);
 def(void, Assert, String descr, bool succeeded);

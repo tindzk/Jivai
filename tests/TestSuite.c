@@ -22,7 +22,7 @@ def(void, Destroy) {
 	TestSuites_Free(this->suites);
 }
 
-def(void, AddSuite, ref(Interface) *suite) {
+def(void, AddSuite, TestSuiteInterface *suite) {
 	TestSuites_Push(&this->suites, suite);
 }
 
@@ -47,7 +47,7 @@ def(void, Assert, String descr, bool succeeded) {
 		descr);
 }
 
-def(void *, Resolve, ref(Interface) *suite, ref(MethodType) type) {
+def(void *, Resolve, TestSuiteInterface *suite, ref(MethodType) type) {
 	forward(i, suite->last - suite->first) {
 		ref(Method) *method = &suite->first[i];
 
@@ -59,7 +59,7 @@ def(void *, Resolve, ref(Interface) *suite, ref(MethodType) type) {
 	return NULL;
 }
 
-def(bool, RunSuite, ref(Interface) *suite) {
+def(bool, RunSuite, TestSuiteInterface *suite) {
 	ref(MethodRun) *method = call(Resolve, suite, ref(MethodType_Run));
 
 	return (method != NULL)
@@ -67,7 +67,7 @@ def(bool, RunSuite, ref(Interface) *suite) {
 		: false;
 }
 
-def(void, InitSuite, ref(Interface) *suite, GenericInstance inst) {
+def(void, InitSuite, TestSuiteInterface *suite, GenericInstance inst) {
 	ref(MethodInit) *method = call(Resolve, suite, ref(MethodType_Init));
 
 	if (method != NULL) {
@@ -75,7 +75,7 @@ def(void, InitSuite, ref(Interface) *suite, GenericInstance inst) {
 	}
 }
 
-def(void, DestroySuite, ref(Interface) *suite, GenericInstance inst) {
+def(void, DestroySuite, TestSuiteInterface *suite, GenericInstance inst) {
 	ref(MethodDestroy) *method = call(Resolve, suite, ref(MethodType_Destroy));
 
 	if (method != NULL) {
@@ -83,7 +83,7 @@ def(void, DestroySuite, ref(Interface) *suite, GenericInstance inst) {
 	}
 }
 
-def(void, RunTestSuite, ref(Interface) *suite, GenericInstance inst) {
+def(void, RunTestSuite, TestSuiteInterface *suite, GenericInstance inst) {
 	forward(i, suite->last - suite->first) {
 		ref(Method) *method = &suite->first[i];
 

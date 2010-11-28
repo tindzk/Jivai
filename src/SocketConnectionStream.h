@@ -11,4 +11,4 @@
 
 def(bool, IsEof);
 
-StreamInterface Impl(self);
+extern Impl(Stream);

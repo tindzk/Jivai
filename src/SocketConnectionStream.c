@@ -4,7 +4,7 @@ def(bool, IsEof) {
 	return false;
 }
 
-StreamInterface Impl(self) = {
+Impl(Stream) = {
 	.read  = (void *) ref(Read),
 	.write = (void *) ref(Write),
 	.close = (void *) ref(Close),

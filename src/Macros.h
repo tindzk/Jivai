@@ -66,7 +66,7 @@
 	simpleConcat(name, Instance)
 
 #define Impl(name) \
-	simpleConcat(name, Impl)
+	name##Interface simpleConcat(self, Impl)
 
 #define def(ret, method, ...) \
 	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)

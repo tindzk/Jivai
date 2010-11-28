@@ -138,7 +138,7 @@ def(Connection_Status, OnData, Client *client) {
 	return Connection_Status_Open;
 }
 
-ClientListenerInterface Impl(self) = {
+Impl(ClientListener) = {
 	.onInit             = (void *) ref(OnInit),
 	.onDestroy          = (void *) ref(OnDestroy),
 	.onClientConnect    = (void *) ref(OnConnect),

@@ -264,7 +264,7 @@ def(Connection_Status, Pull) {
 	return Request_Respond(&this->request);
 }
 
-ConnectionInterface Impl(self) = {
+Impl(Connection) = {
 	.size    = sizeof(self),
 	.init    = (void *) ref(Init),
 	.destroy = (void *) ref(Destroy),
