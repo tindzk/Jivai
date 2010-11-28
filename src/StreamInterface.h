@@ -1,8 +1,8 @@
-#import <stddef.h>
+#import "Types.h"
 
-typedef struct {
-	size_t (*read)(void *, void *, size_t);
-	size_t (*write)(void *, void *, size_t);
-	void (*close)(void *);
-	bool (*isEof)(void *);
-} StreamInterface;
+Interface(Stream) {
+	size_t (*read) (GenericInstance, void *, size_t);
+	size_t (*write)(GenericInstance, void *, size_t);
+	void   (*close)(GenericInstance);
+	bool   (*isEof)(GenericInstance);
+};

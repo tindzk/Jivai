@@ -65,6 +65,9 @@
 #define Instance(name) \
 	simpleConcat(name, Instance)
 
+#define Interface(name) \
+	record(name##Interface)
+
 #define Impl(name) \
 	name##Interface simpleConcat(self, Impl)
 

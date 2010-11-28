@@ -1,7 +1,7 @@
 #import "Client.h"
 #import "Connection.h"
 
-record(ClientListenerInterface) {
+Interface(ClientListener) {
 	void (*onInit)             (GenericInstance);
 	void (*onDestroy)          (GenericInstance);
 	bool (*onClientConnect)    (GenericInstance);

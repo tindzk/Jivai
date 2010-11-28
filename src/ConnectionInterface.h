@@ -1,6 +1,6 @@
 #import "SocketConnection.h"
 
-record(ConnectionInterface) {
+Interface(Connection) {
 	size_t size;
 
 	void (*init)   (GenericInstance, SocketConnection *);

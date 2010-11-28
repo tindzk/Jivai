@@ -25,7 +25,7 @@ record(ref(Method)) {
 	size_t level;
 };
 
-record(TestSuiteInterface) {
+Interface(TestSuite) {
 	String name;
 	size_t size;
 	TestSuite_Method *first;
