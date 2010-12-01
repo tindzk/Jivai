@@ -1,5 +1,7 @@
 #import "Unicode.h"
 
+#define self Unicode
+
 /* Taken from BusyBox (busybox-1.16.1/libbb/unicode.c). */
 sdef(size_t, CalcWidth, const char *src) {
 	size_t bytes = 0;

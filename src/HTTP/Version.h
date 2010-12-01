@@ -1,6 +1,5 @@
 #import "../String.h"
 
-#undef self
 #define self HTTP_Version
 
 set(self) {
@@ -10,3 +9,5 @@ set(self) {
 };
 
 sdef(self, FromString, String s);
+
+#undef self

@@ -5,7 +5,6 @@
 #import "../Pattern.h"
 #import "../DateTime.h"
 
-#undef self
 #define self Date_RFC822
 
 record(self) {
@@ -20,3 +19,5 @@ sdef(self, Parse, String s);
 sdef(self, FromDate, Date $this);
 sdef(self, FromDateTime, DateTime $this);
 sdef(String, ToString, self $this);
+
+#undef self

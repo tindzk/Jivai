@@ -1,5 +1,7 @@
 #import "Terminal.h"
 
+#define self Terminal
+
 #undef Terminal_Print
 
 sdef(bool, IsTTY, File *file) {

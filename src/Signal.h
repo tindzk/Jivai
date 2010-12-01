@@ -4,7 +4,6 @@
 #import "Compiler.h"
 #import "Exception.h"
 
-#undef self
 #define self Signal
 
 enum {
@@ -35,3 +34,5 @@ void Signal0(void);
 sdef(void, Register, int signal, void (*cb)(int, siginfo_t *, void *));
 sdef(void, Ignore, int signal);
 sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *ucontext);
+
+#undef self

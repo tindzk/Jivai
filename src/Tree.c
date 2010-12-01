@@ -1,5 +1,7 @@
 #import "Tree.h"
 
+#define self Tree
+
 def(void, Init, ref(DestroyNode) destroyNode) {
 	this->destroyNode = destroyNode;
 

@@ -5,7 +5,6 @@
 #import "Status.h"
 #import "Version.h"
 
-#undef self
 #define self HTTP_Envelope
 
 class {
@@ -33,3 +32,5 @@ def(void, SetPersistent, bool value);
 def(bool, IsPersistent);
 def(void, SetLastModified, DateTime lastModified);
 def(String, GetString);
+
+#undef self

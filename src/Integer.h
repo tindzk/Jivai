@@ -1,7 +1,6 @@
 #import "String.h"
 #import "Exception.h"
 
-#undef self
 #define self Integer
 
 enum {
@@ -198,3 +197,5 @@ static overload inline short Integer_Compare(u64 a, u64 b) {
 	String _str = StackString(len);        \
 	Integer_ToStringBuf(num, &_str);       \
 	_str; })
+
+#undef self

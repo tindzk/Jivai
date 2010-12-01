@@ -1,5 +1,7 @@
 #import "Method.h"
 
+#define self HTTP_Method
+
 sdef(self, FromString, String s) {
 	if (String_Equals(s, $("GET"))) {
 		return ref(Get);

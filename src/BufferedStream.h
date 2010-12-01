@@ -2,7 +2,6 @@
 #import "Memory.h"
 #import "StreamInterface.h"
 
-#undef self
 #define self BufferedStream
 
 class {
@@ -29,3 +28,5 @@ def(void, Reset);
 def(void, Close);
 
 extern Impl(Stream);
+
+#undef self

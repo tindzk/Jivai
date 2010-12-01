@@ -1,5 +1,7 @@
 #import "SocketConnection.h"
 
+#define self SocketConnection
+
 def(void, Flush) {
 	if (this->corking) {
 		int state = 0;

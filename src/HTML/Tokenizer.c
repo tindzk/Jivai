@@ -1,5 +1,7 @@
 #import "Tokenizer.h"
 
+#define self HTML_Tokenizer
+
 def(void, Init, ref(OnToken) onToken) {
 	this->buf      = HeapString(100);
 	this->curToken = HeapString(100);

@@ -1,5 +1,7 @@
 #import "NetworkAddress.h"
 
+#define self NetworkAddress
+
 struct in_addr NetworkAddress_ResolveHost(String hostname) {
 	struct addrinfo *host;
 

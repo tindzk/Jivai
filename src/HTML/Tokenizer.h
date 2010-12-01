@@ -4,7 +4,6 @@
 #import "../String.h"
 #import "../StreamInterface.h"
 
-#undef self
 #define self HTML_Tokenizer
 
 set(ref(TokenType)) {
@@ -47,3 +46,5 @@ def(void, ProcessChar, char c);
 def(void, Poll);
 overload def(void, Process, String s);
 overload def(void, Process, StreamInterface *stream, void *context);
+
+#undef self

@@ -4,7 +4,6 @@
 #import "String.h"
 #import "Exception.h"
 
-#undef self
 #define self NetworkAddress
 
 enum {
@@ -18,3 +17,5 @@ typedef struct {
 
 struct in_addr NetworkAddress_ResolveHost(String hostname);
 String NetworkAddress_ToString(NetworkAddress addr);
+
+#undef self

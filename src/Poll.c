@@ -1,5 +1,7 @@
 #import "Poll.h"
 
+#define self Poll
+
 def(void, Init, ref(OnEvent) onEvent) {
 	if ((this->fd = Kernel_epoll_create(ref(NumEvents))) == -1) {
 		throw(excUnknownError);

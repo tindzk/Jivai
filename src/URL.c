@@ -1,5 +1,7 @@
 #import "URL.h"
 
+#define self URL
+
 set(ref(State)) {
 	ref(State_Scheme),
 	ref(State_Host),

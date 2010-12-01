@@ -1,7 +1,6 @@
 #import "Memory.h"
 #import "Exception.h"
 
-#undef self
 #define self Memory
 
 /*

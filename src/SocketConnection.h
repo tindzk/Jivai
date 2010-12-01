@@ -8,7 +8,6 @@
 #import "Exception.h"
 #import "NetworkAddress.h"
 
-#undef self
 #define self SocketConnection
 
 #ifndef SocketConnection_ChunkSize
@@ -36,3 +35,5 @@ def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);
 def(ssize_t, Write, void *buf, size_t len);
 def(void, Close);
+
+#undef self

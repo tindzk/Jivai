@@ -1,5 +1,7 @@
 #import "Hex.h"
 
+#define self Hex
+
 sdef(String, ToString, u64 hex) {
 	static char symbols[] = "0123456789abcdef";
 

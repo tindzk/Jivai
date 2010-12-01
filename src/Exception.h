@@ -5,7 +5,6 @@
 #import "String.h"
 #import "Runtime.h"
 
-#undef self
 #define self Exception
 
 #ifndef Exception_SaveOrigin
@@ -65,6 +64,8 @@ sdef(void, Print, size_t code);
 #endif
 
 #if Exception_SaveTrace
+#undef self
+
 #import "Backtrace.h"
 
 #define Exception_SetTrace(e)            \
@@ -74,6 +75,8 @@ sdef(void, Print, size_t code);
 #else
 #define Exception_SetTrace(e) \
 	do { } while (0)
+
+#define self Exception
 #endif
 
 #define Exception_SetCode(e, c) \
@@ -165,3 +168,5 @@ sdef(void, Print, size_t code);
 	Exception_SetException(code); \
 	__exc_rethrow = true;         \
 	goto __exc_finally
+
+#undef self

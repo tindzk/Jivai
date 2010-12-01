@@ -1,5 +1,7 @@
 #import "Process.h"
 
+#define self Process
+
 /*
  * Copyright (C) 2008-2010 vmchecker authors and contributors.
  *

@@ -1,5 +1,7 @@
 #import "SocketSession.h"
 
+#define self SocketSession
+
 def(void, Init, SocketConnection *conn) {
 	this->conn    = conn;
 	this->op.type = ref(OperationType_Idle);

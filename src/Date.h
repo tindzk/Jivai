@@ -1,6 +1,5 @@
 #import "Integer.h"
 
-#undef self
 #define self Date
 
 record(self) {
@@ -53,3 +52,5 @@ sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(short, GetWeekDay, self date);
 sdef(String, Format, self date);
+
+#undef self

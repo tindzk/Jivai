@@ -1,5 +1,7 @@
 #import "RFC822.h"
 
+#define self Date_RFC822
+
 static const String pattern = String("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
 
 static const String weekdays[] = {

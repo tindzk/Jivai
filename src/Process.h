@@ -5,7 +5,6 @@
 #import "String.h"
 #import "Exception.h"
 
-#undef self
 #define self Process
 
 enum {
@@ -26,3 +25,5 @@ def(void, AddParameter, String param);
 def(String, GetCommandLine);
 overload def(int, Spawn, float *time);
 overload def(int, Spawn);
+
+#undef self

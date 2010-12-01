@@ -1,5 +1,7 @@
 #import "Typography.h"
 
+#define self Typography
+
 def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 }

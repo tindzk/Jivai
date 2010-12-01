@@ -1,5 +1,7 @@
 #import "Server.h"
 
+#define self Server
+
 def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context) {
 	this->context  = context;
 	this->listener = listener;

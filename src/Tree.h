@@ -1,6 +1,5 @@
 #import "Memory.h"
 
-#undef self
 #define self Tree
 
 #define Tree_Define(type)  \
@@ -32,3 +31,5 @@ void* ref(AddCustomNode)(void *ptrNode, size_t size);
 
 #define Tree_AddNode(node) \
 	Tree_AddCustomNode(node, sizeof(typeof(*(node))))
+
+#undef self

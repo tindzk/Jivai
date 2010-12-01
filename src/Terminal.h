@@ -7,7 +7,6 @@
 #import "Integer.h"
 #import "Exception.h"
 
-#undef self
 #define self Terminal
 
 enum {
@@ -163,3 +162,5 @@ def(ref(Key), ReadKey);
 
 #define Terminal_Print(obj, ...) \
 	Terminal_Print(Terminal_FromObject(obj), ## __VA_ARGS__)
+
+#undef self

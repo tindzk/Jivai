@@ -3,7 +3,6 @@
 
 #define FileStreamInstance FileInstance
 
-#undef self
 #define self FileStream
 
 def(void, Open, String path, int mode);
@@ -13,3 +12,5 @@ def(size_t, Write, void *buf, size_t len);
 def(bool, IsEof);
 
 extern Impl(Stream);
+
+#undef self

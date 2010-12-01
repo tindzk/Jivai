@@ -1,5 +1,7 @@
 #import "File.h"
 
+#define self File
+
 #undef File_Write
 #undef File_Read
 

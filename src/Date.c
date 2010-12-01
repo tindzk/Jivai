@@ -1,5 +1,7 @@
 #import "Date.h"
 
+#define self Date
+
 /* Contains the days up until the end of a month. Refers to a non-leap year.
  * Taken from diet libc (dietlibc-0.32/libugly/time_table_spd.c).
  */

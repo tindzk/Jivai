@@ -143,7 +143,6 @@ record(EpollEvent) {
 
 #import "String.h"
 
-#undef self
 #define self Kernel
 
 sdef(ssize_t, open, String path, int flags, int mode);
@@ -187,3 +186,5 @@ sdef(ssize_t, accept, ssize_t fd, void *addr, int *len);
 sdef(ssize_t, recv, ssize_t fd, void *buf, size_t len, int flags);
 sdef(ssize_t, send, ssize_t fd, void *buf, size_t len, int flags);
 sdef(ssize_t, sendfile64, ssize_t out, ssize_t in, u64 *offset, size_t len);
+
+#undef self

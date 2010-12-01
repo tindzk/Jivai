@@ -1,5 +1,7 @@
 #import "Envelope.h"
 
+#define self HTTP_Envelope
+
 def(void, Init) {
 	this->contentLength = -1;
 	this->location      = HeapString(0);

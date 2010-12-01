@@ -1,6 +1,5 @@
 #import "../String.h"
 
-#undef self
 #define self HTTP_Status
 
 record(ref(Item)) {
@@ -70,3 +69,5 @@ set(self) {
 
 sdef(ref(Item), GetItem, self status);
 sdef(self, GetStatusByCode, u16 code);
+
+#undef self

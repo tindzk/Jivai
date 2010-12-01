@@ -1,5 +1,7 @@
 #import "StringStream.h"
 
+#define self StringStream
+
 def(void, Init, String *s) {
 	this->str    = s;
 	this->offset = 0;

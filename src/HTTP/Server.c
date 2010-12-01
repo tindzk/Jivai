@@ -1,5 +1,7 @@
 #import "Server.h"
 
+#define self HTTP_Server
+
 def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
 	this->events = events;
 

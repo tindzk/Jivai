@@ -4,7 +4,6 @@
 #import "SocketConnection.h"
 #import "ConnectionInterface.h"
 
-#undef self
 #define self SocketSession
 
 enum {
@@ -48,3 +47,5 @@ def(void, SendFile, File file, u64 length, ref(OnDone) onDone);
 def(void, Continue);
 def(void, Flush);
 def(bool, IsIdle);
+
+#undef self

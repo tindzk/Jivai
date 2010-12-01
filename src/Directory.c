@@ -1,5 +1,7 @@
 #import "Directory.h"
 
+#define self Directory
+
 def(void, Init, String path) {
 	this->fd = Kernel_open(path,
 		FileStatus_Directory |

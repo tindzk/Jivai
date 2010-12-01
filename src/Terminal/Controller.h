@@ -2,7 +2,6 @@
 #import "../Typography.h"
 #import "../StringStream.h"
 
-#undef self
 #define self Terminal_Controller
 
 class {
@@ -11,3 +10,5 @@ class {
 
 def(void, Init, Terminal *term);
 def(void, Render, String s, ...);
+
+#undef self

@@ -4,7 +4,6 @@
 #import "String.h"
 #import "Exception.h"
 
-#undef self
 #define self File
 
 class {
@@ -56,3 +55,5 @@ void ref(GetContents)(String path, String *res);
 
 #define File_Write(obj, ...) \
 	File_Write(File_FromObject(obj), ## __VA_ARGS__)
+
+#undef self

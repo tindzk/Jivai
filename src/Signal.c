@@ -1,5 +1,7 @@
 #import "Signal.h"
 
+#define self Signal
+
 void Signal0(void) {
 	/* Register these signals as exceptions. */
 	Signal_Register(SIGALRM, ref(OnSignal));

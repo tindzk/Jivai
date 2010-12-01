@@ -1,5 +1,7 @@
 #import "Prompt.h"
 
+#define self Terminal_Prompt
+
 def(void, Init, Terminal *term) {
 	this->term = term;
 	Terminal_Buffer_Init(&this->termbuf, term, 1);

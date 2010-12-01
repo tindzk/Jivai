@@ -1,5 +1,7 @@
 #import "Time.h"
 
+#define self Time
+
 sdef(self, Empty) {
 	self res;
 

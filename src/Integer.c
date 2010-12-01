@@ -1,5 +1,7 @@
 #import "Integer.h"
 
+#define self Integer
+
 #define DefineParseString(type, name)                \
 	type name(String s) {                            \
 		type res = 0;                                \

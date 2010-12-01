@@ -1,5 +1,7 @@
 #import "Path.h"
 
+#define self Path
+
 overload sdef(bool, Exists, String path, bool follow) {
 	Stat attr;
 

@@ -1,6 +1,5 @@
 #import "Buffer.h"
 
-#undef self
 #define self Terminal_Selection
 
 class {
@@ -14,3 +13,5 @@ def(void, Destroy);
 def(void, OnSelect, size_t id);
 def(void, Add, String caption, bool selected);
 def(ssize_t, GetSel);
+
+#undef self

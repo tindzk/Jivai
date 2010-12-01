@@ -4,7 +4,6 @@
 #import "ConnectionInterface.h"
 #import "ClientListenerInterface.h"
 
-#undef self
 #define self GenericClientListener
 
 class {
@@ -22,3 +21,5 @@ def(Connection_Status, OnPull, Client *client);
 def(Connection_Status, OnPush, Client *client);
 
 extern Impl(ClientListener);
+
+#undef self

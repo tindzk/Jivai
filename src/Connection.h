@@ -1,7 +1,6 @@
 #import "Client.h"
 #import "DoublyLinkedList.h"
 
-#undef self
 #define self Connection
 
 set(ref(Status)) {
@@ -15,3 +14,5 @@ record(self) {
 };
 
 DoublyLinkedList_DeclareList(self, Connections);
+
+#undef self

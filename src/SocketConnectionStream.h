@@ -1,7 +1,6 @@
 #import "StreamInterface.h"
 #import "SocketConnection.h"
 
-#undef self
 #define self SocketConnectionStream
 
 #define SocketConnectionStream       SocketConnection
@@ -12,3 +11,5 @@
 def(bool, IsEof);
 
 extern Impl(Stream);
+
+#undef self

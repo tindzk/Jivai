@@ -1,5 +1,7 @@
 #import "FileStream.h"
 
+#define self FileStream
+
 def(void, Open, String path, int mode) {
 	File_Open(this, path, mode);
 }

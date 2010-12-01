@@ -2,7 +2,6 @@
 #import "String.h"
 #import "BitMask.h"
 
-#undef self
 #define self Logger
 
 #ifndef Logger_DisabledLevels
@@ -65,3 +64,5 @@ String ref(ResolveLevel)(ref(Level) level);
 
 #define Logger_Trace(this, fmt, ...) \
 	Logger_Log(this, Logger_Level_Trace, fmt, ## __VA_ARGS__)
+
+#undef self

@@ -1,5 +1,7 @@
 #import "InputLine.h"
 
+#define self Terminal_InputLine
+
 def(void, Init, Terminal *term) {
 	this->term = term;
 

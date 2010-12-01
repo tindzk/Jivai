@@ -1,7 +1,6 @@
 #import "String.h"
 #import "StreamInterface.h"
 
-#undef self
 #define self StringStream
 
 class {
@@ -16,3 +15,5 @@ def(void, Close);
 def(bool, IsEof);
 
 extern Impl(Stream);
+
+#undef self

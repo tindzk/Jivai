@@ -5,7 +5,6 @@
 #import "Compiler.h"
 #import "Exceptions.h"
 
-#undef self
 #define self Memory
 
 #ifndef Memory_BoundaryChecks
@@ -51,3 +50,5 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 
 #define Memory_CloneObject(obj) \
 	Memory_Clone(&(obj), sizeof(obj))
+
+#undef self

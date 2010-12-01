@@ -1,5 +1,7 @@
 #import "Pattern.h"
 
+#define self Pattern
+
 /*
  * Copyright (c) 2004-2005 Sergey Lyubka <valenok@gmail.com>
  * All rights reserved

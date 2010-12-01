@@ -1,5 +1,7 @@
 #import "Selection.h"
 
+#define self Terminal_Selection
+
 def(void, Init, Terminal *term) {
 	this->term = term;
 	this->cur  = 0;

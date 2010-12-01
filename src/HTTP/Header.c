@@ -1,5 +1,7 @@
 #import "Header.h"
 
+#define self HTTP_Header
+
 def(void, Init, ref(Events) events) {
 	this->events = events;
 }

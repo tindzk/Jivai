@@ -1,5 +1,7 @@
 #import "Socket.h"
 
+#define self Socket
+
 def(void, Init, ref(Protocol) protocol) {
 	this->fd       = -1;
 	this->unused   = true;

@@ -9,7 +9,6 @@
 #define Server_ConnectionLimit 1024
 #endif
 
-#undef self
 #define self Server
 
 class {
@@ -28,3 +27,5 @@ def(void, Process);
 def(void, DestroyClient, ClientInstance client);
 def(void, AcceptClient);
 def(void, OnEvent, int events, ClientInstance client);
+
+#undef self

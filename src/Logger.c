@@ -1,5 +1,7 @@
 #import "Logger.h"
 
+#define self Logger
+
 def(void, Init, ref(Printer) printer, int levels) {
 	this->printer = printer;
 	this->levels  = levels;

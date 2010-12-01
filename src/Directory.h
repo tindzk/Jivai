@@ -2,7 +2,6 @@
 #import "Kernel.h"
 #import "Exception.h"
 
-#undef self
 #define self Directory
 
 #ifndef Directory_BufSize
@@ -49,3 +48,5 @@ record(ref(Entry)) {
 def(void, Init, String path);
 def(void, Destroy);
 def(bool, Read, ref(Entry) *res);
+
+#undef self

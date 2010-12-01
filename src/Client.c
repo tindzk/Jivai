@@ -1,5 +1,7 @@
 #import "Client.h"
 
+#define self Client
+
 def(void, Init) {
 	this->conn = NULL;
 	this->data = NULL;

@@ -61,7 +61,6 @@
  * and Token_Plus.
  */
 
-#undef self
 #define self Pattern
 
 enum {
@@ -124,3 +123,5 @@ def(void, Compile, String pattern);
 #define Pattern_Result(...) (String*[]) { __VA_ARGS__ }
 
 def(bool, Match, String s, String **caps);
+
+#undef self

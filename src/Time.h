@@ -2,7 +2,6 @@
 #import "Integer.h"
 #import "Exception.h"
 
-#undef self
 #define self Time
 
 #ifndef CLOCK_REALTIME
@@ -23,3 +22,5 @@ sdef(self, Empty);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(ref(UnixEpoch), GetCurrentUnixTime);
+
+#undef self

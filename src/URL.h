@@ -1,7 +1,6 @@
 #import "String.h"
 #import "Integer.h"
 
-#undef self
 #define self URL
 
 record(ref(Parts)) {
@@ -14,3 +13,5 @@ record(ref(Parts)) {
 
 sdef(ref(Parts), Parse, String url);
 sdef(void, Parts_Destroy, ref(Parts) *parts);
+
+#undef self

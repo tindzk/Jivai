@@ -1,5 +1,7 @@
 #import "Entities.h"
 
+#define self HTML_Entities
+
 /* Taken from http://www.w3.org/TR/REC-html40/sgml/entities.html */
 static struct {
 	String entity;

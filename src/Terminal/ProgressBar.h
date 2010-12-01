@@ -2,7 +2,6 @@
 #import "Controller.h"
 #import "../Terminal.h"
 
-#undef self
 #define self Terminal_ProgressBar
 
 #ifndef Terminal_ProgressBar_Padding
@@ -26,3 +25,5 @@ def(void, Render, size_t percent, String msg);
 
 #define Terminal_ProgressBar_Init(obj, ...) \
 	Terminal_ProgressBar_Init(Terminal_ProgressBar_FromObject(obj), ## __VA_ARGS__)
+
+#undef self

@@ -3,7 +3,6 @@
 #import "Exception.h"
 #import "StreamInterface.h"
 
-#undef self
 #define self Typography
 
 typedef struct {
@@ -49,3 +48,5 @@ def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);
 def(ref(Node) *, GetRoot);
 def(void, Parse, StreamInterface *stream, void *context);
+
+#undef self

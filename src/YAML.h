@@ -3,7 +3,6 @@
 #import "Exception.h"
 #import "StreamInterface.h"
 
-#undef self
 #define self YAML
 
 set(ref(NodeType)) {
@@ -56,3 +55,5 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size);
 def(void, AddSection, size_t depth, String s);
 def(void, AddItem, size_t depth, String key, String value);
 def(void, Parse);
+
+#undef self

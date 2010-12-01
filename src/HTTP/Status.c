@@ -23,6 +23,8 @@
 
 #import "Status.h"
 
+#define self HTTP_Status
+
 static ref(Item) items[] = {
 	[ref(Info_Continue)] = scall(Item,
 		100, "Continue", "The client should continue with its request"

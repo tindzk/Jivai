@@ -1,5 +1,7 @@
 #import "Query.h"
 
+#define self HTTP_Query
+
 def(void, Init, HTTP_OnParameter onParameter) {
 	this->onParameter = onParameter;
 	this->autoResize  = false;

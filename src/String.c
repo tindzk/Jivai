@@ -1,6 +1,5 @@
 #import "String.h"
 
-#undef self
 #define self String
 
 inline self HeapString(size_t len) {

@@ -2,7 +2,6 @@
 #import "../Unicode.h"
 #import "../Terminal.h"
 
-#undef self
 #define self Terminal_Buffer
 
 record(ref(Chunk)) {
@@ -28,3 +27,5 @@ def(void, ChangeAttr, size_t id, int color, int font);
 def(void, ChangeValue, size_t id, String s);
 def(void, Redraw);
 def(void, Clear);
+
+#undef self

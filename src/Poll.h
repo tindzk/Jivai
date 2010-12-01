@@ -6,7 +6,6 @@
 #import "Memory.h"
 #import "Exception.h"
 
-#undef self
 #define self Poll
 
 #ifndef Poll_NumEvents
@@ -50,3 +49,5 @@ def(void, AddEvent, GenericInstance inst, ssize_t fd, int events);
 def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events);
 def(void, DeleteEvent, int fd);
 def(size_t, Process, int timeout);
+
+#undef self

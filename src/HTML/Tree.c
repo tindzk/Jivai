@@ -1,5 +1,7 @@
 #import "Tree.h"
 
+#define self HTML_Tree
+
 def(void, Init) {
 	Tree_Init(&this->tree, (void *) ref(DestroyNode));
 

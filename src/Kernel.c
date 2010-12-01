@@ -1,5 +1,7 @@
 #import "Kernel.h"
 
+#define self Kernel
+
 sdef(ssize_t, open, String path, int flags, int mode) {
 	return syscall(__NR_open, String_ToNul(path), flags, mode);
 }

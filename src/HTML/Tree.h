@@ -7,7 +7,6 @@
 #import "../String.h"
 #import "../Exception.h"
 
-#undef self
 #define self HTML_Tree
 
 record(ref(Attr)) {
@@ -44,3 +43,5 @@ sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name);
 sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...);
 sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...);
 sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *));
+
+#undef self

@@ -1,5 +1,7 @@
 #import "DateTime.h"
 
+#define self DateTime
+
 sdef(self, Empty) {
 	self res;
 

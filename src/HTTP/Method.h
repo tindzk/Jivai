@@ -1,6 +1,5 @@
 #import "../String.h"
 
-#undef self
 #define self HTTP_Method
 
 set(self) {
@@ -12,3 +11,5 @@ set(self) {
 
 sdef(self, FromString, String s);
 sdef(String, ToString, self method);
+
+#undef self

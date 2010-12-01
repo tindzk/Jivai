@@ -4,7 +4,6 @@
 #import "../Terminal.h"
 #import "../Exception.h"
 
-#undef self
 #define self Terminal_InputLine
 
 enum {
@@ -45,3 +44,5 @@ def(void, DeleteSucceeding);
 def(void, MoveRight, size_t n);
 def(void, MoveLeft, size_t n);
 def(void, Process);
+
+#undef self

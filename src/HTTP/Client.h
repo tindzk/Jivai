@@ -6,7 +6,6 @@
 #import "../Exception.h"
 #import "../SocketConnection.h"
 
-#undef self
 #define self HTTP_Client
 
 /* Will be mostly used for buffering the headers.
@@ -131,3 +130,5 @@ overload def(String, Read, size_t max);
 
 #define HTTP_Client_Read(obj, ...) \
 	HTTP_Client_Read(HTTP_Client_FromObject(obj), ## __VA_ARGS__)
+
+#undef self

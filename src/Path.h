@@ -5,7 +5,6 @@
 #import "String.h"
 #import "Exception.h"
 
-#undef self
 #define self Path
 
 #ifndef AT_FDCWD
@@ -62,3 +61,5 @@ overload sdef(void, GetXattr, String path, String name, String *value);
 overload sdef(void, SetTime, String path, time_t timestamp, long nano, bool followSymlink);
 overload sdef(void, SetTime, String path, time_t timestamp, bool followSymlink);
 overload sdef(void, SetTime, String path, time_t timestamp);
+
+#undef self

@@ -8,7 +8,6 @@
 #import "../Integer.h"
 #import "../Exception.h"
 
-#undef self
 #define self HTTP_Header
 
 enum {
@@ -45,3 +44,5 @@ def(void, ParseUri, String s);
 def(void, ParseHeaderLine, String s);
 sdef(ssize_t, GetLength, String str);
 def(void, Parse, ref(Type) type, String s);
+
+#undef self

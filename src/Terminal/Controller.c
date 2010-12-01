@@ -1,5 +1,7 @@
 #import "Controller.h"
 
+#define self Terminal_Controller
+
 def(void, Init, Terminal *term) {
 	this->term = term;
 }

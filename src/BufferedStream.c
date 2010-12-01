@@ -1,5 +1,7 @@
 #import "BufferedStream.h"
 
+#define self BufferedStream
+
 def(void, Init, StreamInterface *stream, void *data) {
 	this->stream = stream;
 	this->data  = data;

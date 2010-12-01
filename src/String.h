@@ -4,7 +4,6 @@
 #import "Compiler.h"
 #import "Exceptions.h"
 
-#undef self
 #define self String
 
 #ifndef String_SmartAlign
@@ -24,6 +23,8 @@ enum {
 	ref(NotFound)  = -1
 };
 
+#undef self
+
 #import "Char.h"
 #import "Array.h"
 #import "Kernel.h"
@@ -35,7 +36,6 @@ enum {
 	excBufferOverflow
 };
 
-#undef self
 #define self String
 
 Array_Define(self, StringArray);
@@ -117,6 +117,7 @@ overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpa
 overload sdef(short, NaturalCompare, self a, self b);
 
 #undef self
+
 #define self StringArray
 
 def(ssize_t, Find, String needle);
@@ -151,3 +152,5 @@ def(void, ToHeap);
 		String_Append(this, __tmp);     \
 		String_Destroy(&__tmp);         \
 	} while(0)
+
+#undef self

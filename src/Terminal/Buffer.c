@@ -1,5 +1,7 @@
 #import "Buffer.h"
 
+#define self Terminal_Buffer
+
 def(void, Init, Terminal *term, size_t spacing) {
 	this->term    = term;
 	this->spacing = spacing;

@@ -10,7 +10,6 @@
 #import "../Exception.h"
 #import "../SocketConnection.h"
 
-#undef self
 #define self HTTP_Server
 
 enum {
@@ -73,3 +72,5 @@ def(void, OnHeader, String name, String value);
 def(ref(Result), ReadHeader);
 def(ref(Result), ReadBody);
 def(bool, Process);
+
+#undef self

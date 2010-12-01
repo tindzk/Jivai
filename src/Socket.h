@@ -6,7 +6,6 @@
 #import "NetworkAddress.h"
 #import "SocketConnection.h"
 
-#undef self
 #define self Socket
 
 set(ref(Protocol)) {
@@ -39,3 +38,5 @@ def(void, SetLinger);
 def(SocketConnection, Connect, String hostname, unsigned short port);
 def(SocketConnection, Accept);
 def(void, Destroy);
+
+#undef self

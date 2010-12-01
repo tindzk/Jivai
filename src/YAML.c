@@ -1,5 +1,7 @@
 #import "YAML.h"
 
+#define self YAML
+
 set(ref(State)) {
 	ref(State_Comment),
 	ref(State_Key),

@@ -1,6 +1,5 @@
 #import "Exception.h"
 
-#undef self
 #define self Exception
 
 ExceptionManager __exc_mgr;
