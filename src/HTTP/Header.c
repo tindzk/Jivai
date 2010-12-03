@@ -163,10 +163,16 @@ def(void, Parse, ref(Type) type, String s) {
 		String method = String_Slice(s, 0, posMethod);
 		call(ParseMethod, method);
 
-		String version = String_Slice(s, pos1stLine - sizeof("HTTP/1.1") + 1, sizeof("HTTP/1.1") - 1);
+		String version = String_Slice(s,
+			pos1stLine - $("HTTP/1.1").len,
+			$("HTTP/1.1").len);
+
 		call(ParseVersion, version);
 
-		String path = String_Slice(s, method.len + 1, pos1stLine - version.len - (method.len + 1) - 1);
+		String path = String_Slice(s,
+			method.len + 1,
+			pos1stLine - version.len - (method.len + 1) - 1);
+
 		call(ParseUri, path);
 	} else {
 		ssize_t posVersion = String_Find(s, ' ');
