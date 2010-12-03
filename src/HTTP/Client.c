@@ -146,13 +146,7 @@ def(String, GetRequest, String host, String path) {
 		"Connection: Keep-Alive\r\n"
 		"\r\n"),
 
-		path,
-
-		this->version == HTTP_Version_1_1
-			? String("HTTP/1.1")
-			: String("HTTP/1.0"),
-
-		host);
+		path, HTTP_Version_ToString(this->version), host);
 
 	return res;
 }

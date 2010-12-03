@@ -67,12 +67,9 @@ def(String, GetString) {
 
 	HTTP_Status_Item st = HTTP_Status_GetItem(this->status);
 
-	String_FmtAppend(&s, $("HTTP/% % %\r\n"),
-		(this->version == HTTP_Version_1_1)
-			? $("1.1")
-			: $("1.0"),
-		Integer_ToString(st.code),
-		st.msg);
+	String_FmtAppend(&s, $("% % %\r\n"),
+		HTTP_Version_ToString(this->version),
+		Integer_ToString(st.code), st.msg);
 
 	if (this->contentLength != -1) {
 		String_FmtAppend(&s, $("Content-Length: %\r\n"),
