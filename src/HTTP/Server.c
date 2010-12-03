@@ -88,7 +88,7 @@ static def(void, OnHeader, String name, String value) {
 
 	String_ToLower(&name);
 
-	if (String_Equals(name, String("connection"))) {
+	if (String_Equals(name, $("connection"))) {
 		String_ToLower(&value);
 
 		StringArray *chunks = String_Split(value, ',');
@@ -96,9 +96,9 @@ static def(void, OnHeader, String name, String value) {
 		for (size_t i = 0; i < chunks->len; i++) {
 			String tmp = String_Trim(chunks->buf[i]);
 
-			if (String_Equals(tmp, String("close"))) {
+			if (String_Equals(tmp, $("close"))) {
 				this->headers.persistentConnection = false;
-			} else if (String_Equals(tmp, String("keep-alive"))) {
+			} else if (String_Equals(tmp, $("keep-alive"))) {
 				this->headers.persistentConnection = true;
 			}
 		}
@@ -108,25 +108,25 @@ static def(void, OnHeader, String name, String value) {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);
 
-			if (String_Equals(name, String("content-type"))) {
-				if (String_BeginsWith(value, String("application/x-www-form-urlencoded"))) {
+			if (String_Equals(name, $("content-type"))) {
+				if (String_BeginsWith(value, $("application/x-www-form-urlencoded"))) {
 					this->headers.contentType = HTTP_ContentType_SinglePart;
-				} else if (String_BeginsWith(value, String("multipart/form-data"))) {
+				} else if (String_BeginsWith(value, $("multipart/form-data"))) {
 					this->headers.contentType = HTTP_ContentType_MultiPart;
 
 					ssize_t posBoundary = String_Find(value,
-						String("multipart/form-data").len,
-						String("boundary="));
+						$("multipart/form-data").len,
+						$("boundary="));
 
 					if (posBoundary == String_NotFound) {
 						throw(excUnknownContentType);
 					}
 
-					String_Copy(&this->headers.boundary, value, posBoundary + sizeof("boundary=") - 1);
+					String_Copy(&this->headers.boundary, value, posBoundary + $("boundary=").len);
 				} else {
 					throw(excUnknownContentType);
 				}
-			} else if (String_Equals(name, String("content-length"))) {
+			} else if (String_Equals(name, $("content-length"))) {
 				if (this->method != HTTP_Method_Post) {
 					throw(excBodyUnexpected);
 				}
