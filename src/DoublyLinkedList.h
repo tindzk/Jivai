@@ -14,10 +14,10 @@
 	struct type *next
 
 #define DoublyLinkedList_DeclareList(node, list) \
-	typedef struct {                             \
+	record(list) {                               \
 		node *first;                             \
 		node *last;                              \
-	} list
+	}
 
 #define DoublyLinkedList_InsertBefore(this, node, newNode) \
 	do {                                                   \

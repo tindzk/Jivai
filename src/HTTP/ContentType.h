@@ -1,5 +1,11 @@
-typedef enum {
-	HTTP_ContentType_Unset,
-	HTTP_ContentType_SinglePart,
-	HTTP_ContentType_MultiPart
-} HTTP_ContentType;
+#import "../Macros.h"
+
+#define self HTTP_ContentType
+
+set(self) {
+	ref(Unset),
+	ref(SinglePart),
+	ref(MultiPart)
+};
+
+#undef self

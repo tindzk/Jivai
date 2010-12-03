@@ -22,15 +22,17 @@
 
 #import "Memory.h"
 
-enum {
-	Block_Flags_RefCountMask   = (0xffff),
-	Block_Flags_IsHeap         = (1 << 24),
-	Block_Flags_HasCopyDispose = (1 << 25),
-	Block_Flags_IsGlobal       = (1 << 28),
-	Block_Flags_FieldIsByRef   = 8
-} Block_Flags;
+#define self Block
 
-typedef struct {
+set(ref(Flags)) {
+	ref(Flags_RefCountMask)   = (0xffff),
+	ref(Flags_IsHeap)         = (1 << 24),
+	ref(Flags_HasCopyDispose) = (1 << 25),
+	ref(Flags_IsGlobal)       = (1 << 28),
+	ref(Flags_FieldIsByRef)   = 8
+};
+
+record(ref(Layout)) {
 	void *isa;
 	int flags;
 	int reserved;
@@ -41,24 +43,24 @@ typedef struct {
 		void (*copy)(void *dst, void *src);
 		void (*dispose)(void *);
 	} *descriptor;
-} Block_Layout;
+};
 
-typedef struct _Block_ByRef {
+record(ref(ByRef)) {
 	void *isa;
-	struct _Block_ByRef *forwarding;
+	ref(ByRef) *forwarding;
 	int flags;
 	size_t size;
-	void (*keep)(struct _Block_ByRef *dst, struct _Block_ByRef *src);
-	void (*destroy)(struct _Block_ByRef *);
+	void (*keep)   (ref(ByRef) *dst, ref(ByRef) *src);
+	void (*destroy)(ref(ByRef) *);
 	/* long shared[0]; */
-} Block_ByRef;
+};
 
-typedef struct {
+record(ref(ByRefHeader)) {
 	void *isa;
-	struct Block_ByRef *forwarding;
+	ref(ByRef) *forwarding;
 	int flags;
 	int size;
-} Block_ByRefHeader;
+};
 
 void *_NSConcreteStackBlock[32];
 void *_NSConcreteMallocBlock[32];
@@ -74,3 +76,5 @@ void _Block_object_dispose(const void *object, const int flags);
 
 #define Block_Release(block) \
 	_Block_Release((Block_Layout *)(block))
+
+#undef self

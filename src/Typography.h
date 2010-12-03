@@ -5,14 +5,14 @@
 
 #define self Typography
 
-typedef struct {
+record(ref(Text)) {
 	String value;
-} ref(Text);
+};
 
-typedef struct {
+record(ref(Item)) {
 	String name;
 	String options;
-} ref(Item);
+};
 
 record(ref(Node)) {
 	Tree_Define(ref(Node));

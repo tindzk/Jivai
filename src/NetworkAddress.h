@@ -10,10 +10,10 @@ enum {
 	excGetAddrInfoFailed = excOffset
 };
 
-typedef struct {
+record(self) {
 	unsigned long ip;
 	unsigned short port;
-} NetworkAddress;
+};
 
 struct in_addr NetworkAddress_ResolveHost(String hostname);
 String NetworkAddress_ToString(NetworkAddress addr);

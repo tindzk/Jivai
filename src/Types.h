@@ -6,10 +6,10 @@
  * when overloading functions.
  */
 
-typedef enum {
+set(bool) {
 	false = 0,
 	true  = 1
-} bool;
+};
 
 #define false (bool) false
 #define true  (bool) true

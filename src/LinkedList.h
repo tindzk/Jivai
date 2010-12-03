@@ -11,10 +11,10 @@
 	struct type *next;
 
 #define LinkedList_DeclareList(node, list) \
-	typedef struct {                       \
+	record(list) {                         \
 		node *first;                       \
 		node *last;                        \
-	} list
+	}
 
 #define LinkedList_InsertEnd(this, node) \
 	do {                                 \
