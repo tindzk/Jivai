@@ -38,7 +38,7 @@ enum {
 
 #define self String
 
-Array_Define(self, StringArray);
+Array(self, StringArray);
 
 self HeapString(size_t len);
 self BufString(char *buf, size_t len);

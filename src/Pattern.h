@@ -94,12 +94,14 @@ set(ref(Token)) {
 	ref(Token_Digit)
 };
 
+Array(unsigned char, ref(CharArray));
+
 /*
  * Compiled regular expression
  */
 class {
-	Array(unsigned char, *code);
-	Array(unsigned char, *data);
+	ref(CharArray) *code;
+	ref(CharArray) *data;
 
 	size_t ofs;
 	size_t numCaps; /* Number of bracket pairs. */

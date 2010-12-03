@@ -7,7 +7,7 @@ typedef struct {
 	String field2;
 } Item;
 
-Array_Define(Item, ItemArray);
+Array(Item, ItemArray);
 
 int main(void) {
 	/* Initialize an array allocating memory for 5 elements. You

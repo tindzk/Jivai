@@ -15,16 +15,16 @@
 static const String metaChars = String("|.^$*+?()[\\");
 
 def(void, Init) {
-	Array_Init(this->code, 256);
-	Array_Init(this->data, 256);
+	this->code = scall(CharArray_New, 256);
+	this->data = scall(CharArray_New, 256);
 
 	this->ofs     = 0;
 	this->numCaps = 0;
 }
 
 def(void, Destroy) {
-	Array_Destroy(this->code);
-	Array_Destroy(this->data);
+	scall(CharArray_Free, this->code);
+	scall(CharArray_Free, this->data);
 }
 
 // --------
@@ -42,11 +42,11 @@ static def(void, SetJumpOffset, size_t pc, size_t offset) {
 }
 
 static def(void, Emit, int code) {
-	Array_Push(this->code, (unsigned char) code);
+	scall(CharArray_Push, &this->code, (unsigned char) code);
 }
 
 static def(void, StoreCharInData, int ch) {
-	Array_Push(this->data, (unsigned char) ch);
+	scall(CharArray_Push, &this->data, (unsigned char) ch);
 }
 
 static def(size_t, Exact, size_t offset, String pattern) {

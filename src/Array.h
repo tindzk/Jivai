@@ -1,74 +1,51 @@
 #import "Memory.h"
 
-#define Array(type, name) \
-	struct {              \
-		size_t len;       \
-		size_t size;      \
-		type buf[0];      \
-	} name
-
-#define Array_ItemSize(this) \
-	sizeof(typeof((this)->buf[0]))
-
-#define Array_Size(arr, len) \
-	(sizeof(*arr) + (len) * Array_ItemSize(arr))
-
-#define Array_Init(this, items)                               \
-	do {                                                      \
-		(this) = Memory_Alloc(Array_Size(this, (items) + 1)); \
-		(this)->len  = 0;                                     \
-		(this)->size = items;                                 \
-	} while(0)
-
-#define Array_Destroy(this) \
-	Memory_Free(this)
-
-#define Array_Resize(this, items)                               \
-	do {                                                        \
-		(this) = Memory_Realloc(this, Array_Size(this, items)); \
-		(this)->size = items;                                   \
-		if ((this)->len > items) {                              \
-			(this)->len = items;                                \
-		}                                                       \
-	} while(0)
-
-#define Array_Align(this, items)                               \
-	do {                                                       \
-		if ((items) > 0) {                                     \
-			if ((this)->size == 0 || (items) > (this)->size) { \
-				Array_Resize(this, items);                     \
-			}                                                  \
-		}                                                      \
-	} while(0)
-
-#define Array_Push(this, data)              \
-	do {                                    \
-		Array_Align(this, (this)->len + 1); \
-		(this)->buf[(this)->len] = data;    \
-		(this)->len++;                      \
-	} while(0)
-
 #define Array_Sort(this, cmp) \
-	qsort((this)->buf, (this)->len, Array_ItemSize(this), (void *) cmp)
+	qsort((this)->buf, (this)->len, sizeof((this)->buf[0]), (void *) cmp)
 
-#define Array_Define(type, name)                                    \
-	typedef Array(type, name);                                      \
-	typedef union {                                                 \
-		name *object;                                               \
-		GenericInstance generic;                                    \
-	} Instance(name) transparentUnion;                              \
-	static inline name* tripleConcat(name, _, New)(size_t items) {  \
-		name *res;                                                  \
-		Array_Init(res, items);                                     \
-		return res;                                                 \
-	}                                                               \
-	static inline void tripleConcat(name, _, Free)                  \
-		(Instance(name) $this)                                      \
-	{                                                               \
-		Array_Destroy($this.object);                                \
-	}                                                               \
-	static inline void tripleConcat(name, _, Push)                  \
-		(union { name **object } transparentUnion $this, type data) \
-	{                                                               \
-		Array_Push(*$this.object, data);                            \
+#define Array(type, name)                                                                   \
+	record(name) {                                                                          \
+		size_t len;                                                                         \
+		size_t size;                                                                        \
+		type buf[0];                                                                        \
+	};                                                                                      \
+	typedef union {                                                                         \
+		name *object;                                                                       \
+		GenericInstance generic;                                                            \
+	} Instance(name) transparentUnion;                                                      \
+	static inline name* tripleConcat(name, _, New)(size_t items) {                          \
+		name *res = Memory_Alloc(sizeof(name) + items * sizeof(type));                      \
+		res->len  = 0;                                                                      \
+		res->size = items;                                                                  \
+		return res;                                                                         \
+	}                                                                                       \
+	static inline void tripleConcat(name, _, Free)                                          \
+		(Instance(name) $this)                                                              \
+	{                                                                                       \
+		Memory_Free($this.object);                                                          \
+	}                                                                                       \
+	static inline void tripleConcat(name, _, Resize)                                        \
+		(union { name **object } transparentUnion $this, size_t items)                      \
+	{                                                                                       \
+		*$this.object = Memory_Realloc(*$this.object, sizeof(name) + items * sizeof(type)); \
+		(*$this.object)->size = items;                                                      \
+		if ((*$this.object)->len > items) {                                                 \
+			(*$this.object)->len = items;                                                   \
+		}                                                                                   \
+	}                                                                                       \
+	static inline void tripleConcat(name, _, Align)                                         \
+		(union { name **object } transparentUnion $this, size_t items)                      \
+	{                                                                                       \
+		if (items > 0) {                                                                    \
+			if ((*$this.object)->size == 0 || items > (*$this.object)->size) {              \
+				tripleConcat(name, _, Resize)($this.object, items);                         \
+			}                                                                               \
+		}                                                                                   \
+	}                                                                                       \
+	static inline void tripleConcat(name, _, Push)                                          \
+		(union { name **object } transparentUnion $this, type data)                         \
+	{                                                                                       \
+		tripleConcat(name, _, Align)($this.object, (*$this.object)->len + 1);               \
+		(*$this.object)->buf[(*$this.object)->len] = data;                                  \
+		(*$this.object)->len++;                                                             \
 	}

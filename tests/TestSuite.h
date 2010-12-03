@@ -32,7 +32,7 @@ Interface(TestSuite) {
 	TestSuite_Method *last;
 };
 
-Array_Define(TestSuiteInterface *, TestSuites);
+Array(TestSuiteInterface *, TestSuites);
 
 class {
 	Terminal term;

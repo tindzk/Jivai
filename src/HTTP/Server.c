@@ -103,7 +103,7 @@ static def(void, OnHeader, String name, String value) {
 			}
 		}
 
-		Array_Destroy(chunks);
+		StringArray_Free(chunks);
 	} else {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);

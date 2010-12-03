@@ -39,7 +39,7 @@ record(ref(HostPath)) {
 	String path;
 };
 
-typedef Array(ref(HostPath), ref(HostPaths));
+Array(ref(HostPath), ref(HostPaths));
 
 class {
 	Socket           socket;
