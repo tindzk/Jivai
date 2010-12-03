@@ -169,16 +169,14 @@ def(void, Init, SocketConnection *conn) {
 	this->paramTest  = HeapString(256);
 	this->paramTest2 = HeapString(256);
 
-	HTTP_Server_Events events;
-	events.onHeader         = (HTTP_OnHeader) EmptyCallback();
-	events.onVersion        = (HTTP_OnVersion) Callback(this, Request_OnHttpVersion);
-	events.onMethod         = (HTTP_OnMethod) Callback(this, Request_OnMethod);
-	events.onPath           = (HTTP_OnPath) Callback(this, Request_OnPath);
-	events.onQueryParameter = (HTTP_OnParameter) Callback(this, Request_OnQueryParameter);
-	events.onBodyParameter  = (HTTP_OnParameter) Callback(this, Request_OnBodyParameter);
-	events.onRespond        = (HTTP_Server_OnRespond) Callback(this, Request_OnRespond);
+	HTTP_Server_Init(&this->server, conn, 2048, 4096);
 
-	HTTP_Server_Init(&this->server, events, conn, 2048, 4096);
+	HTTP_Server_BindVersion(&this->server, Callback(this, Request_OnHttpVersion));
+	HTTP_Server_BindMethod(&this->server, Callback(this, Request_OnMethod));
+	HTTP_Server_BindPath(&this->server, Callback(this, Request_OnPath));
+	HTTP_Server_BindQueryParameter(&this->server, Callback(this, Request_OnQueryParameter));
+	HTTP_Server_BindBodyParameter(&this->server, Callback(this, Request_OnBodyParameter));
+	HTTP_Server_BindRespond(&this->server, Callback(this, Request_OnRespond));
 }
 
 def(void, Destroy) {

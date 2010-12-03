@@ -2,9 +2,7 @@
 
 #define self HTTP_Server
 
-def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
-	this->events = events;
-
+def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
 	this->headers.boundary = HeapString(0);
 
 	this->headers.contentType   = HTTP_ContentType_Unset;
@@ -21,6 +19,10 @@ def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLeng
 	this->cleanup = false;
 
 	this->headers.persistentConnection = false;
+
+	this->events = (typeof(this->events)) {
+		.onMethod = { EmptyCallback() }
+	};
 }
 
 def(void, Destroy) {
@@ -29,12 +31,40 @@ def(void, Destroy) {
 	String_Destroy(&this->headers.boundary);
 }
 
-def(void, OnMethod, HTTP_Method method) {
+def(void, BindMethod, HTTP_OnMethod onMethod) {
+	this->events.onMethod = onMethod;
+}
+
+def(void, BindVersion, HTTP_OnVersion onVersion) {
+	this->events.onVersion = onVersion;
+}
+
+def(void, BindPath, HTTP_OnPath onPath) {
+	this->events.onPath = onPath;
+}
+
+def(void, BindHeader, HTTP_OnHeader onHeader) {
+	this->events.onHeader = onHeader;
+}
+
+def(void, BindBodyParameter, HTTP_OnParameter onBodyParameter) {
+	this->events.onBodyParameter = onBodyParameter;
+}
+
+def(void, BindQueryParameter, HTTP_OnParameter onQueryParameter) {
+	this->events.onQueryParameter = onQueryParameter;
+}
+
+def(void, BindRespond, ref(OnRespond) onRespond) {
+	this->events.onRespond = onRespond;
+}
+
+static def(void, OnMethod, HTTP_Method method) {
 	this->method = method;
 	callback(this->events.onMethod, method);
 }
 
-def(void, OnVersion, HTTP_Version version) {
+static def(void, OnVersion, HTTP_Version version) {
 	if (version == HTTP_Version_1_1) {
 		/* By default all connections in HTTP/1.1 are persistent. */
 		this->headers.persistentConnection = true;
@@ -46,15 +76,7 @@ def(void, OnVersion, HTTP_Version version) {
 	callback(this->events.onVersion, version);
 }
 
-def(void, OnPath, String path) {
-	callback(this->events.onPath, path);
-}
-
-def(String *, OnQueryParameter, String name) {
-	return callbackRet(this->events.onQueryParameter, NULL, name);
-}
-
-def(void, OnHeader, String name, String value) {
+static def(void, OnHeader, String name, String value) {
 	callback(this->events.onHeader, name, value);
 
 	/* Generally, manipulating the `mutable' property is not
@@ -191,8 +213,8 @@ def(ref(Result), ReadHeader) {
 	HTTP_Header_Events events;
 	events.onMethod    = (HTTP_OnMethod) Callback(this, ref(OnMethod));
 	events.onVersion   = (HTTP_OnVersion) Callback(this, ref(OnVersion));
-	events.onPath      = (HTTP_OnPath) Callback(this, ref(OnPath));
-	events.onParameter = (HTTP_OnParameter) Callback(this, ref(OnQueryParameter));
+	events.onPath      = this->events.onPath;
+	events.onParameter = this->events.onQueryParameter;
 	events.onHeader    = (HTTP_OnHeader) Callback(this, ref(OnHeader));
 
 	String s = String_Slice(this->header, 0, requestOffset);

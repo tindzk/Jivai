@@ -33,16 +33,6 @@ set(ref(Result)) {
 	ref(Result_Error)
 };
 
-record(ref(Events)) {
-	HTTP_OnMethod    onMethod;
-	HTTP_OnVersion   onVersion;
-	HTTP_OnPath      onPath;
-	HTTP_OnHeader    onHeader;
-	HTTP_OnParameter onBodyParameter;
-	HTTP_OnParameter onQueryParameter;
-	ref(OnRespond)   onRespond;
-};
-
 class {
 	bool               cleanup;
 	String             body;
@@ -52,7 +42,16 @@ class {
 	HTTP_Method        method;
 	SocketConnection   *conn;
 	ref(State)         state;
-	ref(Events)        events;
+
+	struct {
+		HTTP_OnMethod    onMethod;
+		HTTP_OnVersion   onVersion;
+		HTTP_OnPath      onPath;
+		HTTP_OnHeader    onHeader;
+		HTTP_OnParameter onBodyParameter;
+		HTTP_OnParameter onQueryParameter;
+		ref(OnRespond)   onRespond;
+	} events;
 
 	struct {
 		HTTP_ContentType contentType;
@@ -62,13 +61,15 @@ class {
 	} headers;
 };
 
-def(void, Init, ref(Events) events, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
+def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 def(void, Destroy);
-def(void, OnMethod, HTTP_Method method);
-def(void, OnVersion, HTTP_Version version);
-def(void, OnPath, String path);
-def(String *, OnQueryParameter, String name);
-def(void, OnHeader, String name, String value);
+def(void, BindMethod, HTTP_OnMethod onMethod);
+def(void, BindVersion, HTTP_OnVersion onVersion);
+def(void, BindPath, HTTP_OnPath onPath);
+def(void, BindHeader, HTTP_OnHeader onHeader);
+def(void, BindBodyParameter, HTTP_OnParameter onBodyParameter);
+def(void, BindQueryParameter, HTTP_OnParameter onQueryParameter);
+def(void, BindRespond, ref(OnRespond) onRespond);
 def(ref(Result), ReadHeader);
 def(ref(Result), ReadBody);
 def(bool, Process);
