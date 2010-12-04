@@ -39,6 +39,12 @@ static overload inline size_t Integer_CountDigits(s64 num) {
 	return Int64_CountDigits(num);
 }
 
+#if defined(__x86_64__)
+static overload inline size_t Integer_CountDigits(ssize_t num) {
+	return Int64_CountDigits(num);
+}
+#endif
+
 size_t UInt8_CountDigits(u8 num);
 size_t UInt16_CountDigits(u16 num);
 size_t UInt32_CountDigits(u32 num);
@@ -59,6 +65,12 @@ static overload inline size_t Integer_CountDigits(u32 num) {
 static overload inline size_t Integer_CountDigits(u64 num) {
 	return UInt64_CountDigits(num);
 }
+
+#if defined(__x86_64__)
+static overload inline size_t Integer_CountDigits(size_t num) {
+	return UInt64_CountDigits(num);
+}
+#endif
 
 void Int8_ToStringBuf(s8 num, String *buf);
 void Int16_ToStringBuf(s16 num, String *buf);
@@ -81,6 +93,12 @@ static overload inline void Integer_ToStringBuf(s64 num, String *buf) {
 	Int64_ToStringBuf(num, buf);
 }
 
+#if defined(__x86_64__)
+static overload inline void Integer_ToStringBuf(ssize_t num, String *buf) {
+	Int64_ToStringBuf(num, buf);
+}
+#endif
+
 void UInt8_ToStringBuf(u8 num, String *buf);
 void UInt16_ToStringBuf(u16 num, String *buf);
 void UInt32_ToStringBuf(u32 num, String *buf);
@@ -101,6 +119,12 @@ static overload inline void Integer_ToStringBuf(u32 num, String *buf) {
 static overload inline void Integer_ToStringBuf(u64 num, String *buf) {
 	UInt64_ToStringBuf(num, buf);
 }
+
+#if defined(__x86_64__)
+static overload inline void Integer_ToStringBuf(size_t num, String *buf) {
+	UInt64_ToStringBuf(num, buf);
+}
+#endif
 
 short Int8_Compare(s8 a, s8 b);
 short Int16_Compare(s16 a, s16 b);
@@ -123,6 +147,12 @@ static overload inline short Integer_Compare(s64 a, s64 b) {
 	return Int64_Compare(a, b);
 }
 
+#if defined(__x86_64__)
+static overload inline short Integer_Compare(ssize_t a, ssize_t b) {
+	return Int64_Compare(a, b);
+}
+#endif
+
 short UInt8_Compare(u8 a, u8 b);
 short UInt16_Compare(u16 a, u16 b);
 short UInt32_Compare(u32 a, u32 b);
@@ -143,6 +173,12 @@ static overload inline short Integer_Compare(u32 a, u32 b) {
 static overload inline short Integer_Compare(u64 a, u64 b) {
 	return UInt64_Compare(a, b);
 }
+
+#if defined(__x86_64__)
+static overload inline short Integer_Compare(size_t a, size_t b) {
+	return UInt64_Compare(a, b);
+}
+#endif
 
 #define Int8_ToString(num) ({           \
 	size_t len = Int8_CountDigits(num); \
