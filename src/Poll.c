@@ -63,7 +63,7 @@ def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
 	}
 }
 
-def(void, DeleteEvent, int fd) {
+def(void, DeleteEvent, ssize_t fd) {
 	errno = 0;
 
 	if (Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {

@@ -47,7 +47,7 @@ def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
 def(void, AddEvent, GenericInstance inst, ssize_t fd, int events);
 def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events);
-def(void, DeleteEvent, int fd);
+def(void, DeleteEvent, ssize_t fd);
 def(size_t, Process, int timeout);
 
 #undef self

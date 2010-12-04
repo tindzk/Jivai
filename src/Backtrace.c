@@ -2,7 +2,7 @@
 
 void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
-	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, size);
+	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
 
 	String_Print(String("Traceback (most recent call first):\n"), true);
 

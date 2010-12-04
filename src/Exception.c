@@ -4,7 +4,7 @@
 
 ExceptionManager __exc_mgr;
 
-inline sdef(void, Raise, size_t code) {
+inline sdef(void, Raise, int code) {
 	if (__exc_mgr.cur == NULL) {
 		scall(Print, code);
 		Runtime_Exit(ExitStatus_Failure);
@@ -28,7 +28,7 @@ inline sdef(ref(Record) *, GetMeta) {
 	return &__exc_mgr.e;
 }
 
-sdef(void, Print, size_t code) {
+sdef(void, Print, int code) {
 #if Exception_SaveOrigin
 	String fmt = String_Format(
 		String("Uncaught exception %.% (in %)\n"),

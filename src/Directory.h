@@ -20,7 +20,7 @@ record(ref(LinuxEntry)) {
 };
 
 class {
-	int fd;
+	ssize_t fd;
 	ref(LinuxEntry) *d;
 	int nread;
 	char buf[Directory_BufSize];

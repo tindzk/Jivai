@@ -49,11 +49,11 @@ record(ExceptionManager) {
 ExceptionManager __exc_mgr;
 
 sdef(void, Init);
-sdef(void, Raise, size_t code);
+sdef(void, Raise, int code);
 sdef(void, Push, ref(Buffer) *buf);
 sdef(void, Pop);
 sdef(ref(Record) *, GetMeta);
-sdef(void, Print, size_t code);
+sdef(void, Print, int code);
 
 #if Exception_SaveOrigin
 #define Exception_SetOrigin(e) \

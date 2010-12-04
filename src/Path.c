@@ -176,7 +176,7 @@ sdef(String, Resolve, String path) {
 		throw(excEmptyPath);
 	}
 
-	int fd;
+	ssize_t fd;
 
 	if ((fd = Kernel_open(String("."), FileStatus_ReadOnly, 0)) == -1) {
 		throw(excResolvingFailed);

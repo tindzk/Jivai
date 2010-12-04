@@ -41,7 +41,7 @@ static def(void, SetJumpOffset, size_t pc, size_t offset) {
 	}
 }
 
-static def(void, Emit, int code) {
+static def(void, Emit, size_t code) {
 	scall(CharArray_Push, &this->code, (unsigned char) code);
 }
 
