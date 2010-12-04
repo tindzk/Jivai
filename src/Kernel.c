@@ -138,7 +138,7 @@ sdef(ssize_t, epoll_wait, ssize_t epfd, EpollEvent *events, int maxevents, int t
 	return syscall(__NR_epoll_wait, epfd, events, maxevents, timeout);
 }
 
-sdef(ssize_t, fcntl, ssize_t fd, int cmd, int arg) {
+sdef(int, fcntl, ssize_t fd, int cmd, int arg) {
 	return syscall(__NR_fcntl, fd, cmd, arg);
 }
 

@@ -139,7 +139,7 @@ record(EpollEvent) {
 		u32 u32;
 		u64 u64;
 	};
-};
+} __packed;
 
 #import "String.h"
 
@@ -175,7 +175,7 @@ sdef(bool, clock_gettime, int id, Time_UnixEpoch *res);
 sdef(ssize_t, epoll_create, size_t n);
 sdef(bool, epoll_ctl, ssize_t epfd, EpollCtl op, ssize_t fd, EpollEvent *event);
 sdef(ssize_t, epoll_wait, ssize_t epfd, EpollEvent *events, int maxevents, int timeout);
-sdef(ssize_t, fcntl, ssize_t fd, int cmd, int arg);
+sdef(int, fcntl, ssize_t fd, int cmd, int arg);
 sdef(ssize_t, socket, int namespace, int style, int protocol);
 sdef(bool, setsockopt, ssize_t fd, int level, int option, const void *value, int size);
 sdef(bool, bind, ssize_t fd, struct sockaddr_in addr);

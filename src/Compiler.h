@@ -7,6 +7,9 @@
 #define __section(x) \
 	__attribute__((__section__(x)))
 
+#define __packed \
+	__attribute__((__packed__))
+
 #define __used \
 	__attribute__((used))
 
