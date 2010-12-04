@@ -130,11 +130,11 @@ sdef(ssize_t, epoll_create, size_t n) {
 	return syscall(__NR_epoll_create, n);
 }
 
-sdef(bool, epoll_ctl, int epfd, EpollCtl op, ssize_t fd, EpollEvent *event) {
+sdef(bool, epoll_ctl, ssize_t epfd, EpollCtl op, ssize_t fd, EpollEvent *event) {
 	return syscall(__NR_epoll_ctl, epfd, op, fd, event) == 0;
 }
 
-sdef(ssize_t, epoll_wait, int epfd, EpollEvent *events, int maxevents, int timeout) {
+sdef(ssize_t, epoll_wait, ssize_t epfd, EpollEvent *events, int maxevents, int timeout) {
 	return syscall(__NR_epoll_wait, epfd, events, maxevents, timeout);
 }
 

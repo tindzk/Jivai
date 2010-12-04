@@ -22,7 +22,7 @@ record(ref(LinuxEntry)) {
 class {
 	ssize_t fd;
 	ref(LinuxEntry) *d;
-	int nread;
+	ssize_t nread;
 	char buf[Directory_BufSize];
 	int bpos;
 };

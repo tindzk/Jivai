@@ -43,7 +43,7 @@ sdef(void, Ignore, int signal) {
 }
 
 sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *ucontext) {
-	size_t code;
+	int code;
 
 	if (signal == SIGALRM) {
 		code = excSigAlrm;

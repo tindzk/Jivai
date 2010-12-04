@@ -103,7 +103,7 @@ sdef(void, Print, int code);
 	Exception_Buffer __exc_buffer;             \
 	Exception_Push(&__exc_buffer);             \
 	                                           \
-	size_t e = setjmp(__exc_buffer.jmpBuffer); \
+	int e = setjmp(__exc_buffer.jmpBuffer);    \
 	if (e == 0) {
 
 #define clean                              \
