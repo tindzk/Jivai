@@ -121,6 +121,7 @@ overload sdef(short, NaturalCompare, self a, self b);
 #define self StringArray
 
 def(ssize_t, Find, String needle);
+def(String, Join, String separator);
 def(bool, Contains, String needle);
 def(void, Destroy);
 def(void, ToHeap);

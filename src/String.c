@@ -1203,6 +1203,30 @@ def(ssize_t, Find, String needle) {
 	return -1;
 }
 
+def(String, Join, String separator) {
+	size_t len = 0;
+
+	for (size_t i = 0; i < this->len; i++) {
+		len += this->buf[i].len;
+
+		if (i != this->len - 1) {
+			len += separator.len;
+		}
+	}
+
+	String res = HeapString(len);
+
+	for (size_t i = 0; i < this->len; i++) {
+		String_Append(&res, this->buf[i]);
+
+		if (i != this->len - 1) {
+			String_Append(&res, separator);
+		}
+	}
+
+	return res;
+}
+
 def(bool, Contains, String needle) {
 	return StringArray_Find(this, needle) != -1;
 }
