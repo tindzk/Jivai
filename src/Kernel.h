@@ -94,6 +94,25 @@ record(Stat) {
 	Time_UnixEpoch ctime;
 };
 
+#if defined(__x86_64__)
+record(Stat64) {
+	__dev_t device;
+	__ino64_t inode;
+	__nlink_t hardlinks;
+	__mode_t mode;
+	__uid_t uid;
+	__gid_t gid;
+	int __pad0;
+	__dev_t rdev;
+	__off_t size;
+	__blksize_t blksize;
+	__blkcnt64_t blocks;
+	Time_UnixEpoch atime;
+	Time_UnixEpoch mtime;
+	Time_UnixEpoch ctime;
+	long int unused[3];
+};
+#else
 record(Stat64) {
 	__dev_t device;
 	unsigned int __pad1;
@@ -112,6 +131,7 @@ record(Stat64) {
 	Time_UnixEpoch ctime;
 	__ino64_t inode;
 };
+#endif
 
 set(FileNo) {
 	FileNo_StdIn  = 0,
