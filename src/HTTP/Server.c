@@ -131,7 +131,15 @@ static def(void, OnHeader, String name, String value) {
 					throw(excBodyUnexpected);
 				}
 
-				this->headers.contentLength = Int64_Parse(value);
+				try {
+					this->headers.contentLength = UInt64_Parse(value);
+				} clean catch(Integer, excUnderflow) {
+					excThrow(excBodyTooLarge);
+				} catch(Integer, excOverflow) {
+					excThrow(excBodyTooLarge);
+				} finally {
+
+				} tryEnd;
 
 				if (this->headers.contentLength > this->maxBodyLength) {
 					throw(excBodyTooLarge);
