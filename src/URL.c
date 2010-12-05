@@ -29,7 +29,9 @@ sdef(ref(Parts), Parse, String url) {
 		switch (state) {
 			case ref(State_Scheme):
 				if (String_EndsWith(buf, String("://"))) {
-					String_Copy(&res.scheme, buf, 0, -3);
+					String_Copy(&res.scheme,
+						String_Slice(buf, 0, -3));
+
 					buf.len = 0;
 
 					state = ref(State_Host);
@@ -45,7 +47,9 @@ sdef(ref(Parts), Parse, String url) {
 				}
 
 				if (state != ref(State_Host)) {
-					String_Copy(&res.host, buf, 0, -1);
+					String_Copy(&res.host,
+						String_Slice(buf, 0, -1));
+
 					buf.len = 0;
 				}
 

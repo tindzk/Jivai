@@ -370,7 +370,9 @@ overload def(bool, Read, String *res) {
 	 */
 	if (this->canRead > 0) {
 		if (this->canRead > res->size) {
-			String_Copy(res, this->resp, 0, res->size);
+			String_Copy(res,
+				String_Slice(this->resp, 0, res->size));
+
 			String_Crop(&this->resp, res->size);
 
 			this->read    += res->len;
@@ -378,7 +380,8 @@ overload def(bool, Read, String *res) {
 
 			return true;
 		} else {
-			String_Copy(res, this->resp, 0, this->canRead);
+			String_Copy(res,
+				String_Slice(this->resp, 0, this->canRead));
 
 			/* Do not clear this->resp completely as it might
 			 * already contain the next chunk or even more.

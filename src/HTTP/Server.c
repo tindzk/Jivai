@@ -122,7 +122,8 @@ static def(void, OnHeader, String name, String value) {
 						throw(excUnknownContentType);
 					}
 
-					String_Copy(&this->headers.boundary, value, posBoundary + $("boundary=").len);
+					String_Copy(&this->headers.boundary,
+						String_Slice(value, posBoundary + $("boundary=").len));
 				} else {
 					throw(excUnknownContentType);
 				}
@@ -239,7 +240,8 @@ def(ref(Result), ReadHeader) {
 		if (this->header.len != (size_t) requestOffset) {
 			if (this->header.len - requestOffset >= this->headers.contentLength) {
 				/* We have the whole body in this->header. */
-				String_Copy(&this->body, this->header, requestOffset, this->headers.contentLength);
+				String_Copy(&this->body,
+					String_Slice(this->header, requestOffset, this->headers.contentLength));
 
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
@@ -247,7 +249,8 @@ def(ref(Result), ReadHeader) {
 				String_Crop(&this->header, requestOffset + this->headers.contentLength);
 			} else {
 				/* The body is only partial. */
-				String_Copy(&this->body, this->header, requestOffset);
+				String_Copy(&this->body,
+					String_Slice(this->header, requestOffset));
 
 				/* See comment below. */
 				this->header.len = 0;

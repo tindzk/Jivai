@@ -106,45 +106,7 @@ def(void, Align, size_t length) {
 	}
 }
 
-overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset, ssize_t srcLength) {
-	if (!dest->mutable) {
-		throw(excNotMutable);
-	}
-
-	size_t srcRight;
-
-	if (srcOffset < 0) {
-		srcOffset += src.len;
-	}
-
-	if (srcLength < 0) {
-		srcRight = srcLength + src.len;
-	} else {
-		srcRight = srcLength + srcOffset;
-	}
-
-	if ((size_t) srcOffset > srcRight
-	 || (size_t) srcOffset > src.len
-	 || srcRight           > src.len) {
-		throw(excBufferOverflow);
-	}
-
-	scall(Align, dest, dest->len + srcRight - srcOffset);
-
-	if (srcRight - srcOffset > 0) {
-		Memory_Copy(dest->buf,
-			src.buf  + srcOffset,
-			srcRight - srcOffset);
-	}
-
-	dest->len = srcRight - srcOffset;
-}
-
-inline overload sdef(void, Copy, self *dest, self src, ssize_t srcOffset) {
-	scall(Copy, dest, src, srcOffset, src.len - srcOffset);
-}
-
-overload sdef(void, Copy, self *dest, self src) {
+sdef(void, Copy, self *dest, self src) {
 	if (!dest->mutable) {
 		throw(excNotMutable);
 	}

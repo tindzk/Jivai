@@ -208,7 +208,8 @@ def(void, Parse, ref(Type) type, String s) {
 			}
 
 			if (len > 0) {
-				String_Copy(&res, s, last + 1, len);
+				String_Copy(&res,
+					String_Slice(s, last + 1, len));
 
 				try {
 					call(ParseHeaderLine, res);
