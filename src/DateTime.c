@@ -63,39 +63,50 @@ inline sdef(bool, Equals, self a, self b) {
 sdef(self, FromUnixEpoch, u64 time) {
 	self res;
 
-	res.date.year = (int)(time / Date_SecondsYear);
-	time -= (int)(res.date.year * Date_SecondsYear);
+	res.date.year = time / Date_SecondsYear;
+	time -= res.date.year * Date_SecondsYear;
 
-	res.date.day = (int)(time / Date_SecondsDay);
-	time -= (int)(res.date.day * Date_SecondsDay);
+	s32 days = (s32) time / Date_SecondsDay;
+	time -= days * Date_SecondsDay;
 
-	res.time.hour = (int)(time / Date_SecondsHour);
-	time -= (int)(res.time.hour * Date_SecondsHour);
+	res.time.hour = time / Date_SecondsHour;
+	time -= res.time.hour * Date_SecondsHour;
 
-	res.time.minute = (int)(time / Date_SecondsMinute);
-	time -= (int)(res.time.minute * Date_SecondsMinute);
+	res.time.minute = time / Date_SecondsMinute;
+	time -= res.time.minute * Date_SecondsMinute;
 
 	res.time.second = time;
 
-	/* Subtract one day for each leap year. */
-	res.date.day -= (res.date.year + 1) / 4;
+	if (res.time.minute > 0 || res.time.second > 0) {
+		res.time.hour++;
+		days++;
+	}
 
-	/* The day has already begun. */
-	res.date.day++;
+	if (res.time.hour == 24) {
+		res.time.hour = 0;
+		days++;
+	}
+
+	/* Subtract one day for each leap year. */
+	days -= (res.date.year + 1) / 4;
 
 	res.date.month = 0;
 
-	for (size_t i = 12; i >= 1; i--) {
-		if (res.date.day / Date_DaysPerMonth[i]) {
-			res.date.day -= Date_DaysPerMonth[i];
+	reverse (i, 12) {
+		if (days >= Date_DaysPerMonth[i]) {
+			days -= Date_DaysPerMonth[i];
 			res.date.month = i;
-
 			break;
 		}
 	}
 
 	res.date.month++;
 
+	if (days == 0) {
+		days++;
+	}
+
+	res.date.day   = days;
 	res.date.year += 1970;
 
 	return res;
