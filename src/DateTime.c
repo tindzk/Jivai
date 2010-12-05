@@ -77,18 +77,15 @@ sdef(self, FromUnixEpoch, u64 time) {
 
 	res.time.second = time;
 
-	if (res.time.minute > 0 || res.time.second > 0) {
-		res.time.hour++;
-		days++;
-	}
-
-	if (res.time.hour == 24) {
-		res.time.hour = 0;
-		days++;
-	}
+	days++;
 
 	/* Subtract one day for each leap year. */
 	days -= (res.date.year + 1) / 4;
+
+	if (days <= 0) {
+		days += 365;
+		res.date.year--;
+	}
 
 	res.date.month = 0;
 
@@ -101,10 +98,6 @@ sdef(self, FromUnixEpoch, u64 time) {
 	}
 
 	res.date.month++;
-
-	if (days == 0) {
-		days++;
-	}
 
 	res.date.day   = days;
 	res.date.year += 1970;
@@ -119,21 +112,27 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 
 	short years = dateTime.date.year - 1970;
 
-	/* Days since 1970. */
-	int days = years * 365;
+	int days = dateTime.date.day;
 
-	/* Add one day for each leap year since 1970. */
-	days += (years + 1) / 4;
+	/* Add number of days up until last month. */
+	days += Date_DaysPerMonth[dateTime.date.month - 1];
 
-	/* Add one extra day when the year is a leap year and the January is already over. */
-	if (dateTime.date.month > 1) {
-		if (Date_IsLeapYear(dateTime.date.year)) {
+	/* Add one extra day when the year is a leap year and the
+	 * January is already over.
+	 */
+	if (Date_IsLeapYear(dateTime.date.year)) {
+		if (dateTime.date.month > 1) {
 			days++;
 		}
 	}
 
-	/* Add number of days up until the end of the current month. */
-	days += Date_DaysPerMonth[dateTime.date.month - 1] + dateTime.date.day - 1;
+	/* Add days since 1970. */
+	days += years * 365;
+
+	/* Add one day for each leap year since 1970. */
+	days += (years + 1) / 4;
+
+	days--;
 
 	u64 hours   = days    * 24 + dateTime.time.hour;
 	u64 minutes = hours   * 60 + dateTime.time.minute;
