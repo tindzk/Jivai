@@ -161,10 +161,12 @@ def(ref(Result), ReadHeader) {
 
 	if (this->body.buf != NULL) {
 		String_Destroy(&this->body);
+		this->body = HeapString(0);
 	}
 
 	if (this->headers.boundary.buf != NULL) {
 		String_Destroy(&this->headers.boundary);
+		this->headers.boundary = HeapString(0);
 	}
 
 	ssize_t requestOffset = 0;
