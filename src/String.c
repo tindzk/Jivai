@@ -38,7 +38,10 @@ def(void, Destroy) {
 }
 
 inline sdef(self, FromNul, char *s) {
-	return BufString(s, strlen(s));
+	return BufString(s,
+		(s != NULL)
+			? strlen(s)
+			: 0);
 }
 
 inline sdef(char *, ToNulBuf, self s, char *buf) {
