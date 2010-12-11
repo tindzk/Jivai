@@ -1,4 +1,5 @@
 #import "Kernel.h"
+#import "Number.h"
 #import "Integer.h"
 #import "Exception.h"
 
@@ -20,5 +21,6 @@ sdef(self, Empty);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(ref(UnixEpoch), GetCurrentUnixTime);
+sdef(String, Format, self time);
 
 #undef self

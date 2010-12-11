@@ -21,5 +21,6 @@ sdef(bool, Equals, self a, self b);
 sdef(self, FromUnixEpoch, u64 time);
 sdef(u64, ToUnixEpoch, self dateTime);
 sdef(self, GetCurrent);
+sdef(String, Format, self dt);
 
 #undef self

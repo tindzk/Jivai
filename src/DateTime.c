@@ -145,3 +145,15 @@ sdef(self, GetCurrent) {
 	Time_UnixEpoch time = Time_GetCurrentUnixTime();
 	return scall(FromUnixEpoch, time.sec);
 }
+
+sdef(String, Format, self dt) {
+	String date = Date_Format(dt.date, true);
+	String time = Time_Format(dt.time);
+
+	String fmt = String_Format($("% %"), date, time);
+
+	String_Destroy(&time);
+	String_Destroy(&date);
+
+	return fmt;
+}

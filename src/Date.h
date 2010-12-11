@@ -52,6 +52,6 @@ sdef(bool, IsLeapYear, int year);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(short, GetWeekDay, self date);
-sdef(String, Format, self date);
+sdef(String, Format, self date, bool wday);
 
 #undef self

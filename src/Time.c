@@ -41,3 +41,18 @@ sdef(ref(UnixEpoch), GetCurrentUnixTime) {
 
 	return time;
 }
+
+sdef(String, Format, self time) {
+	String hour   = Number_Format(time.hour,   2);
+	String minute = Number_Format(time.minute, 2);
+	String second = Number_Format(time.second, 2);
+
+	String fmt = String_Format($("%:%:%"),
+		hour, minute, second);
+
+	String_Destroy(&second);
+	String_Destroy(&minute);
+	String_Destroy(&hour);
+
+	return fmt;
+}
