@@ -142,7 +142,7 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 }
 
 sdef(self, GetCurrent) {
-	Time_UnixEpoch time = Time_GetCurrentUnixTime();
+	Time_UnixEpoch time = Time_GetCurrent();
 	return scall(FromUnixEpoch, time.sec);
 }
 

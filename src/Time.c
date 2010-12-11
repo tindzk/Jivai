@@ -32,7 +32,7 @@ inline sdef(bool, Equals, self a, self b) {
 	return scall(Compare, a, b) == 0;
 }
 
-sdef(ref(UnixEpoch), GetCurrentUnixTime) {
+sdef(ref(UnixEpoch), GetCurrent) {
 	ref(UnixEpoch) time;
 
 	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {

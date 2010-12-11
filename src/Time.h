@@ -20,7 +20,7 @@ record(self) {
 sdef(self, Empty);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
-sdef(ref(UnixEpoch), GetCurrentUnixTime);
+sdef(ref(UnixEpoch), GetCurrent);
 sdef(String, Format, self time);
 
 #undef self
