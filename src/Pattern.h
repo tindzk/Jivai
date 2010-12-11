@@ -63,15 +63,13 @@
 
 #define self Pattern
 
-enum {
-	excEmptyPattern = excOffset,
-	excNoClosingBracket,
-	excUnbalancedBrackets,
-	excJumpOffsetTooBig,
-	excOffsetOverflow,
-	excOffsetUnderflow,
-	excUnknownCommand
-};
+// @exc EmptyPattern
+// @exc NoClosingBracket
+// @exc UnbalancedBrackets
+// @exc JumpOffsetTooBig
+// @exc OffsetOverflow
+// @exc OffsetUnderflow
+// @exc UnknownCommand
 
 set(ref(Token)) {
 	ref(Token_End),

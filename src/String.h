@@ -2,7 +2,6 @@
 #import "Types.h"
 #import "BitMask.h"
 #import "Compiler.h"
-#import "Exceptions.h"
 
 #define self String
 
@@ -31,10 +30,8 @@ enum {
 #import "Memory.h"
 #import "Exception.h"
 
-enum {
-	excNotMutable = excOffset,
-	excBufferOverflow
-};
+// @exc NotMutable
+// @exc BufferOverflow
 
 #define self String
 

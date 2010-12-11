@@ -16,7 +16,7 @@ def(void, Init, ref(Protocol) protocol) {
 		: IPPROTO_UDP;
 
 	if ((this->fd = Kernel_socket(PF_INET, style, proto)) == -1) {
-		throw(excSocketFailed);
+		throw(SocketFailed);
 	}
 }
 
@@ -24,7 +24,7 @@ def(void, SetNonBlockingFlag, bool enable) {
 	int flags = Kernel_fcntl(this->fd, FcntlMode_GetStatus, 0);
 
 	if (flags == -1) {
-		throw(excFcntlFailed);
+		throw(FcntlFailed);
 	}
 
 	if (enable) {
@@ -34,7 +34,7 @@ def(void, SetNonBlockingFlag, bool enable) {
 	}
 
 	if (Kernel_fcntl(this->fd, FcntlMode_SetStatus, flags) == -1) {
-		throw(excFcntlFailed);
+		throw(FcntlFailed);
 	}
 }
 
@@ -42,7 +42,7 @@ def(void, SetCloexecFlag, bool enable) {
 	int flags = Kernel_fcntl(this->fd, FcntlMode_GetDescriptorFlags, 0);
 
 	if (flags == -1) {
-		throw(excFcntlFailed);
+		throw(FcntlFailed);
 	}
 
 	if (enable) {
@@ -52,7 +52,7 @@ def(void, SetCloexecFlag, bool enable) {
 	}
 
 	if (Kernel_fcntl(this->fd, FcntlMode_SetDescriptorFlags, flags) == -1) {
-		throw(excFcntlFailed);
+		throw(FcntlFailed);
 	}
 }
 
@@ -60,7 +60,7 @@ def(void, SetReusableFlag, bool enable) {
 	int val = enable;
 
 	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val))) {
-		throw(excSetSocketOption);
+		throw(SetSocketOption);
 	}
 }
 
@@ -75,14 +75,14 @@ def(void, Listen, unsigned short port, int maxconns) {
 
 	if (!Kernel_bind(this->fd, addr)) {
 		if (errno == EADDRINUSE) {
-			throw(excAddressInUse);
+			throw(AddressInUse);
 		} else {
-			throw(excBindFailed);
+			throw(BindFailed);
 		}
 	}
 
 	if (!Kernel_listen(this->fd, maxconns)) {
-		throw(excListenFailed);
+		throw(ListenFailed);
 	}
 }
 
@@ -93,7 +93,7 @@ def(void, SetLinger) {
 	ling.l_linger = 30;
 
 	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))) {
-		throw(excSetSocketOption);
+		throw(SetSocketOption);
 	}
 }
 
@@ -110,7 +110,7 @@ def(SocketConnection, Connect, String hostname, unsigned short port) {
 	}
 
 	if (!Kernel_connect(this->fd, &addr, sizeof(addr))) {
-		throw(excConnectFailed);
+		throw(ConnectFailed);
 	}
 
 	this->unused = false;
@@ -136,7 +136,7 @@ def(SocketConnection, Accept) {
 	SocketConnection conn;
 
 	if ((conn.fd = Kernel_accept(this->fd, &remote, &socklen)) == -1) {
-		throw(excAcceptFailed);
+		throw(AcceptFailed);
 	}
 
 	conn.addr.ip   = remote.sin_addr.s_addr;

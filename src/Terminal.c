@@ -199,7 +199,7 @@ sdef(ref(Size), GetSize) {
 		res.cols = size.ws_col;
 		res.rows = size.ws_row;
 	} else {
-		throw(excIoctlFailed);
+		throw(IoctlFailed);
 	}
 
 	return res;

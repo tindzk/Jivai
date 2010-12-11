@@ -24,7 +24,7 @@ inline self BufString(char *buf, size_t len) {
 
 def(void, Destroy) {
 	if (!this->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	this->len  = 0;
@@ -65,7 +65,7 @@ inline sdef(self, Disown, self s) {
 
 def(void, Resize, size_t length) {
 	if (!this->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	if (length > 0) {
@@ -111,7 +111,7 @@ def(void, Align, size_t length) {
 
 sdef(void, Copy, self *dest, self src) {
 	if (!dest->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	if (src.len > 0) {
@@ -155,7 +155,7 @@ sdef(char, CharAt, self s, ssize_t offset) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	return s.buf[offset];
@@ -178,7 +178,7 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > s.len
 	 || right           > s.len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	out.len     = right - offset;
@@ -199,7 +199,7 @@ inline overload sdef(self, Slice, self s, ssize_t offset) {
 
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	if (!dest->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	size_t right;
@@ -217,7 +217,7 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > right
 	 || (size_t) offset > dest->len
 	 || right           > dest->len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	if (offset > 0) {
@@ -247,7 +247,7 @@ inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 
 def(void, Delete, ssize_t offset, ssize_t length) {
 	if (!this->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	size_t from;
@@ -261,7 +261,7 @@ def(void, Delete, ssize_t offset, ssize_t length) {
 	if ((size_t) offset > from
 	 || (size_t) offset > this->len
 	 || from            > this->len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	Memory_Move(
@@ -392,7 +392,7 @@ inline sdef(bool, EndsWith, self s, self needle) {
 
 def(void, ToLower) {
 	if (!this->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -402,7 +402,7 @@ def(void, ToLower) {
 
 def(void, ToUpper) {
 	if (!this->mutable) {
-		throw(excNotMutable);
+		throw(NotMutable);
 	}
 
 	for (size_t i = 0; i < this->len; i++) {
@@ -472,7 +472,7 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	for (ssize_t i = offset; i >= 0; i--) {
@@ -498,7 +498,7 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle) {
 	}
 
 	if ((size_t) offset > s.len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	size_t cnt = 0;
@@ -540,7 +540,7 @@ overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle
 
 	if ((size_t) offset > s.len
 	 || (size_t) right  > s.len) {
-		throw(excBufferOverflow);
+		throw(BufferOverflow);
 	}
 
 	size_t cnt = 0;

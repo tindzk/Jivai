@@ -7,10 +7,8 @@
 
 #define self Process
 
-enum {
-	excForkFailed = excOffset,
-	excSpawningProcessFailed
-};
+// @exc ForkFailed
+// @exc SpawningProcessFailed
 
 extern char **environ;
 

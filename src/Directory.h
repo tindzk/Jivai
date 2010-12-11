@@ -8,9 +8,8 @@
 #define Directory_BufSize 1024
 #endif
 
-enum {
-	excCannotOpenDirectory = excOffset
-};
+// @exc CannotOpenDirectory
+// @exc ReadingFailed
 
 record(ref(LinuxEntry)) {
 	unsigned long inode;

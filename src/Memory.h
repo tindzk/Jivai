@@ -3,7 +3,6 @@
 
 #import "Types.h"
 #import "Compiler.h"
-#import "Exceptions.h"
 
 #define self Memory
 
@@ -19,12 +18,10 @@
 #define Memory_OutOfMemoryChecks 0
 #endif
 
-enum {
-	excNullPointer = excOffset,
-	excOutOfBounds,
-	excOutOfMemory,
-	excOverlapping
-};
+// @exc NullPointer
+// @exc OutOfBounds
+// @exc OutOfMemory
+// @exc Overlapping
 
 void Memory0(void *e);
 bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen);

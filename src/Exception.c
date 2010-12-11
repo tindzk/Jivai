@@ -2,7 +2,9 @@
 
 #define self Exception
 
-ExceptionManager __exc_mgr;
+ExceptionManager __exc_mgr = {
+	.cur = NULL
+};
 
 inline sdef(void, Raise, int code) {
 	if (__exc_mgr.cur == NULL) {
@@ -45,8 +47,4 @@ sdef(void, Print, int code) {
 	String_Print(fmt, true);
 
 	String_Destroy(&fmt);
-}
-
-Constructor {
-	__exc_mgr.cur = NULL;
 }

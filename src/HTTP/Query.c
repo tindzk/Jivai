@@ -124,7 +124,7 @@ def(void, Decode, String s, bool isFormUri) {
 					String_Resize(value, len);
 				} else {
 					String_Destroy(&name);
-					throw(excExceedsPermittedLength);
+					throw(ExceedsPermittedLength);
 				}
 			}
 

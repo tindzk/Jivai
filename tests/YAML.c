@@ -4,7 +4,6 @@
 
 #import "TestSuite.h"
 
-#undef self
 #define self tsYAML
 
 class {

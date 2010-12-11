@@ -12,16 +12,26 @@ class {
 	bool writable;
 };
 
-enum {
-	excCannotOpenFile = excOffset,
-	excNotFound,
-	excNotReadable,
-	excNotWritable,
-	excReadingInterrupted,
-	excSeekingFailed,
-	excWritingFailed,
-	excWritingInterrupted
-};
+// @exc AccessDenied
+// @exc AlreadyExists
+// @exc AttributeNonExistent
+// @exc BufferTooSmall
+// @exc CannotOpenFile
+// @exc GettingAttributeFailed
+// @exc InvalidFileDescriptor
+// @exc InvalidParameter
+// @exc IsDirectory
+// @exc NotFound
+// @exc NotReadable
+// @exc NotWritable
+// @exc ReadingFailed
+// @exc ReadingInterrupted
+// @exc SeekingFailed
+// @exc SettingAttributeFailed
+// @exc StatFailed
+// @exc TruncatingFailed
+// @exc WritingFailed
+// @exc WritingInterrupted
 
 set(ref(SeekType)) {
 	ref(SeekType_Set) = 0,

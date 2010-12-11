@@ -1,6 +1,6 @@
 #import "TestSuite.h"
 
-ExceptionManager exc;
+#define self TestSuite
 
 Singleton(self);
 SingletonDestructor(self);

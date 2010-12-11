@@ -13,15 +13,14 @@ set(ref(Protocol)) {
 	ref(Protocol_UDP)
 };
 
-enum {
-	excAcceptFailed = excOffset,
-	excAddressInUse,
-	excBindFailed,
-	excConnectFailed,
-	excListenFailed,
-	excSetSocketOption,
-	excSocketFailed
-};
+// @exc AcceptFailed
+// @exc AddressInUse
+// @exc BindFailed
+// @exc ConnectFailed
+// @exc ListenFailed
+// @exc SetSocketOption
+// @exc SocketFailed
+// @exc FcntlFailed
 
 class {
 	ssize_t fd;

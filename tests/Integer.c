@@ -3,9 +3,6 @@
 
 #import "TestSuite.h"
 
-extern ExceptionManager exc;
-
-#undef self
 #define self tsInteger
 
 class {
@@ -35,7 +32,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		UInt32_Parse($("-1"));
-	} clean catch(Integer, excUnderflow) {
+	} clean catch(Integer, Underflow) {
 		caught = true;
 	} finally {
 
@@ -50,7 +47,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		val = UInt32_Parse($("4294967295"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -65,7 +62,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		UInt32_Parse($("4294967296"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -79,7 +76,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		UInt32_Parse($("-42949672960"));
-	} clean catch(Integer, excUnderflow) {
+	} clean catch(Integer, Underflow) {
 		caught = true;
 	} finally {
 
@@ -93,7 +90,7 @@ tsCase(Acute, "Parsing UInt32") {
 
 	try {
 		UInt32_Parse($("42949672960"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -108,7 +105,7 @@ tsCase(Acute, "Parsing UInt64") {
 
 	try {
 		val = UInt64_Parse($("18446744073709551615"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -123,7 +120,7 @@ tsCase(Acute, "Parsing UInt64") {
 
 	try {
 		UInt64_Parse($("18446744073709551616"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -137,7 +134,7 @@ tsCase(Acute, "Parsing UInt64") {
 
 	try {
 		UInt64_Parse($("184467440737095516150"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 
@@ -151,7 +148,7 @@ tsCase(Acute, "Parsing Int64") {
 
 	try {
 		Int64_Parse($("-184467440737095516150"));
-	} clean catch(Integer, excUnderflow) {
+	} clean catch(Integer, Underflow) {
 		caught = true;
 	} finally {
 
@@ -165,7 +162,7 @@ tsCase(Acute, "Parsing Int64") {
 
 	try {
 		Int64_Parse($("184467440737095516150"));
-	} clean catch(Integer, excOverflow) {
+	} clean catch(Integer, Overflow) {
 		caught = true;
 	} finally {
 

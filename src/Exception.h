@@ -11,6 +11,14 @@
 #define Exception_SaveOrigin 1
 #endif
 
+#ifndef Exception_SaveData
+#define Exception_SaveData 0
+#endif
+
+#ifndef Exception_SaveMessage
+#define Exception_SaveMessage 0
+#endif
+
 #ifndef Exception_SaveTrace
 #define Exception_SaveTrace 0
 #endif
@@ -26,6 +34,14 @@
 record(ref(Record)) {
 #if Exception_SaveOrigin
 	String func;
+#endif
+
+#if Exception_SaveMessage
+	String msg;
+#endif
+
+#if Exception_SaveData
+	void *data;
 #endif
 
 	String scode;
@@ -56,10 +72,10 @@ sdef(ref(Record) *, GetMeta);
 sdef(void, Print, int code);
 
 #if Exception_SaveOrigin
-#define Exception_SetOrigin(e) \
-	(e).func = String(__func__)
+#define Exception_SetOrigin() \
+	__exc_mgr.e.func = String(__func__)
 #else
-#define Exception_SetOrigin(e) \
+#define Exception_SetOrigin() \
 	do { } while(0)
 #endif
 
@@ -68,10 +84,11 @@ sdef(void, Print, int code);
 
 #import "Backtrace.h"
 
-#define Exception_SetTrace(e)            \
-	(e).traceItems = Backtrace_GetTrace( \
-		(e).trace,                       \
-		Exception_TraceSize)
+#define Exception_SetTrace()     \
+	__exc_mgr.e.traceItems =     \
+		Backtrace_GetTrace(      \
+			__exc_mgr.e.trace,   \
+			Exception_TraceSize)
 #else
 #define Exception_SetTrace(e) \
 	do { } while (0)
@@ -79,31 +96,47 @@ sdef(void, Print, int code);
 #define self Exception
 #endif
 
-#define Exception_SetCode(e, c) \
-	(e).scode = String(#c)
+#if Exception_SaveData
+#define Exception_SetData(_data) \
+	__exc_mgr.e.ptr = _data
+#else
+#define Exception_SetData(_data) \
+	do { } while (0)
+#endif
 
-#define Exception_SetException(c)      \
-	Exception_SetTrace(__exc_mgr.e);   \
-	Exception_SetOrigin(__exc_mgr.e);  \
-	Exception_SetCode(__exc_mgr.e, c);
+#if Exception_SaveMessage
+#define Exception_SetMessage(_msg) \
+	__exc_mgr.e.msg = _msg
+#else
+#define Exception_SetMessage(_msg) \
+	do { } while (0)
+#endif
 
-#define throw(e)                        \
-	do {                                \
-		Exception_SetException(e);      \
-		Exception_Raise(CurModule + e); \
+#define Exception_SetCode(c) \
+	__exc_mgr.e.scode = String(#c)
+
+#define Exception_SetException(c) \
+	Exception_SetTrace();         \
+	Exception_SetOrigin();        \
+	Exception_SetCode(c);
+
+#define throw(e)                   \
+	do {                           \
+		Exception_SetException(e); \
+		Exception_Raise(ref(e));   \
 	} while(0)
 
-#define try                                    \
-{                                              \
-	__label__ __exc_finally;                   \
-	bool __exc_rethrow = false;                \
-	bool __exc_ignore_finally = false;         \
-	void *__exc_return_ptr = && __exc_done;    \
-	                                           \
-	Exception_Buffer __exc_buffer;             \
-	Exception_Push(&__exc_buffer);             \
-	                                           \
-	int e = setjmp(__exc_buffer.jmpBuffer);    \
+#define try                                 \
+{                                           \
+	__label__ __exc_finally;                \
+	bool __exc_rethrow = false;             \
+	bool __exc_ignore_finally = false;      \
+	void *__exc_return_ptr = && __exc_done; \
+	                                        \
+	Exception_Buffer __exc_buffer;          \
+	Exception_Push(&__exc_buffer);          \
+	                                        \
+	int e = setjmp(__exc_buffer.jmpBuffer); \
 	if (e == 0) {
 
 #define clean                              \
@@ -111,11 +144,11 @@ sdef(void, Print, int code);
 	} else if (Exception_Pop(), false) { }
 
 #define catch(module, code) \
-	else if (e == Modules_##module + code)
+	else if (e == module##_##code)
 
-#define catchModule(module)                            \
-	else if (e >= Modules_##module &&                  \
-			 e <  Modules_##module + Manifest_GapSize)
+#define catchModule(module)                 \
+	else if (e > Modules_##module &&        \
+			 e < Modules_##module##_Length)
 
 #define catchAny \
 	else if (true)
@@ -163,10 +196,10 @@ sdef(void, Print, int code);
 	__exc_goto_finally \
 	goto
 
-#define excThrow(code)            \
-	e = CurModule + code;         \
-	Exception_SetException(code); \
-	__exc_rethrow = true;         \
+#define excThrow(code)               \
+	e = tripleConcat(self, _, code); \
+	Exception_SetException(code);    \
+	__exc_rethrow = true;            \
 	goto __exc_finally
 
 #undef self

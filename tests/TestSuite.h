@@ -2,7 +2,6 @@
 #import <Exception.h>
 #import <Terminal/Controller.h>
 
-#undef self
 #define self TestSuite
 
 set(ref(Level)) {
@@ -122,3 +121,5 @@ def(void, Init);
 def(void, Destroy);
 def(void, AddSuite, TestSuiteInterface *suite);
 def(void, Assert, String descr, bool succeeded);
+
+#undef self

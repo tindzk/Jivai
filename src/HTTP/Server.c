@@ -119,31 +119,29 @@ static def(void, OnHeader, String name, String value) {
 						$("boundary="));
 
 					if (posBoundary == String_NotFound) {
-						throw(excUnknownContentType);
+						throw(UnknownContentType);
 					}
 
 					String_Copy(&this->headers.boundary,
 						String_Slice(value, posBoundary + $("boundary=").len));
 				} else {
-					throw(excUnknownContentType);
+					throw(UnknownContentType);
 				}
 			} else if (String_Equals(name, $("content-length"))) {
 				if (this->method != HTTP_Method_Post) {
-					throw(excBodyUnexpected);
+					throw(BodyUnexpected);
 				}
 
 				try {
 					this->headers.contentLength = UInt64_Parse(value);
-				} clean catch(Integer, excUnderflow) {
-					excThrow(excBodyTooLarge);
-				} catch(Integer, excOverflow) {
-					excThrow(excBodyTooLarge);
+				} clean catchModule(Integer) {
+					throw(BodyTooLarge);
 				} finally {
 
 				} tryEnd;
 
 				if (this->headers.contentLength > this->maxBodyLength) {
-					throw(excBodyTooLarge);
+					throw(BodyTooLarge);
 				}
 			}
 		}
@@ -187,7 +185,7 @@ def(ref(Result), ReadHeader) {
 
 		if (this->header.size - this->header.len == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(excHeaderTooLarge);
+			throw(HeaderTooLarge);
 		}
 
 		ssize_t len = SocketConnection_Read(this->conn,
@@ -212,7 +210,7 @@ def(ref(Result), ReadHeader) {
 			return ref(Result_Error);
 		} else if (requestOffset == 0) {
 			/* The buffer is full, but the request is still incomplete. */
-			throw(excHeaderTooLarge);
+			throw(HeaderTooLarge);
 		}
 	}
 

@@ -14,11 +14,13 @@
 #define SocketConnection_ChunkSize 65536
 #endif
 
-enum {
-	excConnectionRefused = excOffset,
-	excFileDescriptorUnusable,
-	excNotConnected
-};
+// @exc ConnectionRefused
+// @exc ConnectionReset
+// @exc FcntlFailed
+// @exc FileDescriptorUnusable
+// @exc InvalidFileDescriptor
+// @exc NotConnected
+// @exc UnknownError
 
 class {
 	NetworkAddress addr;

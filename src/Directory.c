@@ -8,7 +8,7 @@ def(void, Init, String path) {
 		FileStatus_ReadOnly, 0);
 
 	if (this->fd == -1) {
-		throw(excCannotOpenDirectory);
+		throw(CannotOpenDirectory);
 	}
 
 	this->bpos = 0;
@@ -24,7 +24,7 @@ def(bool, Read, ref(Entry) *res) {
 		this->bpos  = 0;
 
 		if (this->nread == -1) {
-			throw(excReadingFailed);
+			throw(ReadingFailed);
 		}
 
 		if (this->nread == 0) {

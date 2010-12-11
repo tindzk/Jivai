@@ -5,9 +5,7 @@
 
 #define self HTTP_Query
 
-enum {
-	excExceedsPermittedLength = excOffset
-};
+// @exc ExceedsPermittedLength
 
 class {
 	HTTP_OnParameter onParameter;

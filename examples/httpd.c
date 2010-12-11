@@ -279,7 +279,7 @@ bool startServer(Server *server, GenericClientListener *listener) {
 		Server_Init(server, 8080, &GenericClientListenerImpl, listener);
 		String_Print(String("Server started.\n"));
 		excReturn true;
-	} clean catch(Socket, excAddressInUse) {
+	} clean catch(Socket, AddressInUse) {
 		String_Print(String("The address is already in use!\n"));
 		excReturn false;
 	} finally {
@@ -305,7 +305,7 @@ int main(void) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch(Signal, excSigInt) {
+	} clean catch(Signal, SigInt) {
 		String_Print(String("Server shutdown.\n"));
 	} catchAny {
 		Exception_Print(e);

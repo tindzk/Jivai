@@ -1,11 +1,8 @@
 #import "TestSuite.h"
 
-enum {
-	excCustomException = excOffset
-};
-
-#undef self
 #define self tsException
+
+// @exc CustomException
 
 class {
 	size_t cntTry;
@@ -30,7 +27,7 @@ def(void, Reset) {
 }
 
 def(void, ThrowExc) {
-	throw(excCustomException);
+	throw(CustomException);
 }
 
 def(void, Start) {

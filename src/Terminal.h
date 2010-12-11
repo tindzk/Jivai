@@ -9,9 +9,7 @@
 
 #define self Terminal
 
-enum {
-	excIoctlFailed = excOffset
-};
+// @exc IoctlFailed
 
 /* VT100 escape sequence strings. */
 #define Terminal_VT100_Normal              String("\33[0m")

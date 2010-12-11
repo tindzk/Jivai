@@ -59,9 +59,6 @@
 #define scall(method, ...) \
 	ref(method)(__VA_ARGS__)
 
-#define CurModule \
-	tripleConcat(Modules, _, self)
-
 #define Instance(name) \
 	simpleConcat(name, Instance)
 

@@ -1,15 +1,12 @@
 #import <String.h>
 #import <Exception.h>
 
-#undef self
 #define self Example
 
-enum {
-	excCustomException = excOffset
-};
+//@excCustomException
 
 void func3(void) {
-	throw(excCustomException);
+	throw(CustomException);
 }
 
 void func2(void) {
@@ -23,7 +20,7 @@ void func1(void) {
 int main(void) {
 	try {
 		func1();
-	} clean catch(Example, excCustomException) {
+	} clean catch(Example, CustomException) {
 		String_Print(String("CustomException caught.\n"));
 
 #if Exception_SaveTrace

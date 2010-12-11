@@ -10,13 +10,11 @@
 
 #define self HTTP_Header
 
-enum {
-	excEmptyRequestUri = excOffset,
-	excRequestMalformed,
-	excUnknownMethod,
-	excUnknownStatus,
-	excUnknownVersion
-};
+// @exc EmptyRequestUri
+// @exc RequestMalformed
+// @exc UnknownMethod
+// @exc UnknownStatus
+// @exc UnknownVersion
 
 set(ref(Type)) {
 	ref(Type_Request),

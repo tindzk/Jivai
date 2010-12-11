@@ -16,18 +16,18 @@
 				repeat (c) {                         \
 					if (digit * 10 / 10 != digit) {  \
 						if (neg) {                   \
-							throw(excUnderflow);     \
+							throw(Underflow);        \
 						} else {                     \
-							throw(excOverflow);      \
+							throw(Overflow);         \
 						}                            \
 					}                                \
 					digit *= 10;                     \
 				}                                    \
 				if (!safeAdd(res, res, digit)) {     \
 					if (neg) {                       \
-						throw(excUnderflow);         \
+						throw(Underflow);            \
 					} else {                         \
-						throw(excOverflow);          \
+						throw(Overflow);             \
 					}                                \
 				}                                    \
 			}                                        \
@@ -35,7 +35,7 @@
 		}                                            \
 		if (neg) {                                   \
 			if (!isSigned(type)) {                   \
-				throw(excUnderflow);                 \
+				throw(Underflow);                    \
 			}                                        \
 			res *= -1;                               \
 		}                                            \

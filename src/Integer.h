@@ -3,10 +3,8 @@
 
 #define self Integer
 
-enum {
-	excOverflow = excOffset,
-	excUnderflow
-};
+// @exc Overflow
+// @exc Underflow
 
 s8  Int8_Parse(String s);
 s16 Int16_Parse(String s);

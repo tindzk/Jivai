@@ -3,7 +3,6 @@
 
 #import "TestSuite.h"
 
-#undef self
 #define self tsDate
 
 class {

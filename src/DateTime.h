@@ -10,9 +10,7 @@ record(self) {
 	Time time;
 };
 
-enum {
-	excYearLower1970 = excOffset
-};
+// @exc YearLower1970
 
 sdef(self, Empty);
 sdef(self, FromDate, Date date);

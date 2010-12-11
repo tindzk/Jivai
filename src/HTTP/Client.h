@@ -23,11 +23,11 @@
 #define HTTP_Client_ReadChunkSize 16384
 #endif
 
-enum {
-	excConnectionError = excOffset,
-	excMalformedChunk,
-	excResponseMalformed
-};
+// @exc BufferTooSmall
+// @exc ConnectionError
+// @exc ConnectionReset
+// @exc MalformedChunk
+// @exc ResponseMalformed
 
 record(ref(Events)) {
 	HTTP_OnVersion onVersion;

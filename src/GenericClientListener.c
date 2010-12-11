@@ -65,9 +65,9 @@ static def(Connection_Status, OnData, Client *client, bool pull) {
 			status = pull
 				? this->connection->pull(conn)
 				: this->connection->push(conn);
-		} clean catch(SocketConnection, excNotConnected) {
+		} clean catch(SocketConnection, NotConnected) {
 			status = Connection_Status_Close;
-		} catch(SocketConnection, excConnectionReset) {
+		} catch(SocketConnection, ConnectionReset) {
 			status = Connection_Status_Close;
 		} finally {
 

@@ -6,19 +6,17 @@
 
 #define self Signal
 
-enum {
-	excSigAlrm = excOffset,
-	excSigBus,
-	excSigFpe,
-	excSigIll,
-	excSigInt,
-	excSigPipe,
-	excSigQuit,
-	excSigSegv,
-	excSigTerm,
-	excSignalHandlerNotSet,
-	excUnknown
-};
+// @exc SigAlrm
+// @exc SigBus
+// @exc SigFpe
+// @exc SigIll
+// @exc SigInt
+// @exc SigPipe
+// @exc SigQuit
+// @exc SigSegv
+// @exc SigTerm
+// @exc SignalHandlerNotSet
+// @exc Unknown
 
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 record(ref(UserContext)) {

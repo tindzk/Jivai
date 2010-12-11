@@ -5,6 +5,8 @@
 
 #define self YAML
 
+// @exc IllegalNesting
+
 set(ref(NodeType)) {
 	ref(NodeType_Node),
 	ref(NodeType_Section),

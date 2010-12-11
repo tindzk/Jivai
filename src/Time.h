@@ -8,9 +8,7 @@
 #define CLOCK_REALTIME 0
 #endif
 
-enum {
-	excGetTimeOfDayFailed = excOffset
-};
+// @exc GetTimeOfDayFailed
 
 record(self) {
 	u8 hour;

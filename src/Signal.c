@@ -25,7 +25,7 @@ sdef(void, Register, int signal, void (*cb)(int, siginfo_t *, void *)) {
 	sigact.sa_restorer  = NULL;
 
 	if (sigaction(signal, &sigact, (struct sigaction *) NULL) != 0) {
-		throw(excSignalHandlerNotSet);
+		throw(SignalHandlerNotSet);
 	}
 }
 
@@ -38,7 +38,7 @@ sdef(void, Ignore, int signal) {
 	sigact.sa_handler = SIG_IGN;
 
 	if (sigaction(signal, &sigact, NULL) != 0) {
-		throw(excSignalHandlerNotSet);
+		throw(SignalHandlerNotSet);
 	}
 }
 
@@ -46,34 +46,34 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 	int code;
 
 	if (signal == SIGALRM) {
-		code = excSigAlrm;
+		code = ref(SigAlrm);
 		__exc_mgr.e.scode = String("excSigAlrm");
 	} else if (signal == SIGBUS) {
-		code = excSigBus;
+		code = ref(SigBus);
 		__exc_mgr.e.scode = String("excSigBus");
 	} else if (signal == SIGFPE) {
-		code = excSigFpe;
+		code = ref(SigFpe);
 		__exc_mgr.e.scode = String("excSigFpe");
 	} else if (signal == SIGILL) {
-		code = excSigIll;
+		code = ref(SigIll);
 		__exc_mgr.e.scode = String("excSigIll");
 	} else if (signal == SIGINT) {
-		code = excSigInt;
+		code = ref(SigInt);
 		__exc_mgr.e.scode = String("excSigInt");
 	} else if (signal == SIGQUIT) {
-		code = excSigQuit;
+		code = ref(SigQuit);
 		__exc_mgr.e.scode = String("excSigQuit");
 	} else if (signal == SIGSEGV) {
-		code = excSigSegv;
+		code = ref(SigSegv);
 		__exc_mgr.e.scode = String("excSigSegv");
 	} else if (signal == SIGTERM) {
-		code = excSigTerm;
+		code = ref(SigTerm);
 		__exc_mgr.e.scode = String("excSigTerm");
 	} else if (signal == SIGPIPE) {
-		code = excSigPipe;
+		code = ref(SigPipe);
 		__exc_mgr.e.scode = String("excSigPipe");
 	} else {
-		code = excUnknown;
+		code = ref(Unknown);
 		__exc_mgr.e.scode = String("excUnknown");
 	}
 
@@ -94,5 +94,5 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 	__exc_mgr.e.func = String(__func__);
 #endif
 
-	Exception_Raise(Modules_Signal + code);
+	Exception_Raise(code);
 }

@@ -33,9 +33,9 @@ def(void, Destroy) {
 
 static def(void, SetJumpOffset, size_t pc, size_t offset) {
 	if (offset >= this->code->len) {
-		throw(excOffsetOverflow);
+		throw(OffsetOverflow);
 	} else if (this->code->len - offset > 0xff) {
-		throw(excJumpOffsetTooBig);
+		throw(JumpOffsetTooBig);
 	} else {
 		this->code->buf[pc] = (unsigned char) (this->code->len - offset);
 	}
@@ -129,7 +129,7 @@ static def(void, Relocate, size_t begin, size_t shift) {
 
 	if (begin + shift           > this->code->size
 	 || this->code->len - begin > this->code->len) {
-		throw(excOffsetOverflow);
+		throw(OffsetOverflow);
 	}
 
 	Memory_Move(
@@ -194,7 +194,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			offset = call(AnyOf, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ']') {
-				throw(excNoClosingBracket);
+				throw(NoClosingBracket);
 			}
 		} else if (pattern.buf[offset] == '\\') {
 			offset++;
@@ -223,7 +223,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			offset = call(Parse, offset + 1, pattern);
 
 			if (pattern.buf[offset] != ')') {
-				throw(excNoClosingBracket);
+				throw(NoClosingBracket);
 			}
 
 			call(Emit, ref(Token_Close));
@@ -232,7 +232,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 			call(FixUpBranch, fixup);
 
 			if (level == 0) {
-				throw(excUnbalancedBrackets);
+				throw(UnbalancedBrackets);
 			}
 
 			return offset;
@@ -276,7 +276,7 @@ static def(size_t, Parse, size_t offset, String pattern) {
 
 def(void, Compile, String pattern) {
 	if (pattern.len == 0) {
-		throw(excEmptyPattern);
+		throw(EmptyPattern);
 	}
 
 	this->numCaps   = 0;
@@ -369,7 +369,7 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 
 	while (res && this->code->buf[pc] != ref(Token_End)) {
 		if (pc >= this->code->len) {
-			throw(excOffsetOverflow);
+			throw(OffsetOverflow);
 		}
 
 		switch (this->code->buf[pc]) {
@@ -567,7 +567,7 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 			break;
 
 		default:
-			throw(excUnknownCommand);
+			throw(UnknownCommand);
 		}
 	}
 

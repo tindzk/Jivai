@@ -6,9 +6,7 @@
 
 #define self SocketSession
 
-enum {
-	excNotIdle = excOffset
-};
+// @exc NotIdle
 
 set(ref(OperationType)) {
 	ref(OperationType_Idle),

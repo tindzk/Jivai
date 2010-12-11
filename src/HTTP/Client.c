@@ -208,13 +208,13 @@ sdef(s64, ParseChunk, String *s) {
 	ssize_t pos = String_Find(*s, String("\r\n"));
 
 	if (pos == String_NotFound) {
-		throw(excMalformedChunk);
+		throw(MalformedChunk);
 	}
 
 	s64 len = Hex_ToInteger(String_Slice(*s, 0, pos));
 
 	if (len == -1) {
-		throw(excMalformedChunk);
+		throw(MalformedChunk);
 	}
 
 	String_Crop(s, pos + 2);
@@ -252,7 +252,7 @@ def(HTTP_Status, FetchResponse) {
 		 * For now this module only supports blocking connections.
 		 */
 		if (len == -1) {
-			throw(excConnectionError);
+			throw(ConnectionError);
 		}
 
 		this->resp.len += len;
@@ -264,7 +264,7 @@ def(HTTP_Status, FetchResponse) {
 			this->resp.len = 0;
 			this->closed   = true;
 
-			throw(excResponseMalformed);
+			throw(ResponseMalformed);
 		} else if (requestOffset > 0) { /* The response is complete. */
 			HTTP_Header_Events events;
 			events.onVersion = (HTTP_OnVersion) Callback(this, ref(OnVersion));
@@ -289,7 +289,7 @@ def(HTTP_Status, FetchResponse) {
 					this->resp.size);
 
 				if (len == -1) {
-					throw(excConnectionError);
+					throw(ConnectionError);
 				}
 
 				this->resp.len = len;
@@ -302,12 +302,12 @@ def(HTTP_Status, FetchResponse) {
 				 * responses.
 				 */
 
-				throw(excBufferTooSmall);
+				throw(BufferTooSmall);
 			}
 		}
-	} clean catch(SocketConnection, excConnectionReset) {
+	} clean catch(SocketConnection, ConnectionReset) {
 		this->closed = true;
-		excThrow(excConnectionReset);
+		excThrow(ConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -332,13 +332,13 @@ static inline def(void, InternalRead) {
 			this->resp.size - this->resp.len);
 
 		if (len == -1) {
-			throw(excConnectionError);
+			throw(ConnectionError);
 		}
 
 		this->resp.len += len;
-	} clean catch(SocketConnection, excConnectionReset) {
+	} clean catch(SocketConnection, ConnectionReset) {
 		this->closed = true;
-		excThrow(excConnectionReset);
+		excThrow(ConnectionReset);
 	} finally {
 
 	} tryEnd;
@@ -420,7 +420,7 @@ overload def(bool, Read, String *res) {
 					goto retry;
 				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
 					/* Chunk does not end on CRLF. */
-					throw(excMalformedChunk);
+					throw(MalformedChunk);
 				} else {
 					/* Don't set this->total and this->read to 0 because
 					 * this will cause the next Read() call to
@@ -447,7 +447,7 @@ overload def(bool, Read, String *res) {
 					 * announced, this will never happen.
 					 *
 					 * Ultimately, this even leads to the raise of an
-					 * excConnectionReset exception.
+					 * ConnectionReset exception.
 					 *
 					 * Note that this would only happen to the final
 					 * chunk, because for the others there's always
@@ -511,12 +511,12 @@ overload def(bool, Read, String *res) {
 			}
 
 			if (read == -1) {
-				throw(excConnectionError);
+				throw(ConnectionError);
 			}
 
 			res->len   += read;
 			this->read += read;
-		} clean catch(SocketConnection, excConnectionReset) {
+		} clean catch(SocketConnection, ConnectionReset) {
 			this->closed = true;
 
 			if (this->total == -1) {
@@ -528,7 +528,7 @@ overload def(bool, Read, String *res) {
 
 				excBreak;
 			} else {
-				excThrow(excConnectionReset);
+				excThrow(ConnectionReset);
 			}
 		} finally {
 

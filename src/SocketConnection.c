@@ -20,15 +20,15 @@ def(ssize_t, Read, void *buf, size_t len) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
-			throw(excConnectionReset);
+			throw(ConnectionReset);
 		} else if (errno == ECONNREFUSED) {
-			throw(excConnectionRefused);
+			throw(ConnectionRefused);
 		} else if (errno == ENOTCONN) {
-			throw(excNotConnected);
+			throw(NotConnected);
 		} else if (errno == EBADF) {
-			throw(excInvalidFileDescriptor);
+			throw(InvalidFileDescriptor);
 		} else {
-			throw(excUnknownError);
+			throw(UnknownError);
 		}
 	}
 
@@ -40,7 +40,7 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus,
 			FileStatus_ReadWrite | FileStatus_NonBlock) == -1)
 		{
-			throw(excFcntlFailed);
+			throw(FcntlFailed);
 		}
 	}
 
@@ -60,11 +60,11 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 			if (errno == EAGAIN) {
 				return false;
 			} else if (errno == EBADF) {
-				throw(excInvalidFileDescriptor);
+				throw(InvalidFileDescriptor);
 			} else if (errno == EINVAL) {
-				throw(excFileDescriptorUnusable);
+				throw(FileDescriptorUnusable);
 			} else {
-				throw(excUnknownError);
+				throw(UnknownError);
 			}
 		} else if (res == 0) {
 			break;
@@ -75,7 +75,7 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 
 	if (this->nonblocking) {
 		if (Kernel_fcntl(this->fd, FcntlMode_SetStatus, FileStatus_ReadWrite) == -1) {
-			throw(excFcntlFailed);
+			throw(FcntlFailed);
 		}
 	}
 
@@ -101,13 +101,13 @@ def(ssize_t, Write, void *buf, size_t len) {
 		if (errno == EWOULDBLOCK || errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
-			throw(excConnectionReset);
+			throw(ConnectionReset);
 		} else if (errno == EPIPE || errno == ENOTCONN) {
-			throw(excNotConnected);
+			throw(NotConnected);
 		} else if (errno == EBADF) {
-			throw(excInvalidFileDescriptor);
+			throw(InvalidFileDescriptor);
 		} else {
-			throw(excUnknownError);
+			throw(UnknownError);
 		}
 	}
 

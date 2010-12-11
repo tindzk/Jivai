@@ -9,7 +9,7 @@ def(void, Init, SocketConnection *conn) {
 
 def(void, Write, String s, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
-		throw(excNotIdle);
+		throw(NotIdle);
 	}
 
 	if (s.len == 0) {
@@ -28,7 +28,7 @@ def(void, Write, String s, ref(OnDone) onDone) {
 
 def(void, SendFile, File file, u64 length, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
-		throw(excNotIdle);
+		throw(NotIdle);
 	}
 
 	this->op.type = ref(OperationType_File);

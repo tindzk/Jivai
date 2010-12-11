@@ -6,7 +6,7 @@ struct in_addr NetworkAddress_ResolveHost(String hostname) {
 	struct addrinfo *host;
 
 	if (getaddrinfo(String_ToNul(hostname), NULL, NULL, &host)) {
-		throw(excGetAddrInfoFailed);
+		throw(GetAddrInfoFailed);
 	}
 
 	struct sockaddr_in saddr = *((struct sockaddr_in *) host->ai_addr);

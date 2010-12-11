@@ -36,12 +36,12 @@ class {
 	ref(OnEvent) onEvent;
 };
 
-enum {
-	excFileDescriptorAlreadyAdded = excOffset,
-	excFileDescriptorNotSupported,
-	excSettingCloexecFailed,
-	excUnknownFileDescriptor
-};
+// @exc FileDescriptorAlreadyAdded
+// @exc FileDescriptorNotSupported
+// @exc SettingCloexecFailed
+// @exc UnknownFileDescriptor
+// @exc UnknownError
+// @exc InvalidFileDescriptor
 
 def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);

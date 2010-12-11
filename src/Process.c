@@ -84,7 +84,7 @@ overload def(int, Spawn, float *time) {
 				argv[i] = NULL;
 			}
 
-			throw(excSpawningProcessFailed);
+			throw(SpawningProcessFailed);
 		}
 
 		_exit(127);
@@ -108,7 +108,7 @@ overload def(int, Spawn, float *time) {
 			argv[i] = NULL;
 		}
 
-		throw(excForkFailed);
+		throw(ForkFailed);
 	}
 
 	for (size_t i = 0; argv[i] != NULL; i++) {

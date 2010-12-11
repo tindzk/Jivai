@@ -12,12 +12,10 @@
 
 #define self HTTP_Server
 
-enum {
-	excBodyTooLarge = excOffset,
-	excBodyUnexpected,
-	excHeaderTooLarge,
-	excUnknownContentType
-};
+// @exc BodyTooLarge
+// @exc BodyUnexpected
+// @exc HeaderTooLarge
+// @exc UnknownContentType
 
 DefineCallback(ref(OnRespond), void, bool);
 

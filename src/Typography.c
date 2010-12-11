@@ -138,7 +138,7 @@ static def(void, Read, size_t st) {
 					call(Flush, &value);
 
 					if (this->node->parent == NULL) {
-						throw(excIllegalNesting);
+						throw(IllegalNesting);
 					}
 
 					this->node = this->node->parent;

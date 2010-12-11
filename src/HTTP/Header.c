@@ -8,13 +8,13 @@ def(void, Init, ref(Events) events) {
 
 def(void, ParseMethod, String s) {
 	if (s.len == 0) {
-		throw(excRequestMalformed);
+		throw(RequestMalformed);
 	}
 
 	HTTP_Method method = HTTP_Method_FromString(s);
 
 	if (method == HTTP_Method_Unset) {
-		throw(excUnknownMethod);
+		throw(UnknownMethod);
 	}
 
 	callback(this->events.onMethod, method);
@@ -24,7 +24,7 @@ def(void, ParseVersion, String s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
-		throw(excUnknownVersion);
+		throw(UnknownVersion);
 	}
 
 	callback(this->events.onVersion, version);
@@ -34,13 +34,13 @@ def(void, ParseStatus, String s) {
 	s32 code = Int32_Parse(s);
 
 	if (code == 0) {
-		throw(excUnknownStatus);
+		throw(UnknownStatus);
 	}
 
 	HTTP_Status status = HTTP_Status_GetStatusByCode(code);
 
 	if (status == HTTP_Status_Unset) {
-		throw(excUnknownStatus);
+		throw(UnknownStatus);
 	}
 
 	callback(this->events.onStatus, status);
@@ -48,7 +48,7 @@ def(void, ParseStatus, String s) {
 
 def(void, ParseUri, String s) {
 	if (s.len == 0) {
-		throw(excEmptyRequestUri);
+		throw(EmptyRequestUri);
 	}
 
 	ssize_t pos = String_Find(s, '?');
@@ -144,7 +144,7 @@ def(void, Parse, ref(Type) type, String s) {
 	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
-		throw(excRequestMalformed);
+		throw(RequestMalformed);
 	}
 
 	ssize_t pos2ndLine = pos1stLine;
@@ -157,7 +157,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posMethod = String_Find(s, ' ');
 
 		if (posMethod == String_NotFound) {
-			throw(excRequestMalformed);
+			throw(RequestMalformed);
 		}
 
 		String method = String_Slice(s, 0, posMethod);
@@ -178,7 +178,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posVersion = String_Find(s, ' ');
 
 		if (posVersion == String_NotFound) {
-			throw(excRequestMalformed);
+			throw(RequestMalformed);
 		}
 
 		String version = String_Slice(s, 0, posVersion);
@@ -187,7 +187,7 @@ def(void, Parse, ref(Type) type, String s) {
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
 		if (posCode == String_NotFound) {
-			throw(excRequestMalformed);
+			throw(RequestMalformed);
 		}
 
 		String code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);

@@ -5,6 +5,8 @@
 
 #define self Typography
 
+// @exc IllegalNesting
+
 record(ref(Text)) {
 	String value;
 };

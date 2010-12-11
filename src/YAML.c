@@ -64,7 +64,7 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 	} else if (depth < this->depth) {
 		while (this->depth - depth > 0) {
 			if (this->node->parent == NULL) {
-				throw(excIllegalNesting);
+				throw(IllegalNesting);
 			}
 
 			if (this->node->type == ref(NodeType_Node)) {
@@ -75,7 +75,7 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 		}
 
 		if (this->node->parent == NULL) {
-			throw(excIllegalNesting);
+			throw(IllegalNesting);
 		}
 
 		if (this->node->parent != NULL) {

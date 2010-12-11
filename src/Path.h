@@ -15,21 +15,28 @@
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
-enum {
-	excCreationFailed = excOffset,
-	excDeletingFailed,
-	excDirectoryNotEmpty,
-	excEmptyPath,
-	excInsufficientSpace,
-	excNameTooLong,
-	excNonExistentFile,
-	excNonExistentPath,
-	excNotDirectory,
-	excPermissionDenied,
-	excReadingLinkFailed,
-	excResolvingFailed,
-	excSettingTimeFailed
-};
+// @exc AccessDenied
+// @exc AlreadyExists
+// @exc AttributeNonExistent
+// @exc BufferTooSmall
+// @exc CreationFailed
+// @exc DeletingFailed
+// @exc DirectoryNotEmpty
+// @exc EmptyPath
+// @exc GettingAttributeFailed
+// @exc InsufficientSpace
+// @exc IsDir
+// @exc NameTooLong
+// @exc NonExistentFile
+// @exc NonExistentPath
+// @exc NotDirectory
+// @exc PermissionDenied
+// @exc ReadingLinkFailed
+// @exc ResolvingFailed
+// @exc SettingAttributeFailed
+// @exc SettingTimeFailed
+// @exc StatFailed
+// @exc TruncatingFailed
 
 overload sdef(bool, Exists, String path, bool follow);
 overload sdef(bool, Exists, String path);

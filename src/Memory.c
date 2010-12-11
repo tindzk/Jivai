@@ -42,7 +42,7 @@ bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen) {
 void* __malloc Memory_Alloc(size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
-		throw(excOutOfBounds);
+		throw(OutOfBounds);
 	}
 #endif
 
@@ -50,7 +50,7 @@ void* __malloc Memory_Alloc(size_t size) {
 
 #if Memory_OutOfMemoryChecks
 	if (pMem == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -60,7 +60,7 @@ void* __malloc Memory_Alloc(size_t size) {
 void Memory_FreePtr(void *pMem) {
 #if Memory_PointerChecks
 	if (pMem == NULL) {
-		throw(excNullPointer);
+		throw(NullPointer);
 	}
 #endif
 
@@ -70,13 +70,13 @@ void Memory_FreePtr(void *pMem) {
 void* __malloc Memory_Realloc(void *pMem, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
-		throw(excOutOfBounds);
+		throw(OutOfBounds);
 	}
 #endif
 
 #if Memory_PointerChecks
 	if (pMem == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -84,7 +84,7 @@ void* __malloc Memory_Realloc(void *pMem, size_t size) {
 
 #if Memory_OutOfMemoryChecks
 	if (res == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -94,17 +94,17 @@ void* __malloc Memory_Realloc(void *pMem, size_t size) {
 void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0) {
-		throw(excOutOfBounds);
+		throw(OutOfBounds);
 	}
 #endif
 
 	if (Memory_Overlaps(pDest, pSource, len, len)) {
-		throw(excOverlapping);
+		throw(Overlapping);
 	}
 
 #if Memory_PointerChecks
 	if (pDest == NULL || pSource == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -114,13 +114,13 @@ void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len)
 void* __malloc Memory_Clone(void *pSource, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
-		throw(excOutOfBounds);
+		throw(OutOfBounds);
 	}
 #endif
 
 #if Memory_PointerChecks
 	if (pSource == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -128,7 +128,7 @@ void* __malloc Memory_Clone(void *pSource, size_t size) {
 
 #if Memory_OutOfMemoryChecks
 	if (pDest == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -144,7 +144,7 @@ bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
 
 #if Memory_PointerChecks
 	if (ptr1 == NULL || ptr2 == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 
@@ -154,13 +154,13 @@ bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
 void* Memory_Move(void *pDest, void *pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0) {
-		throw(excOutOfBounds);
+		throw(OutOfBounds);
 	}
 #endif
 
 #if Memory_PointerChecks
 	if (pDest == NULL || pSource == NULL) {
-		throw(excOutOfMemory);
+		throw(OutOfMemory);
 	}
 #endif
 

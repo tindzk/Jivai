@@ -36,7 +36,7 @@ sdef(ref(UnixEpoch), GetCurrentUnixTime) {
 	ref(UnixEpoch) time;
 
 	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {
-		throw(excGetTimeOfDayFailed);
+		throw(GetTimeOfDayFailed);
 	}
 
 	return time;

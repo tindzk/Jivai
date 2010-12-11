@@ -107,7 +107,7 @@ sdef(self, FromUnixEpoch, u64 time) {
 
 sdef(u64, ToUnixEpoch, self dateTime) {
 	if (dateTime.date.year < 1970) {
-		throw(excYearLower1970);
+		throw(YearLower1970);
 	}
 
 	short years = dateTime.date.year - 1970;

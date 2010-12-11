@@ -32,15 +32,15 @@ def(void, Open, String path, int mode) {
 
 	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
 		if (errno == EACCES) {
-			throw(excAccessDenied);
+			throw(AccessDenied);
 		} else if (errno == ENOENT) {
-			throw(excNotFound);
+			throw(NotFound);
 		} else if (errno == EISDIR) {
-			throw(excIsDirectory);
+			throw(IsDirectory);
 		} else if (errno == EEXIST) {
-			throw(excAlreadyExists);
+			throw(AlreadyExists);
 		} else {
-			throw(excCannotOpenFile);
+			throw(CannotOpenFile);
 		}
 	}
 
@@ -69,7 +69,7 @@ def(void, Close) {
 
 def(void, SetXattr, String name, String value) {
 	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
-		throw(excSettingAttributeFailed);
+		throw(SettingAttributeFailed);
 	}
 }
 
@@ -80,16 +80,16 @@ overload def(String, GetXattr, String name) {
 
 	if (size == -1) {
 		if (errno == ENODATA) {
-			throw(excAttributeNonExistent);
+			throw(AttributeNonExistent);
 		} else {
-			throw(excGettingAttributeFailed);
+			throw(GettingAttributeFailed);
 		}
 	}
 
 	String res = HeapString(size);
 
 	if (Kernel_fgetxattr(this->fd, name, res.buf, res.size) == -1) {
-		throw(excGettingAttributeFailed);
+		throw(GettingAttributeFailed);
 	}
 
 	res.len = res.size;
@@ -104,11 +104,11 @@ overload def(void, GetXattr, String name, String *value) {
 
 	if (size == -1) {
 		if (errno == ENODATA) {
-			throw(excAttributeNonExistent);
+			throw(AttributeNonExistent);
 		} else if (errno == ERANGE) {
-			throw(excBufferTooSmall);
+			throw(BufferTooSmall);
 		} else {
-			throw(excGettingAttributeFailed);
+			throw(GettingAttributeFailed);
 		}
 	}
 
@@ -120,13 +120,13 @@ overload def(void, Truncate, u64 length) {
 
 	if (!Kernel_ftruncate64(this->fd, length)) {
 		if (errno == EBADF) {
-			throw(excInvalidFileDescriptor);
+			throw(InvalidFileDescriptor);
 		} else if (errno == EACCES) {
-			throw(excNotWritable);
+			throw(NotWritable);
 		} else if (errno == EINVAL) {
-			throw(excInvalidParameter);
+			throw(InvalidParameter);
 		} else {
-			throw(excTruncatingFailed);
+			throw(TruncatingFailed);
 		}
 	}
 }
@@ -142,11 +142,11 @@ def(Stat64, GetStat) {
 
 	if (!Kernel_fstat64(this->fd, &attr)) {
 		if (errno == EACCES) {
-			throw(excAccessDenied);
+			throw(AccessDenied);
 		} else if (errno == EBADF) {
-			throw(excInvalidFileDescriptor);
+			throw(InvalidFileDescriptor);
 		} else {
-			throw(excStatFailed);
+			throw(StatFailed);
 		}
 	}
 
@@ -159,7 +159,7 @@ def(u64, GetSize) {
 
 overload def(size_t, Read, void *buf, size_t len) {
 	if (!this->readable) {
-		throw(excNotReadable);
+		throw(NotReadable);
 	}
 
 	errno = 0;
@@ -168,11 +168,11 @@ overload def(size_t, Read, void *buf, size_t len) {
 
 	if ((res = Kernel_read(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(excReadingInterrupted);
+			throw(ReadingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(excIsDirectory);
+			throw(IsDirectory);
 		} else {
-			throw(excReadingFailed);
+			throw(ReadingFailed);
 		}
 	}
 
@@ -185,7 +185,7 @@ inline overload def(void, Read, String *res) {
 
 overload def(size_t, Write, void *buf, size_t len) {
 	if (!this->writable) {
-		throw(excNotWritable);
+		throw(NotWritable);
 	}
 
 	errno = 0;
@@ -194,11 +194,11 @@ overload def(size_t, Write, void *buf, size_t len) {
 
 	if ((res = Kernel_write(this->fd, buf, len)) == -1) {
 		if (errno == EINTR) {
-			throw(excWritingInterrupted);
+			throw(WritingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(excIsDirectory);
+			throw(IsDirectory);
 		} else {
-			throw(excWritingFailed);
+			throw(WritingFailed);
 		}
 	}
 
@@ -211,7 +211,7 @@ overload def(size_t, Write, String s) {
 
 def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	if (!this->readable) {
-		throw(excNotReadable);
+		throw(NotReadable);
 	}
 
 	errno = 0;
@@ -220,11 +220,11 @@ def(u64, Seek, u64 offset, ref(SeekType) whence) {
 
 	if (!Kernel_llseek(this->fd, offset, &pos, whence)) {
 		if (errno == EBADF) {
-			throw(excInvalidFileDescriptor);
+			throw(InvalidFileDescriptor);
 		} else if (errno == EINVAL) {
-			throw(excInvalidParameter);
+			throw(InvalidParameter);
 		} else {
-			throw(excSeekingFailed);
+			throw(SeekingFailed);
 		}
 	}
 

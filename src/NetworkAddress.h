@@ -6,9 +6,7 @@
 
 #define self NetworkAddress
 
-enum {
-	excGetAddrInfoFailed = excOffset
-};
+// @exc GetAddrInfoFailed
 
 record(self) {
 	unsigned long ip;
