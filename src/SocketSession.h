@@ -1,8 +1,6 @@
 #import "String.h"
 #import "Exception.h"
-#import "Connection.h"
 #import "SocketConnection.h"
-#import "ConnectionInterface.h"
 
 #define self SocketSession
 
