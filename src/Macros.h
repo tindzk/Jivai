@@ -108,8 +108,11 @@
 	}                                                \
 	DefineAs(name, ImplName);
 
-#define ExportAnonImpl(module, name) \
-	name##Interface simpleConcat(module, Impl)
+#define ExportAnonImpl(module, name)                 \
+	name##Interface simpleConcat(module, Impl);      \
+	static inline sdef(name##Interface *, GetImpl) { \
+		return &simpleConcat(module, Impl);          \
+	}
 
 #define ImplExName(name) \
 	simpleConcat(self, _##name##Impl)
