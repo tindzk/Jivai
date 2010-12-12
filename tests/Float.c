@@ -24,4 +24,14 @@ tsCase(Acute, "Format") {
 	Assert($("Leading zero (< 1)"), String_Equals(s, $("0.987")));
 }
 
+tsCase(Acute, "Multiplication") {
+	float num = 12.;
+	String s = Float_ToString(num * 1.13, 0.01);
+	Assert($("12.00 * 1.13"), String_Equals(s, $("13.56")));
+
+	num = 0.3333;
+	s = Float_ToString(num * 1.13, 0.01);
+	Assert($(".3333 * 1.13"), String_Equals(s, $("0.37")));
+}
+
 tsFinalize;
