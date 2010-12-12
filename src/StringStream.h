@@ -14,6 +14,13 @@ def(size_t, Write, __unused void *buf, __unused size_t len);
 def(void, Close);
 def(bool, IsEof);
 
-extern Impl(Stream);
+ExportImpl(Stream);
+
+static inline Stream String_AsStream(String *s) {
+	StringStream stream;
+	StringStream_Init(&stream, s);
+
+	return StringStream_AsStream(&stream);
+}
 
 #undef self

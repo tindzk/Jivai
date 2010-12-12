@@ -5,8 +5,7 @@
 #define self BufferedStream
 
 class {
-	StreamInterface *stream;
-	void *data;
+	Stream stream;
 
 	bool eof;
 
@@ -16,7 +15,7 @@ class {
 	String outbuf;
 };
 
-def(void, Init, StreamInterface *stream, void *data);
+def(void, Init, Stream stream);
 def(void, Destroy);
 def(void, SetInputBuffer, size_t size, size_t threshold);
 def(void, SetOutputBuffer, size_t size);
@@ -27,6 +26,6 @@ def(String, Flush);
 def(void, Reset);
 def(void, Close);
 
-extern Impl(Stream);
+ExportImpl(Stream);
 
 #undef self

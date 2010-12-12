@@ -36,8 +36,7 @@ record(ref(Node)) {
 	((Typography_Item *) &(node)->data)
 
 class {
-	StreamInterface *stream;
-	void *context;
+	Stream stream;
 
 	size_t line;
 
@@ -49,6 +48,6 @@ def(void, Init);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);
 def(ref(Node) *, GetRoot);
-def(void, Parse, StreamInterface *stream, void *context);
+def(void, Parse, Stream stream);
 
 #undef self

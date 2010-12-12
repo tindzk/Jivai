@@ -3,8 +3,8 @@
 Interface(Connection) {
 	size_t size;
 
-	void (*init)   (GenericInstance, SocketConnection *);
-	void (*destroy)(GenericInstance);
-	bool (*pull)   (GenericInstance);
-	bool (*push)   (GenericInstance);
+	Method(void, init, SocketConnection *);
+	Method(void, destroy);
+	Method(bool, pull);
+	Method(bool, push);
 };

@@ -2,7 +2,7 @@
 #import "Socket.h"
 #import "Client.h"
 #import "BitMask.h"
-#import "Connection.h"
+#import "ClientConnection.h"
 #import "ClientListenerInterface.h"
 
 #ifndef Server_ConnectionLimit
@@ -12,15 +12,15 @@
 #define self Server
 
 class {
-	bool   edgeTriggered;
-	Poll   poll;
+	bool edgeTriggered;
+	Poll poll;
+
 	Socket socket;
 
-	GenericInstance         context;
-	ClientListenerInterface *listener;
+	ClientListener listener;
 };
 
-def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context);
+def(void, Init, unsigned short port, ClientListener listener);
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);
 def(void, Process);

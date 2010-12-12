@@ -59,17 +59,70 @@
 #define scall(method, ...) \
 	ref(method)(__VA_ARGS__)
 
+#define Method(ret, method, ...) \
+	ret (*method)(GenericInstance $this, ## __VA_ARGS__)
+
 #define Instance(name) \
 	simpleConcat(name, Instance)
 
-#define Interface(name) \
+#define Interface(name)                    \
+	struct name##Interface;                \
+	record(name) {                         \
+		struct name##Interface *interface; \
+		GenericInstance         instance;  \
+	};                                     \
 	record(name##Interface)
 
+#define shareSize \
+	.size = sizeof(self)
+
+#define share(src, dest) \
+	.dest = (void *) ref(src)
+
+#define delegate(name, method, ...) \
+	(name).interface->method((name).instance, ## __VA_ARGS__)
+
+#define implements(name, method) \
+	(name).interface->method != NULL
+
+#define ImplName \
+	simpleConcat(self, Impl)
+
 #define Impl(name) \
-	name##Interface simpleConcat(self, Impl)
+	name##Interface ImplName
+
+#define DefineAs(name, implName)        \
+	static inline def(name, As##name) { \
+		return (name) {                 \
+			.interface = &implName,     \
+			.instance  = {              \
+				.object = $this.object  \
+			}                           \
+		};                              \
+	}
+
+#define ExportImpl(name)                             \
+	extern Impl(name);                               \
+	static inline sdef(name##Interface *, GetImpl) { \
+		return &ImplName;                            \
+	}                                                \
+	DefineAs(name, ImplName);
+
+#define ExportAnonImpl(module, name) \
+	name##Interface simpleConcat(module, Impl)
+
+#define ImplExName(name) \
+	simpleConcat(self, _##name##Impl)
 
 #define ImplEx(name) \
-	name##Interface simpleConcat(self, _##name##Impl)
+	name##Interface ImplExName(name)
+
+#define ExportAnonImplEx(module, name) \
+	name##Interface simpleConcat(module, _##name##Impl)
+
+#define ExportImplEx(name) \
+	extern ImplEx(name);   \
+	DefineAs(name, ImplExName(name));
 
 #define def(ret, method, ...) \
 	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)

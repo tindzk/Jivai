@@ -10,6 +10,6 @@
 
 def(bool, IsEof);
 
-extern Impl(Stream);
+ExportImpl(Stream);
 
 #undef self

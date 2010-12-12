@@ -57,9 +57,9 @@ static def(void, Read, size_t st) {
 	String value   = HeapString(0);
 	String options = HeapString(0);
 
-	while (!this->stream->isEof(this->context)) {
+	while (!delegate(this->stream, isEof)) {
 		if (next == '\0') {
-			this->stream->read(this->context, &cur, 1);
+			delegate(this->stream, read, &cur, 1);
 
 			if (cur == '\n') {
 				this->line++;
@@ -180,11 +180,10 @@ out:
 	String_Destroy(&name);
 }
 
-def(void, Parse, StreamInterface *stream, void *context) {
+def(void, Parse, Stream stream) {
 	this->line = 0;
 
-	this->stream  = stream;
-	this->context = context;
+	this->stream = stream;
 
 	Tree_Reset(&this->tree);
 	this->node = (ref(Node) *) &this->tree.root;

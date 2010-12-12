@@ -1,13 +1,13 @@
 #import "Block.h"
 #import "Server.h"
-#import "Connection.h"
+#import "ClientConnection.h"
 #import "ConnectionInterface.h"
 #import "ClientListenerInterface.h"
 
 #define self GenericClientListener
 
 class {
-	Connections         connections;
+	ClientConnections    connections;
 	ConnectionInterface *connection;
 };
 
@@ -17,9 +17,9 @@ def(void, OnDestroy);
 def(bool, OnConnect);
 def(void, OnAccept, Client *client);
 def(void, OnDisconnect, Client *client);
-def(Connection_Status, OnPull, Client *client);
-def(Connection_Status, OnPush, Client *client);
+def(ClientConnection_Status, OnPull, Client *client);
+def(ClientConnection_Status, OnPush, Client *client);
 
-extern Impl(ClientListener);
+ExportImpl(ClientListener);
 
 #undef self

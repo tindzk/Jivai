@@ -16,9 +16,9 @@
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
-#import <Connection.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
+#import <ClientConnection.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
 #import <ConnectionInterface.h>
@@ -28,7 +28,6 @@
 // Request
 // -------
 
-#undef self
 #define self Request
 
 class {
@@ -188,25 +187,25 @@ def(void, Destroy) {
 	String_Destroy(&this->paramTest2);
 }
 
-def(Connection_Status, Parse) {
+def(ClientConnection_Status, Parse) {
 	this->gotData = true;
 
 	bool incomplete = HTTP_Server_Process(&this->server);
 
 	/* Whilst the request is incomplete, keep the connection alive. */
 	if (incomplete) {
-		return Connection_Status_Open;
+		return ClientConnection_Status_Open;
 	}
 
 	/* There is enough data but does the current request actually
 	 * support persistent connections?
 	 */
 	return this->persistent
-		? Connection_Status_Open
-		: Connection_Status_Close;
+		? ClientConnection_Status_Open
+		: ClientConnection_Status_Close;
 }
 
-def(Connection_Status, Respond) {
+def(ClientConnection_Status, Respond) {
 	/* In edge-triggered mode a new connection may start with a
 	 * `pull' request.
 	 *
@@ -215,7 +214,7 @@ def(Connection_Status, Respond) {
 	 * This is prevented by ignoring the event.
 	 */
 	if (!this->gotData) {
-		return Connection_Status_Open;
+		return ClientConnection_Status_Open;
 	}
 
 	if (this->resp.len > 0) {
@@ -225,24 +224,25 @@ def(Connection_Status, Respond) {
 		bool incomplete = (this->resp.len > 0);
 
 		if (incomplete) {
-			return Connection_Status_Open;
+			return ClientConnection_Status_Open;
 		}
 	}
 
 	return this->persistent
-		? Connection_Status_Open
-		: Connection_Status_Close;
+		? ClientConnection_Status_Open
+		: ClientConnection_Status_Close;
 }
+
+#undef self
 
 // --------------
 // HttpConnection
 // --------------
 
-#undef self
 #define self HttpConnection
 
 class {
-	Connection base;
+	ClientConnection base;
 	Request request;
 };
 
@@ -254,33 +254,38 @@ def(void, Destroy) {
 	Request_Destroy(&this->request);
 }
 
-def(Connection_Status, Push) {
+def(ClientConnection_Status, Push) {
 	return Request_Parse(&this->request);
 }
 
-def(Connection_Status, Pull) {
+def(ClientConnection_Status, Pull) {
 	return Request_Respond(&this->request);
 }
 
 Impl(Connection) = {
-	.size    = sizeof(self),
-	.init    = (void *) ref(Init),
-	.destroy = (void *) ref(Destroy),
-	.push    = (void *) ref(Push),
-	.pull    = (void *) ref(Pull)
+	shareSize,
+
+	share(Init,    init),
+	share(Destroy, destroy),
+	share(Push,    push),
+	share(Pull,    pull)
 };
+
+ExportImpl(Connection);
+
+#undef self
 
 // ----
 // main
 // ----
 
-bool startServer(Server *server, GenericClientListener *listener) {
+bool startServer(Server *server, ClientListener listener) {
 	try {
-		Server_Init(server, 8080, &GenericClientListenerImpl, listener);
-		String_Print(String("Server started.\n"));
+		Server_Init(server, 8080, listener);
+		String_Print($("Server started.\n"));
 		excReturn true;
 	} clean catch(Socket, AddressInUse) {
-		String_Print(String("The address is already in use!\n"));
+		String_Print($("The address is already in use!\n"));
 		excReturn false;
 	} finally {
 
@@ -293,11 +298,13 @@ int main(void) {
 	Signal0();
 
 	GenericClientListener listener;
-	GenericClientListener_Init(&listener, &HttpConnectionImpl);
+	GenericClientListener_Init(&listener, HttpConnection_GetImpl());
 
 	Server server;
 
-	if (!startServer(&server, &listener)) {
+	if (!startServer(&server,
+		GenericClientListener_AsClientListener(&listener)))
+	{
 		return ExitStatus_Failure;
 	}
 

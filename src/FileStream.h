@@ -1,9 +1,9 @@
 #import "File.h"
 #import "StreamInterface.h"
 
-#define FileStreamInstance FileInstance
-
 #define self FileStream
+
+#define FileStreamInstance FileInstance
 
 def(void, Open, String path, int mode);
 def(void, Close);
@@ -11,6 +11,10 @@ def(size_t, Read, void *buf, size_t len);
 def(size_t, Write, void *buf, size_t len);
 def(bool, IsEof);
 
-extern Impl(Stream);
+ExportImpl(Stream);
+
+static inline Stream File_AsStream(File *file) {
+	return FileStream_AsStream(file);
+}
 
 #undef self

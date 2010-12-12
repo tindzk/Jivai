@@ -3,11 +3,10 @@
 
 int main(void) {
 	File file;
+	File_Open(&file, $("YAML.yml"), FileStatus_ReadOnly);
+
 	BufferedStream stream;
-
-	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
-
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	String s = StackString(5);

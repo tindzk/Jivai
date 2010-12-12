@@ -1,12 +1,12 @@
 #import "Client.h"
-#import "Connection.h"
+#import "ClientConnection.h"
 
 Interface(ClientListener) {
-	void (*onInit)             (GenericInstance);
-	void (*onDestroy)          (GenericInstance);
-	bool (*onClientConnect)    (GenericInstance);
-	void (*onClientAccept)     (GenericInstance, ClientInstance);
-	Connection_Status (*onPull)(GenericInstance, ClientInstance);
-	Connection_Status (*onPush)(GenericInstance, ClientInstance);
-	void (*onClientDisconnect) (GenericInstance, ClientInstance);
+	Method(void, onInit);
+	Method(void, onDestroy);
+	Method(bool, onClientConnect);
+	Method(void, onClientAccept, ClientInstance);
+	Method(ClientConnection_Status, onPull, ClientInstance);
+	Method(ClientConnection_Status, onPush, ClientInstance);
+	Method(void, onClientDisconnect, ClientInstance);
 };

@@ -2,10 +2,8 @@
 
 #define self Server
 
-def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericInstance context) {
-	this->context  = context;
+def(void, Init, unsigned short port, ClientListener listener) {
 	this->listener = listener;
-
 	this->edgeTriggered = true;
 
 	Poll_Init(&this->poll, Callback(this, ref(OnEvent)));
@@ -24,14 +22,14 @@ def(void, Init, unsigned short port, ClientListenerInterface *listener, GenericI
 		Poll_Events_Input |
 		Poll_Events_HangUp);
 
-	this->listener->onInit(this->context);
+	delegate(this->listener, onInit);
 }
 
 def(void, Destroy) {
 	Socket_Destroy(&this->socket);
 	Poll_Destroy(&this->poll);
 
-	this->listener->onDestroy(this->context);
+	delegate(this->listener, onDestroy);
 }
 
 def(void, SetEdgeTriggered, bool value) {
@@ -43,7 +41,7 @@ def(void, Process) {
 }
 
 def(void, DestroyClient, ClientInstance client) {
-	this->listener->onClientDisconnect(this->context, client);
+	delegate(this->listener, onClientDisconnect, client);
 
 	Client_Destroy(client);
 	Client_Free(client);
@@ -55,7 +53,7 @@ def(void, AcceptClient) {
 	Client_Init(client);
 	Client_Accept(client, &this->socket);
 
-	this->listener->onClientAccept(this->context, client);
+	delegate(this->listener, onClientAccept, client);
 
 	int flags =
 		Poll_Events_Error  |
@@ -66,11 +64,11 @@ def(void, AcceptClient) {
 		BitMask_Set(flags, Poll_Events_EdgeTriggered);
 	}
 
-	if (this->listener->onPush != NULL) {
+	if (implements(this->listener, onPush)) {
 		BitMask_Set(flags, Poll_Events_Input);
 	}
 
-	if (this->listener->onPull != NULL) {
+	if (implements(this->listener, onPull)) {
 		BitMask_Set(flags, Poll_Events_Output);
 	}
 
@@ -82,11 +80,11 @@ def(void, AcceptClient) {
 
 def(void, OnEvent, int events, ClientInstance client) {
 	if (Client_IsNull(client) &&
-			BitMask_Has(events, Poll_Events_Input))
+		BitMask_Has(events, Poll_Events_Input))
 	{
 		/* Incoming connection. */
 
-		if (this->listener->onClientConnect(this->context)) {
+		if (delegate(this->listener, onClientConnect)) {
 			call(AcceptClient);
 		} else {
 			/* This is necessary, else the same event will occur
@@ -100,21 +98,22 @@ def(void, OnEvent, int events, ClientInstance client) {
 
 	if (!Client_IsNull(client) && BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
-		if (!this->listener->onPush(this->context, client)) {
+		if (!delegate(this->listener, onPush, client)) {
 			client = Client_Null();
 		}
 	}
 
 	if (!Client_IsNull(client) &&
-			BitMask_Has(events, Poll_Events_Output))
+		BitMask_Has(events, Poll_Events_Output))
 	{
 		/* Client requests data. */
-		if (!this->listener->onPull(this->context, client)) {
+		if (!delegate(this->listener, onPull, client)) {
 			client = Client_Null();
 		}
 	}
 
-	if (!Client_IsNull(client) && BitMask_Has(events,
+	if (!Client_IsNull(client) &&
+		BitMask_Has(events,
 			Poll_Events_Error  |
 			Poll_Events_HangUp |
 			Poll_Events_PeerHangUp))

@@ -41,17 +41,16 @@ void PrintTree(Typography_Node *node, size_t depth) {
 }
 
 int main(__unused int argc, __unused char *argv[]) {
-	Typography tyo;
-
 	File file;
-	BufferedStream stream;
-
 	FileStream_Open(&file,
 		String("Typography.tyo"),
 		FileStatus_ReadOnly);
 
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream stream;
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
+
+	Typography tyo;
 
 	try {
 		Typography_Init(&tyo);

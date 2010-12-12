@@ -2,12 +2,9 @@
 
 #define self BufferedStream
 
-def(void, Init, StreamInterface *stream, void *data) {
+def(void, Init, Stream stream) {
 	this->stream = stream;
-	this->data  = data;
-
-	this->eof = false;
-
+	this->eof    = false;
 	this->inbuf  = HeapString(0);
 	this->outbuf = HeapString(0);
 
@@ -38,7 +35,8 @@ def(void, SetOutputBuffer, size_t size) {
 }
 
 def(bool, IsEof) {
-	return this->inbuf.len == 0 && this->eof;
+	return this->inbuf.len == 0
+		&& this->eof;
 }
 
 def(size_t, Read, void *buf, size_t len) {
@@ -47,7 +45,7 @@ def(size_t, Read, void *buf, size_t len) {
 	}
 
 	if (this->inbuf.len == 0 && !this->eof) {
-		this->inbuf.len = this->stream->read(this->data,
+		this->inbuf.len = delegate(this->stream, read,
 			this->inbuf.buf,
 			this->inbuf.size);
 
@@ -70,7 +68,7 @@ def(size_t, Read, void *buf, size_t len) {
 
 	if (!this->eof) {
 		if (this->inbuf.size - this->inbuf.len > this->inbufThreshold) {
-			size_t read = this->stream->read(this->data,
+			size_t read = delegate(this->stream, read,
 				this->inbuf.buf  + this->inbuf.len,
 				this->inbuf.size - this->inbuf.len);
 
@@ -99,7 +97,10 @@ def(size_t, Write, void *buf, size_t len) {
 		String_Append(&this->outbuf, tmp);
 
 		/* Flush the buffer. */
-		this->stream->write(this->data, this->outbuf.buf, this->outbuf.len);
+		delegate(this->stream, write,
+			this->outbuf.buf,
+			this->outbuf.len);
+
 		this->outbuf.len = 0;
 
 		/* Handle the remaining chunk. */
@@ -127,7 +128,10 @@ def(String, Flush) {
 	}
 
 	if (this->outbuf.len > 0) {
-		this->stream->write(this->data, this->outbuf.buf, this->outbuf.len);
+		delegate(this->stream, write,
+			this->outbuf.buf,
+			this->outbuf.len);
+
 		this->outbuf.len = 0;
 	}
 
@@ -143,7 +147,7 @@ def(void, Reset) {
 
 def(void, Close) {
 	BufferedStream_Flush(this);
-	this->stream->close(this->data);
+	delegate(this->stream, close);
 }
 
 Impl(Stream) = {

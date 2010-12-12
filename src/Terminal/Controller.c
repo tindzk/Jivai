@@ -61,12 +61,9 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 }
 
 def(void, Render, String s, ...) {
-	StringStream stream;
-	StringStream_Init(&stream, &s);
-
 	Typography tyo;
 	Typography_Init(&tyo);
-	Typography_Parse(&tyo, &StringStreamImpl, &stream);
+	Typography_Parse(&tyo, String_AsStream(&s));
 
 	VarArg argptr;
 	VarArg_Start(argptr, s);

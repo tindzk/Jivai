@@ -12,7 +12,7 @@ def(void, OnInit) {
 
 def(void, OnDestroy) {
 	/* Shut down all remaining connections. */
-	void (^destroy)(Connection *) = ^(Connection *conn) {
+	void (^destroy)(ClientConnection *) = ^(ClientConnection *conn) {
 		this->connection->destroy(conn);
 
 		Client_Destroy(conn->client);
@@ -29,7 +29,7 @@ def(bool, OnConnect) {
 }
 
 def(void, OnAccept, Client *client) {
-	Connection *conn = Memory_Alloc(this->connection->size);
+	ClientConnection *conn = Memory_Alloc(this->connection->size);
 
 	this->connection->init(conn, client->conn);
 
@@ -48,32 +48,32 @@ def(void, OnAccept, Client *client) {
 
 def(void, OnDisconnect, Client *client) {
 	if (client->data != NULL) {
-		Connection *conn = client->data;
+		ClientConnection *conn = client->data;
 		this->connection->destroy(conn);
 		DoublyLinkedList_Remove(&this->connections, conn);
 		Memory_Free(conn);
 	}
 }
 
-static def(Connection_Status, OnData, Client *client, bool pull) {
-	Connection_Status status = Connection_Status_Open;
+static def(ClientConnection_Status, OnData, Client *client, bool pull) {
+	ClientConnection_Status status = ClientConnection_Status_Open;
 
 	if (client->data != NULL) {
-		Connection *conn = client->data;
+		ClientConnection *conn = client->data;
 
 		try {
 			status = pull
 				? this->connection->pull(conn)
 				: this->connection->push(conn);
 		} clean catch(SocketConnection, NotConnected) {
-			status = Connection_Status_Close;
+			status = ClientConnection_Status_Close;
 		} catch(SocketConnection, ConnectionReset) {
-			status = Connection_Status_Close;
+			status = ClientConnection_Status_Close;
 		} finally {
 
 		} tryEnd;
 
-		if (status == Connection_Status_Close) {
+		if (status == ClientConnection_Status_Close) {
 			/* Destroy all data associated with the client. */
 			call(OnDisconnect, client);
 
@@ -87,11 +87,11 @@ static def(Connection_Status, OnData, Client *client, bool pull) {
 	return status;
 }
 
-def(Connection_Status, OnPull, Client *client) {
+def(ClientConnection_Status, OnPull, Client *client) {
 	return call(OnData, client, true);
 }
 
-def(Connection_Status, OnPush, Client *client) {
+def(ClientConnection_Status, OnPush, Client *client) {
 	return call(OnData, client, false);
 }
 

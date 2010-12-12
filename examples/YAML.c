@@ -34,15 +34,14 @@ void PrintTree(YAML_Node *node, int depth) {
 }
 
 int main(void) {
-	YAML yml;
 	File file;
-	BufferedStream stream;
-
 	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
 
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream stream;
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
+	YAML yml;
 	YAML_Init(&yml, 4, &BufferedStreamImpl, &stream);
 	YAML_Parse(&yml);
 
