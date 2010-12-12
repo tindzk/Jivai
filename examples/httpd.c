@@ -11,17 +11,17 @@
  * crash on malformed requests.
  */
 
-#import <Client.h>
 #import <Signal.h>
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
+#import <Connection.h>
+#import <SocketClient.h>
 #import <ClientConnection.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
-#import <ConnectionInterface.h>
 #import <GenericClientListener.h>
 
 // -------

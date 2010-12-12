@@ -1,7 +1,7 @@
 #import "Poll.h"
 #import "Socket.h"
-#import "Client.h"
 #import "BitMask.h"
+#import "SocketClient.h"
 #import "ClientConnection.h"
 #import "ClientListenerInterface.h"
 
@@ -24,8 +24,8 @@ def(void, Init, unsigned short port, ClientListener listener);
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);
 def(void, Process);
-def(void, DestroyClient, ClientInstance client);
+def(void, DestroyClient, SocketClientInstance client);
 def(void, AcceptClient);
-def(void, OnEvent, int events, ClientInstance client);
+def(void, OnEvent, int events, SocketClientInstance client);
 
 #undef self

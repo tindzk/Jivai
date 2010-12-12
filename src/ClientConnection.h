@@ -1,4 +1,4 @@
-#import "Client.h"
+#import "SocketClient.h"
 #import "DoublyLinkedList.h"
 
 #define self ClientConnection
@@ -9,7 +9,7 @@ set(ref(Status)) {
 };
 
 record(self) {
-	Client *client;
+	SocketClient *client;
 	DoublyLinkedList_DeclareRef(self);
 };
 

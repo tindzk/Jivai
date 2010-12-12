@@ -40,18 +40,18 @@ def(void, Process) {
 	Poll_Process(&this->poll, -1);
 }
 
-def(void, DestroyClient, ClientInstance client) {
+def(void, DestroyClient, SocketClientInstance client) {
 	delegate(this->listener, onClientDisconnect, client);
 
-	Client_Destroy(client);
-	Client_Free(client);
+	SocketClient_Destroy(client);
+	SocketClient_Free(client);
 }
 
 def(void, AcceptClient) {
-	ClientInstance client = Client_New();
+	SocketClientInstance client = SocketClient_New();
 
-	Client_Init(client);
-	Client_Accept(client, &this->socket);
+	SocketClient_Init(client);
+	SocketClient_Accept(client, &this->socket);
 
 	delegate(this->listener, onClientAccept, client);
 
@@ -73,13 +73,13 @@ def(void, AcceptClient) {
 	}
 
 	Poll_AddEvent(&this->poll,
-		Client_ToGeneric(client),
-		Client_GetFd(client),
+		SocketClient_ToGeneric(client),
+		SocketClient_GetFd(client),
 		flags);
 }
 
-def(void, OnEvent, int events, ClientInstance client) {
-	if (Client_IsNull(client) &&
+def(void, OnEvent, int events, SocketClientInstance client) {
+	if (SocketClient_IsNull(client) &&
 		BitMask_Has(events, Poll_Events_Input))
 	{
 		/* Incoming connection. */
@@ -96,23 +96,23 @@ def(void, OnEvent, int events, ClientInstance client) {
 		}
 	}
 
-	if (!Client_IsNull(client) && BitMask_Has(events, Poll_Events_Input)) {
+	if (!SocketClient_IsNull(client) && BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
 		if (!delegate(this->listener, onPush, client)) {
-			client = Client_Null();
+			client = SocketClient_Null();
 		}
 	}
 
-	if (!Client_IsNull(client) &&
+	if (!SocketClient_IsNull(client) &&
 		BitMask_Has(events, Poll_Events_Output))
 	{
 		/* Client requests data. */
 		if (!delegate(this->listener, onPull, client)) {
-			client = Client_Null();
+			client = SocketClient_Null();
 		}
 	}
 
-	if (!Client_IsNull(client) &&
+	if (!SocketClient_IsNull(client) &&
 		BitMask_Has(events,
 			Poll_Events_Error  |
 			Poll_Events_HangUp |

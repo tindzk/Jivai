@@ -1,6 +1,6 @@
-#import "Client.h"
+#import "SocketClient.h"
 
-#define self Client
+#define self SocketClient
 
 def(void, Init) {
 	this->conn = NULL;
@@ -12,6 +12,18 @@ def(void, Destroy) {
 		SocketConnection_Close(this->conn);
 		Memory_Free(this->conn);
 	}
+}
+
+def(void, SetData, void *data) {
+	this->data = data;
+}
+
+def(void *, GetData) {
+	return this->data;
+}
+
+def(SocketConnection *, GetConn) {
+	return this->conn;
 }
 
 def(ssize_t, GetFd) {

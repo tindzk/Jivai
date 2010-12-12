@@ -1,12 +1,12 @@
-#import "Client.h"
+#import "SocketClient.h"
 #import "ClientConnection.h"
 
 Interface(ClientListener) {
 	Method(void, onInit);
 	Method(void, onDestroy);
 	Method(bool, onClientConnect);
-	Method(void, onClientAccept, ClientInstance);
-	Method(ClientConnection_Status, onPull, ClientInstance);
-	Method(ClientConnection_Status, onPush, ClientInstance);
-	Method(void, onClientDisconnect, ClientInstance);
+	Method(void, onClientAccept, SocketClientInstance);
+	Method(ClientConnection_Status, onPull, SocketClientInstance);
+	Method(ClientConnection_Status, onPush, SocketClientInstance);
+	Method(void, onClientDisconnect, SocketClientInstance);
 };

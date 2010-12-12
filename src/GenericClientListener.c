@@ -15,8 +15,8 @@ def(void, OnDestroy) {
 	void (^destroy)(ClientConnection *) = ^(ClientConnection *conn) {
 		this->connection->destroy(conn);
 
-		Client_Destroy(conn->client);
-		Client_Free(conn->client);
+		SocketClient_Destroy(conn->client);
+		SocketClient_Free(conn->client);
 
 		Memory_Free(conn);
 	};
@@ -28,39 +28,40 @@ def(bool, OnConnect) {
 	return true;
 }
 
-def(void, OnAccept, Client *client) {
+def(void, OnAccept, SocketClientInstance client) {
 	ClientConnection *conn = Memory_Alloc(this->connection->size);
 
-	this->connection->init(conn, client->conn);
+	this->connection->init(conn, SocketClient_GetConn(client));
 
 	/* Also save the client pointer because it's needed to force the
 	 * closing of a connection. Otherwise the associated data could
 	 * be destroyed, but not the actual connection.
 	 */
-	conn->client = client;
+	conn->client = SocketClient_GetObject(client);
 
 	/* Link the connection with the current client. */
-	client->data = conn;
+	SocketClient_SetData(client, conn);
 
 	/* And add it to the list of currently active connections. */
 	DoublyLinkedList_InsertEnd(&this->connections, conn);
 }
 
-def(void, OnDisconnect, Client *client) {
-	if (client->data != NULL) {
-		ClientConnection *conn = client->data;
+def(void, OnDisconnect, SocketClientInstance client) {
+	ClientConnection *conn = SocketClient_GetData(client);
+
+	if (conn != NULL) {
 		this->connection->destroy(conn);
 		DoublyLinkedList_Remove(&this->connections, conn);
 		Memory_Free(conn);
 	}
 }
 
-static def(ClientConnection_Status, OnData, Client *client, bool pull) {
+static def(ClientConnection_Status, OnData, SocketClientInstance client, bool pull) {
 	ClientConnection_Status status = ClientConnection_Status_Open;
 
-	if (client->data != NULL) {
-		ClientConnection *conn = client->data;
+	ClientConnection *conn = SocketClient_GetData(client);
 
+	if (conn != NULL) {
 		try {
 			status = pull
 				? this->connection->pull(conn)
@@ -78,20 +79,20 @@ static def(ClientConnection_Status, OnData, Client *client, bool pull) {
 			call(OnDisconnect, client);
 
 			/* Close the connection. */
-			Client_Destroy(client);
+			SocketClient_Destroy(client);
 
-			Client_Free(client);
+			SocketClient_Free(client);
 		}
 	}
 
 	return status;
 }
 
-def(ClientConnection_Status, OnPull, Client *client) {
+def(ClientConnection_Status, OnPull, SocketClientInstance client) {
 	return call(OnData, client, true);
 }
 
-def(ClientConnection_Status, OnPush, Client *client) {
+def(ClientConnection_Status, OnPush, SocketClientInstance client) {
 	return call(OnData, client, false);
 }
 
