@@ -242,7 +242,6 @@ def(ClientConnection_Status, Respond) {
 #define self HttpConnection
 
 class {
-	ClientConnection base;
 	Request request;
 };
 

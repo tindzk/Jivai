@@ -13,7 +13,7 @@ def(void, OnInit) {
 def(void, OnDestroy) {
 	/* Shut down all remaining connections. */
 	void (^destroy)(ClientConnection *) = ^(ClientConnection *conn) {
-		this->connection->destroy(conn);
+		this->connection->destroy(ClientConnection_GetData(conn));
 
 		SocketClient_Destroy(conn->client);
 		SocketClient_Free(conn->client);
@@ -29,9 +29,11 @@ def(bool, OnConnect) {
 }
 
 def(void, OnAccept, SocketClientInstance client) {
-	ClientConnection *conn = Memory_Alloc(this->connection->size);
+	ClientConnection *conn = ClientConnection_New(this->connection->size);
 
-	this->connection->init(conn, SocketClient_GetConn(client));
+	this->connection->init(
+		ClientConnection_GetData(conn),
+		SocketClient_GetConn(client));
 
 	/* Also save the client pointer because it's needed to force the
 	 * closing of a connection. Otherwise the associated data could
@@ -50,8 +52,11 @@ def(void, OnDisconnect, SocketClientInstance client) {
 	ClientConnection *conn = SocketClient_GetData(client);
 
 	if (conn != NULL) {
-		this->connection->destroy(conn);
+		this->connection->destroy(
+			ClientConnection_GetData(conn));
+
 		DoublyLinkedList_Remove(&this->connections, conn);
+
 		Memory_Free(conn);
 	}
 }
@@ -64,8 +69,8 @@ static def(ClientConnection_Status, OnData, SocketClientInstance client, bool pu
 	if (conn != NULL) {
 		try {
 			status = pull
-				? this->connection->pull(conn)
-				: this->connection->push(conn);
+				? this->connection->pull(ClientConnection_GetData(conn))
+				: this->connection->push(ClientConnection_GetData(conn));
 		} clean catch(SocketConnection, NotConnected) {
 			status = ClientConnection_Status_Close;
 		} catch(SocketConnection, ConnectionReset) {

@@ -11,7 +11,16 @@ set(ref(Status)) {
 record(self) {
 	SocketClient *client;
 	DoublyLinkedList_DeclareRef(self);
+	char data[];
 };
+
+static inline self* ClientConnection_New(size_t dataSize) {
+	return Memory_Alloc(sizeof(self) + dataSize);
+}
+
+static inline void* ClientConnection_GetData(self *$this) {
+	return (void *) &$this->data;
+}
 
 DoublyLinkedList_DeclareList(self, ClientConnections);
 
