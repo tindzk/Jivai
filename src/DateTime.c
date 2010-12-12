@@ -79,7 +79,7 @@ sdef(self, FromUnixEpoch, u64 time) {
 
 	days++;
 
-	/* Subtract one day for each leap year. */
+	/* See ToUnixEpoch(). */
 	days -= (res.date.year + 1) / 4;
 
 	if (days <= 0) {
@@ -102,6 +102,13 @@ sdef(self, FromUnixEpoch, u64 time) {
 	res.date.day   = days;
 	res.date.year += 1970;
 
+	/* See ToUnixEpoch(). */
+	if (Date_IsLeapYear(res.date.year)) {
+		if (res.date.month > 2) {
+			res.date.day--;
+		}
+	}
+
 	return res;
 }
 
@@ -118,10 +125,10 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 	days += Date_DaysPerMonth[dateTime.date.month - 1];
 
 	/* Add one extra day when the year is a leap year and the
-	 * January is already over.
+	 * February is already over.
 	 */
 	if (Date_IsLeapYear(dateTime.date.year)) {
-		if (dateTime.date.month > 1) {
+		if (dateTime.date.month > 2) {
 			days++;
 		}
 	}

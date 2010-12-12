@@ -13,7 +13,7 @@ tsRegister("DateTime") {
 	return true;
 }
 
-tsCase(Acute, "Unix epoch conversion") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = DateTime_FromUnixEpoch(1291553857);
 
 	Assert($("Year"),   dt.date.year   == 2010);
@@ -24,7 +24,7 @@ tsCase(Acute, "Unix epoch conversion") {
 	Assert($("Second"), dt.time.second == 37);
 }
 
-tsCase(Acute, "Unix epoch conversion (2)") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = DateTime_FromUnixEpoch(1262304000);
 
 	Assert($("Year"),   dt.date.year   == 2010);
@@ -35,7 +35,7 @@ tsCase(Acute, "Unix epoch conversion (2)") {
 	Assert($("Second"), dt.time.second == 0);
 }
 
-tsCase(Acute, "Unix epoch conversion (3)") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = DateTime_FromUnixEpoch(1234567890);
 
 	Assert($("Year"),   dt.date.year   == 2009);
@@ -46,7 +46,29 @@ tsCase(Acute, "Unix epoch conversion (3)") {
 	Assert($("Second"), dt.time.second == 30);
 }
 
-tsCase(Acute, "Unix epoch conversion (4)") {
+tsCase(Acute, "Unix epoch conversion (leap year)") {
+	DateTime dt = DateTime_FromUnixEpoch(949457442);
+
+	Assert($("Year"),   dt.date.year   == 2000);
+	Assert($("Month"),  dt.date.month  == 2);
+	Assert($("Day"),    dt.date.day    == 2);
+	Assert($("Hour"),   dt.time.hour   == 2);
+	Assert($("Minute"), dt.time.minute == 10);
+	Assert($("Second"), dt.time.second == 42);
+}
+
+tsCase(Acute, "Unix epoch conversion (leap year)") {
+	DateTime dt = DateTime_FromUnixEpoch(952247287);
+
+	Assert($("Year"),   dt.date.year   == 2000);
+	Assert($("Month"),  dt.date.month  == 3);
+	Assert($("Day"),    dt.date.day    == 5);
+	Assert($("Hour"),   dt.time.hour   == 9);
+	Assert($("Minute"), dt.time.minute == 8);
+	Assert($("Second"), dt.time.second == 7);
+}
+
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = {
 		.date.year   = 2010,
 		.date.month  = 12,
@@ -59,7 +81,7 @@ tsCase(Acute, "Unix epoch conversion (4)") {
 	Assert($("1291553857"), DateTime_ToUnixEpoch(dt) == 1291553857);
 }
 
-tsCase(Acute, "Unix epoch conversion (5)") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = {
 		.date.year   = 2010,
 		.date.month  = 1,
@@ -72,7 +94,7 @@ tsCase(Acute, "Unix epoch conversion (5)") {
 	Assert($("1262304000"), DateTime_ToUnixEpoch(dt) == 1262304000);
 }
 
-tsCase(Acute, "Unix epoch conversion (6)") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = {
 		.date.year   = 2009,
 		.date.month  = 2,
@@ -85,7 +107,7 @@ tsCase(Acute, "Unix epoch conversion (6)") {
 	Assert($("1234567890"), DateTime_ToUnixEpoch(dt) == 1234567890);
 }
 
-tsCase(Acute, "Unix epoch conversion (7)") {
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	DateTime dt = {
 		.date.year   = 2010,
 		.date.month  = 12,
@@ -96,6 +118,32 @@ tsCase(Acute, "Unix epoch conversion (7)") {
 	};
 
 	Assert($("1293667200"), DateTime_ToUnixEpoch(dt) == 1293667200);
+}
+
+tsCase(Acute, "Unix epoch conversion (leap year)") {
+	DateTime dt = {
+		.date.year   = 2000,
+		.date.month  = 2,
+		.date.day    = 2,
+		.time.hour   = 2,
+		.time.minute = 10,
+		.time.second = 42
+	};
+
+	Assert($("949457442"), DateTime_ToUnixEpoch(dt) == 949457442);
+}
+
+tsCase(Acute, "Unix epoch conversion (leap year)") {
+	DateTime dt = {
+		.date.year   = 2000,
+		.date.month  = 3,
+		.date.day    = 5,
+		.time.hour   = 9,
+		.time.minute = 8,
+		.time.second = 7
+	};
+
+	Assert($("952247287"), DateTime_ToUnixEpoch(dt) == 952247287);
 }
 
 tsCase(Acute, "Drift (+0)") {
