@@ -54,7 +54,7 @@ int main(__unused int argc, __unused char *argv[]) {
 
 	try {
 		Typography_Init(&tyo);
-		Typography_Parse(&tyo, &BufferedStreamImpl, &stream);
+		Typography_Parse(&tyo, BufferedStream_AsStream(&stream));
 
 		PrintTree(Typography_GetRoot(&tyo), 0);
 
