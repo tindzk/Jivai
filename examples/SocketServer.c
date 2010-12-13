@@ -16,11 +16,11 @@
  * See also the httpd.c which makes use of it.
  */
 
-#import <Client.h>
 #import <Signal.h>
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
+#import <SocketClient.h>
 #import <SocketConnection.h>
 
 // ----------
@@ -35,7 +35,6 @@ record(ClientData) {
 // CustomClientListener
 // --------------------
 
-#undef self
 #define self CustomClientListener
 
 class {
@@ -55,7 +54,7 @@ def(bool, OnConnect) {
 	return this->activeConn < 5;
 }
 
-def(void, OnAccept, Client *client) {
+def(void, OnAccept, SocketClient *client) {
 	ClientData *data = New(ClientData);
 	data->id = this->activeConn;
 
@@ -64,24 +63,24 @@ def(void, OnAccept, Client *client) {
 	String tmp;
 
 	String_FmtPrint(
-		String("Got TCP connection from %:%, fd=%\n"),
+		$("Got TCP connection from %:%, fd=%\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
 		Integer_ToString(client->conn->addr.port),
 		Integer_ToString(client->conn->fd));
 
 	String_Destroy(&tmp);
 
-	String resp = String("Hi.\n");
+	String resp = $("Hi.\n");
 	SocketConnection_Write(client->conn, resp.buf, resp.len);
 
 	this->activeConn++;
 }
 
-def(void, OnDisconnect, Client *client) {
+def(void, OnDisconnect, SocketClient *client) {
 	String tmp;
 
 	String_FmtPrint(
-		String("Client %:%, fd=% disconnected\n"),
+		$("Client %:%, fd=% disconnected\n"),
 		tmp = NetworkAddress_ToString(client->conn->addr),
 		Integer_ToString(client->conn->addr.port),
 		Integer_ToString(client->conn->fd));
@@ -93,35 +92,35 @@ def(void, OnDisconnect, Client *client) {
 	this->activeConn--;
 }
 
-def(Connection_Status, OnData, Client *client) {
+def(ClientConnection_Status, OnData, SocketClient *client) {
 	String s = StackString(1024);
 	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
 
 	String input = String_Trim(s);
 
 	String_FmtPrint(
-		String("Received data from fd=%: '%'\n"),
+		$("Received data from fd=%: '%'\n"),
 		Int16_ToString(client->conn->fd), input);
 
-	if (String_BeginsWith(input, String("info"))) {
+	if (String_BeginsWith(input, $("info"))) {
 		ClientData *data = client->data;
 
 		String resp = String_Format(
-			String("You have the ID %.\n"),
+			$("You have the ID %.\n"),
 			Int32_ToString(data->id));
 
 		SocketConnection_Write(client->conn, resp.buf, resp.len);
 
 		String_Destroy(&resp);
-	} else if (String_BeginsWith(input, String("active"))) {
+	} else if (String_BeginsWith(input, $("active"))) {
 		String tmp = String_Format(
-			String("% active connection(s).\n"),
+			$("% active connection(s).\n"),
 			Int32_ToString(this->activeConn - 1));
 
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 		String_Destroy(&tmp);
-	} else if (String_BeginsWith(input, String("exit"))) {
-		String tmp = String("Bye.\n");
+	} else if (String_BeginsWith(input, $("exit"))) {
+		String tmp = $("Bye.\n");
 		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
 
 		/* Do not use SocketConnection_Close(client->conn); because
@@ -130,23 +129,28 @@ def(Connection_Status, OnData, Client *client) {
 		 */
 
 		call(OnDisconnect, client);
-		Client_Destroy(client);
 
-		return Connection_Status_Close;
+		SocketClient_Destroy(client);
+		SocketClient_Free(client);
+
+		return ClientConnection_Status_Close;
 	}
 
-	return Connection_Status_Open;
+	return ClientConnection_Status_Open;
 }
 
 Impl(ClientListener) = {
-	.onInit             = (void *) ref(OnInit),
-	.onDestroy          = (void *) ref(OnDestroy),
-	.onClientConnect    = (void *) ref(OnConnect),
-	.onClientAccept     = (void *) ref(OnAccept),
-	.onClientDisconnect = (void *) ref(OnDisconnect),
-	.onPush             = (void *) ref(OnData),
-	.onPull             = NULL
+	share(OnInit,       onInit),
+	share(OnDestroy,    onDestroy),
+	share(OnConnect,    onClientConnect),
+	share(OnAccept,     onClientAccept),
+	share(OnDisconnect, onClientDisconnect),
+	share(OnData,       onPush)
 };
+
+ExportImpl(ClientListener);
+
+#undef self
 
 // ----
 // main
@@ -159,16 +163,18 @@ int main(void) {
 	CustomClientListener listener;
 
 	try {
-		Server_Init(&server, 1337, &CustomClientListenerImpl, &listener);
+		Server_Init(&server, 1337,
+			CustomClientListener_AsClientListener(&listener));
+
 		Server_SetEdgeTriggered(&server, false);
 
-		String_Print(String("Server started.\n"));
+		String_Print($("Server started.\n"));
 
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch (Signal, excSigInt) {
-		String_Print(String("Server shutdown.\n"));
+	} clean catch (Signal, SigInt) {
+		String_Print($("Server shutdown.\n"));
 	} finally {
 		Server_Destroy(&server);
 	} tryEnd;
