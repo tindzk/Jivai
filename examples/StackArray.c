@@ -1,4 +1,5 @@
 #import <String.h>
+#import <Integer.h>
 #import <StackArray.h>
 
 typedef struct {
@@ -22,8 +23,8 @@ int main(void) {
 		}
 
 		Item item = {
-			String_Clone(Int16_ToString(i)),
-			String_Clone(Int16_ToString(i + 5))
+			String_Clone(Integer_ToString(i)),
+			String_Clone(Integer_ToString(i + 5))
 		};
 
 		StackArray_Push(arr, item, Item);
@@ -32,7 +33,7 @@ int main(void) {
 	Item *buf = StackArray_GetBuffer(arr, Item);
 
 	for (size_t i = 0; i < arr->len; i++) {
-		String_FmtPrint(String("%:%\n"),
+		String_FmtPrint($("%:%\n"),
 			buf[i].field1,
 			buf[i].field2);
 	}
