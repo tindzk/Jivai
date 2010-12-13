@@ -65,10 +65,10 @@ def(void, OnPath, String path) {
  */
 
 def(String *, OnQueryParameter, String name) {
-	if (String_Equals(name, String("test"))) {
+	if (String_Equals(name, $("test"))) {
 		/* test's value will be put into this variable. */
 		return &this->paramTest;
-	} else if (String_Equals(name, String("test2"))) {
+	} else if (String_Equals(name, $("test2"))) {
 		return &this->paramTest2;
 	}
 
@@ -88,17 +88,17 @@ def(void, OnRespond, bool persistent) {
 	this->resp.len = 0;
 
 	if (this->method == HTTP_Method_Get) {
-		String_Append(&this->resp, String("Page requested via GET."));
+		String_Append(&this->resp, $("Page requested via GET."));
 	} else if (this->method == HTTP_Method_Post) {
-		String_Append(&this->resp, String("Page requested via POST."));
+		String_Append(&this->resp, $("Page requested via POST."));
 	} else if (this->method == HTTP_Method_Head) {
-		String_Append(&this->resp, String("Page requested via HEAD."));
+		String_Append(&this->resp, $("Page requested via HEAD."));
 	}
 
 	if (this->method != HTTP_Method_Head) {
 		String tmp;
 		String_Append(&this->resp, tmp = String_Format(
-			String(
+			$(
 				"<form action=\"/\" method=\"post\">"
 				"<input type=\"text\" name=\"test\" /><br />"
 				"<input type=\"text\" name=\"test2\" /><br />"
@@ -115,21 +115,21 @@ def(void, OnRespond, bool persistent) {
 	}
 
 	String envelope = String_Format(
-		String(
-			"HTTP/% 200 OK\r\n"
+		$(
+			"% 200 OK\r\n"
 			"Content-Type: text/html; charset=utf-8\r\n"
 			"%\r\n"
 			"Content-Length: %\r\n"
 			"\r\n"
 		),
 
-		(this->version == HTTP_Version_1_1) ? String("1.1") : String("1.0"),
+		HTTP_Version_ToString(this->version),
 
 		persistent
-			? String("Connection: Keep-Alive")
-			: String("Connection: Close"),
+			? $("Connection: Keep-Alive")
+			: $("Connection: Close"),
 
-		Int64_ToString(this->resp.len));
+		Integer_ToString(this->resp.len));
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
 
@@ -312,7 +312,7 @@ int main(void) {
 			Server_Process(&server);
 		}
 	} clean catch(Signal, SigInt) {
-		String_Print(String("Server shutdown.\n"));
+		String_Print($("Server shutdown.\n"));
 	} catchAny {
 		Exception_Print(e);
 
