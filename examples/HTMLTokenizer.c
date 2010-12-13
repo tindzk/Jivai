@@ -12,7 +12,7 @@ void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
 	size_t i = depth;
 
 	while (i--) {
-		String_Print(String("    "));
+		String_Print($("    "));
 	}
 
 	if (type == HTML_Tokenizer_TokenType_TagStart) {
@@ -20,24 +20,24 @@ void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
 	}
 
 	if (type == HTML_Tokenizer_TokenType_Value) {
-		String_Print(String("value"));
+		String_Print($("value"));
 	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
-		String_Print(String("tag start"));
+		String_Print($("tag start"));
 	} else if (type == HTML_Tokenizer_TokenType_TagEnd) {
-		String_Print(String("tag end"));
+		String_Print($("tag end"));
 	} else if (type == HTML_Tokenizer_TokenType_Comment) {
-		String_Print(String("comment"));
+		String_Print($("comment"));
 	} else if (type == HTML_Tokenizer_TokenType_AttrName) {
-		String_Print(String("attr name"));
+		String_Print($("attr name"));
 	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
-		String_Print(String("attr value"));
+		String_Print($("attr value"));
 	} else if (type == HTML_Tokenizer_TokenType_Option) {
-		String_Print(String("option"));
+		String_Print($("option"));
 	}
 
-	String_Print(String(": "));
+	String_Print($(": "));
 	String_Print(value);
-	String_Print(String("\n"));
+	String_Print($("\n"));
 }
 
 int main(void) {
@@ -45,15 +45,15 @@ int main(void) {
 	BufferedStream stream;
 
 	try {
-		FileStream_Open(&file, String("HTMLTokenizer.html"), FileStatus_ReadOnly);
-	} clean catch (File, excNotFound) {
-		String_Print(String("File not found.\n"));
+		FileStream_Open(&file, $("HTMLTokenizer.html"), FileStatus_ReadOnly);
+	} clean catch (File, NotFound) {
+		String_Print($("File not found.\n"));
 		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
 
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tokenizer html;

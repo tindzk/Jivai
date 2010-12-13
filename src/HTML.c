@@ -1,5 +1,7 @@
 #import "HTML.h"
 
+#define self HTML
+
 sdef(void, Unescape, String *html) {
 	if (html->len == 0) {
 		return;
