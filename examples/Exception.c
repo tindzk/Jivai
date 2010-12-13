@@ -3,7 +3,7 @@
 
 #define self Example
 
-//@excCustomException
+// @exc CustomException
 
 void func3(void) {
 	throw(CustomException);
@@ -21,13 +21,13 @@ int main(void) {
 	try {
 		func1();
 	} clean catch(Example, CustomException) {
-		String_Print(String("CustomException caught.\n"));
+		String_Print($("CustomException caught.\n"));
 
 #if Exception_SaveTrace
 		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
 #endif
 	} finally {
-		String_Print(String("finally block.\n"));
+		String_Print($("finally block.\n"));
 	} tryEnd;
 
 	return ExitStatus_Success;
