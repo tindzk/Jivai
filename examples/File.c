@@ -5,9 +5,9 @@ int main(void) {
 	File file;
 
 	try {
-		File_Open(&file, String("File.txt"), FileStatus_ReadOnly);
-	} clean catch (File, excNotFound) {
-		String_Print(String("File not found.\n"));
+		File_Open(&file, $("File.txt"), FileStatus_ReadOnly);
+	} clean catch (File, NotFound) {
+		String_Print($("File not found.\n"));
 		excReturn ExitStatus_Failure;
 	} finally {
 
@@ -16,13 +16,13 @@ int main(void) {
 	String s = StackString(5);
 
 	do {
-		s.len = File_Read(File_FromObject(&file), s.buf, s.size);
+		s.len = File_Read(&file, s.buf, s.size);
 		String_Print(s);
 	} while (s.len > 0);
 
-	String_Print(String("size: "));
-	String_Print(Integer64_ToString(File_GetSize(&file)));
-	String_Print(String("\n"));
+	String_Print($("size: "));
+	String_Print(Integer_ToString(File_GetSize(&file)));
+	String_Print($("\n"));
 
 	File_Close(&file);
 

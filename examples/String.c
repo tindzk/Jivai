@@ -6,15 +6,15 @@ int main(void) {
 	 *
 	 * Contrary to a heap-allocated string which requires to be
 	 * destroyed:
-	 *   String s = String_Clone(String("Allocated on heap."));
+	 *   String s = String_Clone($("Allocated on heap."));
 	 *   String_Destroy(&s);
 	 */
-	String s = String("Hello world!");
+	String s = $("Hello world!");
 
 	/* This loop only serves the purpose of illustrating String's
 	 * capabilities. In practice, you'd rather do something like:
 	 *   String_Print(s);
-	 *   String_Print(String("\n"));
+	 *   String_Print($("\n"));
 	 */
 	for (size_t i = 0; i < s.len; i++) {
 		/* Put the current character into a string. */
@@ -23,13 +23,13 @@ int main(void) {
 
 		String fmt = String_Format(
 			/* % is a placeholder. */
-			String("%%"),
+			$("%%"),
 
 			/* Will be put in place of the first '%'. */
 			c,
 
 			/* The last character has the position s.len-1. */
-			(i == s.len - 1) ? String("\n") : String(""));
+			(i == s.len - 1) ? $("\n") : $(""));
 
 		/* String_Print() and String_Format() do not demand a
 		 * pointer because the `String()' macro expands to
@@ -42,13 +42,13 @@ int main(void) {
 	}
 
 	/* Find the needle in the string. */
-	ssize_t pos = String_Find(s, String(" world!"));
+	ssize_t pos = String_Find(s, $(" world!"));
 
 	/* Always check for String_NotFound (-1), otherwise String_Slice()
 	 * will interpret it as the penultimate character of the string!
 	 */
 	if (pos == String_NotFound) {
-		String_Print(String("Needle not found!\n"));
+		String_Print($("Needle not found!\n"));
 		return ExitStatus_Failure;
 	}
 
@@ -56,11 +56,11 @@ int main(void) {
 
 	/* 0..pos-1 */
 	String_Print(String_Slice(s, 0, pos));
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	/* pos..end */
 	String_Print(String_Slice(s, pos));
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	return ExitStatus_Success;
 }

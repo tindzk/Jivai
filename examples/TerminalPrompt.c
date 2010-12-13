@@ -8,7 +8,7 @@ int main(void) {
 	Terminal_Prompt prompt;
 	Terminal_Prompt_Init(&prompt, &term);
 
-	bool isYes = Terminal_Prompt_Ask(&prompt, String("Hello world?"));
+	bool isYes = Terminal_Prompt_Ask(&prompt, $("Hello world?"));
 
 	Terminal_Prompt_Destroy(&prompt);
 
@@ -16,12 +16,12 @@ int main(void) {
 		Terminal_Print(&term,
 			Terminal_Color_ForegroundRed,
 			Terminal_Font_Normal,
-			String("'Yes' selected.\n"));
+			$("'Yes' selected.\n"));
 	} else {
 		Terminal_Print(&term,
 			Terminal_Color_ForegroundGreen,
 			Terminal_Font_Normal,
-			String("'No' selected.\n"));
+			$("'No' selected.\n"));
 	}
 
 	Terminal_Destroy(&term);

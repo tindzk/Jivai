@@ -8,18 +8,18 @@ class {
 };
 
 def(void, OnKeyEnter, String s) {
-	String_Print(String("\nBuffer contains: '"));
+	String_Print($("\nBuffer contains: '"));
 	String_Print(s);
-	String_Print(String("'\n"));
+	String_Print($("'\n"));
 }
 
 def(bool, OnKeyPress, String ch) {
 	if (ch.buf[0] == CTRLKEY('c')) {
-		String_Print(String("Shutting down...\n"));
+		String_Print($("Shutting down...\n"));
 		this->interrupt = true;
 		return true;
 	} else if (ch.buf[0] == CTRLKEY('q')) {
-		String_Print(String("You pressed CTRL-Q!\n"));
+		String_Print($("You pressed CTRL-Q!\n"));
 		return true;
 	}
 

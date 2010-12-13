@@ -10,24 +10,24 @@ int main(void) {
 
 	String arr[5];
 
-	Terminal_Selection_Add(&termsel, arr[0] = String("First"),  true);
-	Terminal_Selection_Add(&termsel, arr[1] = String("Second"), false);
-	Terminal_Selection_Add(&termsel, arr[2] = String("Third"),  false);
-	Terminal_Selection_Add(&termsel, arr[3] = String("Fourth"), false);
-	Terminal_Selection_Add(&termsel, arr[4] = String("Fifth"),  false);
+	Terminal_Selection_Add(&termsel, arr[0] = $("First"),  true);
+	Terminal_Selection_Add(&termsel, arr[1] = $("Second"), false);
+	Terminal_Selection_Add(&termsel, arr[2] = $("Third"),  false);
+	Terminal_Selection_Add(&termsel, arr[3] = $("Fourth"), false);
+	Terminal_Selection_Add(&termsel, arr[4] = $("Fifth"),  false);
 
 	ssize_t sel = Terminal_Selection_GetSel(&termsel);
 
 	Terminal_Selection_Destroy(&termsel);
 
 	if (sel < 0) {
-		String_Print(String("Aborted."));
+		String_Print($("Aborted."));
 	} else {
-		String_Print(String("You selected: "));
+		String_Print($("You selected: "));
 		String_Print(arr[sel]);
 	}
 
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	Terminal_Destroy(&term);
 

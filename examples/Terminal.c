@@ -8,52 +8,52 @@ int main(void) {
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Normal,
-		String("Normal."));
+		$("Normal."));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Normal,
-		String("\n"));
+		$("\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Bold,
-		String("Bold font.\n"));
+		$("Bold font.\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Italics,
-		String("Italic font.\n"));
+		$("Italic font.\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Underline,
-		String("Underlined font.\n"));
+		$("Underlined font.\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Blink,
-		String("Blinking font.\n"));
+		$("Blinking font.\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_ForegroundRed,
 		Terminal_Font_Normal,
-		String("Red foreground.\n"));
+		$("Red foreground.\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_BackgroundRed,
 		Terminal_Font_Normal,
-		String("Red background."));
+		$("Red background."));
 
 	Terminal_Print(&term,
 		Terminal_Color_Normal,
 		Terminal_Font_Normal,
-		String("\n"));
+		$("\n"));
 
 	Terminal_Print(&term,
 		Terminal_Color_ForegroundRed,
 		Terminal_Font_Bold | Terminal_Font_Italics,
-		String("Red foreground, bold and italic font.\n"));
+		$("Red foreground, bold and italic font.\n"));
 
 	Terminal_Destroy(&term);
 

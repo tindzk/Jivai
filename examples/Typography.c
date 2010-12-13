@@ -8,32 +8,32 @@
 #import <BufferedStream.h>
 
 void PrintTree(Typography_Node *node, size_t depth) {
-	String_FmtPrint(String("depth=%"),
+	String_FmtPrint($("depth=%"),
 		Int16_ToString(depth));
 
 	for (size_t i = 0; i < depth; i++) {
-		String_Print(String("    "));
+		String_Print($("    "));
 	}
 
 	if (node->type == Typography_NodeType_Text) {
-		String_Print(String("value: "));
+		String_Print($("value: "));
 
 		String_Print(Typography_Text(node)->value);
 	} else if (node->type == Typography_NodeType_Item) {
-		String_Print(String("name: "));
+		String_Print($("name: "));
 
 		String_Print(Typography_Item(node)->name);
 
-		String_Print(String(" options: "));
+		String_Print($(" options: "));
 
 		if (Typography_Item(node)->options.len > 0) {
 			String_Print(Typography_Item(node)->options);
 		} else {
-			String_Print(String("(empty)"));
+			String_Print($("(empty)"));
 		}
 	}
 
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	for (size_t i = 0; i < node->len; i++) {
 		PrintTree(node->buf[i], depth + 1);
@@ -43,7 +43,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 int main(__unused int argc, __unused char *argv[]) {
 	File file;
 	FileStream_Open(&file,
-		String("Typography.tyo"),
+		$("Typography.tyo"),
 		FileStatus_ReadOnly);
 
 	BufferedStream stream;

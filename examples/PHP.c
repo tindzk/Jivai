@@ -68,7 +68,7 @@ function PrintSubString(String $s, Integer $offset, Integer $length) {
 #define Integer(x) x
 function main() {
 	PrintSubString(
-		String("Hello\n"),
+		$("Hello\n"),
 		Integer(2),
 		Integer(3));
 

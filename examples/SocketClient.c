@@ -7,20 +7,20 @@ int main(void) {
 	Socket_Init(&socket, Socket_Protocol_TCP);
 
 	SocketConnection conn =
-		Socket_Connect(&socket, String("www.kernel.org"), 80);
+		Socket_Connect(&socket, $("www.kernel.org"), 80);
 
 	String d1, d2;
 
 	String_Print(
 		d1 = String_Format(
-			String("Connected to %:%\n\n"),
+			$("Connected to %:%\n\n"),
 			d2 = NetworkAddress_ToString(conn.addr),
 			Int16_ToString(conn.addr.port)));
 
 	String_Destroy(&d2);
 	String_Destroy(&d1);
 
-	String request = String(
+	String request = $(
 		"GET / HTTP/1.1\r\n"
 		"Host: www.kernel.org\r\n"
 		"Connection: Close\r\n"

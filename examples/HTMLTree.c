@@ -4,7 +4,7 @@
 
 void IndentTree(int level) {
 	while (level--) {
-		String_Print(String("  "));
+		String_Print($("  "));
 	}
 }
 
@@ -15,14 +15,14 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 		if (node->type == HTML_Tree_NodeType_Tag) {
 			IndentTree(level);
 
-			String_Print(tmp = String_Format(String("tag=%\n"), node->value));
+			String_Print(tmp = String_Format($("tag=%\n"), node->value));
 			String_Destroy(&tmp);
 
 			for (size_t i = 0; i < node->attrs->len; i++) {
 				IndentTree(level + 1);
 
 				String_Print(tmp = String_Format(
-					String("name=\"%\" value=\"%\"\n"),
+					$("name=\"%\" value=\"%\"\n"),
 					node->attrs->buf[i].name, node->attrs->buf[i].value));
 
 				String_Destroy(&tmp);
@@ -40,12 +40,12 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 
 			if (node->value.len > 0) {
 				String_Print(tmp = String_Format(
-					String("value=\"%\"\n"),
+					$("value=\"%\"\n"),
 					node->value));
 
 				String_Destroy(&tmp);
 			} else {
-				String_Print(String("value={empty}\n"));
+				String_Print($("value={empty}\n"));
 			}
 		}
 	});
@@ -53,18 +53,18 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 
 int main(void) {
 	File file;
-	BufferedStream stream;
 
 	try {
-		FileStream_Open(&file, String("HTMLTree.html"), FileStatus_ReadOnly);
-	} clean catch (File, excNotFound) {
-		String_Print(String("File not found.\n"));
+		FileStream_Open(&file, $("HTMLTree.html"), FileStatus_ReadOnly);
+	} clean catch (File, NotFound) {
+		String_Print($("File not found.\n"));
 		return ExitStatus_Failure;
 	} finally {
 
 	} tryEnd;
 
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream stream;
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tree tree;
@@ -84,7 +84,7 @@ int main(void) {
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	return ExitStatus_Success;
 }

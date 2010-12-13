@@ -11,19 +11,19 @@ int main(void) {
 	Terminal_Buffer_Chunk chunk;
 	chunk.color = Terminal_Color_ForegroundRed;
 	chunk.font  = Terminal_Font_Italics;
-	chunk.value = String_Clone(String("Red foreground and italic font."));
+	chunk.value = String_Clone($("Red foreground and italic font."));
 
 	size_t first = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
 	chunk.color = Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
-	chunk.value = String_Clone(String("Normal text."));
+	chunk.value = String_Clone($("Normal text."));
 
 	size_t second = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
 	chunk.color = Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Bold;
-	chunk.value = String_Clone(String("Bold text."));
+	chunk.value = String_Clone($("Bold text."));
 
 	size_t third = Terminal_Buffer_AddChunk(&termbuf, chunk);
 
@@ -40,7 +40,7 @@ int main(void) {
 
 	Terminal_Buffer_ChangeValue(&termbuf,
 		first,
-		String("New value."));
+		$("New value."));
 
 	Terminal_Buffer_Redraw(&termbuf);
 
@@ -53,7 +53,7 @@ int main(void) {
 
 	Terminal_Buffer_ChangeValue(&termbuf,
 		third,
-		String("Blue text."));
+		$("Blue text."));
 
 	Terminal_Buffer_Redraw(&termbuf);
 

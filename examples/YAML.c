@@ -5,26 +5,26 @@
 void PrintTree(YAML_Node *node, int depth) {
 	if (node->type == YAML_NodeType_Section
 	 || node->type == YAML_NodeType_Item) {
-		String_Print(String("\n"));
+		String_Print($("\n"));
 
 		for (ssize_t i = depth - 1; i > 0; i--) {
-			String_Print(String("  "));
+			String_Print($("  "));
 		}
 	}
 
 	if (node->type == YAML_NodeType_Section) {
-		String_Print(String("section: "));
+		String_Print($("section: "));
 		String_Print(YAML_Section(node)->name);
 	} else if (node->type == YAML_NodeType_Item) {
-		String_Print(String("key: "));
+		String_Print($("key: "));
 
 		if (YAML_Item(node)->key.len == 0) {
-			String_Print(String("(empty)"));
+			String_Print($("(empty)"));
 		} else {
 			String_Print(YAML_Item(node)->key);
 		}
 
-		String_Print(String(" value: "));
+		String_Print($(" value: "));
 		String_Print(YAML_Item(node)->value);
 	}
 
@@ -35,7 +35,7 @@ void PrintTree(YAML_Node *node, int depth) {
 
 int main(void) {
 	File file;
-	FileStream_Open(&file, String("YAML.yml"), FileStatus_ReadOnly);
+	FileStream_Open(&file, $("YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream stream;
 	BufferedStream_Init(&stream, File_AsStream(&file));
@@ -53,7 +53,7 @@ int main(void) {
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	return ExitStatus_Success;
 }

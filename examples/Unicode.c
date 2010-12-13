@@ -44,27 +44,27 @@ void printCharsReverse(String s) {
 int main(void) {
 	String s;
 
-	s = String("ßühiöö");
+	s = $("ßühiöö");
 
 	String_FmtPrint($("len=%\n"),
 		Int16_ToString(Unicode_Count(s)));
 
 	printChars(s);
-	String_Print(String("\n"));
+	String_Print($("\n"));
 	printCharsReverse(s);
 
-	s = String("\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e");
+	s = $("\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e");
 
-	String_Print(String("\n\n"));
+	String_Print($("\n\n"));
 
 	String_FmtPrint($("len=%\n"),
 		Int16_ToString(Unicode_Count(s)));
 
 	printChars(s);
-	String_Print(String("\n"));
+	String_Print($("\n"));
 	printCharsReverse(s);
 
-	String_Print(String("\n"));
+	String_Print($("\n"));
 
 	return ExitStatus_Success;
 }
