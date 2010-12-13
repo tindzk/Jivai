@@ -20,7 +20,7 @@ def(bool, Ask, String msg) {
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 
-	chunk.value = String_Clone(String("[y/n] "));
+	chunk.value = String_Clone($("[y/n] "));
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 

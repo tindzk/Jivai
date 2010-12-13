@@ -2,32 +2,32 @@
 
 #define self Date_RFC822
 
-static const String pattern = String("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
+static const String pattern = $("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
 
 static const String weekdays[] = {
-	String("Sun"),
-	String("Mon"),
-	String("Tue"),
-	String("Wed"),
-	String("Thu"),
-	String("Fri"),
-	String("Sat")
+	$("Sun"),
+	$("Mon"),
+	$("Tue"),
+	$("Wed"),
+	$("Thu"),
+	$("Fri"),
+	$("Sat")
 };
 
 static const String months[] = {
-	String(""),
-	String("Jan"),
-	String("Feb"),
-	String("Mar"),
-	String("Apr"),
-	String("May"),
-	String("Jun"),
-	String("Jul"),
-	String("Aug"),
-	String("Sep"),
-	String("Oct"),
-	String("Nov"),
-	String("Dec")
+	$(""),
+	$("Jan"),
+	$("Feb"),
+	$("Mar"),
+	$("Apr"),
+	$("May"),
+	$("Jun"),
+	$("Jul"),
+	$("Aug"),
+	$("Sep"),
+	$("Oct"),
+	$("Nov"),
+	$("Dec")
 };
 
 sdef(self, Empty) {
@@ -113,7 +113,7 @@ sdef(String, ToString, self $this) {
 
 	String tmp1, tmp2, tmp3, tmp4, tmp5;
 
-	String out = String_Format(String("%, % % % %:%:% GMT"),
+	String out = String_Format($("%, % % % %:%:% GMT"),
 		weekdays[$this.weekday],
 		tmp1 = Number_Format($this.date.day,    2),
 		months[$this.date.month],

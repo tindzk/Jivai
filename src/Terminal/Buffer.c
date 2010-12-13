@@ -74,7 +74,7 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 	if (width > this->max) {
 		if (this->max > 3) {
 			Unicode_Shrink(&chunk.value, this->max - 3);
-			String_Append(&chunk.value, String("..."));
+			String_Append(&chunk.value, $("..."));
 		}
 	}
 

@@ -6,7 +6,7 @@ sdef(String, ToString, u64 hex) {
 	static char symbols[] = "0123456789abcdef";
 
 	String res = HeapString(6);
-	String_Append(&res, String("000000"));
+	String_Append(&res, $("000000"));
 
 	u64 digit;
 	ssize_t i = res.len - 1;

@@ -39,7 +39,7 @@ String ref(ResolveLevel)(ref(Level) level);
 		if (Logger_IsEnabled(this, level)) {                   \
 			String __fmt = String_Format(fmt, ## __VA_ARGS__); \
 			callback((this)->printer,                          \
-				__fmt, level, String(__FILE__), __LINE__);     \
+				__fmt, level, $(__FILE__), __LINE__);          \
 			Memory_Free(__fmt.buf);                            \
 		}                                                      \
 	} while(0)

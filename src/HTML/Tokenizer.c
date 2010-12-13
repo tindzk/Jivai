@@ -45,7 +45,7 @@ def(void, ProcessChar, char c) {
 
 	/* End of a comment */
 	if (BitMask_Has(this->state, ref(State_Comment))
-			&& String_EndsWith(this->buf, String("--"))
+			&& String_EndsWith(this->buf, $("--"))
 			&& c == '>') {
 		String_Crop(&this->buf, 0, -2);
 		callback(this->onToken, ref(TokenType_Comment), this->buf);
@@ -66,7 +66,7 @@ def(void, ProcessChar, char c) {
 	}
 
 	/* Start of a comment. */
-	if (String_Equals(this->buf, String("!--"))) {
+	if (String_Equals(this->buf, $("!--"))) {
 		BitMask_Set(this->state, ref(State_Comment));
 
 		this->buf.len = 0;
@@ -113,7 +113,7 @@ def(void, ProcessChar, char c) {
 	if (Char_IsSpace(c) || c == '/' || c == '>') {
 		if (BitMask_Has(this->state, ref(State_TagName))) {
 			if (this->buf.len > 0) {
-				if (!String_BeginsWith(this->buf, String("/"))) {
+				if (!String_BeginsWith(this->buf, $("/"))) {
 					/* Start of token. */
 					callback(this->onToken,
 						ref(TokenType_TagStart), this->buf);
@@ -127,7 +127,7 @@ def(void, ProcessChar, char c) {
 				/* Expecting a tag name (true by default when a tag is
 				 * introduced with `<'. */
 
-				if (String_BeginsWith(this->buf, String("/"))) {
+				if (String_BeginsWith(this->buf, $("/"))) {
 					/* End of token. */
 					if (this->buf.len > 1) {
 						String_Crop(&this->buf, 1);
@@ -156,7 +156,7 @@ def(void, ProcessChar, char c) {
 
 			BitMask_Set(this->state, ref(State_AttrName));
 			BitMask_Clear(this->state, ref(State_AttrValue));
-		} else if (String_Equals(this->buf, String("/"))) {
+		} else if (String_Equals(this->buf, $("/"))) {
 			/* Create a fake `end'-token for XHTML tags such as `<br />'. */
 			callback(this->onToken,
 				ref(TokenType_TagEnd), this->curToken);

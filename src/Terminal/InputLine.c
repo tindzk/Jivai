@@ -168,7 +168,7 @@ def(void, Process) {
 	} else if (key.t == Terminal_KeyType_End) {
 		call(MoveRight, this->line.len - this->pos);
 	} else if (key.c == '\n') {
-		Terminal_Print(this->term, String("\n"));
+		Terminal_Print(this->term, $("\n"));
 
 		if (hasCallback(this->onKeyEnter)) {
 			String line = String_Disown(this->line);

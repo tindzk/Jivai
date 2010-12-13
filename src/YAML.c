@@ -181,7 +181,7 @@ def(void, Parse) {
 					}
 				} else if (c == '\n') {
 					if (buf.len > 0) {
-						call(AddItem, whitespaces / this->depthWidth, String(""), buf);
+						call(AddItem, whitespaces / this->depthWidth, $(""), buf);
 						buf.len = 0;
 					}
 

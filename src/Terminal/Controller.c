@@ -30,26 +30,26 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 
 			Terminal_Style style = Terminal_GetStyle(this->term);
 
-			if (String_Equals(name, String("fg"))
-			 || String_Equals(name, String("bg"))) {
+			if (String_Equals(name, $("fg"))
+			 || String_Equals(name, $("bg"))) {
 				String strColor = Typography_Item(child)->options;
 
-				if (String_Equals(strColor, String("%"))) {
+				if (String_Equals(strColor, $("%"))) {
 					strColor = VarArg_Get(*argptr, String);
 				}
 
 				int color = Terminal_ResolveColorName(
 					strColor,
-					String_Equals(name, String("bg")));
+					String_Equals(name, $("bg")));
 
 				Terminal_SetVT100Color(this->term, color);
-			} else if (String_Equals(name, String("b"))) {
+			} else if (String_Equals(name, $("b"))) {
 				Terminal_SetVT100Font(this->term, Terminal_Font_Bold);
-			} else if (String_Equals(name, String("i"))) {
+			} else if (String_Equals(name, $("i"))) {
 				Terminal_SetVT100Font(this->term, Terminal_Font_Italics);
-			} else if (String_Equals(name, String("u"))) {
+			} else if (String_Equals(name, $("u"))) {
 				Terminal_SetVT100Font(this->term, Terminal_Font_Underline);
-			} else if (String_Equals(name, String("bl"))) {
+			} else if (String_Equals(name, $("bl"))) {
 				Terminal_SetVT100Font(this->term, Terminal_Font_Blink);
 			}
 

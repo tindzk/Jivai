@@ -95,7 +95,7 @@ def(void, ParseHeaderLine, String s) {
 	if (hasCallback(this->events.onHeader)) {
 		ssize_t pos;
 
-		if ((pos = String_Find(s, String(": "))) != String_NotFound) {
+		if ((pos = String_Find(s, $(": "))) != String_NotFound) {
 			callback(this->events.onHeader,
 				String_Trim(String_Slice(s, 0, pos)),   /* name  */
 				String_Trim(String_Slice(s, pos + 2))); /* value */

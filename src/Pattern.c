@@ -12,7 +12,7 @@
  * this stuff is worth it, you can buy me a beer in return.
  */
 
-static const String metaChars = String("|.^$*+?()[\\");
+static const String metaChars = $("|.^$*+?()[\\");
 
 def(void, Init) {
 	this->code = scall(CharArray_New, 256);

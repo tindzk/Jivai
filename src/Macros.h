@@ -45,8 +45,6 @@
 #define tripleConcat(x, y, z) \
 	_tripleConcat(x, y, z)
 
-#define $(s) String(s)
-
 #define NullString \
 	(String) { 0, 0, NULL, false }
 

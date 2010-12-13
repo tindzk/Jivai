@@ -36,7 +36,7 @@ def(void, Add, String caption, bool selected) {
 		? Terminal_Color_BackgroundCyan | Terminal_Color_ForegroundWhite
 		: Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
-	chunk.value = String_Format(String("(%) %"),
+	chunk.value = String_Format($("(%) %"),
 		Int32_ToString(Terminal_Buffer_Count(&this->termbuf)),
 		caption);
 

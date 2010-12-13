@@ -117,7 +117,7 @@ overload sdef(String, GetFilename, String path, bool verify) {
 	}
 
 	if (verify && !scall(IsFile, path)) {
-		return String("");
+		return $("");
 	}
 
 	ssize_t pos = String_ReverseFind(path, '/');
@@ -144,11 +144,11 @@ overload sdef(String, GetDirectory, String path, bool verify) {
 		throw(EmptyPath);
 	}
 
-	if (String_Equals(path, String("/"))) {
-		return String("/");
+	if (String_Equals(path, $("/"))) {
+		return $("/");
 	}
 
-	if (String_EndsWith(path, String("/"))) {
+	if (String_EndsWith(path, $("/"))) {
 		return String_Slice(path, 0, -1);
 	}
 
@@ -160,7 +160,7 @@ overload sdef(String, GetDirectory, String path, bool verify) {
 	ssize_t pos = String_ReverseFind(path, '/');
 
 	if (pos == String_NotFound) {
-		return String(".");
+		return $(".");
 	}
 
 	return String_Slice(path, 0, pos);
@@ -178,7 +178,7 @@ sdef(String, Resolve, String path) {
 
 	ssize_t fd;
 
-	if ((fd = Kernel_open(String("."), FileStatus_ReadOnly, 0)) == -1) {
+	if ((fd = Kernel_open($("."), FileStatus_ReadOnly, 0)) == -1) {
 		throw(ResolvingFailed);
 	}
 
@@ -211,7 +211,7 @@ overload sdef(void, Create, String path, int mode, bool recursive) {
 		throw(EmptyPath);
 	}
 
-	if (String_Equals(path, String("."))) {
+	if (String_Equals(path, $("."))) {
 		return;
 	}
 

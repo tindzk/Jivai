@@ -47,34 +47,34 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 
 	if (signal == SIGALRM) {
 		code = ref(SigAlrm);
-		__exc_mgr.e.scode = String("excSigAlrm");
+		__exc_mgr.e.scode = $("excSigAlrm");
 	} else if (signal == SIGBUS) {
 		code = ref(SigBus);
-		__exc_mgr.e.scode = String("excSigBus");
+		__exc_mgr.e.scode = $("excSigBus");
 	} else if (signal == SIGFPE) {
 		code = ref(SigFpe);
-		__exc_mgr.e.scode = String("excSigFpe");
+		__exc_mgr.e.scode = $("excSigFpe");
 	} else if (signal == SIGILL) {
 		code = ref(SigIll);
-		__exc_mgr.e.scode = String("excSigIll");
+		__exc_mgr.e.scode = $("excSigIll");
 	} else if (signal == SIGINT) {
 		code = ref(SigInt);
-		__exc_mgr.e.scode = String("excSigInt");
+		__exc_mgr.e.scode = $("excSigInt");
 	} else if (signal == SIGQUIT) {
 		code = ref(SigQuit);
-		__exc_mgr.e.scode = String("excSigQuit");
+		__exc_mgr.e.scode = $("excSigQuit");
 	} else if (signal == SIGSEGV) {
 		code = ref(SigSegv);
-		__exc_mgr.e.scode = String("excSigSegv");
+		__exc_mgr.e.scode = $("excSigSegv");
 	} else if (signal == SIGTERM) {
 		code = ref(SigTerm);
-		__exc_mgr.e.scode = String("excSigTerm");
+		__exc_mgr.e.scode = $("excSigTerm");
 	} else if (signal == SIGPIPE) {
 		code = ref(SigPipe);
-		__exc_mgr.e.scode = String("excSigPipe");
+		__exc_mgr.e.scode = $("excSigPipe");
 	} else {
 		code = ref(Unknown);
-		__exc_mgr.e.scode = String("excUnknown");
+		__exc_mgr.e.scode = $("excUnknown");
 	}
 
 #if Exception_SaveTrace
@@ -91,7 +91,7 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 #endif
 
 #if Exception_SaveOrigin
-	__exc_mgr.e.func = String(__func__);
+	__exc_mgr.e.func = $(__func__);
 #endif
 
 	Exception_Raise(code);

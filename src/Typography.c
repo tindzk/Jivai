@@ -116,7 +116,7 @@ static def(void, Read, size_t st) {
 
 					state = prevstate;
 				} else if (cur != '\\') {
-					String_Append(&value, String("."));
+					String_Append(&value, $("."));
 					String_Append(&value, name);
 
 					name.len = 0;

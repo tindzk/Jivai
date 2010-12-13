@@ -121,7 +121,7 @@ def(bool, Contains, String needle);
 def(void, Destroy);
 def(void, ToHeap);
 
-#define String(s) \
+#define $(s) \
 	(String) { sizeof(s) - 1, sizeof(s) - 1, (char *) s, false }
 
 #define StackString(len) \

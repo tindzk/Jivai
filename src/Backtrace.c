@@ -4,20 +4,20 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
 
-	String_Print(String("Traceback (most recent call first):\n"), true);
+	String_Print($("Traceback (most recent call first):\n"), true);
 
 	for (ssize_t i = size - 1; i >= 0; i--) {
-		String_Print(String("\tat "), true);
+		String_Print($("\tat "), true);
 
 		if (items[i].function.len == 0) {
-			String_Print(String("0x"), true);
+			String_Print($("0x"), true);
 
 			String hex = Hex_ToString(items[i].addr);
 			String_Print(hex, true);
 			String_Destroy(&hex);
 		} else {
 			String_Print(items[i].function, true);
-			String_Print(String("("), true);
+			String_Print($("("), true);
 
 			if (items[i].filename.len > 0) {
 				ssize_t pos = String_ReverseFind(items[i].filename, '/');
@@ -27,17 +27,17 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 				}
 
 				String_Print(items[i].filename, true);
-				String_Print(String(":"), true);
+				String_Print($(":"), true);
 				String_Print(Int32_ToString(items[i].line), true);
 			}
 
-			String_Print(String(")"), true);
+			String_Print($(")"), true);
 		}
 
 		String_Destroy(&items[i].filename);
 		String_Destroy(&items[i].function);
 
-		String_Print(String("\n"), true);
+		String_Print($("\n"), true);
 	}
 
 	Memory_Free(items);

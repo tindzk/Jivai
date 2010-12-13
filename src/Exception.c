@@ -33,13 +33,13 @@ inline sdef(ref(Record) *, GetMeta) {
 sdef(void, Print, int code) {
 #if Exception_SaveOrigin
 	String fmt = String_Format(
-		String("Uncaught exception %.% (in %)\n"),
+		$("Uncaught exception %.% (in %)\n"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.e.scode,
 		__exc_mgr.e.func);
 #else
 	String fmt = String_Format(
-		String("Uncaught exception %.%\n"),
+		$("Uncaught exception %.%\n"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.e.scode);
 #endif

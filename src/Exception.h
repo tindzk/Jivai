@@ -73,7 +73,7 @@ sdef(void, Print, int code);
 
 #if Exception_SaveOrigin
 #define Exception_SetOrigin() \
-	__exc_mgr.e.func = String(__func__)
+	__exc_mgr.e.func = $(__func__)
 #else
 #define Exception_SetOrigin() \
 	do { } while(0)
@@ -113,7 +113,7 @@ sdef(void, Print, int code);
 #endif
 
 #define Exception_SetCode(c) \
-	__exc_mgr.e.scode = String(#c)
+	__exc_mgr.e.scode = $(#c)
 
 #define Exception_SetException(c) \
 	Exception_SetTrace();         \

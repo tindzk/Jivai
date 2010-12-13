@@ -108,19 +108,19 @@ def(void, OnHeader, String name, String value) {
 
 	String_ToLower(&name);
 
-	if (String_Equals(name, String("connection"))) {
+	if (String_Equals(name, $("connection"))) {
 		String_ToLower(&value);
 
-		if (String_Equals(value, String("close"))) {
+		if (String_Equals(value, $("close"))) {
 			this->keepAlive = false;
-		} else if (String_Equals(value, String("keep-alive"))) {
+		} else if (String_Equals(value, $("keep-alive"))) {
 			this->keepAlive = true;
 		}
-	} else if (String_Equals(name, String("transfer-encoding"))) {
-		if (String_Equals(value, String("chunked"))) {
+	} else if (String_Equals(name, $("transfer-encoding"))) {
+		if (String_Equals(value, $("chunked"))) {
 			this->chunked = true;
 		}
-	} else if (String_Equals(name, String("content-length"))) {
+	} else if (String_Equals(name, $("content-length"))) {
 		this->total = Int64_Parse(value);
 	}
 }
@@ -205,7 +205,7 @@ overload def(void, Request, String path) {
 }
 
 sdef(s64, ParseChunk, String *s) {
-	ssize_t pos = String_Find(*s, String("\r\n"));
+	ssize_t pos = String_Find(*s, $("\r\n"));
 
 	if (pos == String_NotFound) {
 		throw(MalformedChunk);
@@ -418,7 +418,7 @@ overload def(bool, Read, String *res) {
 
 					call(InternalRead);
 					goto retry;
-				} else if (!String_BeginsWith(this->resp, String("\r\n"))) {
+				} else if (!String_BeginsWith(this->resp, $("\r\n"))) {
 					/* Chunk does not end on CRLF. */
 					throw(MalformedChunk);
 				} else {
@@ -460,7 +460,7 @@ overload def(bool, Read, String *res) {
 					 * at once.
 					 */
 
-					if (String_Find(this->resp, 2, String("\r\n")) != String_NotFound) {
+					if (String_Find(this->resp, 2, $("\r\n")) != String_NotFound) {
 						/* We have enough data to deal with it.
 						 * Fall through.
 						 */

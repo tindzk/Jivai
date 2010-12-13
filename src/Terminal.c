@@ -165,21 +165,21 @@ def(void, Restore, ref(Style) style) {
 sdef(size_t, ResolveColorName, String name, bool bg) {
 	int color = 0;
 
-	if (String_Equals(name, String("black"))) {
+	if (String_Equals(name, $("black"))) {
 		color = ref(Color_ForegroundBlack);
-	} else if (String_Equals(name, String("red"))) {
+	} else if (String_Equals(name, $("red"))) {
 		color = ref(Color_ForegroundRed);
-	} else if (String_Equals(name, String("green"))) {
+	} else if (String_Equals(name, $("green"))) {
 		color = ref(Color_ForegroundGreen);
-	} else if (String_Equals(name, String("yellow"))) {
+	} else if (String_Equals(name, $("yellow"))) {
 		color = ref(Color_ForegroundYellow);
-	} else if (String_Equals(name, String("blue"))) {
+	} else if (String_Equals(name, $("blue"))) {
 		color = ref(Color_ForegroundBlue);
-	} else if (String_Equals(name, String("magenta"))) {
+	} else if (String_Equals(name, $("magenta"))) {
 		color = ref(Color_ForegroundMagenta);
-	} else if (String_Equals(name, String("cyan"))) {
+	} else if (String_Equals(name, $("cyan"))) {
 		color = ref(Color_ForegroundCyan);
-	} else if (String_Equals(name, String("white"))) {
+	} else if (String_Equals(name, $("white"))) {
 		color = ref(Color_ForegroundWhite);
 	}
 
@@ -233,9 +233,9 @@ def(void, DeleteLine, size_t n) {
 	if (n == 1) {
 		call(Write, ref(VT100_Delete_Line));
 	} else {
-		call(Write, String("\33["));
+		call(Write, $("\33["));
 		call(Write, Int32_ToString(n));
-		call(Write, String("M"));
+		call(Write, $("M"));
 	}
 }
 
@@ -251,9 +251,9 @@ def(void, MoveUp, size_t n) {
 	if (n == 1) {
 		call(Write, ref(VT100_Cursor_Up));
 	} else {
-		call(Write, String("\33["));
+		call(Write, $("\33["));
 		call(Write, Int32_ToString(n));
-		call(Write, String("A"));
+		call(Write, $("A"));
 	}
 }
 
@@ -261,9 +261,9 @@ def(void, MoveDown, size_t n) {
 	if (n == 1) {
 		call(Write, ref(VT100_Cursor_Down));
 	} else {
-		call(Write, String("\33["));
+		call(Write, $("\33["));
 		call(Write, Int32_ToString(n));
-		call(Write, String("B"));
+		call(Write, $("B"));
 	}
 }
 
@@ -271,9 +271,9 @@ def(void, MoveLeft, size_t n) {
 	if (n == 1) {
 		call(Write, ref(VT100_Cursor_Left));
 	} else {
-		call(Write, String("\33["));
+		call(Write, $("\33["));
 		call(Write, Int32_ToString(n));
-		call(Write, String("D"));
+		call(Write, $("D"));
 	}
 }
 
@@ -282,9 +282,9 @@ def(void, MoveRight, size_t n) {
 		if (n == 1) {
 			call(Write, ref(VT100_Cursor_Right));
 		} else {
-			call(Write, String("\33["));
+			call(Write, $("\33["));
 			call(Write, Int32_ToString(n));
-			call(Write, String("C"));
+			call(Write, $("C"));
 		}
 	}
 }

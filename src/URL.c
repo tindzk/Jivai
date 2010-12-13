@@ -28,7 +28,7 @@ sdef(ref(Parts), Parse, String url) {
 	for (size_t i = 0; i < url.len; i++) {
 		switch (state) {
 			case ref(State_Scheme):
-				if (String_EndsWith(buf, String("://"))) {
+				if (String_EndsWith(buf, $("://"))) {
 					String_Copy(&res.scheme,
 						String_Slice(buf, 0, -3));
 
@@ -40,9 +40,9 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Host):
-				if (String_EndsWith(buf, String(":"))) {
+				if (String_EndsWith(buf, $(":"))) {
 					state = ref(State_Port);
-				} else if (String_EndsWith(buf, String("/"))) {
+				} else if (String_EndsWith(buf, $("/"))) {
 					state = ref(State_Path);
 				}
 
@@ -56,7 +56,7 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Port):
-				if (String_EndsWith(buf, String("/"))) {
+				if (String_EndsWith(buf, $("/"))) {
 					res.port = Int16_Parse(buf);
 					buf.len = 0;
 
@@ -66,7 +66,7 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Path):
-				if (String_EndsWith(buf, String("#"))) {
+				if (String_EndsWith(buf, $("#"))) {
 					String_Append(&res.path,
 						String_Slice(buf, 0, -1));
 					state = ref(State_Fragment);

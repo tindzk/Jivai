@@ -26,7 +26,7 @@ overload def(void, Init, Terminal *term, String block, String empty, size_t widt
 }
 
 inline overload def(void, Init, Terminal *term) {
-	call(Init, term, String("█"), String(" "), 0);
+	call(Init, term, $("█"), $(" "), 0);
 }
 
 /* Clear all printed lines. */
@@ -76,7 +76,7 @@ def(void, Render, size_t percent, String msg) {
 	}
 
 	Terminal_Controller_Render(&this->controller,
-		String("%!% [.b{%%}] %\n"),
+		$("%!% [.b{%%}] %\n"),
 		Int16_ToString(percent),
 		progress, empty, msg);
 
