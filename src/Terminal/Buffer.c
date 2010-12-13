@@ -7,8 +7,7 @@ def(void, Init, Terminal *term, size_t spacing) {
 	this->spacing = spacing;
 	this->lines   = 0;
 	this->max     = Terminal_GetSize().cols;
-
-	Array_Init(this->chunks, 0);
+	this->chunks  = scall(Chunks_New, 0);
 }
 
 def(void, Destroy) {
@@ -18,7 +17,7 @@ def(void, Destroy) {
 		String_Destroy(&chunk->value);
 	}
 
-	Array_Destroy(this->chunks);
+	scall(Chunks_Free, this->chunks);
 }
 
 static def(size_t, GetCurrentLineLength) {
@@ -83,7 +82,7 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 		chunk.font,
 		chunk.value);
 
-	Array_Push(this->chunks, chunk);
+	scall(Chunks_Push, &this->chunks, chunk);
 
 	return this->chunks->len - 1;
 }

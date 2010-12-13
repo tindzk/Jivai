@@ -11,8 +11,10 @@ record(ref(Chunk)) {
 	size_t line;
 };
 
+Array(ref(Chunk), ref(Chunks));
+
 class {
-	Array(ref(Chunk), *chunks);
+	ref(Chunks) *chunks;
 	Terminal *term;
 	size_t spacing;
 	size_t lines;
