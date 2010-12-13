@@ -16,10 +16,10 @@ tsRegister("YAML") {
 
 tsCase(Acute, "Memory") {
 	File file;
-	FileStream_Open(&file, String("../examples/YAML.yml"), FileStatus_ReadOnly);
+	FileStream_Open(&file, $("../examples/YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream stream;
-	BufferedStream_Init(&stream, &FileStreamImpl, &file);
+	BufferedStream_Init(&stream, File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	YAML yml;

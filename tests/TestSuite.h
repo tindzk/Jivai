@@ -24,14 +24,14 @@ record(ref(Method)) {
 	size_t level;
 };
 
-Interface(TestSuite) {
+Interface(ITestSuite) {
 	String name;
 	size_t size;
 	TestSuite_Method *first;
 	TestSuite_Method *last;
 };
 
-Array(TestSuiteInterface *, TestSuites);
+Array(ITestSuiteInterface *, TestSuites);
 
 class {
 	Terminal term;
@@ -54,8 +54,8 @@ class {
 		.type = TestSuite_MethodType_Run,         \
 		.addr = ref(Run)                          \
 	};                                            \
-	Impl(TestSuite) = {                           \
-		.name  = String(caption),                 \
+	Impl(ITestSuite) = {                          \
+		.name  = $(caption),                      \
 		.size  = sizeof(self),                    \
 		.first = &ref(MethodRun),                 \
 		.last  = NULL                             \
@@ -91,7 +91,7 @@ class {
 	tsCaseMethod;                               \
 	TestSuite_Method tsSection tsMethodName = { \
 		.type  = TestSuite_MethodType_TestCase, \
-		.name  = String(descr),                 \
+		.name  = $(descr),                      \
 		.level = TestSuite_Level_ ## caseLevel, \
 		.addr  = tsCaseName                     \
 	};                                          \
@@ -119,7 +119,7 @@ SingletonPrototype(self);
 
 def(void, Init);
 def(void, Destroy);
-def(void, AddSuite, TestSuiteInterface *suite);
+def(void, AddSuite, ITestSuiteInterface *suite);
 def(void, Assert, String descr, bool succeeded);
 
 #undef self
