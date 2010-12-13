@@ -45,9 +45,6 @@
 #define tripleConcat(x, y, z) \
 	_tripleConcat(x, y, z)
 
-#define NullString \
-	(String) { 0, 0, NULL, false }
-
 #define ref(name) \
 	tripleConcat(self, _, name)
 
