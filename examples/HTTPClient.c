@@ -13,7 +13,7 @@ bool HTTP_Client_Receive(SocketConnection *conn, String *resp) {
 		}
 
 		resp->len += len;
-	} clean catch (SocketConnection, excConnectionReset) {
+	} clean catch (SocketConnection, ConnectionReset) {
 		excReturn false;
 	} finally {
 
@@ -36,7 +36,7 @@ void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, 
 	};
 
 	String request = String_Format(
-		String(
+		$(
 			"GET % HTTP/1.1\r\n"
 			"Host: %\r\n"
 			"Connection: Close\r\n"
@@ -57,7 +57,7 @@ void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, 
 int main(void) {
 	String resp = HeapString(1024 * 150); // Fetch max. 150 KiB
 
-	HTTP_Client_GetResponse(String("www.kernel.org"), String("/"), 80, &resp);
+	HTTP_Client_GetResponse($("www.kernel.org"), $("/"), 80, &resp);
 
 	String_Print(resp);
 
