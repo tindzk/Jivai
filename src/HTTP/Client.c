@@ -140,7 +140,7 @@ def(void, Reopen) {
 }
 
 def(String, GetRequest, String host, String path) {
-	String res = String_Format(String(
+	String res = String_Format($(
 		"GET % %\r\n"
 		"Host: %\r\n"
 		"Connection: Keep-Alive\r\n"
