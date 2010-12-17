@@ -102,6 +102,7 @@ overload def(void, Open);
 overload def(void, Open, String host);
 overload def(void, Open, String host, short port);
 def(void, Close);
+def(HTTP_Status_Item, GetStatus);
 def(void, OnStatus, HTTP_Status status);
 def(void, OnVersion, HTTP_Version version);
 def(void, OnHeader, String name, String value);

@@ -85,6 +85,10 @@ def(void, Close) {
 	SocketConnection_Close(&this->conn);
 }
 
+def(HTTP_Status_Item, GetStatus) {
+	return HTTP_Status_GetItem(this->status);
+}
+
 def(void, OnStatus, HTTP_Status status) {
 	this->status = status;
 }
