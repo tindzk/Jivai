@@ -6,7 +6,7 @@
 void Float_ToStringBuf(float num, double precision, String *out) {
 	int m = (int) log10(num);
 
-	while (num > 0 + precision) {
+	while (m >= 0 || num > 0 + precision) {
 		double weight = pow(10.0f, m);
 		int digit     = (int) floor(num / weight);
 

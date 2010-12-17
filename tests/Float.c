@@ -14,8 +14,11 @@ tsRegister("Float") {
 }
 
 tsCase(Acute, "Format") {
-	String s = Float_ToString(12., 0.01);
-	Assert($("No decimal places"), String_Equals(s, $("12.00")));
+	String s = Float_ToString(200., 0.01);
+	Assert($("No decimal places"), String_Equals(s, $("200.00")));
+
+	s = Float_ToString(12., 0.01);
+	Assert($("No decimal places (2)"), String_Equals(s, $("12.00")));
 
 	s = Float_ToString(1234.98765, 0.001);
 	Assert($("Trim decimal places"), String_Equals(s, $("1234.987")));
