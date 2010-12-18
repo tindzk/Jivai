@@ -90,8 +90,8 @@ sdef(self, FromUnixEpoch, u64 time) {
 	res.date.month = 0;
 
 	reverse (i, 12) {
-		if (days >= Date_DaysPerMonth[i]) {
-			days -= Date_DaysPerMonth[i];
+		if (days >= Date_AddedDaysPerMonth[i]) {
+			days -= Date_AddedDaysPerMonth[i];
 			res.date.month = i;
 			break;
 		}
@@ -122,7 +122,7 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 	int days = dateTime.date.day;
 
 	/* Add number of days up until last month. */
-	days += Date_DaysPerMonth[dateTime.date.month - 1];
+	days += Date_AddedDaysPerMonth[dateTime.date.month - 1];
 
 	/* Add one extra day when the year is a leap year and the
 	 * February is already over.

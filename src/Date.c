@@ -2,10 +2,14 @@
 
 #define self Date
 
+const short ref(DaysPerMonth)[] = {
+	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+};
+
 /* Contains the days up until the end of a month. Refers to a non-leap year.
  * Taken from diet libc (dietlibc-0.32/libugly/time_table_spd.c).
  */
-const short ref(DaysPerMonth)[13] = {
+const short ref(AddedDaysPerMonth)[] = {
 	0,
 	(31),
 	(31 + 28),
@@ -21,7 +25,7 @@ const short ref(DaysPerMonth)[13] = {
 	(31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31)
 };
 
-const String ref(MonthNames)[13] = {
+const String ref(MonthNames)[] = {
 	$(""),
 	$("January"),
 	$("Februray"),
@@ -37,7 +41,7 @@ const String ref(MonthNames)[13] = {
 	$("December")
 };
 
-const String ref(WeekDays)[13] = {
+const String ref(WeekDays)[] = {
 	$("Sunday"),
 	$("Monday"),
 	$("Tuesday"),
@@ -92,7 +96,7 @@ sdef(short, GetWeekDay, self date) {
 
 	int day = (year * 365) + (year / 4);
 
-	day += ref(DaysPerMonth)[date.month - 1] + date.day;
+	day += ref(AddedDaysPerMonth)[date.month - 1] + date.day;
 
 	if (date.month < 2) {
 		if (scall(IsLeapYear, date.year)) {
