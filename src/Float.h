@@ -4,11 +4,11 @@
 #import "String.h"
 #import "Integer.h"
 
-void Float_ToStringBuf(float num, double precision, String *out);
+void Float_ToStringBuf(float num, double precision, char sep, String *out);
 
-#define Float_ToString(num, precision) ({    \
-	String str = StackString(80);            \
-	Float_ToStringBuf(num, precision, &str); \
+#define Float_ToString(num, precision, sep) ({    \
+	String str = StackString(80);                 \
+	Float_ToStringBuf(num, precision, sep, &str); \
 	str; })
 
 float Float_Parse(String s, char sep);
