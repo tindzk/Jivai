@@ -37,4 +37,18 @@ tsCase(Acute, "Multiplication") {
 	Assert($(".3333 * 1.13"), String_Equals(s, $("0.37")));
 }
 
+tsCase(Acute, "Parsing") {
+	float number = Float_Parse($("12.00"), '.');
+	Assert($("12.00"), Float_Equals(number, 12., 0.00001));
+
+	number = Float_Parse($("12.45"), '.');
+	Assert($("12.45"), Float_Equals(number, 12.45, 0.00001));
+
+	number = Float_Parse($("-12.00"), '.');
+	Assert($("-12.00"), Float_Equals(number, -12., 0.00001));
+
+	number = Float_Parse($("-12.45"), '.');
+	Assert($("-12.45"), Float_Equals(number, -12.45, 0.00001));
+}
+
 tsFinalize;
