@@ -732,7 +732,7 @@ overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, b
 
 		posLeft += left.len;
 
-		if ((posRight = scall(Find, s, posLeft, right)) == ref(NotFound)) {
+		if ((posRight = scall(Find, s, posLeft + 1, right)) == ref(NotFound)) {
 			return ref(NotFound);
 		}
 	} else {
