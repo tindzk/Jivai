@@ -24,6 +24,17 @@
 	{                                                                                       \
 		Memory_Free($this.object);                                                          \
 	}                                                                                       \
+	static inline void tripleConcat(name, _, Delete)                                        \
+		(Instance(name) $this, size_t idx)                                                  \
+	{                                                                                       \
+		if ($this.object->len - idx - 1 > 0) {                                              \
+			Memory_Copy(                                                                    \
+				 $this.object->buf + idx,                                                   \
+				 $this.object->buf + idx + 1,                                               \
+				($this.object->len - idx - 1) * sizeof(type));                              \
+		}                                                                                   \
+		$this.object->len--;                                                                \
+	}                                                                                       \
 	static inline void tripleConcat(name, _, Resize)                                        \
 		(union { name **object } transparentUnion $this, size_t items)                      \
 	{                                                                                       \
