@@ -215,7 +215,7 @@
 	}
 
 #define SingletonDestructor(name)                 \
-	static void __destructor dtor(void) {         \
+	Destructor {                                  \
 		Instance(self) instance =                 \
 			tripleConcat(name, _, GetInstance)(); \
 		tripleConcat(name, _, Destroy)(instance); \
