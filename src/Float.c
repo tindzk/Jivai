@@ -4,7 +4,9 @@
  * http://stackoverflow.com/questions/2302969/how-to-implement-char-ftoafloat-num-without-sprintf-library-function
  */
 void Float_ToStringBuf(float num, double precision, char sep, String *out) {
-	int m = (int) log10(num);
+	int m = (num > 0)
+		? (int) log10(num)
+		: 0;
 
 	while (m >= 0 || num > 0 + precision) {
 		double weight = pow(10.0f, m);
