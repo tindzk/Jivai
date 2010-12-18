@@ -38,7 +38,7 @@ void Float_ToStringBuf(float num, double precision, char sep, String *out) {
 }
 
 float Float_Parse(String s, char sep) {
-	String sdigit   = $("");
+	String sdigit   = s;
 	String sdecimal = $("");
 
 	forward (i, s.len) {

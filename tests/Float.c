@@ -52,6 +52,12 @@ tsCase(Acute, "Parsing") {
 
 	number = Float_Parse($("-12.45"), '.');
 	Assert($("-12.45"), Float_Equals(number, -12.45, 0.00001));
+
+	number = Float_Parse($("3"), '.');
+	Assert($("3"), Float_Equals(number, 3., 0.00001));
+
+	number = Float_Parse($("-3"), '.');
+	Assert($("-3"), Float_Equals(number, -3, 0.00001));
 }
 
 tsFinalize;
