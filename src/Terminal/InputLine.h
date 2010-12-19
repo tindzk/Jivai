@@ -6,9 +6,7 @@
 
 #define self Terminal_InputLine
 
-enum {
-	excCommandExceedsAllowedLength = excOffset
-};
+// @exc CommandExceedsAllowedLength
 
 DefineCallback(ref(OnKeyUp),    void);
 DefineCallback(ref(OnKeyDown),  void);

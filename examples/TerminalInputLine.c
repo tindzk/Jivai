@@ -1,6 +1,5 @@
 #import <Terminal/InputLine.h>
 
-#undef self
 #define self App
 
 class {

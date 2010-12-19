@@ -223,7 +223,7 @@ def(void, Process) {
 				this->line.len = 0;
 				this->pos      = 0;
 
-				throw(excCommandExceedsAllowedLength);
+				throw(CommandExceedsAllowedLength);
 			}
 		}
 	}
