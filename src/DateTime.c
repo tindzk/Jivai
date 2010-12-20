@@ -90,7 +90,7 @@ sdef(self, FromUnixEpoch, u64 time) {
 	res.date.month = 0;
 
 	reverse (i, 12) {
-		if (days >= Date_AddedDaysPerMonth[i]) {
+		if (days > Date_AddedDaysPerMonth[i]) {
 			days -= Date_AddedDaysPerMonth[i];
 			res.date.month = i;
 			break;

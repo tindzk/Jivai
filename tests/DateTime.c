@@ -46,6 +46,17 @@ tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	Assert($("Second"), dt.time.second == 30);
 }
 
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
+	DateTime dt = DateTime_FromUnixEpoch(1238492280);
+
+	Assert($("Year"),   dt.date.year   == 2009);
+	Assert($("Month"),  dt.date.month  == 3);
+	Assert($("Day"),    dt.date.day    == 31);
+	Assert($("Hour"),   dt.time.hour   == 9);
+	Assert($("Minute"), dt.time.minute == 38);
+	Assert($("Second"), dt.time.second == 0);
+}
+
 tsCase(Acute, "Unix epoch conversion (leap year)") {
 	DateTime dt = DateTime_FromUnixEpoch(949457442);
 
@@ -118,6 +129,19 @@ tsCase(Acute, "Unix epoch conversion (no leap year)") {
 	};
 
 	Assert($("1293667200"), DateTime_ToUnixEpoch(dt) == 1293667200);
+}
+
+tsCase(Acute, "Unix epoch conversion (no leap year)") {
+	DateTime dt = {
+		.date.year   = 2009,
+		.date.month  = 3,
+		.date.day    = 31,
+		.time.hour   = 9,
+		.time.minute = 38,
+		.time.second = 0
+	};
+
+	Assert($("1238492280"), DateTime_ToUnixEpoch(dt) == 1238492280);
 }
 
 tsCase(Acute, "Unix epoch conversion (leap year)") {
