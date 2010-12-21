@@ -215,7 +215,11 @@ sdef(s64, ParseChunk, String *s) {
 		throw(MalformedChunk);
 	}
 
-	s64 len = Hex_ToInteger(String_Slice(*s, 0, pos));
+	String hex =
+		String_Trim(
+			String_Slice(*s, 0, pos));
+
+	s64 len = Hex_ToInteger(hex);
 
 	if (len == -1) {
 		throw(MalformedChunk);
