@@ -22,7 +22,7 @@ sdef(void, DestroyNode, ref(Node) *node) {
 			String_Destroy(&item->value);
 		}
 
-		Array_Destroy(node->attrs);
+		scall(Attrs_Free, node->attrs);
 	}
 }
 
@@ -33,7 +33,7 @@ def(ref(Node) *, GetRoot) {
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
-			throw(excIllegalNesting);
+			throw(IllegalNesting);
 		}
 
 		this->node = this->node->parent;
@@ -45,7 +45,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 		this->node->value = String_Clone(value);
 		this->node->type  = ref(NodeType_Tag);
 
-		Array_Init(this->node->attrs, 0);
+		this->node->attrs = scall(Attrs_New, 0);
 
 		this->depth++;
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
@@ -61,7 +61,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 		item.name  = String_Clone(value);
 		item.value = HeapString(0);
 
-		Array_Push(this->node->attrs, item);
+		scall(Attrs_Push, &this->node->attrs, item);
 	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
 		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
 		attr->value = String_Clone(value);

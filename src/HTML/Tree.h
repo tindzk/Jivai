@@ -9,10 +9,14 @@
 
 #define self HTML_Tree
 
+// @exc IllegalNesting
+
 record(ref(Attr)) {
 	String name;
 	String value;
 };
+
+Array(ref(Attr), ref(Attrs));
 
 record(ref(Node)) {
 	Tree_Define(ref(Node));
@@ -24,7 +28,7 @@ record(ref(Node)) {
 
 	String value;
 
-	Array(ref(Attr), *attrs);
+	ref(Attrs) *attrs;
 };
 
 class {
