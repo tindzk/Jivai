@@ -7,6 +7,18 @@
 #undef HTTP_Client_Request
 #undef HTTP_Client_Read
 
+sdef(ref(RequestItem), CreateRequest, String host, String path) {
+	ref(RequestItem) res;
+
+	res.method  = HTTP_Method_Get;
+	res.version = HTTP_Version_1_1;
+	res.host    = host;
+	res.path    = path;
+	res.data    = NULL;
+
+	return res;
+}
+
 overload def(void, Init) {
 	this->closed = true;
 
@@ -14,8 +26,6 @@ overload def(void, Init) {
 
 	this->host = HeapString(0);
 	this->port = 80;
-
-	this->version = HTTP_Version_1_1;
 
 	this->events.onVersion = (HTTP_OnVersion) EmptyCallback();
 	this->events.onHeader  = (HTTP_OnHeader)  EmptyCallback();
@@ -53,10 +63,6 @@ overload def(void, SetBufferSize, size_t size) {
 
 def(void, SetEvents, ref(Events) events) {
 	this->events = events;
-}
-
-def(void, SetVersion, HTTP_Version version) {
-	this->version = version;
 }
 
 overload def(void, Open) {
@@ -143,28 +149,45 @@ def(void, Reopen) {
 	}
 }
 
-def(String, GetRequest, String host, String path) {
-	String res = String_Format($(
-		"GET % %\r\n"
+static def(void, _CreateRequest, ref(RequestItem) request, String *res) {
+	String fmt = String_Format($(
+		"% % %\r\n"
 		"Host: %\r\n"
-		"Connection: Keep-Alive\r\n"
-		"\r\n"),
+		"Connection: Keep-Alive\r\n"),
 
-		path, HTTP_Version_ToString(this->version), host);
+		HTTP_Method_ToString(request.method),
+		request.path,
+		HTTP_Version_ToString(request.version),
+		request.host);
 
-	return res;
+	String_Append(res, fmt);
+
+	String_Destroy(&fmt);
+
+	if (request.method == HTTP_Method_Post) {
+		if (request.data == NULL) {
+			String_Append(res, $("Content-Length: 0\r\n"));
+		} else {
+			String_Append(res,
+				$("Content-Type: application/x-www-form-urlencoded\r\n"));
+
+			String_Append(res, $("Content-Length: "));
+			String_Append(res, Integer_ToString(request.data->len));
+			String_Append(res, $("\r\n"));
+			String_Append(res, *request.data);
+		}
+	}
+
+	String_Append(res, $("\r\n"));
 }
 
-overload def(void, Request, ref(HostPaths) *items) {
+overload def(void, Request, ref(Requests) *items) {
 	call(Reopen);
 
-	String s = HeapString(items->len * 50);
+	String s = HeapString(items->len * 128);
 
-	for (size_t i = 0; i < items->len; i++) {
-		String tmp = call(GetRequest,
-			items->buf[i].host, items->buf[i].path);
-		String_Append(&s, tmp);
-		String_Destroy(&tmp);
+	forward (i, items->len) {
+		call(_CreateRequest, items->buf[i], &s);
 	}
 
 	try {
@@ -174,38 +197,18 @@ overload def(void, Request, ref(HostPaths) *items) {
 	} tryEnd;
 }
 
-overload def(void, Request, StringArray paths) {
+overload def(void, Request, ref(RequestItem) request) {
 	call(Reopen);
 
-	String s = HeapString(paths.len * 50);
+	String s = HeapString(128);
 
-	for (size_t i = 0; i < paths.len; i++) {
-		String tmp = call(GetRequest, this->host, paths.buf[i]);
-		String_Append(&s, tmp);
-		String_Destroy(&tmp);
-	}
+	call(_CreateRequest, request, &s);
 
 	try {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
 	} clean finally {
 		String_Destroy(&s);
 	} tryEnd;
-}
-
-overload def(void, Request, String host, String path) {
-	call(Reopen);
-
-	String request = call(GetRequest, host, path);
-
-	try {
-		SocketConnection_Write(&this->conn, request.buf, request.len);
-	} clean finally {
-		String_Destroy(&request);
-	} tryEnd;
-}
-
-overload def(void, Request, String path) {
-	call(Request, this->host, path);
 }
 
 sdef(s64, ParseChunk, String *s) {

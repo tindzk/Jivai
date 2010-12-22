@@ -34,12 +34,15 @@ record(ref(Events)) {
 	HTTP_OnHeader  onHeader;
 };
 
-record(ref(HostPath)) {
+record(ref(RequestItem)) {
+	HTTP_Method method;
+	HTTP_Version version;
 	String host;
 	String path;
+	String *data;
 };
 
-Array(ref(HostPath), ref(HostPaths));
+Array(ref(RequestItem), ref(Requests));
 
 class {
 	Socket           socket;
@@ -48,7 +51,6 @@ class {
 	short            port;
 	bool             closed;
 	ref(Events)      events;
-	HTTP_Version     version;
 
 	/* The resolved response code. */
 	HTTP_Status status;
@@ -91,13 +93,13 @@ class {
 	bool inChunk;
 };
 
+sdef(ref(RequestItem), CreateRequest, String host, String path);
 overload def(void, Init);
 overload def(void, Init, String host);
 overload def(void, Init, String host, short port);
 def(void, Destroy);
 overload def(void, SetBufferSize, size_t size);
 def(void, SetEvents, ref(Events) events);
-def(void, SetVersion, HTTP_Version version);
 overload def(void, Open);
 overload def(void, Open, String host);
 overload def(void, Open, String host, short port);
@@ -109,11 +111,8 @@ def(void, OnHeader, String name, String value);
 def(s64, GetLength);
 def(bool, IsConnected);
 def(void, Reopen);
-def(String, GetRequest, String host, String path);
-overload def(void, Request, ref(HostPaths) *items);
-overload def(void, Request, StringArray paths);
-overload def(void, Request, String host, String path);
-overload def(void, Request, String path);
+overload def(void, Request, ref(Requests) *items);
+overload def(void, Request, ref(RequestItem) request);
 sdef(s64, ParseChunk, String *s);
 def(void, ProcessChunk);
 def(HTTP_Status, FetchResponse);
