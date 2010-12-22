@@ -26,7 +26,7 @@ overload def(void, Init, Terminal *term, String block, String empty, size_t widt
 }
 
 inline overload def(void, Init, Terminal *term) {
-	call(Init, term, $("█"), $(" "), 0);
+	call(Init, term, $("▊"), $(" "), 0);
 }
 
 /* Clear all printed lines. */
