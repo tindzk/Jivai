@@ -88,16 +88,17 @@ def(void, Decode, String s, bool isFormUri) {
 
 			start = i + 1;
 		} else if (s.buf[i] == '&' || s.len == i + 1) {
-			/* Handle malformed queries such as p1=v1&&&p2=v2. */
-			if (i > 0 && s.buf[i - 1] == '&') {
-				goto next;
-			}
-
 			if (s.len == i + 1) {
-				i++;
+				if (s.buf[i] != '&') {
+					i++;
+				}
 			}
 
 			String escaped = String_Slice(s, start, i - start);
+
+			if (escaped.len == 0) {
+				goto next;
+			}
 
 			/* Parameter is an option. */
 			if (name.len == 0) {
