@@ -15,7 +15,7 @@ sdef(size_t, GetAbsoluteLength, String s) {
 	size_t cnt = 0;
 
 	for (size_t i = 0; i < s.len; i++) {
-		if (s.buf[i] == '%' && i + 2 <= s.len) {
+		if (s.buf[i] == '%' && i + 2 < s.len) {
 			if (Char_IsHexDigit(s.buf[i + 1])
 			 && Char_IsHexDigit(s.buf[i + 2])) {
 				cnt++;
