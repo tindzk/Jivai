@@ -86,7 +86,7 @@ def(void, ParseUri, String s) {
 			HTTP_Query qry;
 			HTTP_Query_Init(&qry, this->events.onParameter);
 			HTTP_Query_SetAutoResize(&qry, true);
-			HTTP_Query_Decode(&qry, String_Slice(s, pos + 1), false);
+			HTTP_Query_Decode(&qry, String_Slice(s, pos + 1), true);
 		}
 	}
 }
