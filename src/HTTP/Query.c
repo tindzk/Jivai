@@ -20,7 +20,7 @@ sdef(size_t, GetAbsoluteLength, String s) {
 			 && Char_IsHexDigit(s.buf[i + 2])) {
 				cnt++;
 			} else {
-				cnt += 2;
+				cnt += 3;
 			}
 
 			i += 2;
@@ -54,6 +54,7 @@ sdef(void, Unescape, String src, char *dst, bool isFormUri) {
 		} else if (src.buf[i] == '%' && i + 2 < src.len) {
 			if (!Char_IsHexDigit(src.buf[i + 1])
 			 || !Char_IsHexDigit(src.buf[i + 2])) {
+				*dst++ = src.buf[i];
 				*dst++ = src.buf[i + 1];
 				*dst++ = src.buf[i + 2];
 			} else {
