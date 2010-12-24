@@ -72,6 +72,43 @@ sdef(void, Unescape, String src, char *dst, bool isFormUri) {
 	}
 }
 
+static String _reserved[] = {
+	['!']  = $("%21"),
+	['*']  = $("%2A"),
+	['\''] = $("%27"),
+	['(']  = $("%28"),
+	[')']  = $("%29"),
+	[';']  = $("%3B"),
+	[':']  = $("%3A"),
+	['@']  = $("%40"),
+	['&']  = $("%26"),
+	['=']  = $("%3D"),
+	['+']  = $("%2B"),
+	['$']  = $("%24"),
+	[',']  = $("%2C"),
+	['/']  = $("%2F"),
+	['?']  = $("%3F"),
+	['#']  = $("%23"),
+	['[']  = $("%5B"),
+	[']']  = $("%5D")
+};
+
+sdef(String, Encode, String param) {
+	String res = HeapString(param.len * 1.3);
+
+	forward (i, param.len) {
+		size_t c = param.buf[i];
+
+		if (c < nElems(_reserved) && _reserved[c].len != 0) {
+			String_Append(&res, _reserved[c]);
+		} else {
+			String_Append(&res, (char) c);
+		}
+	}
+
+	return res;
+}
+
 def(void, Decode, String s, bool isFormUri) {
 	String name  = HeapString(0);
 	size_t start = 0;
