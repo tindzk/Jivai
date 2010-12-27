@@ -32,6 +32,8 @@ class {
 	bool nonblocking;
 };
 
+ExtendClass;
+
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);

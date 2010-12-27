@@ -42,10 +42,4 @@ void* Memory_Move(void *pDest, void *pSource, size_t num);
 #define New(X) \
 	(X *) Memory_Alloc(sizeof(X))
 
-#define Memory_CopyObject(pDest, pSource) \
-	Memory_Copy(pDest, pSource, sizeof(*(pSource)))
-
-#define Memory_CloneObject(obj) \
-	Memory_Clone(&(obj), sizeof(obj))
-
 #undef self

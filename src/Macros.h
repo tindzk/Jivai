@@ -198,6 +198,9 @@
 	}                                                                                      \
 	static inline void tripleConcat(self, _, Free)(Instance(self) instance) {              \
 		Memory_Free(instance.object);                                                      \
+	}                                                                                      \
+	static inline Instance(self) tripleConcat(self, _, Clone)(Instance(self) instance) {   \
+		return (Instance(self)) (self *) Memory_Clone(instance.object, sizeof(self));      \
 	}
 
 #define SingletonPrototype(name) \
