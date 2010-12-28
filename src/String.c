@@ -1038,6 +1038,48 @@ inline overload sdef(void, Print, self s) {
 	scall(Print, s, false);
 }
 
+sdef(void, PrintFmt, FmtString s) {
+	forward (i, s.fmt.len) {
+		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
+			Char_Print('%');
+			i++;
+			continue;
+		}
+
+		if (s.fmt.buf[i] == '%') {
+			String_Print(*s.val);
+			s.val++;
+		} else {
+			Char_Print(s.fmt.buf[i]);
+		}
+	}
+}
+
+sdef(void, FmtPrint, String fmt, ...) {
+	VarArg argptr;
+	VarArg_Start(argptr, fmt);
+
+	forward (i, fmt.len) {
+		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
+			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
+		{
+			Char_Print(fmt.buf[i + 1]);
+			i++;
+			continue;
+		}
+
+		if (fmt.buf[i] == '$') {
+			scall(PrintFmt, VarArg_Get(argptr, FmtString));
+		} else if (fmt.buf[i] == '%') {
+			scall(Print, VarArg_Get(argptr, self));
+		} else {
+			Char_Print(fmt.buf[i]);
+		}
+	}
+
+	VarArg_End(argptr);
+}
+
 /*
  * CompareRight(), CompareLeft() and NaturalCompare() are based upon
  * Martin Pool's `strnatcmp' library:

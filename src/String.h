@@ -16,6 +16,11 @@ class {
 	bool mutable;
 };
 
+record(FmtString) {
+	String fmt;
+	String *val;
+};
+
 enum {
 	ref(TrimLeft)  = Bit(0),
 	ref(TrimRight) = Bit(1),
@@ -106,6 +111,8 @@ overload sdef(self, ReplaceAll, self s, self needle, self replacement);
 def(self, Consume, size_t n);
 overload sdef(void, Print, self s, bool err);
 overload sdef(void, Print, self s);
+sdef(void, PrintFmt, FmtString s);
+sdef(void, FmtPrint, String fmt, ...);
 sdef(short, CompareRight, self a, self b);
 sdef(short, CompareLeft, self a, self b);
 overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpaces, bool skipZeros);
@@ -122,7 +129,15 @@ def(void, Destroy);
 def(void, ToHeap);
 
 #define $(s) \
-	(String) { sizeof(s) - 1, 0, (char *) s, false }
+	((String) { sizeof(s) - 1, 0, (char *) s, false })
+
+#define FmtString(_fmt, ...) \
+	(FmtString) {            \
+		.fmt = _fmt,         \
+		.val = (String[]) {  \
+			__VA_ARGS__      \
+		}                    \
+	}
 
 #define NullString \
 	(String) { 0, 0, NULL, false }
@@ -135,14 +150,6 @@ def(void, ToHeap);
 
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))
-
-#define String_FmtPrint(...)            \
-	do {                                \
-		String __tmp =                  \
-			String_Format(__VA_ARGS__); \
-		String_Print(__tmp);            \
-		String_Destroy(&__tmp);         \
-	} while(0)
 
 #define String_FmtAppend(this, ...)     \
 	do {                                \

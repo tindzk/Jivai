@@ -19,7 +19,7 @@ set(ref(Level)) {
 	ref(Level_Count) = 7
 };
 
-DefineCallback(ref(Printer), void, String msg, ref(Level) level, String file, int line);
+DefineCallback(ref(Printer), void, FmtString msg, ref(Level) level, String file, int line);
 
 class {
 	ref(Printer) printer;
@@ -34,14 +34,13 @@ static inline def(bool, IsEnabled, ref(Level) level) {
 def(void, Init, ref(Printer) printer, int levels);
 String ref(ResolveLevel)(ref(Level) level);
 
-#define Logger_Log(this, level, fmt, ...)                      \
-	do {                                                       \
-		if (Logger_IsEnabled(this, level)) {                   \
-			String __fmt = String_Format(fmt, ## __VA_ARGS__); \
-			callback((this)->printer,                          \
-				__fmt, level, $(__FILE__), __LINE__);          \
-			Memory_Free(__fmt.buf);                            \
-		}                                                      \
+#define Logger_Log(this, level, fmt, ...)      \
+	do {                                       \
+		if (Logger_IsEnabled(this, level)) {   \
+			callback((this)->printer,          \
+				FmtString(fmt, __VA_ARGS__),   \
+				level, $(__FILE__), __LINE__); \
+		}                                      \
 	} while(0)
 
 #define Logger_Fatal(this, fmt, ...) \
