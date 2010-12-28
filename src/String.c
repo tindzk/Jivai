@@ -1074,10 +1074,7 @@ sdef(void, PrintFmt, FmtString s) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
 			Char_Print('%');
 			i++;
-			continue;
-		}
-
-		if (s.fmt.buf[i] == '%') {
+		} else if (s.fmt.buf[i] == '%') {
 #if String_FmtChecks
 			if (s.val->size == (size_t) -1) {
 				throw(ElementMismatch);
@@ -1102,10 +1099,7 @@ sdef(void, FmtPrint, String fmt, ...) {
 		{
 			Char_Print(fmt.buf[i + 1]);
 			i++;
-			continue;
-		}
-
-		if (fmt.buf[i] == '$') {
+		} else if (fmt.buf[i] == '$') {
 			scall(PrintFmt, VarArg_Get(argptr, FmtString));
 		} else if (fmt.buf[i] == '%') {
 			scall(Print, VarArg_Get(argptr, self));

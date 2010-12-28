@@ -7,7 +7,7 @@ def(void, Init, Terminal *term) {
 }
 
 static def(void, PrintFmt, String s, VarArg *argptr) {
-	for (size_t i = 0; i < s.len; i++) {
+	forward (i, s.len) {
 		if (i + 1 != s.len && s.buf[i] == '!' && s.buf[i + 1] == '%') {
 			Terminal_Print(this->term, '%');
 			i++;
