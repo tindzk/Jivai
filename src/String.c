@@ -27,12 +27,11 @@ def(void, Destroy) {
 		throw(NotMutable);
 	}
 
-	this->len  = 0;
-	this->size = 0;
-
+	this->len = 0;
 	this->mutable = false;
 
-	if (this->buf != NULL) {
+	if (this->size > 0) {
+		this->size = 0;
 		Memory_Free(this->buf);
 	}
 }
@@ -68,14 +67,22 @@ def(void, Resize, size_t length) {
 		throw(NotMutable);
 	}
 
-	if (length > 0) {
-		if (this->buf == NULL) {
-			this->buf = Memory_Alloc(length);
-		} else {
-			this->buf = Memory_Realloc(this->buf, length);
+	if (length == 0) {
+		if (this->size > 0) {
+			Memory_Free(this->buf);
 		}
 	} else {
-		Memory_Free(this->buf);
+		if (this->size > 0) {
+			this->buf = Memory_Realloc(this->buf, length);
+		} else {
+			char *buf = Memory_Alloc(length);
+
+			if (this->len > 0) {
+				Memory_Copy(buf, this->buf, this->len);
+			}
+
+			this->buf = buf;
+		}
 	}
 
 	this->size = length;
@@ -114,26 +121,44 @@ sdef(void, Copy, self *dest, self src) {
 		throw(NotMutable);
 	}
 
-	if (src.len > 0) {
-		if (dest->buf == NULL) {
-			dest->buf = Memory_Alloc(src.len);
-		} else if (dest->size < src.len) {
-			dest->size = src.len;
-			dest->buf  = Memory_Realloc(dest->buf, src.len);
+	if (dest->size == 0) {
+		if (src.size == 0) {
+			dest->buf = src.buf;
+			goto out;
 		}
-
-		Memory_Copy(dest->buf, src.buf, src.len);
-	} else if (dest->buf != NULL) {
-		Memory_Free(dest->buf);
 	}
 
+	if (src.len > 0) {
+		if (dest->size == 0) {
+			dest->buf = Memory_Alloc(src.len);
+		} else if (src.len > dest->size) {
+			dest->buf = Memory_Realloc(dest->buf, src.len);
+		}
+
+		dest->size = src.len;
+		Memory_Copy(dest->buf, src.buf, src.len);
+	}
+
+out:
 	dest->len = src.len;
 }
 
 sdef(self, Clone, self s) {
-	self out = HeapString(s.len);
+	self out = {
+		.buf  = NULL,
+		.len  = 0,
+		.size = 0,
+		.mutable = true
+	};
 
-	if (s.len > 0) {
+	if (s.size == 0) {
+		/* `s' is a rodata string, probably created with $(...). */
+		out.buf = s.buf;
+		out.len = s.len;
+	} else if (s.len > 0) {
+		out.buf = Memory_Alloc(s.len);
+		out.size = s.len;
+
 		Memory_Copy(out.buf, s.buf, s.len);
 		out.len = s.len;
 	}
@@ -287,8 +312,21 @@ overload sdef(void, Prepend, self *dest, char c) {
 }
 
 overload sdef(void, Append, self *dest, self s) {
+	if (!dest->mutable) {
+		throw(NotMutable);
+	}
+
 	if (s.len == 0) {
 		return;
+	}
+
+	if (s.size == 0) {
+		if (dest->size == 0) {
+			dest->buf = s.buf;
+			dest->len = s.len;
+
+			return;
+		}
 	}
 
 	scall(Align, dest, dest->len + s.len);

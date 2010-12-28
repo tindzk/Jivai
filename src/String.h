@@ -122,7 +122,7 @@ def(void, Destroy);
 def(void, ToHeap);
 
 #define $(s) \
-	(String) { sizeof(s) - 1, sizeof(s) - 1, (char *) s, false }
+	(String) { sizeof(s) - 1, 0, (char *) s, false }
 
 #define NullString \
 	(String) { 0, 0, NULL, false }
