@@ -1,6 +1,6 @@
 #import "Number.h"
 
-String Number_Format(s32 number, size_t decimals) {
+void Number_FormatBuf(s32 number, size_t decimals, String *res) {
 	bool isNeg = (number < 0);
 
 	if (isNeg) {
@@ -13,18 +13,14 @@ String Number_Format(s32 number, size_t decimals) {
 		n *= 10;
 	}
 
-	String res = HeapString(Number_BufferSize);
-
 	if (isNeg) {
-		String_Append(&res, '-');
+		String_Append(res, '-');
 	}
 
 	while (number < n && n > 1) {
-		String_Append(&res, '0');
+		String_Append(res, '0');
 		n /= 10;
 	}
 
-	String_Append(&res, Int32_ToString(number));
-
-	return res;
+	String_Append(res, Int32_ToString(number));
 }

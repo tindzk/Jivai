@@ -111,22 +111,14 @@ sdef(String, ToString, self $this) {
 		$this.date.month = 0;
 	}
 
-	String tmp1, tmp2, tmp3, tmp4, tmp5;
-
 	String out = String_Format($("%, % % % %:%:% GMT"),
 		weekdays[$this.weekday],
-		tmp1 = Number_Format($this.date.day,    2),
+		Number_Format($this.date.day,    2),
 		months[$this.date.month],
-		tmp2 = Number_Format($this.date.year,   4),
-		tmp3 = Number_Format($this.time.hour,   2),
-		tmp4 = Number_Format($this.time.minute, 2),
-		tmp5 = Number_Format($this.time.second, 2));
-
-	String_Destroy(&tmp5);
-	String_Destroy(&tmp4);
-	String_Destroy(&tmp3);
-	String_Destroy(&tmp2);
-	String_Destroy(&tmp1);
+		Number_Format($this.date.year,   4),
+		Number_Format($this.time.hour,   2),
+		Number_Format($this.time.minute, 2),
+		Number_Format($this.time.second, 2));
 
 	return out;
 }

@@ -50,9 +50,5 @@ sdef(String, Format, self time) {
 	String fmt = String_Format($("%:%:%"),
 		hour, minute, second);
 
-	String_Destroy(&second);
-	String_Destroy(&minute);
-	String_Destroy(&hour);
-
 	return fmt;
 }
