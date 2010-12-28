@@ -321,7 +321,7 @@ overload sdef(void, Append, self *dest, self s) {
 	}
 
 	if (s.size == 0) {
-		if (dest->size == 0) {
+		if (dest->len == 0 && dest->size == 0) {
 			dest->buf = s.buf;
 			dest->len = s.len;
 
