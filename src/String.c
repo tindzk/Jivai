@@ -342,6 +342,23 @@ overload sdef(void, Append, self *dest, char c) {
 	dest->len++;
 }
 
+overload sdef(void, Append, self *dest, FmtString s) {
+	forward (i, s.fmt.len) {
+		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
+			String_Append(dest, '%');
+			i++;
+			continue;
+		}
+
+		if (s.fmt.buf[i] == '%') {
+			String_Append(dest, *s.val);
+			s.val++;
+		} else {
+			String_Append(dest, s.fmt.buf[i]);
+		}
+	}
+}
+
 sdef(self, Join, self *first, ...) {
 	self *s;
 	VarArg argptr;

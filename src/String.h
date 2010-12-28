@@ -64,6 +64,7 @@ overload sdef(void, Prepend, self *dest, self s);
 overload sdef(void, Prepend, self *dest, char c);
 overload sdef(void, Append, self *dest, self s);
 overload sdef(void, Append, self *dest, char c);
+overload sdef(void, Append, self *dest, FmtString s);
 sdef(self, Join, self *first, ...);
 sdef(bool, Equals, self s, self needle);
 sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffset);
@@ -150,13 +151,5 @@ def(void, ToHeap);
 
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))
-
-#define String_FmtAppend(this, ...)     \
-	do {                                \
-		String __tmp =                  \
-			String_Format(__VA_ARGS__); \
-		String_Append(this, __tmp);     \
-		String_Destroy(&__tmp);         \
-	} while(0)
 
 #undef self
