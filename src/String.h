@@ -128,7 +128,7 @@ def(void, ToHeap);
 	(String) { 0, 0, NULL, false }
 
 #define StackString(len) \
-	(String) { 0, len, ((len) > 0) ? alloca((len)) : NULL, false }
+	(String) { 0, len, alloca(len), false }
 
 #define String_StackClone(s) \
 	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), false }

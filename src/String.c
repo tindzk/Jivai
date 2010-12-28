@@ -803,25 +803,25 @@ inline overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self r
 }
 
 inline overload sdef(self, Between, self s, ssize_t offset, self left, self right, bool leftAligned) {
-	self out = StackString(0);
+	self out = NullString;
 	scall(Between, s, offset, left, right, leftAligned, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, ssize_t offset, self left, self right) {
-	self out = StackString(0);
+	self out = NullString;
 	scall(Between, s, offset, left, right, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, self left, self right, bool leftAligned) {
-	self out = StackString(0);
+	self out = NullString;
 	scall(Between, s, 0, left, right, leftAligned, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, self left, self right) {
-	self out = StackString(0);
+	self out = NullString;
 	scall(Between, s, 0, left, right, true, &out);
 	return out;
 }
