@@ -218,4 +218,21 @@ tsCase(Acute, "Copying (3)") {
 	String_Destroy(&s);
 }
 
+tsCase(Acute, "Formatted appending") {
+	String s = HeapString(0);
+
+	bool caught = false;
+
+	try {
+		String_Append(&s, FmtString($("Hello %.")));
+	} clean catch(String, ElementMismatch) {
+		caught = true;
+	} finally {
+	} tryEnd;
+
+	Assert($("Detected mismatch"), caught);
+
+	String_Destroy(&s);
+}
+
 tsFinalize;

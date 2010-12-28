@@ -343,6 +343,10 @@ overload sdef(void, Append, self *dest, char c) {
 }
 
 overload sdef(void, Append, self *dest, FmtString s) {
+#if String_FmtChecks
+	s.val++;
+#endif
+
 	forward (i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
 			String_Append(dest, '%');
@@ -351,6 +355,12 @@ overload sdef(void, Append, self *dest, FmtString s) {
 		}
 
 		if (s.fmt.buf[i] == '%') {
+#if String_FmtChecks
+			if (s.val->size == (size_t) -1) {
+				throw(ElementMismatch);
+			}
+#endif
+
 			String_Append(dest, *s.val);
 			s.val++;
 		} else {
@@ -1056,6 +1066,10 @@ inline overload sdef(void, Print, self s) {
 }
 
 sdef(void, PrintFmt, FmtString s) {
+#if String_FmtChecks
+	s.val++;
+#endif
+
 	forward (i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
 			Char_Print('%');
@@ -1064,6 +1078,12 @@ sdef(void, PrintFmt, FmtString s) {
 		}
 
 		if (s.fmt.buf[i] == '%') {
+#if String_FmtChecks
+			if (s.val->size == (size_t) -1) {
+				throw(ElementMismatch);
+			}
+#endif
+
 			String_Print(*s.val);
 			s.val++;
 		} else {

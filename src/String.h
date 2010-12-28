@@ -9,6 +9,10 @@
 #define String_SmartAlign 1
 #endif
 
+#ifndef String_FmtChecks
+#define String_FmtChecks 1
+#endif
+
 class {
 	size_t len;
 	size_t size;
@@ -37,6 +41,7 @@ enum {
 
 // @exc NotMutable
 // @exc BufferOverflow
+// @exc ElementMismatch
 
 #define self String
 
@@ -132,6 +137,19 @@ def(void, ToHeap);
 #define $(s) \
 	((String) { sizeof(s) - 1, 0, (char *) s, false })
 
+#if String_FmtChecks
+#define FmtString(_fmt, ...) \
+	(FmtString) {            \
+		.fmt = _fmt,         \
+		.val = (String[]) {  \
+			NullString,      \
+			## __VA_ARGS__,  \
+			(String) {       \
+				.size = -1   \
+			}                \
+		}                    \
+	}
+#else
 #define FmtString(_fmt, ...) \
 	(FmtString) {            \
 		.fmt = _fmt,         \
@@ -139,6 +157,7 @@ def(void, ToHeap);
 			__VA_ARGS__      \
 		}                    \
 	}
+#endif
 
 #define NullString \
 	(String) { 0, 0, NULL, false }

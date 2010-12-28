@@ -19,6 +19,9 @@
  */
 #define String_SmartAlign 1
 
+/* Check for element mismatches in FmtString(). */
+#define String_FmtChecks 1
+
 /* Support formatting call traces. */
 #define Backtrace_HasBFD
 

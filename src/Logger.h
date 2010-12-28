@@ -34,13 +34,13 @@ static inline def(bool, IsEnabled, ref(Level) level) {
 def(void, Init, ref(Printer) printer, int levels);
 String ref(ResolveLevel)(ref(Level) level);
 
-#define Logger_Log(this, level, fmt, ...)      \
-	do {                                       \
-		if (Logger_IsEnabled(this, level)) {   \
-			callback((this)->printer,          \
-				FmtString(fmt, __VA_ARGS__),   \
-				level, $(__FILE__), __LINE__); \
-		}                                      \
+#define Logger_Log(this, level, fmt, ...)       \
+	do {                                        \
+		if (Logger_IsEnabled(this, level)) {    \
+			callback((this)->printer,           \
+				FmtString(fmt, ## __VA_ARGS__), \
+				level, $(__FILE__), __LINE__);  \
+		}                                       \
 	} while(0)
 
 #define Logger_Fatal(this, fmt, ...) \
