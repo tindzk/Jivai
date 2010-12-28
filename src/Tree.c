@@ -37,7 +37,7 @@ def(void, FreeNodes, ref(Node) *node) {
 	node->len = 0;
 }
 
-void* ref(AddCustomNode)(void *ptrNode, size_t size) {
+sdef(void *, AddCustomNode, void *ptrNode, size_t size) {
 	ref(Node) *node = ptrNode;
 
 	if (node->len == 0) {

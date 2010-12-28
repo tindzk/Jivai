@@ -27,7 +27,7 @@ def(void, Init, ref(DestroyNode) destroyNode);
 def(void, Destroy);
 def(void, Reset);
 def(void, FreeNodes, ref(Node) *node);
-void* ref(AddCustomNode)(void *ptrNode, size_t size);
+sdef(void *, AddCustomNode, void *ptrNode, size_t size);
 
 #define Tree_AddNode(node) \
 	Tree_AddCustomNode(node, sizeof(typeof(*(node))))
