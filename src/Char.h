@@ -1,6 +1,5 @@
-#import "Kernel.h"
+#import "Types.h"
 
-void Char_Print(char c);
 bool Char_IsAlpha(s32 ch);
 bool Char_IsLower(s32 ch);
 bool Char_IsUpper(s32 ch);

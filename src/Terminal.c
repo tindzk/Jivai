@@ -45,12 +45,8 @@ def(void, Destroy) {
 	tcsetattr(FileNo_StdIn, 0, &this->oldTermios);
 }
 
-def(void, Write, String s) {
-	File_Write(this->out, s);
-}
-
 def(void, ResetVT100) {
-	call(Write, ref(VT100_Normal));
+	File_Write(this->out, ref(VT100_Normal));
 
 	this->style = (ref(Style)) {0, 0};
 }
@@ -59,69 +55,69 @@ def(void, ResetVT100) {
 def(void, SetVT100Color, int color) {
 	switch (color & ref(Color_ForegroundMask)) {
 		case ref(Color_ForegroundBlack):
-			call(Write, ref(VT100_Foreground_Black));
+			File_Write(this->out, ref(VT100_Foreground_Black));
 			break;
 
 		case ref(Color_ForegroundRed):
-			call(Write, ref(VT100_Foreground_Red));
+			File_Write(this->out, ref(VT100_Foreground_Red));
 			break;
 
 		case ref(Color_ForegroundGreen):
-			call(Write, ref(VT100_Foreground_Green));
+			File_Write(this->out, ref(VT100_Foreground_Green));
 			break;
 
 		case ref(Color_ForegroundYellow):
-			call(Write, ref(VT100_Foreground_Yellow));
+			File_Write(this->out, ref(VT100_Foreground_Yellow));
 			break;
 
 		case ref(Color_ForegroundBlue):
-			call(Write, ref(VT100_Foreground_Blue));
+			File_Write(this->out, ref(VT100_Foreground_Blue));
 			break;
 
 		case ref(Color_ForegroundMagenta):
-			call(Write, ref(VT100_Foreground_Magenta));
+			File_Write(this->out, ref(VT100_Foreground_Magenta));
 			break;
 
 		case ref(Color_ForegroundCyan):
-			call(Write, ref(VT100_Foreground_Cyan));
+			File_Write(this->out, ref(VT100_Foreground_Cyan));
 			break;
 
 		case ref(Color_ForegroundWhite):
-			call(Write, ref(VT100_Foreground_White));
+			File_Write(this->out, ref(VT100_Foreground_White));
 			break;
 	}
 
 	switch (color & ref(Color_BackgroundMask)) {
 		case ref(Color_BackgroundBlack):
-			call(Write, ref(VT100_Background_Black));
+			File_Write(this->out, ref(VT100_Background_Black));
 			break;
 
 		case ref(Color_BackgroundRed):
-			call(Write, ref(VT100_Background_Red));
+			File_Write(this->out, ref(VT100_Background_Red));
 			break;
 
 		case ref(Color_BackgroundGreen):
-			call(Write, ref(VT100_Background_Green));
+			File_Write(this->out, ref(VT100_Background_Green));
 			break;
 
 		case ref(Color_BackgroundYellow):
-			call(Write, ref(VT100_Background_Yellow));
+			File_Write(this->out, ref(VT100_Background_Yellow));
 			break;
 
 		case ref(Color_BackgroundBlue):
-			call(Write, ref(VT100_Background_Blue));
+			File_Write(this->out, ref(VT100_Background_Blue));
 			break;
 
 		case ref(Color_BackgroundMagenta):
-			call(Write, ref(VT100_Background_Magenta));
+			File_Write(this->out, ref(VT100_Background_Magenta));
 			break;
 
 		case ref(Color_BackgroundCyan):
-			call(Write, ref(VT100_Background_Cyan));
+			File_Write(this->out, ref(VT100_Background_Cyan));
 			break;
 
 		case ref(Color_BackgroundWhite):
-			call(Write, ref(VT100_Background_White));
+			File_Write(this->out, ref(VT100_Background_White));
 			break;
 	}
 
@@ -130,19 +126,19 @@ def(void, SetVT100Color, int color) {
 
 def(void, SetVT100Font, int font) {
 	if (BitMask_Has(font, ref(Font_Bold))) {
-		call(Write, ref(VT100_Bold));
+		File_Write(this->out, ref(VT100_Bold));
 	}
 
 	if (BitMask_Has(font, ref(Font_Italics))) {
-		call(Write, ref(VT100_Italics));
+		File_Write(this->out, ref(VT100_Italics));
 	}
 
 	if (BitMask_Has(font, ref(Font_Underline))) {
-		call(Write, ref(VT100_Underline));
+		File_Write(this->out, ref(VT100_Underline));
 	}
 
 	if (BitMask_Has(font, ref(Font_Blink))) {
-		call(Write, ref(VT100_Blink));
+		File_Write(this->out, ref(VT100_Blink));
 	}
 
 	this->style.font = font;
@@ -213,7 +209,7 @@ overload def(void, Print, int color, int font, String s) {
 	}
 
 	/* Write the text into the stream. */
-	call(Write, s);
+	File_Write(this->out, s);
 
 	/* Restore the normal color state for the stream. */
 	if (this->isVT100) {
@@ -222,87 +218,135 @@ overload def(void, Print, int color, int font, String s) {
 }
 
 overload def(void, Print, String s) {
-	call(Write, s);
+	File_Write(this->out, s);
 }
 
 overload def(void, Print, char c) {
-	File_Write(this->out, &c, 1);
+	File_Write(this->out, c);
+}
+
+def(void, PrintFmt, FmtString s) {
+#if String_FmtChecks
+	s.val++;
+#endif
+
+	forward (i, s.fmt.len) {
+		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
+			File_Write(this->out, '%');
+			i++;
+		} else if (s.fmt.buf[i] == '%') {
+#if String_FmtChecks
+			if (s.val->size == (size_t) -1) {
+				throw(ElementMismatch);
+			}
+#endif
+
+			File_Write(this->out, *s.val);
+			s.val++;
+		} else {
+			File_Write(this->out, s.fmt.buf[i]);
+		}
+	}
+}
+
+def(void, FmtArgPrint, String fmt, VarArg *argptr) {
+	forward (i, fmt.len) {
+		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
+			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
+		{
+			File_Write(this->out, fmt.buf[i + 1]);
+			i++;
+		} else if (fmt.buf[i] == '$') {
+			call(PrintFmt, VarArg_Get(*argptr, FmtString));
+		} else if (fmt.buf[i] == '%') {
+			File_Write(this->out, VarArg_Get(*argptr, String));
+		} else {
+			File_Write(this->out, fmt.buf[i]);
+		}
+	}
+}
+
+def(void, FmtPrint, String fmt, ...) {
+	VarArg argptr;
+	VarArg_Start(argptr, fmt);
+	call(FmtArgPrint, fmt, &argptr);
+	VarArg_End(argptr);
 }
 
 def(void, DeleteLine, size_t n) {
 	if (n == 1) {
-		call(Write, ref(VT100_Delete_Line));
+		File_Write(this->out, ref(VT100_Delete_Line));
 	} else {
-		call(Write, $("\33["));
-		call(Write, Int32_ToString(n));
-		call(Write, $("M"));
+		File_Write(this->out, $("\33["));
+		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, $("M"));
 	}
 }
 
 def(void, DeleteUntilEol) {
-	call(Write, ref(VT100_Delete_UntilEol));
+	File_Write(this->out, ref(VT100_Delete_UntilEol));
 }
 
 def(void, MoveHome) {
-	call(Write, ref(VT100_Cursor_Home));
+	File_Write(this->out, ref(VT100_Cursor_Home));
 }
 
 def(void, MoveUp, size_t n) {
 	if (n == 1) {
-		call(Write, ref(VT100_Cursor_Up));
+		File_Write(this->out, ref(VT100_Cursor_Up));
 	} else {
-		call(Write, $("\33["));
-		call(Write, Int32_ToString(n));
-		call(Write, $("A"));
+		File_Write(this->out, $("\33["));
+		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, $("A"));
 	}
 }
 
 def(void, MoveDown, size_t n) {
 	if (n == 1) {
-		call(Write, ref(VT100_Cursor_Down));
+		File_Write(this->out, ref(VT100_Cursor_Down));
 	} else {
-		call(Write, $("\33["));
-		call(Write, Int32_ToString(n));
-		call(Write, $("B"));
+		File_Write(this->out, $("\33["));
+		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, $("B"));
 	}
 }
 
 def(void, MoveLeft, size_t n) {
 	if (n == 1) {
-		call(Write, ref(VT100_Cursor_Left));
+		File_Write(this->out, ref(VT100_Cursor_Left));
 	} else {
-		call(Write, $("\33["));
-		call(Write, Int32_ToString(n));
-		call(Write, $("D"));
+		File_Write(this->out, $("\33["));
+		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, $("D"));
 	}
 }
 
 def(void, MoveRight, size_t n) {
 	if (n > 0) {
 		if (n == 1) {
-			call(Write, ref(VT100_Cursor_Right));
+			File_Write(this->out, ref(VT100_Cursor_Right));
 		} else {
-			call(Write, $("\33["));
-			call(Write, Int32_ToString(n));
-			call(Write, $("C"));
+			File_Write(this->out, $("\33["));
+			File_Write(this->out, Int32_ToString(n));
+			File_Write(this->out, $("C"));
 		}
 	}
 }
 
 def(void, HideCursor) {
-	call(Write, ref(VT100_Cursor_Hide));
+	File_Write(this->out, ref(VT100_Cursor_Hide));
 }
 
 def(void, ShowCursor) {
-	call(Write, ref(VT100_Cursor_Show));
+	File_Write(this->out, ref(VT100_Cursor_Show));
 }
 
 def(void, SaveCursor) {
-	call(Write, ref(VT100_Cursor_Save));
+	File_Write(this->out, ref(VT100_Cursor_Save));
 }
 
 def(void, RestoreCursor) {
-	call(Write, ref(VT100_Cursor_Restore));
+	File_Write(this->out, ref(VT100_Cursor_Restore));
 }
 
 def(char, ReadChar) {

@@ -6,32 +6,21 @@ def(void, Init, Terminal *term) {
 	this->term = term;
 }
 
-static def(void, PrintFmt, String s, VarArg *argptr) {
-	forward (i, s.len) {
-		if (i + 1 != s.len && s.buf[i] == '!' && s.buf[i + 1] == '%') {
-			Terminal_Print(this->term, '%');
-			i++;
-		} else if (s.buf[i] == '%') {
-			Terminal_Print(this->term, VarArg_Get(*argptr, String));
-		} else {
-			Terminal_Print(this->term, s.buf[i]);
-		}
-	}
-}
-
 static def(void, Print, Typography_Node *node, VarArg *argptr) {
-	for (size_t i = 0; i < node->len; i++) {
+	forward (i, node->len) {
 		Typography_Node *child = node->buf[i];
 
 		if (child->type == Typography_NodeType_Text) {
-			call(PrintFmt, Typography_Text(child)->value, argptr);
+			Terminal_FmtArgPrint(this->term,
+				Typography_Text(child)->value, argptr);
 		} else if (child->type == Typography_NodeType_Item) {
 			String name = Typography_Item(child)->name;
 
 			Terminal_Style style = Terminal_GetStyle(this->term);
 
-			if (String_Equals(name, $("fg"))
-			 || String_Equals(name, $("bg"))) {
+			if (String_Equals(name, $("fg")) ||
+				String_Equals(name, $("bg")))
+			{
 				String strColor = Typography_Item(child)->options;
 
 				if (String_Equals(strColor, $("%"))) {

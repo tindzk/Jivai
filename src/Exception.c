@@ -1,4 +1,5 @@
 #import "Exception.h"
+#import "Terminal.h"
 
 #define self Exception
 
@@ -32,19 +33,20 @@ inline sdef(ref(Record) *, GetMeta) {
 
 sdef(void, Print, int code) {
 #if Exception_SaveOrigin
-	String fmt = String_Format(
+	FmtString fmt = FmtString(
 		$("Uncaught exception %.% (in %)\n"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.e.scode,
 		__exc_mgr.e.func);
 #else
-	String fmt = String_Format(
+	FmtString fmt = FmtString(
 		$("Uncaught exception %.%\n"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.e.scode);
 #endif
 
-	String_Print(fmt, true);
-
-	String_Destroy(&fmt);
+	Terminal term;
+	Terminal_Init(&term, File_StdIn, File_StdErr, false);
+	Terminal_PrintFmt(&term, fmt);
+	Terminal_Destroy(&term);
 }

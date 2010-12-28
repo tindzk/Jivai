@@ -4,20 +4,20 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
 
-	String_Print($("Traceback (most recent call first):\n"), true);
+	File_Write(File_StdErr, $("Traceback (most recent call first):\n"));
 
-	for (ssize_t i = size - 1; i >= 0; i--) {
-		String_Print($("\tat "), true);
+	reverse (i, size) {
+		File_Write(File_StdErr, $("\tat "));
 
 		if (items[i].function.len == 0) {
-			String_Print($("0x"), true);
+			File_Write(File_StdErr, $("0x"));
 
 			String hex = Hex_ToString(items[i].addr);
-			String_Print(hex, true);
+			File_Write(File_StdErr, true);
 			String_Destroy(&hex);
 		} else {
-			String_Print(items[i].function, true);
-			String_Print($("("), true);
+			File_Write(File_StdErr, items[i].function);
+			File_Write(File_StdErr, $("("));
 
 			if (items[i].filename.len > 0) {
 				ssize_t pos = String_ReverseFind(items[i].filename, '/');
@@ -26,18 +26,18 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 					String_Crop(&items[i].filename, pos + 1);
 				}
 
-				String_Print(items[i].filename, true);
-				String_Print($(":"), true);
-				String_Print(Int32_ToString(items[i].line), true);
+				File_Write(File_StdErr, items[i].filename);
+				File_Write(File_StdErr, $(":"));
+				File_Write(File_StdErr, Integer_ToString(items[i].line));
 			}
 
-			String_Print($(")"), true);
+			File_Write(File_StdErr, $(")"));
 		}
 
 		String_Destroy(&items[i].filename);
 		String_Destroy(&items[i].function);
 
-		String_Print($("\n"), true);
+		File_Write(File_StdErr, $("\n"));
 	}
 
 	Memory_Free(items);

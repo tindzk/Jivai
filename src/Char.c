@@ -1,9 +1,5 @@
 #import "Char.h"
 
-void Char_Print(char c) {
-	Kernel_write(FileNo_StdOut, &c, 1);
-}
-
 /* Taken from diet libc (dietlibc-0.32/lib/isalpha.c). */
 bool Char_IsAlpha(s32 ch) {
 	return (u32) ((ch | 0x20) - 'a') < 26u;

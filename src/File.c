@@ -209,6 +209,10 @@ overload def(size_t, Write, String s) {
 	return call(Write, s.buf, s.len);
 }
 
+overload def(size_t, Write, char c) {
+	return call(Write, &c, 1);
+}
+
 def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	if (!this->readable) {
 		throw(NotReadable);

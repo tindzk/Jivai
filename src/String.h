@@ -35,7 +35,6 @@ enum {
 
 #import "Char.h"
 #import "Array.h"
-#import "Kernel.h"
 #import "Memory.h"
 #import "Exception.h"
 
@@ -115,10 +114,6 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self re
 overload sdef(bool, ReplaceAll, self *dest, self needle, self replacement);
 overload sdef(self, ReplaceAll, self s, self needle, self replacement);
 def(self, Consume, size_t n);
-overload sdef(void, Print, self s, bool err);
-overload sdef(void, Print, self s);
-sdef(void, PrintFmt, FmtString s);
-sdef(void, FmtPrint, String fmt, ...);
 sdef(short, CompareRight, self a, self b);
 sdef(short, CompareLeft, self a, self b);
 overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpaces, bool skipZeros);
@@ -133,6 +128,9 @@ def(String, Join, String separator);
 def(bool, Contains, String needle);
 def(void, Destroy);
 def(void, ToHeap);
+
+#define String_Print(s) \
+	File_Write(File_StdOut, s)
 
 #define $(s) \
 	((String) { sizeof(s) - 1, 0, (char *) s, false })

@@ -1055,62 +1055,6 @@ def(self, Consume, size_t n) {
 	return res;
 }
 
-overload sdef(void, Print, self s, bool err) {
-	if (s.buf != NULL) {
-		Kernel_write(err ? FileNo_StdErr : FileNo_StdOut, s.buf, s.len);
-	}
-}
-
-inline overload sdef(void, Print, self s) {
-	scall(Print, s, false);
-}
-
-sdef(void, PrintFmt, FmtString s) {
-#if String_FmtChecks
-	s.val++;
-#endif
-
-	forward (i, s.fmt.len) {
-		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
-			Char_Print('%');
-			i++;
-		} else if (s.fmt.buf[i] == '%') {
-#if String_FmtChecks
-			if (s.val->size == (size_t) -1) {
-				throw(ElementMismatch);
-			}
-#endif
-
-			String_Print(*s.val);
-			s.val++;
-		} else {
-			Char_Print(s.fmt.buf[i]);
-		}
-	}
-}
-
-sdef(void, FmtPrint, String fmt, ...) {
-	VarArg argptr;
-	VarArg_Start(argptr, fmt);
-
-	forward (i, fmt.len) {
-		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
-			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
-		{
-			Char_Print(fmt.buf[i + 1]);
-			i++;
-		} else if (fmt.buf[i] == '$') {
-			scall(PrintFmt, VarArg_Get(argptr, FmtString));
-		} else if (fmt.buf[i] == '%') {
-			scall(Print, VarArg_Get(argptr, self));
-		} else {
-			Char_Print(fmt.buf[i]);
-		}
-	}
-
-	VarArg_End(argptr);
-}
-
 /*
  * CompareRight(), CompareLeft() and NaturalCompare() are based upon
  * Martin Pool's `strnatcmp' library:

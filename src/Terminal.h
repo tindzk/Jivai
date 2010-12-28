@@ -10,6 +10,7 @@
 #define self Terminal
 
 // @exc IoctlFailed
+// @exc ElementMismatch
 
 /* VT100 escape sequence strings. */
 #define Terminal_VT100_Normal              $("\33[0m")
@@ -133,7 +134,6 @@ class {
 def(void, Init, File *in, File *out, bool assumeVT100);
 def(void, Configure, bool echo, bool signal);
 def(void, Destroy);
-def(void, Write, String s);
 def(void, ResetVT100);
 def(void, SetVT100Color, int color);
 def(void, SetVT100Font, int font);
@@ -144,6 +144,9 @@ sdef(ref(Size), GetSize);
 overload def(void, Print, int color, int font, String s);
 overload def(void, Print, String s);
 overload def(void, Print, char c);
+def(void, PrintFmt, FmtString s);
+def(void, FmtArgPrint, String fmt, VarArg *argptr);
+def(void, FmtPrint, String fmt, ...);
 def(void, DeleteLine, size_t n);
 def(void, DeleteUntilEol);
 def(void, MoveHome);
