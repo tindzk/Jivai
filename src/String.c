@@ -16,7 +16,7 @@ inline self HeapString(size_t len) {
 inline self BufString(char *buf, size_t len) {
 	return (self) {
 		.len     = len,
-		.size    = 0,
+		.size    = len,
 		.buf     = buf,
 		.mutable = false
 	};
@@ -312,10 +312,6 @@ overload sdef(void, Prepend, self *dest, char c) {
 }
 
 overload sdef(void, Append, self *dest, self s) {
-	if (!dest->mutable) {
-		throw(NotMutable);
-	}
-
 	if (s.len == 0) {
 		return;
 	}
