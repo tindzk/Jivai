@@ -312,6 +312,10 @@ overload sdef(void, Prepend, self *dest, char c) {
 }
 
 overload sdef(void, Append, self *dest, self s) {
+	if (dest->size == 0 && !dest->mutable) {
+		throw(NotMutable);
+	}
+
 	if (s.len == 0) {
 		return;
 	}
