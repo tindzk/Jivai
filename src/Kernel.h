@@ -150,6 +150,12 @@ set(EpollCtl) {
 	EpollCtl_Modify = 3
 };
 
+#if defined(__x86_64__)
+#define __epollPacked __packed
+#else
+#define __epollPacked
+#endif
+
 record(EpollEvent) {
 	u32 events;
 
@@ -159,7 +165,7 @@ record(EpollEvent) {
 		u32 u32;
 		u64 u64;
 	};
-} __packed;
+} __epollPacked;
 
 #import "String.h"
 
