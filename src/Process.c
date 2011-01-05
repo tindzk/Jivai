@@ -40,7 +40,10 @@ def(void, Destroy) {
 }
 
 def(void, AddParameter, String param) {
-	StringArray_Push(&this->params, String_Clone(param));
+	String *push = New(String);
+	*push = String_Clone(param);
+
+	StringArray_Push(&this->params, push);
 }
 
 def(String, GetCommandLine) {
@@ -49,8 +52,8 @@ def(String, GetCommandLine) {
 	String_Append(&out, this->cmd);
 	String_Append(&out, ' ');
 
-	for (size_t i = 0; i < this->params->len; i++) {
-		String_Append(&out, this->params->buf[i]);
+	forward (i, this->params->len) {
+		String_Append(&out, *this->params->buf[i]);
 
 		if (i != this->params->len - 1) {
 			String_Append(&out, ' ');
@@ -68,7 +71,7 @@ overload def(int, Spawn, float *time) {
 	size_t i;
 
 	for (i = 0; i < this->params->len; i++) {
-		argv[i + 1] = String_ToNulHeap(this->params->buf[i]);
+		argv[i + 1] = String_ToNulHeap(*this->params->buf[i]);
 	}
 
 	argv[i + 1] = NULL;
