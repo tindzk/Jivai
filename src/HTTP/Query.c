@@ -91,7 +91,8 @@ static String _reserved[] = {
 	['?']  = $("%3F"),
 	['#']  = $("%23"),
 	['[']  = $("%5B"),
-	[']']  = $("%5D")
+	[']']  = $("%5D"),
+	[' ']  = $("+")
 };
 
 sdef(String, Encode, String param) {
