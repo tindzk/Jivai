@@ -6,7 +6,7 @@
 // @exc LimitExceeded
 
 #ifndef Arena_Allocations
-#define Arena_Allocations 1024
+#define Arena_Allocations 10000
 #endif
 
 record(ArenaSegment) {
