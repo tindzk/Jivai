@@ -189,7 +189,7 @@
 	static inline bool tripleConcat(self, _, Equals)(Instance(self) a, Instance(self) b) { \
 		return a.object == b.object;                                                       \
 	}                                                                                      \
-	static __unused alwaysInline Instance(self) tripleConcat(self, _, NewStack)(void) {    \
+	static alwaysInline Instance(self) tripleConcat(self, _, NewStack)(void) {             \
 		self obj;                                                                          \
 		return (Instance(self)) &obj;                                                      \
 	}                                                                                      \

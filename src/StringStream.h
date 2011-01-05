@@ -16,7 +16,7 @@ def(bool, IsEof);
 
 ExportImpl(Stream);
 
-static __unused alwaysInline Stream String_AsStream(String *s) {
+static alwaysInline Stream String_AsStream(String *s) {
 	StringStream stream;
 	StringStream_Init(&stream, s);
 
