@@ -40,6 +40,8 @@ tsCase(Acute, "Detect read-only data") {
 
 	Assert($("Heap memory"),
 		Memory_IsRoData(ptr) == false);
+
+	Memory_Free(ptr);
 }
 
 tsFinalize;
