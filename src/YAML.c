@@ -101,12 +101,12 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 	return &node->data;
 }
 
-def(void, AddSection, size_t depth, String s) {
+static def(void, AddSection, size_t depth, String s) {
 	ref(Section) *section = call(Store, depth, ref(NodeType_Section), sizeof(ref(Section)));
 	section->name = String_Clone(s);
 }
 
-def(void, AddItem, size_t depth, String key, String value) {
+static def(void, AddItem, size_t depth, String key, String value) {
 	ref(Item) *item = call(Store, depth, ref(NodeType_Item), sizeof(ref(Item)));
 
 	item->key   = String_Clone(key);
@@ -125,8 +125,8 @@ def(void, Parse) {
 	this->depth = 0;
 	this->line  = 0;
 
-	String buf = HeapString(512);
-	String key = HeapString(0);
+	String buf = String_New(512);
+	String key = $("");
 
 	size_t whitespaces = 0;
 
@@ -198,8 +198,7 @@ def(void, Parse) {
 					state = ref(State_Comment);
 					prevState = ref(State_Value);
 				} else if (c == '\n') {
-					String_Trim(&buf);
-					call(AddItem, whitespaces / this->depthWidth, key, buf);
+					call(AddItem, whitespaces / this->depthWidth, key, String_Trim(buf));
 
 					buf.len = 0;
 					whitespaces = 0;

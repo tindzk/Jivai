@@ -86,13 +86,13 @@ overload def(String, GetXattr, String name) {
 		}
 	}
 
-	String res = HeapString(size);
+	String res = String_New(size);
 
-	if (Kernel_fgetxattr(this->fd, name, res.buf, res.size) == -1) {
+	if (Kernel_fgetxattr(this->fd, name, res.buf, size) == -1) {
 		throw(GettingAttributeFailed);
 	}
 
-	res.len = res.size;
+	res.len = size;
 
 	return res;
 }
@@ -100,7 +100,7 @@ overload def(String, GetXattr, String name) {
 overload def(void, GetXattr, String name, String *value) {
 	errno = 0;
 
-	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, value->size);
+	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, String_GetSize(value));
 
 	if (size == -1) {
 		if (errno == ENODATA) {
@@ -180,7 +180,7 @@ overload def(size_t, Read, void *buf, size_t len) {
 }
 
 inline overload def(void, Read, String *res) {
-	res->len = call(Read, res->buf, res->size);
+	res->len = call(Read, res->buf, String_GetSize(res));
 }
 
 overload def(size_t, Write, void *buf, size_t len) {
@@ -244,12 +244,13 @@ void ref(GetContents)(String path, String *res) {
 	ref(Open)(&file, path, FileStatus_ReadOnly);
 
 	size_t len = 0;
+	size_t size = String_GetSize(res);
 
 	do {
 		len = ref(Read)(
 			File_FromObject(&file),
-			res->buf  + res->len,
-			res->size - res->len);
+			res->buf + res->len,
+			size - res->len);
 
 		res->len += len;
 	} while (len > 0);

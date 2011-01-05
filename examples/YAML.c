@@ -1,13 +1,15 @@
 #import <YAML.h>
+#import <Terminal.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
 void PrintTree(YAML_Node *node, int depth) {
-	if (node->type == YAML_NodeType_Section
-	 || node->type == YAML_NodeType_Item) {
+	if (node->type == YAML_NodeType_Section ||
+		node->type == YAML_NodeType_Item)
+	{
 		String_Print($("\n"));
 
-		for (ssize_t i = depth - 1; i > 0; i--) {
+		repeat (depth) {
 			String_Print($("  "));
 		}
 	}
@@ -28,7 +30,7 @@ void PrintTree(YAML_Node *node, int depth) {
 		String_Print(YAML_Item(node)->value);
 	}
 
-	for (size_t i = 0; i < node->len; i++) {
+	forward (i, node->len) {
 		PrintTree(node->buf[i], depth + 1);
 	}
 }

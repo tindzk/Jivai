@@ -2,45 +2,116 @@
 
 #define self String
 
-inline self HeapString(size_t len) {
+inline sdef(self, New, size_t size) {
 	return (self) {
-		.len  = 0,
-		.size = len,
-		.buf  = (len > 0)
-			? Memory_Alloc(len)
-			: NULL,
-		.mutable = true
+		.buf = Arena_Alloc(Arena_GetInstance(), size)
 	};
 }
 
-inline self BufString(char *buf, size_t len) {
-	return (self) {
-		.len     = len,
-		.size    = len,
-		.buf     = buf,
-		.mutable = false
-	};
+def(size_t, GetSize) {
+	ssize_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
+
+	if (size == -1) {
+		return 0;
+	}
+
+	return size;
+}
+
+def(size_t, GetFree) {
+	ssize_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
+
+	if (size == -1) {
+		return 0;
+	}
+
+	return size - this->len;
+}
+
+def(void, Free) {
+	Memory_FreePtr(this);
+}
+
+static inline def(bool, IsWritable) {
+	return
+		!this->inherited   &&
+		this->buf  != NULL &&
+		this->prev == NULL &&
+		this->next == NULL &&
+		!Memory_IsRoData(this->buf);
+}
+
+/* Deletes references to this string in `prev' and `next'. */
+def(void, Unlink) {
+	if (this->prev != NULL) {
+		this->prev->next = this->next;
+	}
+
+	if (this->next != NULL) {
+		this->next->prev = this->prev;
+	}
+
+	this->prev = NULL;
+	this->next = NULL;
+}
+
+def(void, Decouple) {
+	/* Clone the old memory segment and assign it to this->buf so that all
+	 * strings depending on our string can continue to use their buffer.
+	 * This also unlink this string from its dependents.
+	 */
+
+	if (Memory_IsRoData(this->buf) || (this->prev != NULL && this->next != NULL)) {
+		if (this->len > 0) {
+			char *buf = Arena_Alloc(Arena_GetInstance(), this->len);
+			Memory_Copy(buf, this->buf, this->len);
+			this->buf = buf;
+		}
+
+		call(Unlink);
+	}
+}
+
+sdef(void, Insert, String *src, String *res) {
+	res->len  = src->len;
+	res->buf  = src->buf;
+	res->next = NULL;
+	res->inherited = false;
+
+	/* Follow trail and insert as last element. */
+	for (String *cur = src; true; cur = cur->next) {
+		if (cur->next == NULL) {
+			cur->next = res;
+			res->prev = cur;
+
+			return;
+		}
+	}
 }
 
 def(void, Destroy) {
-	if (!this->mutable) {
-		throw(NotMutable);
+	if (this->buf == (void *) 0xdeadbeef) {
+		throw(DoubleFree);
 	}
 
+	/* Is the buffer safe to delete? */
+	if (call(IsWritable)) {
+		Arena_Free(Arena_GetInstance(), this->buf);
+	}
+
+	this->buf = (void *) 0xdeadbeef;
 	this->len = 0;
-	this->mutable = false;
 
-	if (this->size > 0) {
-		this->size = 0;
-		Memory_Free(this->buf);
-	}
+	call(Unlink);
 }
 
 inline sdef(self, FromNul, char *s) {
-	return BufString(s,
-		(s != NULL)
+	return (self) {
+		.buf = s,
+		.len = (s != NULL)
 			? strlen(s)
-			: 0);
+			: 0
+	};
 }
 
 inline sdef(char *, ToNulBuf, self s, char *buf) {
@@ -54,38 +125,39 @@ inline sdef(char *, ToNulBuf, self s, char *buf) {
 }
 
 inline sdef(char *, ToNulHeap, self s) {
-	return scall(ToNulBuf, s, Memory_Alloc(s.len + 1));
+	return scall(ToNulBuf, s,
+		Arena_Alloc(Arena_GetInstance(), s.len + 1));
 }
 
 inline sdef(self, Disown, self s) {
-	s.mutable = false;
+	s.inherited = true;
 	return s;
 }
 
+/* Resizes the string's buffer to be `length' characters long. If 0 is supplied,
+ * the buffer is freed. */
 def(void, Resize, size_t length) {
-	if (!this->mutable) {
-		throw(NotMutable);
-	}
+	size_t realLength = (this->len > length)
+		? length
+		: this->len;
 
 	if (length == 0) {
-		if (this->size > 0) {
-			Memory_Free(this->buf);
+		call(Destroy);
+		this->buf = NULL;
+	} else if (!call(IsWritable)) {
+		char *buf = Arena_Alloc(Arena_GetInstance(), length);
+
+		if (realLength > 0) {
+			Memory_Copy(buf, this->buf, realLength);
 		}
+
+		this->buf = buf;
+		this->inherited = false;
+
+		call(Unlink);
 	} else {
-		if (this->size > 0) {
-			this->buf = Memory_Realloc(this->buf, length);
-		} else {
-			char *buf = Memory_Alloc(length);
-
-			if (this->len > 0) {
-				Memory_Copy(buf, this->buf, this->len);
-			}
-
-			this->buf = buf;
-		}
+		this->buf = Arena_Realloc(Arena_GetInstance(), this->buf, length);
 	}
-
-	this->size = length;
 
 	if (this->len > length) {
 		/* The string was shortened. */
@@ -93,85 +165,66 @@ def(void, Resize, size_t length) {
 	}
 }
 
+/* Ensures that the stringg is at least `length' characters long. */
 def(void, Align, size_t length) {
-	if (length > 0) {
-		if (this->size == 0) {
-			call(Resize, length);
-		} else if (length > this->size) {
+	if (length == 0) {
+		return;
+	}
+
+	if (this->inherited) {
+		call(Resize, length);
+		return;
+	}
+
+	if (length < this->len) {
+		return;
+	}
+
+	size_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
+
+	if ((ssize_t) size == -1 || size == 0) {
+		call(Resize, length);
+	} else if (length > size) {
 #if String_SmartAlign
-			/* See also:
-			 * http://stackoverflow.com/questions/2243366/how-to-implement-a-variable-length-string-y-in-c
-			 */
-			size_t size = this->size;
+		/* See also:
+		 * http://stackoverflow.com/questions/2243366/how-to-implement-a-variable-length-string-y-in-c
+		 */
+		do {
+			size <<= 1;
+		} while (size < length);
 
-			do {
-				size <<= 1;
-			} while (size < length);
-
-			call(Resize, size);
+		call(Resize, size);
 #else
-			call(Resize, length);
+		call(Resize, length);
 #endif
-		}
 	}
 }
 
-sdef(void, Copy, self *dest, self src) {
-	if (!dest->mutable) {
-		throw(NotMutable);
-	}
+def(void, Assign, self *src) {
+	call(Destroy);
+	scall(Insert, src, this);
+}
 
-	if (dest->size == 0) {
-		if (src.size == 0) {
-			dest->buf = src.buf;
-			goto out;
-		}
-	}
-
-	if (src.len > 0) {
-		if (dest->size == 0) {
-			dest->buf = Memory_Alloc(src.len);
-		} else if (src.len > dest->size) {
-			dest->buf = Memory_Realloc(dest->buf, src.len);
-		}
-
-		dest->size = src.len;
-		Memory_Copy(dest->buf, src.buf, src.len);
-	}
-
-out:
-	dest->len = src.len;
+def(void, Clear) {
+	call(Decouple);
+	this->len = 0;
 }
 
 sdef(self, Clone, self s) {
-	self out = {
-		.buf  = NULL,
-		.len  = 0,
-		.size = 0,
-		.mutable = true
-	};
+	self out = { .len = s.len };
 
-	if (s.size == 0) {
-		/* `s' is a rodata string, probably created with $(...). */
-		out.buf = s.buf;
-		out.len = s.len;
-	} else if (s.len > 0) {
-		out.buf = Memory_Alloc(s.len);
-		out.size = s.len;
-
+	if (s.len > 0) {
+		out.buf = Arena_Alloc(Arena_GetInstance(), s.len);
 		Memory_Copy(out.buf, s.buf, s.len);
-		out.len = s.len;
 	}
 
 	return out;
 }
 
-sdef(char *, CloneBuf, self s, char *buf) {
-	if (s.len > 0) {
-		Memory_Copy(buf, s.buf, s.len);
-	}
-
-	return buf;
+sdef(self *, SafeClone, String *src) {
+	self *dest = Memory_Alloc(sizeof(self));
+	scall(Insert, src, dest);
+	return dest;
 }
 
 sdef(char, CharAt, self s, ssize_t offset) {
@@ -187,7 +240,6 @@ sdef(char, CharAt, self s, ssize_t offset) {
 }
 
 overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
-	self out;
 	size_t right;
 
 	if (offset < 0) {
@@ -200,18 +252,18 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 		right = length + offset;
 	}
 
-	if ((size_t) offset > right
-	 || (size_t) offset > s.len
-	 || right           > s.len) {
+	if ((size_t) offset > right ||
+		(size_t) offset > s.len ||
+		right           > s.len)
+	{
 		throw(BufferOverflow);
 	}
 
-	out.len     = right - offset;
-	out.size    = out.len;
-	out.buf     = s.buf + offset;
-	out.mutable = false;
-
-	return out;
+	return (self) {
+		.len = right - offset,
+		.buf = s.buf + offset,
+		.inherited = true
+	};
 }
 
 inline overload sdef(self, Slice, self s, ssize_t offset) {
@@ -222,11 +274,45 @@ inline overload sdef(self, Slice, self s, ssize_t offset) {
 	return scall(Slice, s, offset, s.len - offset);
 }
 
-overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
-	if (!dest->mutable) {
-		throw(NotMutable);
+overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length) {
+	size_t right;
+
+	if (offset < 0) {
+		offset += s->len;
 	}
 
+	if (length < 0) {
+		right = length + s->len;
+	} else {
+		right = length + offset;
+	}
+
+	if ((size_t) offset > right  ||
+		(size_t) offset > s->len ||
+		right           > s->len)
+	{
+		throw(BufferOverflow);
+	}
+
+	String *res = Memory_Alloc(sizeof(String));
+
+	scall(Insert, s, res);
+
+	res->buf = s->buf + offset;
+	res->len = right  - offset;
+
+	return res;
+}
+
+inline overload sdef(String *, SafeSlice, self *s, ssize_t offset) {
+	if (offset < 0) {
+		offset += s->len;
+	}
+
+	return scall(SafeSlice, s, offset, s->len - offset);
+}
+
+overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	size_t right;
 
 	if (offset < 0) {
@@ -239,14 +325,15 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 		right = length + offset;
 	}
 
-	if ((size_t) offset > right
-	 || (size_t) offset > dest->len
-	 || right           > dest->len) {
+	if ((size_t) offset > right     ||
+		(size_t) offset > dest->len ||
+		right           > dest->len)
+	{
 		throw(BufferOverflow);
 	}
 
-	if (offset > 0) {
-		if (right - offset > 0) {
+	if (offset > 0 && right - offset > 0) {
+		if (scall(IsWritable, dest)) {
 			/* Memory_Move is preferable because it also works with
 			 * overlapping memory areas.
 			 */
@@ -254,12 +341,20 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 			Memory_Move(dest->buf,
 				dest->buf + offset,
 				right     - offset);
-		}
+		} else {
+			char *buf = Arena_Alloc(Arena_GetInstance(), right - offset);
 
-		dest->len = right - offset;
-	} else {
-		dest->len = right;
+			Memory_Copy(buf,
+				dest->buf + offset,
+				right     - offset);
+
+			dest->buf = buf;
+
+			scall(Unlink, dest);
+		}
 	}
+
+	dest->len = right - offset;
 }
 
 inline overload sdef(void, Crop, self *dest, ssize_t offset) {
@@ -270,9 +365,59 @@ inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 	scall(Crop, dest, offset, dest->len - offset);
 }
 
+overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
+	size_t right;
+
+	if (offset < 0) {
+		offset += dest->len;
+	}
+
+	if (length < 0) {
+		right = length + dest->len;
+	} else {
+		right = length + offset;
+	}
+
+	if ((size_t) offset > right     ||
+		(size_t) offset > dest->len ||
+		right           > dest->len)
+	{
+		throw(BufferOverflow);
+	}
+
+	dest->buf += offset;
+	dest->len  = right - offset;
+}
+
+inline overload sdef(void, FastCrop, self *dest, ssize_t offset) {
+	if (offset < 0) {
+		offset += dest->len;
+	}
+
+	scall(FastCrop, dest, offset, dest->len - offset);
+}
+
+def(void, Shift) {
+	if (this->inherited) {
+		throw(IsInherited);
+	}
+
+	size_t ofs = Arena_GetOffset(Arena_GetInstance(), this->buf);
+
+	if (ofs == 0) {
+		return;
+	}
+
+	if (this->len > 0) {
+		Memory_Move(this->buf - ofs, this->buf, this->len);
+	}
+
+	this->buf -= ofs;
+}
+
 def(void, Delete, ssize_t offset, ssize_t length) {
-	if (!this->mutable) {
-		throw(NotMutable);
+	if (this->inherited) {
+		throw(IsInherited);
 	}
 
 	size_t from;
@@ -283,9 +428,10 @@ def(void, Delete, ssize_t offset, ssize_t length) {
 
 	from = offset + length;
 
-	if ((size_t) offset > from
-	 || (size_t) offset > this->len
-	 || from            > this->len) {
+	if ((size_t) offset > from      ||
+		(size_t) offset > this->len ||
+		from            > this->len)
+	{
 		throw(BufferOverflow);
 	}
 
@@ -304,36 +450,57 @@ overload sdef(void, Prepend, self *dest, self s) {
 }
 
 overload sdef(void, Prepend, self *dest, char c) {
-	self tmp = HeapString(dest->len + 1);
+	self tmp = String_New(dest->len + 1);
 	scall(Append, &tmp, c);
 	scall(Append, &tmp, *dest);
 	scall(Copy, dest, tmp);
 	scall(Destroy, &tmp);
 }
 
-overload sdef(void, Append, self *dest, self s) {
-	if (dest->size == 0 && !dest->mutable) {
-		throw(NotMutable);
+def(void, Copy, self src) {
+	if ((this->buf == NULL || Memory_IsRoData(this->buf)) &&
+		Memory_IsRoData(src.buf))
+	{
+		call(Unlink);
+
+		this->buf = src.buf;
+		this->len = src.len;
+		this->inherited = false;
+
+		return;
 	}
 
+	call(Decouple);
+
+	if (src.len > 0) {
+		call(Align, src.len);
+		Memory_Move(this->buf, src.buf, src.len);
+	}
+
+	this->len = src.len;
+}
+
+overload sdef(void, Append, self *dest, self s) {
 	if (s.len == 0) {
 		return;
 	}
 
-	if (s.size == 0) {
-		if (dest->len == 0 && dest->size == 0) {
-			dest->buf = s.buf;
-			dest->len = s.len;
+	if (Memory_IsRoData(s.buf) && dest->buf == NULL) {
+		scall(Unlink, dest);
 
-			return;
-		}
+		dest->buf = s.buf;
+		dest->len = s.len;
+		dest->inherited = false;
+
+		return;
 	}
 
+	/* Resize the buffer if necessary. */
 	scall(Align, dest, dest->len + s.len);
 
+	/* Append s. */
 	Memory_Copy(dest->buf + dest->len, s.buf, s.len);
-
-	dest->len = dest->len + s.len;
+	dest->len += s.len;
 }
 
 overload sdef(void, Append, self *dest, char c) {
@@ -356,7 +523,7 @@ overload sdef(void, Append, self *dest, FmtString s) {
 
 		if (s.fmt.buf[i] == '%') {
 #if String_FmtChecks
-			if (s.val->size == (size_t) -1) {
+			if (s.val->len == (size_t) -1) {
 				throw(ElementMismatch);
 			}
 #endif
@@ -367,49 +534,6 @@ overload sdef(void, Append, self *dest, FmtString s) {
 			String_Append(dest, s.fmt.buf[i]);
 		}
 	}
-}
-
-sdef(self, Join, self *first, ...) {
-	self *s;
-	VarArg argptr;
-	size_t length = first->len;
-
-	VarArg_Start(argptr, first);
-
-	while (true) {
-		s = VarArg_Get(argptr, self *);
-
-		if (s == NULL) {
-			break;
-		}
-
-		length += s->len;
-	}
-
-	VarArg_End(argptr);
-
-	self res = HeapString(length);
-
-	VarArg_Start(argptr, first);
-
-	s = first;
-
-	while (true) {
-		if (s->len > 0) {
-			Memory_Copy(res.buf + res.len, s->buf, s->len);
-			res.len += s->len;
-		}
-
-		s = VarArg_Get(argptr, self *);
-
-		if (s == NULL) {
-			break;
-		}
-	}
-
-	VarArg_End(argptr);
-
-	return res;
 }
 
 inline sdef(bool, Equals, self s, self needle) {
@@ -456,52 +580,48 @@ inline sdef(bool, EndsWith, self s, self needle) {
 }
 
 def(void, ToLower) {
-	if (!this->mutable) {
-		throw(NotMutable);
-	}
+	call(Decouple);
 
-	for (size_t i = 0; i < this->len; i++) {
+	forward (i, this->len) {
 		this->buf[i] = (char) Char_ToLower(this->buf[i]);
 	}
 }
 
 def(void, ToUpper) {
-	if (!this->mutable) {
-		throw(NotMutable);
-	}
+	call(Decouple);
 
-	for (size_t i = 0; i < this->len; i++) {
+	forward (i, this->len) {
 		this->buf[i] = (char) Char_ToUpper(this->buf[i]);
 	}
 }
 
-overload sdef(StringArray *, Split, self s, size_t offset, char c) {
+overload sdef(StringArray *, Split, self *s, size_t offset, char c) {
 	size_t chunks = 1;
 	size_t left, right;
 
-	for (size_t i = offset; i < s.len; i++) {
-		if (s.buf[i] == c) {
+	forward (i, s->len) {
+		if (s->buf[i] == c) {
 			chunks++;
 		}
 	}
 
 	StringArray *res = StringArray_New(chunks);
 
-	for (left = right = offset; right < s.len; right++) {
-		if (s.buf[right] == c) {
-			res->buf[res->len] = scall(Slice, s, left, right - left);
+	for (left = right = offset; right < s->len; right++) {
+		if (s->buf[right] == c) {
+			res->buf[res->len] = scall(SafeSlice, s, left, right - left);
 			res->len++;
 			left = right + 1;
 		}
 	}
 
-	res->buf[res->len] = scall(Slice, s, left, right - left);
+	res->buf[res->len] = scall(SafeSlice, s, left, right - left);
 	res->len++;
 
 	return res;
 }
 
-inline overload sdef(StringArray *, Split, self s, char c) {
+inline overload sdef(StringArray *, Split, self *s, char c) {
 	return scall(Split, s, 0, c);
 }
 
@@ -540,7 +660,7 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c) {
 		throw(BufferOverflow);
 	}
 
-	for (ssize_t i = offset; i >= 0; i--) {
+	reverse (i, offset + 1) {
 		if (s.buf[i] == c) {
 			return i;
 		}
@@ -568,7 +688,7 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle) {
 
 	size_t cnt = 0;
 
-	for (ssize_t i = offset; i >= 0; i--) {
+	reverse (i, offset + 1) {
 		if (s.buf[i] == needle.buf[needle.len - cnt - 1]) {
 			cnt++;
 
@@ -603,8 +723,9 @@ overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle
 		right = length + offset;
 	}
 
-	if ((size_t) offset > s.len
-	 || (size_t) right  > s.len) {
+	if ((size_t) offset > s.len ||
+		(size_t) right  > s.len)
+	{
 		throw(BufferOverflow);
 	}
 
@@ -660,44 +781,6 @@ overload sdef(bool, Contains, self s, char needle) {
 	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
 }
 
-overload sdef(void, Trim, self *dest, short type) {
-	size_t i, lpos = 0;
-
-	if (BitMask_Has(type, ref(TrimLeft))) {
-		for (i = 0; i < dest->len; i++) {
-			if (Char_IsSpace(dest->buf[i])) {
-				lpos = i + 1;
-			} else {
-				break;
-			}
-		}
-	}
-
-	if (lpos == dest->len) {
-		dest->len = 0;
-	} else {
-		size_t rpos = dest->len;
-
-		if (BitMask_Has(type, ref(TrimRight))) {
-			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(dest->buf[i - 1])) {
-					rpos = i - 1;
-				} else {
-					break;
-				}
-			}
-		}
-
-		scall(Crop, dest, lpos, rpos - lpos);
-	}
-}
-
-inline overload sdef(void, Trim, self *dest) {
-	scall(Trim, dest,
-		ref(TrimLeft) |
-		ref(TrimRight));
-}
-
 overload sdef(self, Trim, self s, short type) {
 	size_t i, lpos = 0;
 
@@ -712,13 +795,55 @@ overload sdef(self, Trim, self s, short type) {
 	}
 
 	if (lpos == s.len) {
-		s.len = 0;
+		return (String) { .buf = s.buf };
+	}
+
+	size_t rpos = s.len;
+
+	if (BitMask_Has(type, ref(TrimRight))) {
+		for (i = rpos; i > 0; i--) {
+			if (Char_IsSpace(s.buf[i - 1])) {
+				rpos = i - 1;
+			} else {
+				break;
+			}
+		}
+	}
+
+	return scall(Slice, s, lpos, rpos - lpos);
+}
+
+inline overload sdef(self, Trim, self s) {
+	return scall(Trim, s,
+		ref(TrimLeft) |
+		ref(TrimRight));
+}
+
+overload sdef(self *, SafeTrim, String *s, short type) {
+	size_t i, lpos = 0;
+
+	if (BitMask_Has(type, ref(TrimLeft))) {
+		for (i = 0; i < s->len; i++) {
+			if (Char_IsSpace(s->buf[i])) {
+				lpos = i + 1;
+			} else {
+				break;
+			}
+		}
+	}
+
+	self *dest = Memory_Alloc(sizeof(self));
+
+	scall(Insert, s, dest);
+
+	if (lpos == s->len) {
+		dest->len = 0;
 	} else {
-		size_t rpos = s.len;
+		size_t rpos = s->len;
 
 		if (BitMask_Has(type, ref(TrimRight))) {
 			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(s.buf[i - 1])) {
+				if (Char_IsSpace(s->buf[i - 1])) {
 					rpos = i - 1;
 				} else {
 					break;
@@ -726,16 +851,15 @@ overload sdef(self, Trim, self s, short type) {
 			}
 		}
 
-		return scall(Slice, s, lpos, rpos - lpos);
+		dest->buf = s->buf + lpos;
+		dest->len = rpos   - lpos;
 	}
 
-	return s;
+	return dest;
 }
 
-inline overload sdef(self, Trim, self s) {
-	return scall(Trim, s,
-		ref(TrimLeft) |
-		ref(TrimRight));
+inline overload sdef(String *, SafeTrim, String *s) {
+	return scall(SafeTrim, s, ref(TrimLeft) | ref(TrimRight));
 }
 
 sdef(self, Format, self fmt, ...) {
@@ -745,7 +869,7 @@ sdef(self, Format, self fmt, ...) {
 
 	VarArg_Start(argptr, fmt);
 
-	for (size_t i = 0; i < fmt.len; i++) {
+	forward (i, fmt.len) {
 		if (fmt.buf[i] == '%') {
 			if (i == 0 || fmt.buf[i - 1] != '!') {
 				length += VarArg_Get(argptr, self).len;
@@ -757,11 +881,11 @@ sdef(self, Format, self fmt, ...) {
 
 	VarArg_End(argptr);
 
-	self res = HeapString(length);
+	self res = String_New(length);
 
 	VarArg_Start(argptr, fmt);
 
-	for (size_t i = 0; i < fmt.len; i++) {
+	forward (i, fmt.len) {
 		if (i + 1 != fmt.len && fmt.buf[i] == '!' && fmt.buf[i + 1] == '%') {
 			res.buf[res.len] = '%';
 			res.len++;
@@ -816,7 +940,10 @@ overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, b
 		}
 	}
 
-	*out = BufString(s.buf + posLeft, posRight - posLeft);
+	*out = (self) {
+		.buf = s.buf + posLeft,
+		.len = posRight - posLeft
+	};
 
 	return posRight + right.len;
 }
@@ -876,10 +1003,10 @@ def(bool, Filter, self s1, self s2) {
 		return false;
 	}
 
-	self out = HeapString(0);
+	self out = String_New(0);
 
 	if (left > 0) {
-		out = scall(Clone, String_Slice(*this, 0, left - 1));
+		out = String_Slice(*this, 0, left - 1);
 	}
 
 	left += s1.len;
@@ -910,7 +1037,7 @@ def(bool, Outside, self left, self right) {
 		return false;
 	}
 
-	self out = HeapString(posLeft + this->len - posRight - right.len);
+	self out = String_New(posLeft + this->len - posRight - right.len);
 
 	scall(Append, &out, String_Slice(*this, 0, posLeft));
 	scall(Append, &out, String_Slice(*this, posRight + right.len));
@@ -923,7 +1050,7 @@ def(bool, Outside, self left, self right) {
 }
 
 overload sdef(self, Concat, self a, self b) {
-	self res = HeapString(a.len + b.len);
+	self res = String_New(a.len + b.len);
 
 	if (a.len > 0) {
 		Memory_Copy(res.buf, a.buf, a.len);
@@ -939,7 +1066,7 @@ overload sdef(self, Concat, self a, self b) {
 }
 
 overload sdef(self, Concat, self s, char c) {
-	self res = HeapString(s.len + 1);
+	self res = String_New(s.len + 1);
 
 	if (s.len > 0) {
 		Memory_Copy(res.buf, s.buf, s.len);
@@ -969,7 +1096,7 @@ overload sdef(bool, Replace, self *dest, ssize_t offset, self needle, self repla
 		len = replacement.len;
 	}
 
-	self out = HeapString(len);
+	self out = String_New(len);
 
 	scall(Append, &out, String_Slice(*dest, 0, pos));
 	scall(Append, &out, replacement);
@@ -1004,7 +1131,7 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self re
 	}
 
 	/* Approximation for one occurence. */
-	self out = HeapString(len);
+	self out = String_New(len);
 
 	size_t cnt     = 0;
 	size_t lastPos = 0;
@@ -1050,8 +1177,8 @@ inline overload sdef(self, ReplaceAll, self s, self needle, self replacement) {
 }
 
 def(self, Consume, size_t n) {
-	self res = scall(Clone, String_Slice(*this, 0, n));
-	scall(Crop, this, n);
+	self res = String_Slice(*this, 0, n);
+	scall(FastCrop, this, n);
 	return res;
 }
 
@@ -1119,8 +1246,7 @@ sdef(short, CompareLeft, self a, self b) {
 	 */
 
 	for (size_t i = 0; i < a.len && i < b.len; i++) {
-		if (!Char_IsDigit(a.buf[i])
-		 && !Char_IsDigit(b.buf[i])) {
+		if (!Char_IsDigit(a.buf[i]) && !Char_IsDigit(b.buf[i])) {
 			return 0;
 		} else if (!Char_IsDigit(a.buf[i])) {
 			return -1;
@@ -1214,8 +1340,8 @@ inline overload sdef(short, NaturalCompare, self a, self b) {
 #define self StringArray
 
 def(ssize_t, Find, String needle) {
-	for (size_t i = 0; i < this->len; i++) {
-		if (String_Equals(this->buf[i], needle)) {
+	forward (i, this->len) {
+		if (String_Equals(*this->buf[i], needle)) {
 			return i;
 		}
 	}
@@ -1226,18 +1352,18 @@ def(ssize_t, Find, String needle) {
 def(String, Join, String separator) {
 	size_t len = 0;
 
-	for (size_t i = 0; i < this->len; i++) {
-		len += this->buf[i].len;
+	forward (i, this->len) {
+		len += this->buf[i]->len;
 
 		if (i != this->len - 1) {
 			len += separator.len;
 		}
 	}
 
-	String res = HeapString(len);
+	String res = String_New(len);
 
-	for (size_t i = 0; i < this->len; i++) {
-		String_Append(&res, this->buf[i]);
+	forward (i, this->len) {
+		String_Append(&res, *this->buf[i]);
 
 		if (i != this->len - 1) {
 			String_Append(&res, separator);
@@ -1248,21 +1374,14 @@ def(String, Join, String separator) {
 }
 
 def(bool, Contains, String needle) {
-	return StringArray_Find(this, needle) != -1;
+	return call(Find, needle) != -1;
 }
 
 def(void, Destroy) {
-	for (size_t i = 0; i < this->len; i++) {
-		String_Destroy(&this->buf[i]);
+	forward (i, this->len) {
+		String_Destroy(this->buf[i]);
+		String_Free(this->buf[i]);
 	}
 
 	this->len = 0;
-}
-
-def(void, ToHeap) {
-	for (size_t i = 0; i < this->len; i++) {
-		if (!this->buf[i].mutable) {
-			this->buf[i] = String_Clone(this->buf[i]);
-		}
-	}
 }

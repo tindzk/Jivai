@@ -391,12 +391,15 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 			size_t dataOffset = this->code->buf[pc + 1];
 			size_t dataLength = this->code->buf[pc + 2];
 
-			String cmp = BufString(
-				(char *) this->data->buf + dataOffset,
-				dataLength);
+			String cmp = (String) {
+				.buf = (char *) this->data->buf + dataOffset,
+				.len = dataLength
+			};
 
-			String orig = BufString(
-				s.buf + this->ofs, dataLength);
+			String orig = (String) {
+				.buf = s.buf + this->ofs,
+				.len = dataLength
+			};
 
 			if (dataLength <= len - this->ofs && String_Equals(orig, cmp)) {
 				this->ofs += dataLength;
@@ -540,9 +543,9 @@ static def(bool, _Match, size_t pc, String s, size_t len, String **caps) {
 				size_t offset = this->code->buf[pc + 1];
 
 				if (caps[offset] != NULL) {
-					caps[offset]->buf     = s.buf + this->ofs;
-					caps[offset]->len     = 0;
-					caps[offset]->mutable = false;
+					caps[offset]->buf = s.buf + this->ofs;
+					caps[offset]->len = 0;
+					caps[offset]->inherited = true;
 				}
 			}
 

@@ -17,10 +17,10 @@ inline overload sdef(bool, Exists, String path) {
 }
 
 sdef(String, GetCwd) {
-	String s = HeapString(512);
+	String s = String_New(512);
 	ssize_t len;
 
-	if ((len = Kernel_getcwd(s.buf, s.size)) > 0) {
+	if ((len = Kernel_getcwd(s.buf, 512)) > 0) {
 		s.len = len - 1;
 	}
 
@@ -122,14 +122,12 @@ overload sdef(String, GetFilename, String path, bool verify) {
 
 	ssize_t pos = String_ReverseFind(path, '/');
 
-	path.mutable = false;
-
 	if (pos == String_NotFound) {
-		return path;
+		return String_Disown(path);
 	}
 
 	if ((size_t) pos + 1 >= path.len) {
-		return path;
+		return String_Disown(path);
 	}
 
 	return String_Slice(path, pos + 1);
@@ -153,8 +151,7 @@ overload sdef(String, GetDirectory, String path, bool verify) {
 	}
 
 	if (verify && scall(IsDirectory, path)) {
-		path.mutable = false;
-		return path;
+		return String_Disown(path);
 	}
 
 	ssize_t pos = String_ReverseFind(path, '/');
@@ -188,7 +185,7 @@ sdef(String, Resolve, String path) {
 		? scall(GetDirectory, path, false)
 		: path;
 
-	String res = HeapString(0);
+	String res = String_New(0);
 
 	if (Kernel_chdir(dirpath)) {
 		res = scall(GetCwd);
@@ -220,7 +217,7 @@ overload sdef(void, Create, String path, int mode, bool recursive) {
 	}
 
 	if (recursive) {
-		for (size_t i = 0; i < path.len; i++) {
+		forward (i, path.len) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
 				errno = 0;
 
@@ -325,7 +322,7 @@ sdef(void, DeleteDirectory, String path) {
 sdef(void, ReadLink, String path, String *out) {
 	errno = 0;
 
-	ssize_t len = Kernel_readlink(path, out->buf, out->size);
+	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(out));
 
 	if (len == -1) {
 		if (errno == EACCES) {
@@ -375,13 +372,13 @@ overload sdef(String, GetXattr, String path, String name) {
 		}
 	}
 
-	String res = HeapString(size);
+	String res = String_New(size);
 
-	if (Kernel_getxattr(path, name, res.buf, res.size) == -1) {
+	if (Kernel_getxattr(path, name, res.buf, size) == -1) {
 		throw(GettingAttributeFailed);
 	}
 
-	res.len = res.size;
+	res.len = size;
 
 	return res;
 }
@@ -389,7 +386,7 @@ overload sdef(String, GetXattr, String path, String name) {
 overload sdef(void, GetXattr, String path, String name, String *value) {
 	errno = 0;
 
-	ssize_t size = Kernel_getxattr(path, name, value->buf, value->size);
+	ssize_t size = Kernel_getxattr(path, name, value->buf, String_GetSize(value));
 
 	if (size < 0) {
 		if (errno == ENODATA) {

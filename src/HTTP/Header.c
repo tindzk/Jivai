@@ -57,7 +57,7 @@ def(void, ParseUri, String s) {
 		String path =
 			(pos != String_NotFound)
 				? String_Slice(s, 0, pos)
-				: s;
+				: String_Disown(s);
 
 		size_t len = HTTP_Query_GetAbsoluteLength(path);
 
@@ -65,7 +65,7 @@ def(void, ParseUri, String s) {
 			HTTP_Query_Unescape(path, path.buf, true);
 			path.len = len;
 		} else {
-			String decoded = HeapString(len);
+			String decoded = String_New(len);
 			HTTP_Query_Unescape(path, decoded.buf, true);
 			decoded.len = len;
 
@@ -75,9 +75,7 @@ def(void, ParseUri, String s) {
 		try {
 			callback(this->events.onPath, path);
 		} clean finally {
-			if (path.mutable) {
-				String_Destroy(&path);
-			}
+			String_Destroy(&path);
 		} tryEnd;
 	}
 
@@ -194,7 +192,7 @@ def(void, Parse, ref(Type) type, String s) {
 		call(ParseStatus, code);
 	}
 
-	String res = HeapString(0);
+	String res = $("");
 
 	size_t len;
 	size_t last = pos2ndLine;

@@ -1,4 +1,5 @@
 #import <String.h>
+#import <Terminal.h>
 
 int main(void) {
 	/* Define a string on the stack, i.e. there is no need to
@@ -16,7 +17,7 @@ int main(void) {
 	 *   String_Print(s);
 	 *   String_Print($("\n"));
 	 */
-	for (size_t i = 0; i < s.len; i++) {
+	forward (i, s.len) {
 		/* Put the current character into a string. */
 		String c = StackString(1);
 		String_Append(&c, s.buf[i]);

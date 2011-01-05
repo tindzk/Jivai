@@ -15,6 +15,7 @@
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
+#import <Terminal.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
 #import <Connection.h>
@@ -114,6 +115,8 @@ def(void, OnRespond, bool persistent) {
 		String_Destroy(&tmp);
 	}
 
+	String strLength = Integer_ToString(this->resp.len);
+
 	String envelope = String_Format(
 		$(
 			"% 200 OK\r\n"
@@ -129,7 +132,9 @@ def(void, OnRespond, bool persistent) {
 			? $("Connection: Keep-Alive")
 			: $("Connection: Close"),
 
-		Integer_ToString(this->resp.len));
+		strLength);
+
+	String_Destroy(&strLength);
 
 	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
 
@@ -153,20 +158,20 @@ def(void, OnRespond, bool persistent) {
 
 def(void, Init, SocketConnection *conn) {
 	this->conn       = conn;
-	this->resp       = HeapString(2048);
+	this->resp       = String_New(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
 	this->gotData    = false;
 	this->persistent = false;
-	this->path       = HeapString(0);
+	this->path       = $("");
 
 	/* paramTest and paramTest2 must not be longer than 256 bytes,
 	 * otherwise an `HTTP_Query_ExceedsPermittedLengthException'
 	 * exception will be thrown.
 	 */
 
-	this->paramTest  = HeapString(256);
-	this->paramTest2 = HeapString(256);
+	this->paramTest  = String_New(256);
+	this->paramTest2 = String_New(256);
 
 	HTTP_Server_Init(&this->server, conn, 2048, 4096);
 

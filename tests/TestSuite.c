@@ -143,10 +143,15 @@ def(bool, Run) {
 			call(RunTestSuite, *suite, inst);
 			call(DestroySuite, *suite, inst);
 
+			String strSuccess = Integer_ToString(this->success);
+			String strFailure = Integer_ToString(this->failure);
+
 			Terminal_Controller_Render(&this->controller,
 				$(".fg[cyan]{.u{Results:} .fg[green]{%} succeeeded, .fg[red]{%} failed}\n"),
-				Integer_ToString(this->success),
-				Integer_ToString(this->failure));
+				strSuccess, strFailure);
+
+			String_Destroy(&strFailure);
+			String_Destroy(&strSuccess);
 
 			if (!Generic_IsNull(inst)) {
 				Generic_Free(inst);

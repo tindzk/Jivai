@@ -262,12 +262,12 @@ static struct {
 };
 
 sdef(String, Decode, String s) {
-	String res = HeapString(s.len);
+	String res = String_New(s.len);
 
 	bool ampersand = false;
 	size_t pos = 0;
 
-	for (size_t i = 0; i < s.len; i++) {
+	forward (i, s.len) {
 		if (!ampersand) {
 			if (s.buf[i] == '&') {
 				pos = i + 1;
@@ -359,7 +359,7 @@ overload sdef(void, Encode, String s, String *out) {
 }
 
 overload sdef(String, Encode, String s) {
-	String res = HeapString(s.len * HTML_Entities_GrowthFactor);
+	String res = String_New(s.len * HTML_Entities_GrowthFactor);
 	HTML_Entities_Encode(s, &res);
 
 	return res;

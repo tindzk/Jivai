@@ -22,9 +22,9 @@ sdef(ref(RequestItem), CreateRequest, String host, String path) {
 overload def(void, Init) {
 	this->closed = true;
 
-	this->resp = HeapString(ref(BufferSize));
+	this->resp = String_New(ref(BufferSize));
 
-	this->host = HeapString(0);
+	this->host = $("");
 	this->port = 80;
 
 	this->events.onVersion = (HTTP_OnVersion) EmptyCallback();
@@ -112,10 +112,6 @@ def(void, OnVersion, HTTP_Version version) {
 def(void, OnHeader, String name, String value) {
 	callback(this->events.onHeader, name, value);
 
-	/* See HTTP/Server.c for a justification of this hack. */
-	name.mutable  = true;
-	value.mutable = true;
-
 	String_ToLower(&name);
 
 	if (String_Equals(name, $("connection"))) {
@@ -171,10 +167,14 @@ static def(void, _CreateRequest, ref(RequestItem) request, String *res) {
 			String_Append(res,
 				$("Content-Type: application/x-www-form-urlencoded\r\n"));
 
+			String strLength = Integer_ToString(request.data->len);
+
 			String_Append(res, $("Content-Length: "));
-			String_Append(res, Integer_ToString(request.data->len));
+			String_Append(res, strLength);
 			String_Append(res, $("\r\n"));
 			String_Append(res, *request.data);
+
+			String_Destroy(&strLength);
 		}
 	}
 
@@ -184,7 +184,7 @@ static def(void, _CreateRequest, ref(RequestItem) request, String *res) {
 overload def(void, Request, ref(Requests) *items) {
 	call(Reopen);
 
-	String s = HeapString(items->len * 128);
+	String s = String_New(items->len * 128);
 
 	forward (i, items->len) {
 		call(_CreateRequest, items->buf[i], &s);
@@ -200,7 +200,7 @@ overload def(void, Request, ref(Requests) *items) {
 overload def(void, Request, ref(RequestItem) request) {
 	call(Reopen);
 
-	String s = HeapString(128);
+	String s = String_New(128);
 
 	call(_CreateRequest, request, &s);
 
@@ -255,8 +255,8 @@ def(HTTP_Status, FetchResponse) {
 
 	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
-			this->resp.buf  + this->resp.len,
-			this->resp.size - this->resp.len);
+			this->resp.buf + this->resp.len,
+			String_GetFree(&this->resp));
 
 		/* SocketConnection_Read() only returns -1 for non-blocking
 		 * connections.
@@ -297,7 +297,7 @@ def(HTTP_Status, FetchResponse) {
 			if (this->resp.len == 0 && this->total != 0) {
 				len = SocketConnection_Read(&this->conn,
 					this->resp.buf,
-					this->resp.size);
+					String_GetFree(&this->resp));
 
 				if (len == -1) {
 					throw(ConnectionError);
@@ -306,7 +306,7 @@ def(HTTP_Status, FetchResponse) {
 				this->resp.len = len;
 			}
 		} else { /* Response is incomplete. */
-			if (this->resp.len == this->resp.size) {
+			if (String_GetFree(&this->resp) == 0) {
 				/* But buffer is already full, i.e. we cannot store
 				 * more in it. Increasing the buffer size might
 				 * help. If not, the HTTP server sends corrupt
@@ -339,8 +339,8 @@ def(HTTP_Status, FetchResponse) {
 static inline def(void, InternalRead) {
 	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
-			this->resp.buf  + this->resp.len,
-			this->resp.size - this->resp.len);
+			this->resp.buf + this->resp.len,
+			String_GetFree(&this->resp));
 
 		if (len == -1) {
 			throw(ConnectionError);
@@ -380,11 +380,11 @@ overload def(bool, Read, String *res) {
 	 * `canRead' bytes.
 	 */
 	if (this->canRead > 0) {
-		if (this->canRead > res->size) {
+		if (this->canRead > String_GetSize(res)) {
 			String_Copy(res,
-				String_Slice(this->resp, 0, res->size));
+				String_Slice(this->resp, 0, String_GetSize(res)));
 
-			String_Crop(&this->resp, res->size);
+			String_Crop(&this->resp, String_GetSize(res));
 
 			this->read    += res->len;
 			this->canRead -= res->len;
@@ -496,7 +496,7 @@ overload def(bool, Read, String *res) {
 			break;
 		}
 
-		if (res->len >= res->size) {
+		if (String_GetFree(res) == 0) {
 			/* Buffer is full. */
 			break;
 		}
@@ -506,7 +506,7 @@ overload def(bool, Read, String *res) {
 		try {
 			if (this->chunked) {
 				/* Use the full available space. */
-				size_t length = res->size - res->len;
+				size_t length = String_GetFree(res);
 
 				/* But it mustn't exceed the number of remaining bytes
 				 * in the current chunk. */
@@ -517,8 +517,8 @@ overload def(bool, Read, String *res) {
 				read = SocketConnection_Read(&this->conn, res->buf + res->len, length);
 			} else {
 				read = SocketConnection_Read(&this->conn,
-					res->buf  + res->len,
-					res->size - res->len);
+					res->buf + res->len,
+					String_GetFree(res));
 			}
 
 			if (read == -1) {
@@ -554,12 +554,12 @@ overload def(bool, Read, String *res) {
 }
 
 overload def(String, Read, size_t max) {
-	String res = HeapString(max);
+	String res = String_New(max);
 
-	String buf = HeapString(ref(ReadChunkSize));
+	String buf = String_New(ref(ReadChunkSize));
 
 	while (call(Read, &buf)) {
-		if (res.len + buf.len > res.size) {
+		if (res.len + buf.len > max) {
 			/* If the response buffer is full, skip the remaining
 			 * bytes. Otherwise problems will arise when another
 			 * request is waiting to be processed (HTTP pipelining).

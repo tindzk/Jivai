@@ -110,8 +110,8 @@ sdef(short, GetWeekDay, self date) {
 sdef(String, Format, self date, bool wday) {
 	String month = ref(MonthNames)[date.month];
 
-	String day  = Int32_ToString(date.day);
-	String year = Int32_ToString(date.year);
+	String day  = Integer_ToString(date.day);
+	String year = Integer_ToString(date.year);
 
 	String suffix;
 
@@ -125,12 +125,19 @@ sdef(String, Format, self date, bool wday) {
 		suffix = $("th");
 	}
 
+	String res;
+
 	if (wday) {
-		return String_Format($("%, % %%, %"),
+		res = String_Format($("%, % %%, %"),
 			ref(WeekDays)[scall(GetWeekDay, date)],
+			month, day, suffix, year);
+	} else {
+		res = String_Format($("% %%, %"),
 			month, day, suffix, year);
 	}
 
-	return String_Format($("% %%, %"),
-		month, day, suffix, year);
+	String_Destroy(&year);
+	String_Destroy(&day);
+
+	return res;
 }

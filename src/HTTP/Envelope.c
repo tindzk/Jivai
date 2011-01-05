@@ -4,10 +4,10 @@
 
 def(void, Init) {
 	this->contentLength = -1;
-	this->location      = HeapString(0);
-	this->contentType   = HeapString(0);
-	this->cookieName    = HeapString(0);
-	this->cookieValue   = HeapString(0);
+	this->location      = $("");
+	this->contentType   = $("");
+	this->cookieName    = $("");
+	this->cookieValue   = $("");
 	this->version       = HTTP_Version_1_1;
 	this->status        = HTTP_Status_Success_Ok;
 	this->persistent    = false;
@@ -63,17 +63,21 @@ def(void, SetLastModified, DateTime lastModified) {
 }
 
 def(String, GetString) {
-	String s = HeapString(1024);
+	String s = String_New(1024);
 
 	HTTP_Status_Item st = HTTP_Status_GetItem(this->status);
 
+	String strCode = Integer_ToString(st.code);
 	String_Append(&s, FmtString($("% % %\r\n"),
 		HTTP_Version_ToString(this->version),
-		Integer_ToString(st.code), st.msg));
+		strCode, st.msg));
+	String_Destroy(&strCode);
 
 	if (this->contentLength != -1) {
+		String strValue = Integer_ToString(this->contentLength);
 		String_Append(&s, FmtString($("Content-Length: %\r\n"),
-			Integer_ToString(this->contentLength)));
+			strValue));
+		String_Destroy(&strValue);
 	}
 
 	if (this->contentType.len != 0) {

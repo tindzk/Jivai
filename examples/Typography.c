@@ -1,17 +1,21 @@
 /* Typography is a lightweight markup language. */
 
-#import <Path.h>
 #import <File.h>
 #import <Integer.h>
+#import <Terminal.h>
 #import <Typography.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
 void PrintTree(Typography_Node *node, size_t depth) {
-	String_FmtPrint($("depth=%"),
-		Int16_ToString(depth));
+	String strDepth = Integer_ToString(depth);
 
-	for (size_t i = 0; i < depth; i++) {
+	String_Print($("depth="));
+	String_Print(strDepth);
+
+	String_Destroy(&strDepth);
+
+	repeat (depth) {
 		String_Print($("    "));
 	}
 
@@ -68,7 +72,7 @@ int main(__unused int argc, __unused char *argv[]) {
 
 		excReturn ExitStatus_Failure;
 	} finally {
-
+		BufferedStream_Destroy(&stream);
 	} tryEnd;
 
 	return ExitStatus_Success;

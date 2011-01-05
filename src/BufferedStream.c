@@ -5,8 +5,8 @@
 def(void, Init, Stream stream) {
 	this->stream = stream;
 	this->eof    = false;
-	this->inbuf  = HeapString(0);
-	this->outbuf = HeapString(0);
+	this->inbuf  = $("");
+	this->outbuf = $("");
 
 	this->inbufThreshold = 0;
 }
@@ -17,21 +17,12 @@ def(void, Destroy) {
 }
 
 def(void, SetInputBuffer, size_t size, size_t threshold) {
-	if (this->inbuf.size == 0) {
-		this->inbuf = HeapString(size);
-	} else {
-		String_Align(&this->inbuf, size);
-	}
-
+	String_Align(&this->inbuf, size);
 	this->inbufThreshold = threshold;
 }
 
 def(void, SetOutputBuffer, size_t size) {
-	if (this->outbuf.size == 0) {
-		this->outbuf = HeapString(size);
-	} else {
-		String_Align(&this->outbuf, size);
-	}
+	String_Align(&this->outbuf, size);
 }
 
 def(bool, IsEof) {
@@ -44,10 +35,11 @@ def(size_t, Read, void *buf, size_t len) {
 		return 0;
 	}
 
+	size_t size = String_GetSize(&this->inbuf);
+
 	if (this->inbuf.len == 0 && !this->eof) {
 		this->inbuf.len = delegate(this->stream, read,
-			this->inbuf.buf,
-			this->inbuf.size);
+			this->inbuf.buf, size);
 
 		if (this->inbuf.len == 0) {
 			this->eof = true;
@@ -67,10 +59,10 @@ def(size_t, Read, void *buf, size_t len) {
 	}
 
 	if (!this->eof) {
-		if (this->inbuf.size - this->inbuf.len > this->inbufThreshold) {
+		if (size - this->inbuf.len > this->inbufThreshold) {
 			size_t read = delegate(this->stream, read,
-				this->inbuf.buf  + this->inbuf.len,
-				this->inbuf.size - this->inbuf.len);
+				this->inbuf.buf + this->inbuf.len,
+				size - this->inbuf.len);
 
 			if (read == 0) {
 				this->eof = true;
@@ -88,12 +80,14 @@ def(size_t, Write, void *buf, size_t len) {
 		return 0;
 	}
 
-	String tmp = StackString(0);
+	String tmp = $("");
 
-	if (this->outbuf.len + len > this->outbuf.size) {
+	size_t size = String_GetSize(&this->outbuf);
+
+	if (this->outbuf.len + len > size) {
 		/* Jam-pack the buffer first. */
 		tmp.buf = buf;
-		tmp.len = this->outbuf.size - this->outbuf.len;
+		tmp.len = size - this->outbuf.len;
 		String_Append(&this->outbuf, tmp);
 
 		/* Flush the buffer. */
@@ -119,7 +113,7 @@ def(size_t, Write, void *buf, size_t len) {
 }
 
 def(String, Flush) {
-	String res = StackString(0);
+	String res = $("");
 
 	if (this->inbuf.len > 0) {
 		res.len = this->inbuf.len;

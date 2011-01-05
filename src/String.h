@@ -13,17 +13,10 @@
 #define String_FmtChecks 1
 #endif
 
-class {
-	size_t len;
-	size_t size;
-	char *buf;
-	bool mutable;
-};
-
-record(FmtString) {
-	String fmt;
-	String *val;
-};
+// @exc DoubleFree
+// @exc IsInherited
+// @exc BufferOverflow
+// @exc ElementMismatch
 
 enum {
 	ref(TrimLeft)  = Bit(0),
@@ -31,23 +24,44 @@ enum {
 	ref(NotFound)  = -1
 };
 
+class {
+	/* Character buffer including offset. */
+	char *buf;
+	size_t len;
+
+	/* If set, one of these will become the new owner of the buffer upon
+	 * destruction.
+	 */
+	String *prev;
+	String *next;
+
+	bool inherited;
+};
+
+record(FmtString) {
+	String fmt;
+	String *val;
+};
+
 #undef self
 
 #import "Char.h"
 #import "Array.h"
+#import "Arena.h"
 #import "Memory.h"
 #import "Exception.h"
 
-// @exc NotMutable
-// @exc BufferOverflow
-// @exc ElementMismatch
-
 #define self String
 
-Array(self, StringArray);
+Array(self *, StringArray);
 
-self HeapString(size_t len);
-self BufString(char *buf, size_t len);
+sdef(self, New, size_t size);
+def(size_t, GetSize);
+def(size_t, GetFree);
+def(void, Free);
+def(void, Unlink);
+def(void, Decouple);
+sdef(void, Insert, String *src, String *res);
 def(void, Destroy);
 sdef(self, FromNul, char *s);
 sdef(char *, ToNulBuf, self s, char *buf);
@@ -55,29 +69,35 @@ sdef(char *, ToNulHeap, self s);
 sdef(self, Disown, self s);
 def(void, Resize, size_t length);
 def(void, Align, size_t length);
-sdef(void, Copy, self *dest, self src);
+def(void, Assign, self *src);
+def(void, Clear);
 sdef(self, Clone, self s);
-sdef(char *, CloneBuf, self s, char *buf);
+sdef(self *, SafeClone, String *src);
 sdef(char, CharAt, self s, ssize_t offset);
 overload sdef(self, Slice, self s, ssize_t offset, ssize_t length);
 overload sdef(self, Slice, self s, ssize_t offset);
+overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length);
+overload sdef(String *, SafeSlice, self *s, ssize_t offset);
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length);
 overload sdef(void, Crop, self *dest, ssize_t offset);
+overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length);
+overload sdef(void, FastCrop, self *dest, ssize_t offset);
+def(void, Shift);
 def(void, Delete, ssize_t offset, ssize_t length);
 overload sdef(void, Prepend, self *dest, self s);
 overload sdef(void, Prepend, self *dest, char c);
+def(void, Copy, self src);
 overload sdef(void, Append, self *dest, self s);
 overload sdef(void, Append, self *dest, char c);
 overload sdef(void, Append, self *dest, FmtString s);
-sdef(self, Join, self *first, ...);
 sdef(bool, Equals, self s, self needle);
 sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffset);
 sdef(bool, BeginsWith, self s, self needle);
 sdef(bool, EndsWith, self s, self needle);
 def(void, ToLower);
 def(void, ToUpper);
-overload sdef(StringArray *, Split, self s, size_t offset, char c);
-overload sdef(StringArray *, Split, self s, char c);
+overload sdef(StringArray *, Split, self *s, size_t offset, char c);
+overload sdef(StringArray *, Split, self *s, char c);
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, char c);
 overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c);
 overload sdef(ssize_t, ReverseFind, self s, char c);
@@ -90,10 +110,10 @@ overload sdef(ssize_t, Find, self s, char c);
 overload sdef(ssize_t, Find, self s, ssize_t offset, char c);
 overload sdef(bool, Contains, self s, self needle);
 overload sdef(bool, Contains, self s, char needle);
-overload sdef(void, Trim, self *dest, short type);
-overload sdef(void, Trim, self *dest);
 overload sdef(self, Trim, self s, short type);
 overload sdef(self, Trim, self s);
+overload sdef(self *, SafeTrim, String *s, short type);
+overload sdef(String *, SafeTrim, String *s);
 sdef(self, Format, self fmt, ...);
 overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out);
 overload sdef(ssize_t, Between, self s, self left, self right, self *out);
@@ -127,13 +147,9 @@ def(ssize_t, Find, String needle);
 def(String, Join, String separator);
 def(bool, Contains, String needle);
 def(void, Destroy);
-def(void, ToHeap);
 
 #define String_Print(s) \
 	File_Write(File_StdOut, s)
-
-#define $(s) \
-	((String) { sizeof(s) - 1, 0, (char *) s, false })
 
 #if String_FmtChecks
 #define FmtString(_fmt, ...) \
@@ -143,7 +159,7 @@ def(void, ToHeap);
 			NullString,      \
 			## __VA_ARGS__,  \
 			(String) {       \
-				.size = -1   \
+				.len = -1    \
 			}                \
 		}                    \
 	}
@@ -158,13 +174,19 @@ def(void, ToHeap);
 #endif
 
 #define NullString \
-	(String) { 0, 0, NULL, false }
+	(String) { .len = 0 }
 
-#define StackString(len) \
-	(String) { 0, len, alloca(len), false }
+#define $(s) ((String) { \
+	.buf = (char *) s,   \
+	.len = sizeof(s) - 1 \
+})
 
-#define String_StackClone(s) \
-	(String) { (s).len, (s).len, String_CloneBuf(s, alloca((s).len)), false }
+#define StackString(size)        \
+	(String) {                   \
+		.buf = Arena_AddBuffer(  \
+			Arena_GetInstance(), \
+			alloca(size), size)  \
+	}
 
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))

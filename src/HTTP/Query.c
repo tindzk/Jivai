@@ -95,7 +95,7 @@ static String _reserved[] = {
 };
 
 sdef(String, Encode, String param) {
-	String res = HeapString(param.len * 1.3);
+	String res = String_New(param.len * 1.3);
 
 	forward (i, param.len) {
 		size_t c = param.buf[i];
@@ -111,10 +111,10 @@ sdef(String, Encode, String param) {
 }
 
 def(void, Decode, String s, bool isFormUri) {
-	String name  = HeapString(0);
+	String name  = $("");
 	size_t start = 0;
 
-	for (size_t i = 0; i < s.len; i++) {
+	forward (i, s.len) {
 		if (s.buf[i] == '=') {
 			String tmp = String_Slice(s, start, i - start);
 
@@ -158,7 +158,7 @@ def(void, Decode, String s, bool isFormUri) {
 
 			size_t len = scall(GetAbsoluteLength, escaped);
 
-			if (len > value->size) {
+			if (len > String_GetSize(value)) {
 				if (this->autoResize) {
 					String_Resize(value, len);
 				} else {

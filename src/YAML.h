@@ -54,8 +54,6 @@ void ref(DestroyNode)(ref(Node) *node);
 def(ref(Node) *, GetRoot);
 def(size_t, GetLine);
 def(void *, Store, size_t depth, ref(NodeType) type, size_t size);
-def(void, AddSection, size_t depth, String s);
-def(void, AddItem, size_t depth, String key, String value);
 def(void, Parse);
 
 #undef self

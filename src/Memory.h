@@ -23,6 +23,15 @@
 // @exc OutOfMemory
 // @exc Overlapping
 
+extern void *_etext;
+extern void *__data_start;
+
+static inline bool Memory_IsRoData(void *ptr) {
+	return
+		ptr > (void *) &_etext &&
+		ptr < (void *) &__data_start;
+}
+
 void Memory0(void *e);
 bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen);
 void* __malloc Memory_Alloc(size_t size);

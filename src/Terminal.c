@@ -236,7 +236,7 @@ def(void, PrintFmt, FmtString s) {
 			i++;
 		} else if (s.fmt.buf[i] == '%') {
 #if String_FmtChecks
-			if (s.val->size == (size_t) -1) {
+			if (s.val->len == (size_t) -1) {
 				throw(ElementMismatch);
 			}
 #endif
@@ -277,9 +277,13 @@ def(void, DeleteLine, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, ref(VT100_Delete_Line));
 	} else {
+		String s = Integer_ToString(n);
+
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, s);
 		File_Write(this->out, $("M"));
+
+		String_Destroy(&s);
 	}
 }
 
@@ -295,9 +299,13 @@ def(void, MoveUp, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, ref(VT100_Cursor_Up));
 	} else {
+		String s = Integer_ToString(n);
+
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, s);
 		File_Write(this->out, $("A"));
+
+		String_Destroy(&s);
 	}
 }
 
@@ -305,9 +313,13 @@ def(void, MoveDown, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, ref(VT100_Cursor_Down));
 	} else {
+		String s = Integer_ToString(n);
+
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, s);
 		File_Write(this->out, $("B"));
+
+		String_Destroy(&s);
 	}
 }
 
@@ -315,9 +327,13 @@ def(void, MoveLeft, size_t n) {
 	if (n == 1) {
 		File_Write(this->out, ref(VT100_Cursor_Left));
 	} else {
+		String s = Integer_ToString(n);
+
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, Int32_ToString(n));
+		File_Write(this->out, s);
 		File_Write(this->out, $("D"));
+
+		String_Destroy(&s);
 	}
 }
 
@@ -326,9 +342,13 @@ def(void, MoveRight, size_t n) {
 		if (n == 1) {
 			File_Write(this->out, ref(VT100_Cursor_Right));
 		} else {
+			String s = Integer_ToString(n);
+
 			File_Write(this->out, $("\33["));
-			File_Write(this->out, Int32_ToString(n));
+			File_Write(this->out, s);
 			File_Write(this->out, $("C"));
+
+			String_Destroy(&s);
 		}
 	}
 }

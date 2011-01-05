@@ -44,7 +44,7 @@ def(void, AddParameter, String param) {
 }
 
 def(String, GetCommandLine) {
-	String out = HeapString(128);
+	String out = String_New(128);
 
 	String_Append(&out, this->cmd);
 	String_Append(&out, ' ');

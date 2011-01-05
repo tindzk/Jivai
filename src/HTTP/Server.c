@@ -3,7 +3,7 @@
 #define self HTTP_Server
 
 def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
-	this->headers.boundary = HeapString(0);
+	this->headers.boundary = String_New(0);
 
 	this->headers.contentType   = HTTP_ContentType_Unset;
 	this->headers.contentLength = 0;
@@ -11,8 +11,8 @@ def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLengt
 	this->maxBodyLength   = maxBodyLength;
 	this->maxHeaderLength = maxHeaderLength;
 
-	this->body   = HeapString(0);
-	this->header = HeapString(maxHeaderLength);
+	this->body   = $("");
+	this->header = String_New(maxHeaderLength);
 
 	this->state   = ref(State_Header);
 	this->conn    = conn;
@@ -79,22 +79,15 @@ static def(void, OnVersion, HTTP_Version version) {
 static def(void, OnHeader, String name, String value) {
 	callback(this->events.onHeader, name, value);
 
-	/* Generally, manipulating the `mutable' property is not
-	 * advisable but in this case both strings are known to be
-	 * heap-allocated and also keep their lengths.
-	 */
-	name.mutable  = true;
-	value.mutable = true;
-
 	String_ToLower(&name);
 
 	if (String_Equals(name, $("connection"))) {
 		String_ToLower(&value);
 
-		StringArray *chunks = String_Split(value, ',');
+		StringArray *chunks = String_Split(&value, ',');
 
-		for (size_t i = 0; i < chunks->len; i++) {
-			String tmp = String_Trim(chunks->buf[i]);
+		forward (i, chunks->len) {
+			String tmp = String_Trim(*chunks->buf[i]);
 
 			if (String_Equals(tmp, $("close"))) {
 				this->headers.persistentConnection = false;
@@ -103,6 +96,7 @@ static def(void, OnHeader, String name, String value) {
 			}
 		}
 
+		StringArray_Destroy(chunks);
 		StringArray_Free(chunks);
 	} else {
 		if (this->method == HTTP_Method_Post) {
@@ -159,17 +153,17 @@ def(ref(Result), ReadHeader) {
 
 	if (this->body.buf != NULL) {
 		String_Destroy(&this->body);
-		this->body = HeapString(0);
+		this->body = String_New(0);
 	}
 
 	if (this->headers.boundary.buf != NULL) {
 		String_Destroy(&this->headers.boundary);
-		this->headers.boundary = HeapString(0);
+		this->headers.boundary = String_New(0);
 	}
 
 	ssize_t requestOffset = 0;
 
-	while (this->header.len < this->header.size) {
+	for (;;) {
 		/* Do this now because the buffer might already contain the next
 		 * request. */
 		requestOffset = HTTP_Header_GetLength(this->header);
@@ -183,14 +177,21 @@ def(ref(Result), ReadHeader) {
 			break;
 		}
 
-		if (this->header.size - this->header.len == 0) {
+		/* This is necessary because the code below uses FastCrop(). Now is a
+		 * good time to move the buffer to its beginning. Otherwise we probably
+		 * couldn't add as much as initially allocated.
+		 */
+		String_Shift(&this->header);
+
+		size_t free = String_GetFree(&this->header);
+
+		if (free == 0) {
 			/* The buffer is full, but the request is still incomplete. */
 			throw(HeaderTooLarge);
 		}
 
 		ssize_t len = SocketConnection_Read(this->conn,
-			this->header.buf  + this->header.len,
-			this->header.size - this->header.len);
+			this->header.buf + this->header.len, free);
 
 		if (len <= 0) {
 			/* This function will be called again when more data is available. */
@@ -214,10 +215,11 @@ def(ref(Result), ReadHeader) {
 		}
 	}
 
-	/* Trim the request... */
-	size_t oldLength = this->header.len;
-	String_Trim(&this->header, String_TrimLeft);
-	requestOffset -= oldLength - this->header.len; /* ...and update requestOffset accordingly. */
+	/* Trim the request and update requestOffset accordingly. */
+	String cleaned = String_Trim(this->header, String_TrimLeft);
+	size_t ofs = this->header.len - cleaned.len;
+	String_FastCrop(&this->header, ofs);
+	requestOffset -= ofs;
 
 	HTTP_Header_Events events;
 	events.onMethod    = (HTTP_OnMethod) Callback(this, ref(OnMethod));
@@ -226,15 +228,14 @@ def(ref(Result), ReadHeader) {
 	events.onParameter = this->events.onQueryParameter;
 	events.onHeader    = (HTTP_OnHeader) Callback(this, ref(OnHeader));
 
-	String s = String_Slice(this->header, 0, requestOffset);
-
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
-	HTTP_Header_Parse(&header, HTTP_Header_Type_Request, s);
+	HTTP_Header_Parse(&header, HTTP_Header_Type_Request,
+		String_Slice(this->header, 0, requestOffset));
 
 	if (this->headers.contentLength > 0) {
 		/* The request has a body. */
-		this->body = HeapString(this->headers.contentLength);
+		this->body = String_New(this->headers.contentLength);
 
 		/* It is likely that we already have fetched some body chunks in our header buffer. */
 		if (this->header.len != (size_t) requestOffset) {
@@ -246,7 +247,7 @@ def(ref(Result), ReadHeader) {
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
 				 */
-				String_Crop(&this->header, requestOffset + this->headers.contentLength);
+				String_FastCrop(&this->header, requestOffset + this->headers.contentLength);
 			} else {
 				/* The body is only partial. */
 				String_Copy(&this->body,
@@ -274,12 +275,11 @@ def(ref(Result), ReadHeader) {
 		/* The buffer possibly contains the next request. This will
 		 * delete the range 0..requestOffset.
 		 *
-		 * If this->header does not hold anything except for the
-		 * current requestion, String_Crop() empties the string.
+		 * If this->header does not hold anything except the current request,
+		 * this empties it.
 		 */
 
-		String_Crop(&this->header, requestOffset);
-
+		String_FastCrop(&this->header, requestOffset);
 		this->state = ref(State_Dispatch);
 	}
 
@@ -296,10 +296,10 @@ def(ref(Result), ReadBody) {
 		/* TODO */
 	} else {
 		/* Get the remaining chunks (if any). */
-		while (this->body.len < this->body.size) {
+		while (String_GetFree(&this->body) > 0) {
 			ssize_t len = SocketConnection_Read(this->conn,
 				this->body.buf  + this->body.len,
-				this->body.size - this->body.len);
+				String_GetFree(&this->body));
 
 			if (len == -1) {
 				return ref(Result_Incomplete);

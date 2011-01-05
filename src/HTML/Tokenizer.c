@@ -3,8 +3,8 @@
 #define self HTML_Tokenizer
 
 def(void, Init, ref(OnToken) onToken) {
-	this->buf      = HeapString(100);
-	this->curToken = HeapString(100);
+	this->buf      = String_New(100);
+	this->curToken = String_New(100);
 	this->onToken  = onToken;
 	this->state    = 0;
 }
@@ -164,11 +164,10 @@ def(void, ProcessChar, char c) {
 			/* Neither a name nor a value, thus we are assuming the current
 			 * token to be an option such as `selected'. */
 
-			String_Trim(&this->buf);
+			String cleaned = String_Trim(this->buf);
 
-			if (this->buf.len > 0) {
-				callback(this->onToken,
-					ref(TokenType_Option), this->buf);
+			if (cleaned.len > 0) {
+				callback(this->onToken, ref(TokenType_Option), cleaned);
 			}
 		}
 

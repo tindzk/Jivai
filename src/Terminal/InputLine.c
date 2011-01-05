@@ -14,7 +14,7 @@ def(void, Init, Terminal *term) {
 	this->onKeyEnter = (ref(OnKeyEnter)) EmptyCallback();
 
 	this->pos  = 0;
-	this->line = HeapString(150);
+	this->line = String_New(150);
 }
 
 def(void, Destroy) {

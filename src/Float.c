@@ -3,7 +3,9 @@
 /* Taken from
  * http://stackoverflow.com/questions/2302969/how-to-implement-char-ftoafloat-num-without-sprintf-library-function
  */
-void Float_ToStringBuf(float num, double precision, char sep, String *out) {
+String Float_ToString(float num, double precision, char sep) {
+	String res = String_New(80);
+
 	int m = (num > 0)
 		? (int) log10(num)
 		: 0;
@@ -14,10 +16,10 @@ void Float_ToStringBuf(float num, double precision, char sep, String *out) {
 
 		num -= digit * weight;
 
-		String_Append(out, '0' + (char) digit);
+		String_Append(&res, '0' + (char) digit);
 
 		if (m == 0) {
-			String_Append(out, sep);
+			String_Append(&res, sep);
 		}
 
 		m--;
@@ -33,8 +35,10 @@ void Float_ToStringBuf(float num, double precision, char sep, String *out) {
 	digits -= m * -1;
 
 	for (; digits >= 0; digits--) {
-		String_Append(out, '0');
+		String_Append(&res, '0');
 	}
+
+	return res;
 }
 
 float Float_Parse(String s, char sep) {

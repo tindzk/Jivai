@@ -1,3 +1,4 @@
+#import <Terminal.h>
 #import <HTML/Tree.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
@@ -36,13 +37,10 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 			 * of whitespaces. In some cases this is useful, but not for
 			 * printing trees.
 			 */
-			String_Trim(&node->value);
+			String value = String_Trim(node->value);
 
-			if (node->value.len > 0) {
-				String_Print(tmp = String_Format(
-					$("value=\"%\"\n"),
-					node->value));
-
+			if (value.len > 0) {
+				String_Print(tmp = String_Format($("value=\"%\"\n"), value));
 				String_Destroy(&tmp);
 			} else {
 				String_Print($("value={empty}\n"));

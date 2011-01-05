@@ -1,3 +1,4 @@
+#import <Terminal.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 #import <HTML/Tokenizer.h>

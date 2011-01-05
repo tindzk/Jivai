@@ -32,13 +32,19 @@ def(void, OnSelect, size_t id) {
 def(void, Add, String caption, bool selected) {
 	Terminal_Buffer_Chunk chunk;
 
+	String strCount =
+		Integer_ToString(
+			Terminal_Buffer_Count(&this->termbuf));
+
 	chunk.color = selected
 		? Terminal_Color_BackgroundCyan | Terminal_Color_ForegroundWhite
 		: Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
-	chunk.value = String_Format($("(%) %"),
-		Int32_ToString(Terminal_Buffer_Count(&this->termbuf)),
-		caption);
+	chunk.value =
+		String_Format($("(%) %"),
+			strCount, caption);
+
+	String_Destroy(&strCount);
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 }

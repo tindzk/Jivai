@@ -73,40 +73,42 @@ DefineCountDigits(u16, UInt16_CountDigits);
 DefineCountDigits(u32, UInt32_CountDigits);
 DefineCountDigits(u64, UInt64_CountDigits);
 
-#define DefineToStringBuf(type, name)                             \
-	void name(type num, String *res) {                            \
-		typeof(num) orig = num;                                   \
-		size_t digit = res->size;                                 \
-		u8 offset;                                                \
-		if (num == 0 || num > 0) {                                \
-			offset = 0;                                           \
-		} else {                                                  \
-			res->buf[0] = '-';                                    \
-			offset = 1;                                           \
-			orig *= -1;                                           \
-		}                                                         \
-		/* Force new length. */                                   \
-		res->len = offset + digit;                                \
-		/* Now operate on the original number. */                 \
-		do {                                                      \
-			/* Necessary as indexes start with 0. */              \
-			digit--;                                              \
-			/* Convert current ones digit (48 = (int) '0'). */    \
-			res->buf[offset + digit] = (char) ((orig % 10) + 48); \
-			/* Remove current ones digit. */                      \
-			orig /= 10;                                           \
-		} while(orig);                                            \
+#define DefineToString(type, name)                               \
+	String name(type num) {                                      \
+		size_t digit = Integer_CountDigits(num);                 \
+		String res = String_New(digit + 1);                      \
+		typeof(num) orig = num;                                  \
+		u8 offset;                                               \
+		if (num == 0 || num > 0) {                               \
+			offset = 0;                                          \
+		} else {                                                 \
+			res.buf[0] = '-';                                    \
+			offset = 1;                                          \
+			orig *= -1;                                          \
+		}                                                        \
+		/* Force new length. */                                  \
+		res.len = offset + digit;                                \
+		/* Now operate on the original number. */                \
+		do {                                                     \
+			/* Necessary as indexes start with 0. */             \
+			digit--;                                             \
+			/* Convert current ones digit (48 = (int) '0'). */   \
+			res.buf[offset + digit] = (char) ((orig % 10) + 48); \
+			/* Remove current ones digit. */                     \
+			orig /= 10;                                          \
+		} while(orig);                                           \
+		return res;                                              \
 	}
 
-DefineToStringBuf(s8,  Int8_ToStringBuf);
-DefineToStringBuf(s16, Int16_ToStringBuf);
-DefineToStringBuf(s32, Int32_ToStringBuf);
-DefineToStringBuf(s64, Int64_ToStringBuf);
+DefineToString(s8,  Int8_ToString);
+DefineToString(s16, Int16_ToString);
+DefineToString(s32, Int32_ToString);
+DefineToString(s64, Int64_ToString);
 
-DefineToStringBuf(u8,  UInt8_ToStringBuf);
-DefineToStringBuf(u16, UInt16_ToStringBuf);
-DefineToStringBuf(u32, UInt32_ToStringBuf);
-DefineToStringBuf(u64, UInt64_ToStringBuf);
+DefineToString(u8,  UInt8_ToString);
+DefineToString(u16, UInt16_ToString);
+DefineToString(u32, UInt32_ToString);
+DefineToString(u64, UInt64_ToString);
 
 #define DefineCompare(type, name)       \
 	inline short name(type a, type b) { \

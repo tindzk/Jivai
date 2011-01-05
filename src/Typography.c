@@ -30,8 +30,8 @@ def(ref(Node) *, GetRoot) {
 static def(void, Flush, String *value) {
 	if (value->len > 0) {
 		ref(Node) *node = Tree_AddCustomNode(this->node,
-			sizeof(ref(Node))
-		  + sizeof(ref(Text)));
+			sizeof(ref(Node)) +
+			sizeof(ref(Text)));
 
 		node->type = ref(NodeType_Text);
 		node->line = this->line;
@@ -39,7 +39,7 @@ static def(void, Flush, String *value) {
 		ref(Text) *text = (ref(Text) *) &node->data;
 		text->value = String_Clone(*value);
 
-		value->len  = 0;
+		value->len = 0;
 	}
 }
 
@@ -53,9 +53,9 @@ static def(void, Read, size_t st) {
 
 	bool prevstate = NONE;
 
-	String name    = HeapString(0);
-	String value   = HeapString(0);
-	String options = HeapString(0);
+	String name    = $("");
+	String value   = $("");
+	String options = $("");
 
 	while (!delegate(this->stream, isEof)) {
 		if (next == '\0') {
@@ -84,8 +84,9 @@ static def(void, Read, size_t st) {
 
 			case POINT:
 				if (prev == '\\') {
-					if (cur != '[' && cur != ']'
-					 && cur != '{' && cur != '}') {
+					if (cur != '[' && cur != ']' &&
+						cur != '{' && cur != '}')
+					{
 						String_Append(&name, '\\');
 					}
 
@@ -98,8 +99,8 @@ static def(void, Read, size_t st) {
 					call(Flush, &value);
 
 					this->node = Tree_AddCustomNode(this->node,
-						sizeof(ref(Node))
-					  + sizeof(ref(Item)));
+						sizeof(ref(Node)) +
+						sizeof(ref(Item)));
 
 					this->node->type = ref(NodeType_Item);
 					this->node->line = this->line;
@@ -116,7 +117,7 @@ static def(void, Read, size_t st) {
 
 					state = prevstate;
 				} else if (cur != '\\') {
-					String_Append(&value, $("."));
+					String_Append(&value, '.');
 					String_Append(&value, name);
 
 					name.len = 0;

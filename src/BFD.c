@@ -75,8 +75,8 @@ static void BFD_ReadSymtab(bfd *abfd) {
 }
 
 void BFD_TranslateAddress(bfd *abfd, bfd_vma pc, BFD_Item *cur) {
-	cur->function = HeapString(0);
-	cur->filename = HeapString(0);
+	cur->function = $("");
+	cur->filename = $("");
 	cur->addr     = (long long unsigned int) pc;
 	cur->line     = 0;
 
@@ -103,19 +103,13 @@ void BFD_TranslateAddress(bfd *abfd, bfd_vma pc, BFD_Item *cur) {
 
 		if (bfd_find_nearest_line(abfd, p, syms, pc - vma, &filename, &function, &cur->line)) {
 			if (function != NULL) {
-				String tmp = StackString(0);
-				tmp.buf = (char *) function;
-				tmp.len = strlen(function);
-
-				String_Copy(&cur->function, tmp);
+				String_Copy(&cur->function,
+					String_FromNul((char *) function));
 			}
 
 			if (filename != NULL) {
-				String tmp = StackString(0);
-				tmp.buf = (char *) filename;
-				tmp.len = strlen(filename);
-
-				String_Copy(&cur->filename, tmp);
+				String_Copy(&cur->filename,
+					String_FromNul((char *) filename));
 			}
 
 			return;

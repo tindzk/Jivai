@@ -21,24 +21,24 @@ size_t Int16_CountDigits(s16 num);
 size_t Int32_CountDigits(s32 num);
 size_t Int64_CountDigits(s64 num);
 
-static overload inline size_t Integer_CountDigits(s8 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(s8 num) {
 	return Int8_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(s16 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(s16 num) {
 	return Int16_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(s32 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(s32 num) {
 	return Int32_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(s64 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(s64 num) {
 	return Int64_CountDigits(num);
 }
 
 #if defined(__x86_64__)
-static overload inline size_t Integer_CountDigits(ssize_t num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(ssize_t num) {
 	return Int64_CountDigits(num);
 }
 #endif
@@ -48,79 +48,79 @@ size_t UInt16_CountDigits(u16 num);
 size_t UInt32_CountDigits(u32 num);
 size_t UInt64_CountDigits(u64 num);
 
-static overload inline size_t Integer_CountDigits(u8 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(u8 num) {
 	return UInt8_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(u16 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(u16 num) {
 	return UInt16_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(u32 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(u32 num) {
 	return UInt32_CountDigits(num);
 }
 
-static overload inline size_t Integer_CountDigits(u64 num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(u64 num) {
 	return UInt64_CountDigits(num);
 }
 
 #if defined(__x86_64__)
-static overload inline size_t Integer_CountDigits(size_t num) {
+static overload __unused alwaysInline size_t Integer_CountDigits(size_t num) {
 	return UInt64_CountDigits(num);
 }
 #endif
 
-void Int8_ToStringBuf(s8 num, String *buf);
-void Int16_ToStringBuf(s16 num, String *buf);
-void Int32_ToStringBuf(s32 num, String *buf);
-void Int64_ToStringBuf(s64 num, String *buf);
+String Int8_ToString(s8 num);
+String Int16_ToString(s16 num);
+String Int32_ToString(s32 num);
+String Int64_ToString(s64 num);
 
-static overload inline void Integer_ToStringBuf(s8 num, String *buf) {
-	Int8_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(s8 num) {
+	return Int8_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(s16 num, String *buf) {
-	Int16_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(s16 num) {
+	return Int16_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(s32 num, String *buf) {
-	Int32_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(s32 num) {
+	return Int32_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(s64 num, String *buf) {
-	Int64_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(s64 num) {
+	return Int64_ToString(num);
 }
 
 #if defined(__x86_64__)
-static overload inline void Integer_ToStringBuf(ssize_t num, String *buf) {
-	Int64_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(ssize_t num) {
+	return Int64_ToString(num);
 }
 #endif
 
-void UInt8_ToStringBuf(u8 num, String *buf);
-void UInt16_ToStringBuf(u16 num, String *buf);
-void UInt32_ToStringBuf(u32 num, String *buf);
-void UInt64_ToStringBuf(u64 num, String *buf);
+String UInt8_ToString(u8 num);
+String UInt16_ToString(u16 num);
+String UInt32_ToString(u32 num);
+String UInt64_ToString(u64 num);
 
-static overload inline void Integer_ToStringBuf(u8 num, String *buf) {
-	UInt8_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(u8 num) {
+	return UInt8_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(u16 num, String *buf) {
-	UInt16_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(u16 num) {
+	return UInt16_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(u32 num, String *buf) {
-	UInt32_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(u32 num) {
+	return UInt32_ToString(num);
 }
 
-static overload inline void Integer_ToStringBuf(u64 num, String *buf) {
-	UInt64_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(u64 num) {
+	return UInt64_ToString(num);
 }
 
 #if defined(__x86_64__)
-static overload inline void Integer_ToStringBuf(size_t num, String *buf) {
-	UInt64_ToStringBuf(num, buf);
+static overload __unused alwaysInline String Integer_ToString(size_t num) {
+	return UInt64_ToString(num);
 }
 #endif
 
@@ -129,24 +129,24 @@ short Int16_Compare(s16 a, s16 b);
 short Int32_Compare(s32 a, s32 b);
 short Int64_Compare(s64 a, s64 b);
 
-static overload inline short Integer_Compare(s8 a, s8 b) {
+static overload __unused alwaysInline short Integer_Compare(s8 a, s8 b) {
 	return Int8_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(s16 a, s16 b) {
+static overload __unused alwaysInline short Integer_Compare(s16 a, s16 b) {
 	return Int16_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(s32 a, s32 b) {
+static overload __unused alwaysInline short Integer_Compare(s32 a, s32 b) {
 	return Int32_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(s64 a, s64 b) {
+static overload __unused alwaysInline short Integer_Compare(s64 a, s64 b) {
 	return Int64_Compare(a, b);
 }
 
 #if defined(__x86_64__)
-static overload inline short Integer_Compare(ssize_t a, ssize_t b) {
+static overload __unused alwaysInline short Integer_Compare(ssize_t a, ssize_t b) {
 	return Int64_Compare(a, b);
 }
 #endif
@@ -156,80 +156,26 @@ short UInt16_Compare(u16 a, u16 b);
 short UInt32_Compare(u32 a, u32 b);
 short UInt64_Compare(u64 a, u64 b);
 
-static overload inline short Integer_Compare(u8 a, u8 b) {
+static overload __unused alwaysInline short Integer_Compare(u8 a, u8 b) {
 	return UInt8_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(u16 a, u16 b) {
+static overload __unused alwaysInline short Integer_Compare(u16 a, u16 b) {
 	return UInt16_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(u32 a, u32 b) {
+static overload __unused alwaysInline short Integer_Compare(u32 a, u32 b) {
 	return UInt32_Compare(a, b);
 }
 
-static overload inline short Integer_Compare(u64 a, u64 b) {
+static overload __unused alwaysInline short Integer_Compare(u64 a, u64 b) {
 	return UInt64_Compare(a, b);
 }
 
 #if defined(__x86_64__)
-static overload inline short Integer_Compare(size_t a, size_t b) {
+static overload __unused alwaysInline short Integer_Compare(size_t a, size_t b) {
 	return UInt64_Compare(a, b);
 }
 #endif
-
-#define Int8_ToString(num) ({           \
-	size_t len = Int8_CountDigits(num); \
-	String _str = StackString(len);     \
-	Int8_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define Int16_ToString(num) ({           \
-	size_t len = Int16_CountDigits(num); \
-	String _str = StackString(len);      \
-	Int16_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define Int32_ToString(num) ({           \
-	size_t len = Int32_CountDigits(num); \
-	String _str = StackString(len);      \
-	Int32_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define Int64_ToString(num) ({           \
-	size_t len = Int64_CountDigits(num); \
-	String _str = StackString(len);      \
-	Int64_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define UInt8_ToString(num) ({           \
-	size_t len = UInt8_CountDigits(num); \
-	String _str = StackString(len);      \
-	UInt8_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define UInt16_ToString(num) ({           \
-	size_t len = UInt16_CountDigits(num); \
-	String _str = StackString(len);       \
-	UInt16_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define UInt32_ToString(num) ({           \
-	size_t len = UInt32_CountDigits(num); \
-	String _str = StackString(len);       \
-	UInt32_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define UInt64_ToString(num) ({           \
-	size_t len = UInt64_CountDigits(num); \
-	String _str = StackString(len);       \
-	UInt64_ToStringBuf(num, &_str);       \
-	_str; })
-
-#define Integer_ToString(num) ({           \
-	size_t len = Integer_CountDigits(num); \
-	String _str = StackString(len);        \
-	Integer_ToStringBuf(num, &_str);       \
-	_str; })
 
 #undef self

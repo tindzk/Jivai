@@ -42,9 +42,8 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
 		this->node = Tree_AddNode(this->node);
 
-		this->node->value = String_Clone(value);
 		this->node->type  = ref(NodeType_Tag);
-
+		this->node->value = String_Clone(value);
 		this->node->attrs = scall(Attrs_New, 0);
 
 		this->depth++;
@@ -55,11 +54,12 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 		node->value = HTML_Entities_Decode(value);
 		node->attrs = NULL;
 	} else if (type == HTML_Tokenizer_TokenType_AttrName
-			|| type == HTML_Tokenizer_TokenType_Option) {
-		ref(Attr) item;
-
-		item.name  = String_Clone(value);
-		item.value = HeapString(0);
+			|| type == HTML_Tokenizer_TokenType_Option)
+	{
+		ref(Attr) item = {
+			.name  = String_Clone(value),
+			.value = $("")
+		};
 
 		scall(Attrs_Push, &this->node->attrs, item);
 	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
@@ -70,7 +70,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 
 sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name) {
 	if (node->type == ref(NodeType_Tag)) {
-		for (size_t i = 0; i < node->attrs->len; i++) {
+		forward (i, node->attrs->len) {
 			if (String_Equals(node->attrs->buf[i].name, name)) {
 				return &node->attrs->buf[i];
 			}
@@ -96,7 +96,7 @@ sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 
 		found = false;
 
-		for (size_t i = 0; i < node->len; i++) {
+		forward (i, node->len) {
 			if (node->buf[i]->type == ref(NodeType_Tag)) {
 				if (String_Equals(*s, node->buf[i]->value)) {
 					node = node->buf[i];
@@ -146,7 +146,7 @@ sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...) {
 }
 
 sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *)) {
-	for (size_t i = 0; i < node->len; i++) {
+	forward (i, node->len) {
 		cb(node->buf[i]);
 	}
 }

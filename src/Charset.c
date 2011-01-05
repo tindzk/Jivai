@@ -12,9 +12,9 @@ String Charset_Latin1ToUTF8(String s) {
 	 * 1.2x appears to be a reasonable approximation.
 	 */
 
-	String res = HeapString(s.len * 1.2);
+	String res = String_New(s.len * 1.2);
 
-	for (size_t i = 0; i < s.len; i++) {
+	forward (i, s.len) {
 		unsigned short c = *(unsigned char *) &s.buf[i];
 
 		if (Charset_IsHighBitSet(c)) {

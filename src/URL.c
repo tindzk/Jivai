@@ -13,17 +13,17 @@ set(ref(State)) {
 sdef(ref(Parts), Parse, String url) {
 	ref(Parts) res;
 
-	res.scheme   = HeapString(0);
-	res.host     = HeapString(0);
+	res.scheme   = $("");
+	res.host     = $("");
 	res.port     = 0;
-	res.path     = HeapString(128);
-	res.fragment = HeapString(32);
+	res.path     = String_New(128);
+	res.fragment = String_New(32);
 
 	String_Append(&res.path, '/');
 
 	ref(State) state = ref(State_Scheme);
 
-	String buf = HeapString(256);
+	String buf = String_New(256);
 
 	for (size_t i = 0; i < url.len; i++) {
 		switch (state) {

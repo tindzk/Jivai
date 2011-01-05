@@ -65,23 +65,28 @@ def(void, Render, size_t percent, String msg) {
 	size_t width     = (barWidth * percent) / 100;
 	size_t remaining =  barWidth - width;
 
-	String progress = StackString(this->block.len * width);
-	for (size_t i = 0; i < width; i++) {
+	String strPercent = Integer_ToString(percent);
+
+	String progress = String_New(this->block.len * width);
+	forward (i, width) {
 		String_Append(&progress, this->block);
 	}
 
-	String empty = StackString(this->empty.len * remaining);
-	for (size_t i = 0; i < remaining; i++) {
+	String empty = String_New(this->empty.len * remaining);
+	forward (i, remaining) {
 		String_Append(&empty, this->empty);
 	}
 
 	Terminal_Controller_Render(&this->controller,
 		$("%!% [.b{%%}] %\n"),
-		Int16_ToString(percent),
-		progress, empty, msg);
+		strPercent, progress, empty, msg);
+
+	String_Destroy(&strPercent);
+	String_Destroy(&progress);
+	String_Destroy(&empty);
 
 	this->lines = 1;
-	for (size_t i = 0; i < msg.len; i++) {
+	forward (i, msg.len) {
 		if (msg.buf[i] == '\n') {
 			this->lines++;
 		}

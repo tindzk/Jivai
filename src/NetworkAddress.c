@@ -40,7 +40,7 @@ static size_t i2a(char *dest, size_t x) {
 
 /* Taken from diet libc (dietlibc-0.32/libcruft/inet_ntoa_r.c). */
 String NetworkAddress_ToString(NetworkAddress addr) {
-	String out = HeapString(15);
+	String out = String_New(15);
 
 	unsigned char *ip = (unsigned char *) &addr.ip;
 

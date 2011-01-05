@@ -21,7 +21,7 @@ tsCase(Acute, "Empty string") {
 	StringStream_Init(&stream, &s);
 
 	Assert($("read()"),
-		StringStream_Read(&stream, out.buf, out.size) == 0);
+		StringStream_Read(&stream, out.buf, String_GetSize(&out)) == 0);
 
 	Assert($("isEof()"),
 		StringStream_IsEof(&stream) == true);
@@ -44,7 +44,7 @@ tsCase(Acute, "Non-empty string") {
 		StringStream_IsEof(&stream) == false);
 
 	Assert($("read() return value"),
-		(out.len = StringStream_Read(&stream, out.buf, out.size)) == s.len - 2);
+		(out.len = StringStream_Read(&stream, out.buf, String_GetSize(&out))) == s.len - 2);
 
 	Assert($("read() contents"),
 		String_Equals(out, $("llo World.")));
