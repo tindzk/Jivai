@@ -135,7 +135,15 @@ sdef(bool, epoll_ctl, ssize_t epfd, EpollCtl op, ssize_t fd, EpollEvent *event) 
 }
 
 sdef(ssize_t, epoll_wait, ssize_t epfd, EpollEvent *events, int maxevents, int timeout) {
-	return syscall(__NR_epoll_wait, epfd, events, maxevents, timeout);
+	/* TODO On x86, using syscall() causes a segmentation fault when this
+	 * function is interrupted (e.g. by pressing Ctrl-C) and the return
+	 * addresses of the trace are requested (Backtrace_GetReturnAddr()).
+	 *
+	 * epoll_wait() appears to circumvent this issue.
+	 */
+	#include <sys/epoll.h>
+	return epoll_wait(epfd, (void *) events, maxevents, timeout);
+	// return syscall(__NR_epoll_wait, epfd, events, maxevents, timeout);
 }
 
 sdef(int, fcntl, ssize_t fd, int cmd, int arg) {

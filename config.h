@@ -11,7 +11,7 @@
 #define Exception_SaveOrigin 1
 
 /* Include a trace with 20 elements at most. */
-#define Exception_SaveTrace  0
+#define Exception_SaveTrace  1
 #define Exception_TraceSize 20
 
 /* This will possibly improve the performance when dealing with
