@@ -60,12 +60,12 @@
 #define Instance(name) \
 	simpleConcat(name, Instance)
 
-#define Interface(name)                    \
-	struct name##Interface;                \
-	record(name) {                         \
-		struct name##Interface *interface; \
-		GenericInstance         instance;  \
-	};                                     \
+#define Interface(name)               \
+	struct name##Interface;           \
+	record(name) {                    \
+		struct name##Interface *impl; \
+		GenericInstance         inst; \
+	};                                \
 	record(name##Interface)
 
 #define shareSize \
@@ -75,10 +75,10 @@
 	.dest = (void *) ref(src)
 
 #define delegate(name, method, ...) \
-	(name).interface->method((name).instance, ## __VA_ARGS__)
+	(name).impl->method((name).inst, ## __VA_ARGS__)
 
 #define implements(name, method) \
-	(name).interface->method != NULL
+	(name).impl->method != NULL
 
 #define ImplName \
 	simpleConcat(self, Impl)
@@ -89,8 +89,8 @@
 #define DefineAs(name, implName)        \
 	static inline def(name, As##name) { \
 		return (name) {                 \
-			.interface = &implName,     \
-			.instance  = {              \
+			.impl = &implName,          \
+			.inst = {                   \
 				.object = $this.object  \
 			}                           \
 		};                              \
