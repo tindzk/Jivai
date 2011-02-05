@@ -212,10 +212,6 @@ overload sdef(void, Create, String path, int mode, bool recursive) {
 		return;
 	}
 
-	if (scall(Exists, path)) {
-		throw(AlreadyExists);
-	}
-
 	if (recursive) {
 		forward (i, path.len) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
