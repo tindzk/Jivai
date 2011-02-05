@@ -46,7 +46,7 @@ class {
 
 def(void, Init);
 def(void, Destroy);
-void ref(DestroyNode)(ref(Node) *node);
+sdef(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);
 def(void, Parse, Stream stream);
 

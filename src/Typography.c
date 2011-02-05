@@ -10,7 +10,7 @@ def(void, Destroy) {
 	Tree_Destroy(&this->tree);
 }
 
-void ref(DestroyNode)(ref(Node) *node) {
+sdef(void, DestroyNode, ref(Node) *node) {
 	if (node->type == ref(NodeType_Item)) {
 		ref(Item) *item = (ref(Item) *) &node->data;
 
