@@ -15,12 +15,14 @@ extern char **environ;
 class {
 	String cmd;
 	StringArray *params;
+	int stdOut;
 };
 
 def(void, Init, String cmd);
 def(void, Destroy);
 def(void, AddParameter, String param);
 def(String, GetCommandLine);
+def(void, MapStdOut, int fd);
 overload def(int, Spawn, float *time);
 overload def(int, Spawn);
 

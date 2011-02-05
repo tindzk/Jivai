@@ -84,20 +84,16 @@ static def(void, OnHeader, String name, String value) {
 	if (String_Equals(name, $("connection"))) {
 		String_ToLower(&value);
 
-		StringArray *chunks = String_Split(&value, ',');
+		String elem = $("");
+		while (String_Split(value, ',', &elem)) {
+			String chunk = String_Trim(elem);
 
-		forward (i, chunks->len) {
-			String tmp = String_Trim(*chunks->buf[i]);
-
-			if (String_Equals(tmp, $("close"))) {
+			if (String_Equals(chunk, $("close"))) {
 				this->headers.persistentConnection = false;
-			} else if (String_Equals(tmp, $("keep-alive"))) {
+			} else if (String_Equals(chunk, $("keep-alive"))) {
 				this->headers.persistentConnection = true;
 			}
 		}
-
-		StringArray_Destroy(chunks);
-		StringArray_Free(chunks);
 	} else {
 		if (this->method == HTTP_Method_Post) {
 			String_ToLower(&value);

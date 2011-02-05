@@ -484,15 +484,31 @@ tsCase(Acute, "Split") {
 	String_Append(&s, $("Hello World."));
 
 	Assert($("s.next == NULL"), s.next == NULL);
-	StringArray *parts = String_Split(&s, ' ');
-
-	/* Points now to the first element in `parts'. */
-	Assert($("s.next != NULL"), s.next != NULL);
+	StringArray *parts = String_Split(s, ' ');
+	Assert($("s.next == NULL"), s.next == NULL);
 
 	String_Destroy(&s);
 
-	StringArray_Destroy(parts);
+	StringArray_Destroy(parts); /* Optional. */
 	StringArray_Free(parts);
+}
+
+tsCase(Acute, "Split") {
+	String s = String_New(0);
+	String_Append(&s, $("Hello World."));
+	String_Append(&s, $("Hello World."));
+
+	String part = $("");
+	Assert($("Return value"), String_Split(s, ' ', &part));
+	Assert($("off=0 len=5"), part.buf == s.buf && part.len == 5);
+
+	Assert($("Return value"), String_Split(s, ' ', &part));
+	Assert($("off=6 len=11"), part.buf == s.buf + 6 && part.len == 11);
+
+	Assert($("Return value"), String_Split(s, ' ', &part));
+	Assert($("off=18 len=6"), part.buf == s.buf + 18 && part.len == 6);
+
+	String_Destroy(&s);
 }
 
 tsCase(Acute, "Cloning") {

@@ -53,7 +53,7 @@ record(FmtString) {
 
 #define self String
 
-Array(self *, StringArray);
+Array(self, StringArray);
 
 sdef(self, New, size_t size);
 def(size_t, GetSize);
@@ -96,8 +96,8 @@ sdef(bool, BeginsWith, self s, self needle);
 sdef(bool, EndsWith, self s, self needle);
 def(void, ToLower);
 def(void, ToUpper);
-overload sdef(StringArray *, Split, self *s, size_t offset, char c);
-overload sdef(StringArray *, Split, self *s, char c);
+overload sdef(bool, Split, self s, char c, String *res);
+overload sdef(StringArray *, Split, self s, char c);
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, char c);
 overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c);
 overload sdef(ssize_t, ReverseFind, self s, char c);
@@ -156,7 +156,7 @@ def(void, Destroy);
 	(FmtString) {            \
 		.fmt = _fmt,         \
 		.val = (String[]) {  \
-			NullString,      \
+			$(""),           \
 			## __VA_ARGS__,  \
 			(String) {       \
 				.len = -1    \
@@ -173,12 +173,9 @@ def(void, Destroy);
 	}
 #endif
 
-#define NullString \
-	(String) { .len = 0 }
-
-#define $(s) ((String) { \
-	.buf = (char *) s,   \
-	.len = sizeof(s) - 1 \
+#define $(s) ((String) {                         \
+	.buf = (sizeof(s) == 1) ? NULL : (char *) s, \
+	.len = sizeof(s) - 1                         \
 })
 
 #define StackString(size)        \

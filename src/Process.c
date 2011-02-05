@@ -30,6 +30,7 @@
 def(void, Init, String cmd) {
 	this->cmd    = String_Clone(cmd);
 	this->params = StringArray_New(0);
+	this->stdOut = -1;
 }
 
 def(void, Destroy) {
@@ -40,10 +41,7 @@ def(void, Destroy) {
 }
 
 def(void, AddParameter, String param) {
-	String *push = New(String);
-	*push = String_Clone(param);
-
-	StringArray_Push(&this->params, push);
+	StringArray_Push(&this->params, String_Clone(param));
 }
 
 def(String, GetCommandLine) {
@@ -53,7 +51,7 @@ def(String, GetCommandLine) {
 	String_Append(&out, ' ');
 
 	forward (i, this->params->len) {
-		String_Append(&out, *this->params->buf[i]);
+		String_Append(&out, this->params->buf[i]);
 
 		if (i != this->params->len - 1) {
 			String_Append(&out, ' ');
@@ -61,6 +59,10 @@ def(String, GetCommandLine) {
 	}
 
 	return out;
+}
+
+def(void, MapStdOut, int fd) {
+	this->stdOut = fd;
 }
 
 overload def(int, Spawn, float *time) {
@@ -71,7 +73,7 @@ overload def(int, Spawn, float *time) {
 	size_t i;
 
 	for (i = 0; i < this->params->len; i++) {
-		argv[i + 1] = String_ToNulHeap(*this->params->buf[i]);
+		argv[i + 1] = String_ToNulHeap(this->params->buf[i]);
 	}
 
 	argv[i + 1] = NULL;
@@ -81,6 +83,10 @@ overload def(int, Spawn, float *time) {
 	int status;
 
 	if ((pid = fork()) == 0) { /* child */
+		if (this->stdOut != -1) {
+			dup2(this->stdOut, FileNo_StdOut);
+		}
+
 		if (execve(argv[0], argv, environ) < 0) {
 			for (size_t i = 0; argv[i] != NULL; i++) {
 				Memory_Free(argv[i]);

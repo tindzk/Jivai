@@ -595,34 +595,46 @@ def(void, ToUpper) {
 	}
 }
 
-overload sdef(StringArray *, Split, self *s, size_t offset, char c) {
-	size_t chunks = 1;
-	size_t left, right;
+overload sdef(bool, Split, self s, char c, String *res) {
+	size_t offset = (res->buf != NULL)
+		? res->buf - s.buf + res->len + 1
+		: 0;
 
-	forward (i, s->len) {
-		if (s->buf[i] == c) {
+	if (offset > s.len) {
+		return false;
+	}
+
+	for (size_t pos = offset; pos <= s.len; pos++) {
+		if (pos == s.len || s.buf[pos] == c) {
+			res->buf = s.buf + offset;
+			res->len = pos   - offset;
+
+			res->inherited = true;
+
+			break;
+		}
+	}
+
+	return true;
+}
+
+overload sdef(StringArray *, Split, self s, char c) {
+	size_t chunks = 1;
+	forward (i, s.len) {
+		if (s.buf[i] == c) {
 			chunks++;
 		}
 	}
 
 	StringArray *res = StringArray_New(chunks);
 
-	for (left = right = offset; right < s->len; right++) {
-		if (s->buf[right] == c) {
-			res->buf[res->len] = scall(SafeSlice, s, left, right - left);
-			res->len++;
-			left = right + 1;
-		}
+	String elem = $("");
+	while (String_Split(s, c, &elem)) {
+		res->buf[res->len] = elem;
+		res->len++;
 	}
 
-	res->buf[res->len] = scall(SafeSlice, s, left, right - left);
-	res->len++;
-
 	return res;
-}
-
-inline overload sdef(StringArray *, Split, self *s, char c) {
-	return scall(Split, s, 0, c);
 }
 
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, char c) {
@@ -957,25 +969,25 @@ inline overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self r
 }
 
 inline overload sdef(self, Between, self s, ssize_t offset, self left, self right, bool leftAligned) {
-	self out = NullString;
+	self out = $("");
 	scall(Between, s, offset, left, right, leftAligned, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, ssize_t offset, self left, self right) {
-	self out = NullString;
+	self out = $("");
 	scall(Between, s, offset, left, right, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, self left, self right, bool leftAligned) {
-	self out = NullString;
+	self out = $("");
 	scall(Between, s, 0, left, right, leftAligned, &out);
 	return out;
 }
 
 inline overload sdef(self, Between, self s, self left, self right) {
-	self out = NullString;
+	self out = $("");
 	scall(Between, s, 0, left, right, true, &out);
 	return out;
 }
@@ -1341,7 +1353,7 @@ inline overload sdef(short, NaturalCompare, self a, self b) {
 
 def(ssize_t, Find, String needle) {
 	forward (i, this->len) {
-		if (String_Equals(*this->buf[i], needle)) {
+		if (String_Equals(this->buf[i], needle)) {
 			return i;
 		}
 	}
@@ -1353,7 +1365,7 @@ def(String, Join, String separator) {
 	size_t len = 0;
 
 	forward (i, this->len) {
-		len += this->buf[i]->len;
+		len += this->buf[i].len;
 
 		if (i != this->len - 1) {
 			len += separator.len;
@@ -1363,7 +1375,7 @@ def(String, Join, String separator) {
 	String res = String_New(len);
 
 	forward (i, this->len) {
-		String_Append(&res, *this->buf[i]);
+		String_Append(&res, this->buf[i]);
 
 		if (i != this->len - 1) {
 			String_Append(&res, separator);
@@ -1379,8 +1391,7 @@ def(bool, Contains, String needle) {
 
 def(void, Destroy) {
 	forward (i, this->len) {
-		String_Destroy(this->buf[i]);
-		String_Free(this->buf[i]);
+		String_Destroy(&this->buf[i]);
 	}
 
 	this->len = 0;
