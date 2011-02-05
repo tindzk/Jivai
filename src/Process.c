@@ -50,10 +50,10 @@ def(String, GetCommandLine) {
 	String_Append(&out, this->cmd);
 	String_Append(&out, ' ');
 
-	forward (i, this->params->len) {
-		String_Append(&out, this->params->buf[i]);
+	foreach (param, this->params) {
+		String_Append(&out, *param);
 
-		if (i != this->params->len - 1) {
+		if (!isLast(param, this->params)) {
 			String_Append(&out, ' ');
 		}
 	}
@@ -89,7 +89,7 @@ overload def(int, Spawn, float *time) {
 
 		if (execve(argv[0], argv, environ) < 0) {
 			for (size_t i = 0; argv[i] != NULL; i++) {
-				Memory_Free(argv[i]);
+				Arena_Free(Arena_GetInstance(), argv[i]);
 				argv[i] = NULL;
 			}
 
@@ -113,7 +113,7 @@ overload def(int, Spawn, float *time) {
 		}
 	} else {
 		for (size_t i = 0; argv[i] != NULL; i++) {
-			Memory_Free(argv[i]);
+			Arena_Free(Arena_GetInstance(), argv[i]);
 			argv[i] = NULL;
 		}
 
@@ -121,7 +121,7 @@ overload def(int, Spawn, float *time) {
 	}
 
 	for (size_t i = 0; argv[i] != NULL; i++) {
-		Memory_Free(argv[i]);
+		Arena_Free(Arena_GetInstance(), argv[i]);
 	}
 
 	return ret;
