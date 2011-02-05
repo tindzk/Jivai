@@ -122,6 +122,13 @@ sdef(size_t, GetWeekNumber, self date) {
 	return weekNumber;
 }
 
+sdef(short, GetRealWeekNumber, self date) {
+	size_t dayOfYear   = scall(GetDayOfYear, date);
+	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+
+	return (7 + (dayOfYear - 1) + (jan1WeekDay - 1)) / 7;
+}
+
 sdef(short, Compare, self a, self b) {
 	short year = Int16_Compare(a.year, b.year);
 

@@ -51,6 +51,7 @@ const String ref(WeekDays)[8];
 sdef(self, Empty);
 sdef(bool, IsLeapYear, int year);
 sdef(size_t, GetWeekNumber, self date);
+sdef(short, GetRealWeekNumber, self date);
 sdef(short, Compare, self a, self b);
 sdef(bool, Equals, self a, self b);
 sdef(size_t, GetDayOfYear, self date);

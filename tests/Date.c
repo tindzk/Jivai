@@ -55,4 +55,30 @@ tsCase(Acute, "Week number") {
 		Date_GetWeekNumber((Date) {2010, 1, 1}) == 53);
 }
 
+tsCase(Acute, "Real week number") {
+	Assert($("2011-01-01"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 1}) == 1);
+
+	Assert($("2011-01-03"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 3}) == 2);
+
+	Assert($("2011-01-10"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 10}) == 3);
+
+	Assert($("2011-01-11"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 11}) == 3);
+
+	Assert($("2011-01-12"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 12}) == 3);
+
+	Assert($("2011-01-15"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 15}) == 3);
+
+	Assert($("2011-01-16"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 16}) == 3);
+
+	Assert($("2011-01-17"),
+		Date_GetRealWeekNumber((Date) {2011, 1, 17}) == 4);
+}
+
 tsFinalize;
