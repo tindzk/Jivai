@@ -41,4 +41,18 @@ tsCase(Acute, "Week day for non-leap years") {
 		Date_GetWeekDay((Date) {1997, 1, 15}) == 3);
 }
 
+tsCase(Acute, "Week number") {
+	Assert($("2007-01-01"),
+		Date_GetWeekNumber((Date) {2007, 1, 1}) == 1);
+
+	Assert($("2008-01-01"),
+		Date_GetWeekNumber((Date) {2008, 1, 1}) == 1);
+
+	Assert($("2009-12-31"),
+		Date_GetWeekNumber((Date) {2009, 12, 31}) == 53);
+
+	Assert($("2010-01-01"),
+		Date_GetWeekNumber((Date) {2010, 1, 1}) == 53);
+}
+
 tsFinalize;

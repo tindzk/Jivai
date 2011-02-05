@@ -119,19 +119,7 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 
 	short years = dateTime.date.year - 1970;
 
-	int days = dateTime.date.day;
-
-	/* Add number of days up until last month. */
-	days += Date_AddedDaysPerMonth[dateTime.date.month - 1];
-
-	/* Add one extra day when the year is a leap year and the
-	 * February is already over.
-	 */
-	if (Date_IsLeapYear(dateTime.date.year)) {
-		if (dateTime.date.month > 2) {
-			days++;
-		}
-	}
+	int days = Date_GetDayOfYear(dateTime.date);
 
 	/* Add days since 1970. */
 	days += years * 365;

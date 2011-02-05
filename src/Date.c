@@ -70,6 +70,58 @@ sdef(bool, IsLeapYear, int year) {
 	return (!(year % 4) && ((year % 100) || !(year % 400)));
 }
 
+/*
+ * Returns the week number as ISO 8601.
+ *
+ * Rendered after McCarty's algorithm:
+ * http://personal.ecu.edu/mccartyr/ISOwdALG.txt
+ */
+
+sdef(size_t, GetWeekNumber, self date) {
+	size_t dayOfYear   = scall(GetDayOfYear, date);
+	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+	size_t weekDay     = scall(GetWeekDay, date);
+	size_t weekNumber  = 0;
+	size_t yearNumber  = date.year;
+
+	if (dayOfYear <= 8 - jan1WeekDay && jan1WeekDay > 4) {
+		yearNumber--;
+
+		if (jan1WeekDay == 5 || (jan1WeekDay == 6 && scall(IsLeapYear, date.year - 1))) {
+			weekNumber = 53;
+		} else {
+			weekNumber = 52;
+		}
+	}
+
+	if (yearNumber == date.year) {
+		size_t totalDays;
+
+		if (scall(IsLeapYear, date.year)) {
+			totalDays = 366;
+		} else {
+			totalDays = 365;
+		}
+
+		if (totalDays - dayOfYear < 4 - weekDay) {
+			yearNumber++;
+			weekNumber = 1;
+		}
+	}
+
+	if (yearNumber == date.year) {
+		size_t j = dayOfYear + (7 - weekDay) + (jan1WeekDay - 1);
+
+		weekNumber = j / 7;
+
+		if (jan1WeekDay > 4) {
+			weekNumber--;
+		}
+	}
+
+	return weekNumber;
+}
+
 sdef(short, Compare, self a, self b) {
 	short year = Int16_Compare(a.year, b.year);
 
@@ -88,6 +140,24 @@ sdef(short, Compare, self a, self b) {
 
 inline sdef(bool, Equals, self a, self b) {
 	return scall(Compare, a, b) == 0;
+}
+
+sdef(size_t, GetDayOfYear, self date) {
+	int days = date.day;
+
+	/* Add number of days up until last month. */
+	days += ref(AddedDaysPerMonth)[date.month - 1];
+
+	/* Add one extra day when the year is a leap year and the
+	 * February is already over.
+	 */
+	if (scall(IsLeapYear, date.year)) {
+		if (date.month > 2) {
+			days++;
+		}
+	}
+
+	return days;
 }
 
 /* See also DateTime_ToUnixEpoch(). */
