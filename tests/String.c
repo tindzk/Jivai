@@ -511,6 +511,11 @@ tsCase(Acute, "Split") {
 	String_Destroy(&s);
 }
 
+tsCase(Acute, "Split with empty string") {
+	String part = $("");
+	Assert($("Return value"), String_Split($(""), ' ', &part) == false);
+}
+
 tsCase(Acute, "Cloning") {
 	String s = String_New(0);
 	String_Append(&s, $("Hello World."));

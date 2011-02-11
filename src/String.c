@@ -521,7 +521,7 @@ overload sdef(bool, Split, self s, char c, String *res) {
 		? res->buf - s.buf + res->len + 1
 		: 0;
 
-	if (offset > s.len) {
+	if (offset >= s.len) {
 		return false;
 	}
 
