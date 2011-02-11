@@ -2,12 +2,6 @@
 
 #define self String
 
-inline sdef(self, New, size_t size) {
-	return (self) {
-		.buf = Arena_Alloc(Arena_GetInstance(), size)
-	};
-}
-
 def(size_t, GetSize) {
 	ssize_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
 
@@ -103,35 +97,6 @@ def(void, Destroy) {
 	this->len = 0;
 
 	call(Unlink);
-}
-
-inline sdef(self, FromNul, char *s) {
-	return (self) {
-		.buf = s,
-		.len = (s != NULL)
-			? strlen(s)
-			: 0
-	};
-}
-
-inline sdef(char *, ToNulBuf, self s, char *buf) {
-	if (s.len > 0) {
-		Memory_Copy(buf, s.buf, s.len);
-	}
-
-	buf[s.len] = '\0';
-
-	return buf;
-}
-
-inline sdef(char *, ToNulHeap, self s) {
-	return scall(ToNulBuf, s,
-		Arena_Alloc(Arena_GetInstance(), s.len + 1));
-}
-
-inline sdef(self, Disown, self s) {
-	s.inherited = true;
-	return s;
 }
 
 /* Resizes the string's buffer to be `length' characters long. If 0 is supplied,
@@ -266,14 +231,6 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 	};
 }
 
-inline overload sdef(self, Slice, self s, ssize_t offset) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return scall(Slice, s, offset, s.len - offset);
-}
-
 overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length) {
 	size_t right;
 
@@ -302,14 +259,6 @@ overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length) {
 	res->len = right  - offset;
 
 	return res;
-}
-
-inline overload sdef(String *, SafeSlice, self *s, ssize_t offset) {
-	if (offset < 0) {
-		offset += s->len;
-	}
-
-	return scall(SafeSlice, s, offset, s->len - offset);
 }
 
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
@@ -357,14 +306,6 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	dest->len = right - offset;
 }
 
-inline overload sdef(void, Crop, self *dest, ssize_t offset) {
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
-	scall(Crop, dest, offset, dest->len - offset);
-}
-
 overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
 	size_t right;
 
@@ -387,14 +328,6 @@ overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
 
 	dest->buf += offset;
 	dest->len  = right - offset;
-}
-
-inline overload sdef(void, FastCrop, self *dest, ssize_t offset) {
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
-	scall(FastCrop, dest, offset, dest->len - offset);
 }
 
 def(void, Shift) {
@@ -536,10 +469,6 @@ overload sdef(void, Append, self *dest, FmtString s) {
 	}
 }
 
-inline sdef(bool, Equals, self s, self needle) {
-	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
-}
-
 sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffset) {
 	if (needle.len == 0) {
 		return true;
@@ -569,14 +498,6 @@ sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffse
 		s.buf + offset,
 		needle.buf + needleOffset,
 		needle.len - needleOffset);
-}
-
-inline sdef(bool, BeginsWith, self s, self needle) {
-	return scall(RangeEquals, s, 0, needle, 0);
-}
-
-inline sdef(bool, EndsWith, self s, self needle) {
-	return scall(RangeEquals, s, s.len - needle.len, needle, 0);
 }
 
 def(void, ToLower) {
@@ -681,10 +602,6 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c) {
 	return ref(NotFound);
 }
 
-inline overload sdef(ssize_t, ReverseFind, self s, char c) {
-	return scall(ReverseFind, s, s.len - 1, c);
-}
-
 overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle) {
 	if (s.len == 0) {
 		return ref(NotFound);
@@ -716,10 +633,6 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle) {
 	}
 
 	return ref(NotFound);
-}
-
-inline overload sdef(ssize_t, ReverseFind, self s, self needle) {
-	return scall(ReverseFind, s, s.len - 1, needle);
 }
 
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle) {
@@ -761,38 +674,6 @@ overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle
 	return ref(NotFound);
 }
 
-inline overload sdef(ssize_t, Find, self s, self needle) {
-	return scall(Find, s, 0, s.len, needle);
-}
-
-inline overload sdef(ssize_t, Find, self s, ssize_t offset, self needle) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return scall(Find, s, offset, s.len - offset, needle);
-}
-
-inline overload sdef(ssize_t, Find, self s, char c) {
-	return scall(Find, s, 0, s.len, c);
-}
-
-inline overload sdef(ssize_t, Find, self s, ssize_t offset, char c) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return scall(Find, s, offset, s.len - offset, c);
-}
-
-overload sdef(bool, Contains, self s, self needle) {
-	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
-}
-
-overload sdef(bool, Contains, self s, char needle) {
-	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
-}
-
 overload sdef(self, Trim, self s, short type) {
 	size_t i, lpos = 0;
 
@@ -823,12 +704,6 @@ overload sdef(self, Trim, self s, short type) {
 	}
 
 	return scall(Slice, s, lpos, rpos - lpos);
-}
-
-inline overload sdef(self, Trim, self s) {
-	return scall(Trim, s,
-		ref(TrimLeft) |
-		ref(TrimRight));
 }
 
 overload sdef(self *, SafeTrim, String *s, short type) {
@@ -868,10 +743,6 @@ overload sdef(self *, SafeTrim, String *s, short type) {
 	}
 
 	return dest;
-}
-
-inline overload sdef(String *, SafeTrim, String *s) {
-	return scall(SafeTrim, s, ref(TrimLeft) | ref(TrimRight));
 }
 
 sdef(self, Format, self fmt, ...) {
@@ -959,39 +830,6 @@ overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, b
 
 	return posRight + right.len;
 }
-
-inline overload sdef(ssize_t, Between, self s, self left, self right, self *out) {
-	return scall(Between, s, 0, left, right, true, out);
-}
-
-inline overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, self *out) {
-	return scall(Between, s, offset, left, right, true, out);
-}
-
-inline overload sdef(self, Between, self s, ssize_t offset, self left, self right, bool leftAligned) {
-	self out = $("");
-	scall(Between, s, offset, left, right, leftAligned, &out);
-	return out;
-}
-
-inline overload sdef(self, Between, self s, ssize_t offset, self left, self right) {
-	self out = $("");
-	scall(Between, s, offset, left, right, &out);
-	return out;
-}
-
-inline overload sdef(self, Between, self s, self left, self right, bool leftAligned) {
-	self out = $("");
-	scall(Between, s, 0, left, right, leftAligned, &out);
-	return out;
-}
-
-inline overload sdef(self, Between, self s, self left, self right) {
-	self out = $("");
-	scall(Between, s, 0, left, right, true, &out);
-	return out;
-}
-
 sdef(self, Cut, self s, self left, self right) {
 	ssize_t posLeft = scall(Find, s, left);
 
@@ -1121,16 +959,6 @@ overload sdef(bool, Replace, self *dest, ssize_t offset, self needle, self repla
 	return true;
 }
 
-inline overload sdef(bool, Replace, self *dest, self needle, self replacement) {
-	return scall(Replace, dest, 0, needle, replacement);
-}
-
-inline overload sdef(self, Replace, self s, self needle, self replacement) {
-	self tmp = s;
-	scall(Replace, &tmp, 0, needle, replacement);
-	return tmp;
-}
-
 overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self replacement) {
 	if (offset < 0) {
 		offset += dest->len;
@@ -1176,16 +1004,6 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, self needle, self re
 	scall(Destroy, &out);
 
 	return lastPos != 0;
-}
-
-inline overload sdef(bool, ReplaceAll, self *dest, self needle, self replacement) {
-	return scall(ReplaceAll, dest, 0, needle, replacement);
-}
-
-inline overload sdef(self, ReplaceAll, self s, self needle, self replacement) {
-	self tmp = scall(Clone, s);
-	scall(ReplaceAll, &tmp, 0, needle, replacement);
-	return tmp;
 }
 
 def(self, Consume, size_t n) {
@@ -1342,10 +1160,6 @@ overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpa
 	} else {
 		return 0;
 	}
-}
-
-inline overload sdef(short, NaturalCompare, self a, self b) {
-	return scall(NaturalCompare, a, b, true, true, true);
 }
 
 #undef self
