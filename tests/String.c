@@ -516,6 +516,38 @@ tsCase(Acute, "Split with empty string") {
 	Assert($("Return value"), String_Split($(""), ' ', &part) == false);
 }
 
+tsCase(Acute, "Joining") {
+	String orig  = $("");
+	String orig2 = $(" ");
+	String orig3 = $("abc ab a");
+	String orig4 = $("abc ab a ");
+
+	StringArray *items  = String_Split(orig,  ' ');
+	StringArray *items2 = String_Split(orig2, ' ');
+	StringArray *items3 = String_Split(orig3, ' ');
+	StringArray *items4 = String_Split(orig4, ' ');
+
+	String joined  = StringArray_Join(items,  $(" "));
+	String joined2 = StringArray_Join(items2, $(" "));
+	String joined3 = StringArray_Join(items3, $(" "));
+	String joined4 = StringArray_Join(items4, $(" "));
+
+	Assert($("Empty"),         String_Equals(orig,  joined));
+	Assert($("Non-empty"),     String_Equals(orig2, joined2));
+	Assert($("Non-empty (2)"), String_Equals(orig3, joined3));
+	Assert($("Non-empty (3)"), String_Equals(orig4, joined4));
+
+	StringArray_Free(items4);
+	StringArray_Free(items3);
+	StringArray_Free(items2);
+	StringArray_Free(items);
+
+	String_Destroy(&joined4);
+	String_Destroy(&joined3);
+	String_Destroy(&joined2);
+	String_Destroy(&joined);
+}
+
 tsCase(Acute, "Cloning") {
 	String s = String_New(0);
 	String_Append(&s, $("Hello World."));
