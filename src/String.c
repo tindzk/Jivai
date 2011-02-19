@@ -23,60 +23,7 @@ def(void, Free) {
 }
 
 static inline def(bool, IsWritable) {
-	return
-		!this->readonly    &&
-		this->buf  != NULL &&
-		this->prev == NULL &&
-		this->next == NULL;
-}
-
-/* Deletes references to this string in `prev' and `next'. */
-def(void, Unlink) {
-	if (this->prev != NULL) {
-		this->prev->next = this->next;
-	}
-
-	if (this->next != NULL) {
-		this->next->prev = this->prev;
-	}
-
-	this->prev = NULL;
-	this->next = NULL;
-}
-
-def(void, Decouple) {
-	/* Clone the old memory segment and assign it to this->buf so that all
-	 * strings depending on our string can continue to use their buffer.
-	 * This also unlink this string from its dependents.
-	 */
-
-	if (this->readonly || (this->prev != NULL && this->next != NULL)) {
-		if (this->len > 0) {
-			char *buf = Arena_Alloc(Arena_GetInstance(), this->len);
-			Memory_Copy(buf, this->buf, this->len);
-			this->buf = buf;
-			this->readonly = false;
-		}
-
-		call(Unlink);
-	}
-}
-
-sdef(void, Insert, String *src, String *res) {
-	res->len  = src->len;
-	res->buf  = src->buf;
-	res->next = NULL;
-	res->readonly = src->readonly;
-
-	/* Follow trail and insert as last element. */
-	for (String *cur = src; true; cur = cur->next) {
-		if (cur->next == NULL) {
-			cur->next = res;
-			res->prev = cur;
-
-			return;
-		}
-	}
+	return !this->readonly && this->buf != NULL;
 }
 
 def(void, Destroy) {
@@ -92,8 +39,6 @@ def(void, Destroy) {
 	this->buf = (void *) 0xdeadbeef;
 	this->len = 0;
 	this->readonly = true;
-
-	call(Unlink);
 }
 
 /* Resizes the string's buffer to be `length' characters long. If 0 is supplied,
@@ -115,8 +60,6 @@ def(void, Resize, size_t length) {
 
 		this->buf = buf;
 		this->readonly = false;
-
-		call(Unlink);
 	} else {
 		this->buf = Arena_Realloc(Arena_GetInstance(), this->buf, length);
 	}
@@ -162,16 +105,6 @@ def(void, Align, size_t length) {
 	}
 }
 
-def(void, Assign, self *src) {
-	call(Destroy);
-	scall(Insert, src, this);
-}
-
-def(void, Clear) {
-	call(Decouple);
-	this->len = 0;
-}
-
 sdef(self, Clone, self s) {
 	self out = { .len = s.len };
 
@@ -181,12 +114,6 @@ sdef(self, Clone, self s) {
 	}
 
 	return out;
-}
-
-sdef(self *, SafeClone, String *src) {
-	self *dest = Memory_Alloc(sizeof(self));
-	scall(Insert, src, dest);
-	return dest;
 }
 
 sdef(char, CharAt, self s, ssize_t offset) {
@@ -228,36 +155,6 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 	};
 }
 
-overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length) {
-	size_t right;
-
-	if (offset < 0) {
-		offset += s->len;
-	}
-
-	if (length < 0) {
-		right = length + s->len;
-	} else {
-		right = length + offset;
-	}
-
-	if ((size_t) offset > right  ||
-		(size_t) offset > s->len ||
-		right           > s->len)
-	{
-		throw(BufferOverflow);
-	}
-
-	String *res = Memory_Alloc(sizeof(String));
-
-	scall(Insert, s, res);
-
-	res->buf = s->buf + offset;
-	res->len = right  - offset;
-
-	return res;
-}
-
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	size_t right;
 
@@ -295,8 +192,6 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 				right     - offset);
 
 			dest->buf = buf;
-
-			scall(Unlink, dest);
 		}
 	}
 
@@ -389,15 +284,11 @@ overload sdef(void, Prepend, self *dest, char c) {
 
 def(void, Copy, self src) {
 	if (this->readonly && src.readonly) {
-		call(Unlink);
-
 		this->buf = src.buf;
 		this->len = src.len;
 
 		return;
 	}
-
-	call(Decouple);
 
 	if (src.len > 0) {
 		call(Align, src.len);
@@ -494,16 +385,12 @@ sdef(bool, RangeEquals, self s, ssize_t offset, self needle, ssize_t needleOffse
 }
 
 def(void, ToLower) {
-	call(Decouple);
-
 	forward (i, this->len) {
 		this->buf[i] = (char) Char_ToLower(this->buf[i]);
 	}
 }
 
 def(void, ToUpper) {
-	call(Decouple);
-
 	forward (i, this->len) {
 		this->buf[i] = (char) Char_ToUpper(this->buf[i]);
 	}
@@ -697,45 +584,6 @@ overload sdef(self, Trim, self s, short type) {
 	}
 
 	return scall(Slice, s, lpos, rpos - lpos);
-}
-
-overload sdef(self *, SafeTrim, String *s, short type) {
-	size_t i, lpos = 0;
-
-	if (BitMask_Has(type, ref(TrimLeft))) {
-		for (i = 0; i < s->len; i++) {
-			if (Char_IsSpace(s->buf[i])) {
-				lpos = i + 1;
-			} else {
-				break;
-			}
-		}
-	}
-
-	self *dest = Memory_Alloc(sizeof(self));
-
-	scall(Insert, s, dest);
-
-	if (lpos == s->len) {
-		dest->len = 0;
-	} else {
-		size_t rpos = s->len;
-
-		if (BitMask_Has(type, ref(TrimRight))) {
-			for (i = rpos; i > 0; i--) {
-				if (Char_IsSpace(s->buf[i - 1])) {
-					rpos = i - 1;
-				} else {
-					break;
-				}
-			}
-		}
-
-		dest->buf = s->buf + lpos;
-		dest->len = rpos   - lpos;
-	}
-
-	return dest;
 }
 
 sdef(self, Format, self fmt, ...) {

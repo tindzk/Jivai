@@ -28,13 +28,6 @@ class {
 	/* Character buffer including offset. */
 	char *buf;
 	size_t len;
-
-	/* If set, one of these will become the new owner of the buffer upon
-	 * destruction.
-	 */
-	String *prev;
-	String *next;
-
 	bool readonly;
 };
 
@@ -58,19 +51,12 @@ Array(self, StringArray);
 def(size_t, GetSize);
 def(size_t, GetFree);
 def(void, Free);
-def(void, Unlink);
-def(void, Decouple);
-sdef(void, Insert, String *src, String *res);
 def(void, Destroy);
 def(void, Resize, size_t length);
 def(void, Align, size_t length);
-def(void, Assign, self *src);
-def(void, Clear);
 sdef(self, Clone, self s);
-sdef(self *, SafeClone, String *src);
 sdef(char, CharAt, self s, ssize_t offset);
 overload sdef(self, Slice, self s, ssize_t offset, ssize_t length);
-overload sdef(String *, SafeSlice, self *s, ssize_t offset, ssize_t length);
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length);
 overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length);
 def(void, Shift);
@@ -91,7 +77,6 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c);
 overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle);
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle);
 overload sdef(self, Trim, self s, short type);
-overload sdef(self *, SafeTrim, String *s, short type);
 sdef(self, Format, self fmt, ...);
 overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out);
 sdef(self, Cut, self s, self left, self right);
@@ -187,14 +172,6 @@ static inline overload sdef(self, Slice, self s, ssize_t offset) {
 	return scall(Slice, s, offset, s.len - offset);
 }
 
-static inline overload sdef(String *, SafeSlice, self *s, ssize_t offset) {
-	if (offset < 0) {
-		offset += s->len;
-	}
-
-	return scall(SafeSlice, s, offset, s->len - offset);
-}
-
 static inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 	if (offset < 0) {
 		offset += dest->len;
@@ -267,10 +244,6 @@ static inline overload sdef(self, Trim, self s) {
 	return scall(Trim, s,
 		ref(TrimLeft) |
 		ref(TrimRight));
-}
-
-static inline overload sdef(String *, SafeTrim, String *s) {
-	return scall(SafeTrim, s, ref(TrimLeft) | ref(TrimRight));
 }
 
 static inline overload sdef(ssize_t, Between, self s, self left, self right, self *out) {
