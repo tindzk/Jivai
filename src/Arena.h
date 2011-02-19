@@ -12,8 +12,6 @@
 record(ArenaSegment) {
 	void *addr;
 	size_t size;
-
-	bool resizable;
 };
 
 class {
@@ -24,14 +22,11 @@ class {
 };
 
 def(void, Init);
-def(void, AddItem, void *addr, size_t size, bool resizable);
 def(void *, Alloc, size_t size);
-def(ArenaSegment *, GetSegment, void *ptr);
 def(bool, Contains, void *addr);
-def(void *, AddBuffer, void *addr, size_t size);
 def(void *, Realloc, void *addr, size_t newSize);
-def(ssize_t, GetOffset, void *addr);
-def(ssize_t, GetSize, void *addr);
+def(size_t, GetOffset, void *addr);
+def(size_t, GetSize, void *addr);
 def(void, Free, void *addr);
 
 SingletonPrototype(self);
