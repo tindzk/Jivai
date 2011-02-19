@@ -3,23 +3,19 @@
 #define self String
 
 def(size_t, GetSize) {
-	ssize_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
-
-	if (size == -1) {
+	if (this->readonly) {
 		return 0;
 	}
 
-	return size;
+	return Arena_GetSize(Arena_GetInstance(), this->buf);
 }
 
 def(size_t, GetFree) {
-	ssize_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
-
-	if (size == -1) {
+	if (this->readonly) {
 		return 0;
 	}
 
-	return size - this->len;
+	return Arena_GetSize(Arena_GetInstance(), this->buf) - this->len;
 }
 
 def(void, Free) {
@@ -28,11 +24,10 @@ def(void, Free) {
 
 static inline def(bool, IsWritable) {
 	return
-		!this->inherited   &&
+		!this->readonly    &&
 		this->buf  != NULL &&
 		this->prev == NULL &&
-		this->next == NULL &&
-		!Memory_IsRoData(this->buf);
+		this->next == NULL;
 }
 
 /* Deletes references to this string in `prev' and `next'. */
@@ -55,11 +50,12 @@ def(void, Decouple) {
 	 * This also unlink this string from its dependents.
 	 */
 
-	if (Memory_IsRoData(this->buf) || (this->prev != NULL && this->next != NULL)) {
+	if (this->readonly || (this->prev != NULL && this->next != NULL)) {
 		if (this->len > 0) {
 			char *buf = Arena_Alloc(Arena_GetInstance(), this->len);
 			Memory_Copy(buf, this->buf, this->len);
 			this->buf = buf;
+			this->readonly = false;
 		}
 
 		call(Unlink);
@@ -70,7 +66,7 @@ sdef(void, Insert, String *src, String *res) {
 	res->len  = src->len;
 	res->buf  = src->buf;
 	res->next = NULL;
-	res->inherited = false;
+	res->readonly = src->readonly;
 
 	/* Follow trail and insert as last element. */
 	for (String *cur = src; true; cur = cur->next) {
@@ -95,6 +91,7 @@ def(void, Destroy) {
 
 	this->buf = (void *) 0xdeadbeef;
 	this->len = 0;
+	this->readonly = true;
 
 	call(Unlink);
 }
@@ -117,7 +114,7 @@ def(void, Resize, size_t length) {
 		}
 
 		this->buf = buf;
-		this->inherited = false;
+		this->readonly = false;
 
 		call(Unlink);
 	} else {
@@ -136,7 +133,7 @@ def(void, Align, size_t length) {
 		return;
 	}
 
-	if (this->inherited) {
+	if (this->readonly) {
 		call(Resize, length);
 		return;
 	}
@@ -147,7 +144,7 @@ def(void, Align, size_t length) {
 
 	size_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
 
-	if ((ssize_t) size == -1 || size == 0) {
+	if (size == 0) {
 		call(Resize, length);
 	} else if (length > size) {
 #if String_SmartAlign
@@ -227,7 +224,7 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 	return (self) {
 		.len = right - offset,
 		.buf = s.buf + offset,
-		.inherited = true
+		.readonly = true
 	};
 }
 
@@ -331,8 +328,8 @@ overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
 }
 
 def(void, Shift) {
-	if (this->inherited) {
-		throw(IsInherited);
+	if (this->readonly) {
+		throw(IsReadOnly);
 	}
 
 	size_t ofs = Arena_GetOffset(Arena_GetInstance(), this->buf);
@@ -349,8 +346,8 @@ def(void, Shift) {
 }
 
 def(void, Delete, ssize_t offset, ssize_t length) {
-	if (this->inherited) {
-		throw(IsInherited);
+	if (this->readonly) {
+		throw(IsReadOnly);
 	}
 
 	size_t from;
@@ -391,14 +388,11 @@ overload sdef(void, Prepend, self *dest, char c) {
 }
 
 def(void, Copy, self src) {
-	if ((this->buf == NULL || Memory_IsRoData(this->buf)) &&
-		Memory_IsRoData(src.buf))
-	{
+	if (this->readonly && src.readonly) {
 		call(Unlink);
 
 		this->buf = src.buf;
 		this->len = src.len;
-		this->inherited = false;
 
 		return;
 	}
@@ -418,12 +412,11 @@ overload sdef(void, Append, self *dest, self s) {
 		return;
 	}
 
-	if (Memory_IsRoData(s.buf) && dest->buf == NULL) {
-		scall(Unlink, dest);
+	if (dest->len == 0 && s.readonly) {
+		scall(Destroy, dest);
 
 		dest->buf = s.buf;
 		dest->len = s.len;
-		dest->inherited = false;
 
 		return;
 	}
@@ -530,7 +523,7 @@ overload sdef(bool, Split, self s, char c, String *res) {
 			res->buf = s.buf + offset;
 			res->len = pos   - offset;
 
-			res->inherited = true;
+			res->readonly = true;
 
 			break;
 		}

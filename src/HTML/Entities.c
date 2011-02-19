@@ -291,10 +291,12 @@ sdef(String, Decode, String s) {
 						c = Int16_Parse(String_Slice(entity, 1));
 					}
 
-					String s = StackString(4);
+					String s = String_New(4);
 					Unicode_ToMultiByte(c, &s);
 
 					String_Append(&res, s);
+
+					String_Destroy(&s);
 				} else {
 					size_t j;
 
@@ -307,10 +309,12 @@ sdef(String, Decode, String s) {
 					goto error;
 
 					when (found) {
-						String s = StackString(4);
+						String s = String_New(4);
 						Unicode_ToMultiByte(entities[j].c, &s);
 
 						String_Append(&res, s);
+
+						String_Destroy(&s);
 					}
 				}
 

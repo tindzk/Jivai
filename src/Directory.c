@@ -38,7 +38,7 @@ def(bool, Read, ref(Entry) *res) {
 
 	res->inode = item->inode;
 	res->type  = *(p + item->reclen - 1);
-	res->name  = StackString(0);
+	res->name  = $("");
 	res->name.buf = item->name;
 
 	/* TODO This does not work. */

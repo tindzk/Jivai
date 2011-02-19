@@ -14,7 +14,7 @@
 #endif
 
 // @exc DoubleFree
-// @exc IsInherited
+// @exc IsReadOnly
 // @exc BufferOverflow
 // @exc ElementMismatch
 
@@ -35,7 +35,7 @@ class {
 	String *prev;
 	String *next;
 
-	bool inherited;
+	bool readonly;
 };
 
 record(FmtString) {
@@ -133,20 +133,18 @@ overload sdef(short, NaturalCompare, self a, self b, bool foldcase, bool skipSpa
 
 #define $(s) ((String) {                         \
 	.buf = (sizeof(s) == 1) ? NULL : (char *) s, \
-	.len = sizeof(s) - 1                         \
+	.len = sizeof(s) - 1,                        \
+	.readonly = true                             \
 })
-
-#define StackString(size)        \
-	(String) {                   \
-		.buf = Arena_AddBuffer(  \
-			Arena_GetInstance(), \
-			alloca(size), size)  \
-	}
 
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))
 
 static inline sdef(self, New, size_t size) {
+	if (size == 0) {
+		return (self) { .readonly = true };
+	}
+
 	return (self) {
 		.buf = Arena_Alloc(Arena_GetInstance(), size)
 	};
@@ -177,7 +175,7 @@ static inline sdef(char *, ToNulHeap, self s) {
 }
 
 static inline sdef(self, Disown, self s) {
-	s.inherited = true;
+	s.readonly = true;
 	return s;
 }
 

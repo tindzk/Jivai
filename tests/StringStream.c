@@ -15,7 +15,7 @@ tsRegister("String stream") {
 
 tsCase(Acute, "Empty string") {
 	String s   = $("");
-	String out = StackString(16);
+	String out = String_New(16);
 
 	StringStream stream;
 	StringStream_Init(&stream, &s);
@@ -25,11 +25,13 @@ tsCase(Acute, "Empty string") {
 
 	Assert($("isEof()"),
 		StringStream_IsEof(&stream) == true);
+
+	String_Destroy(&out);
 }
 
 tsCase(Acute, "Non-empty string") {
 	String s   = $("Hello World.");
-	String out = StackString(128);
+	String out = String_New(128);
 
 	StringStream stream;
 	StringStream_Init(&stream, &s);
@@ -51,6 +53,8 @@ tsCase(Acute, "Non-empty string") {
 
 	Assert($("isEof()"),
 		StringStream_IsEof(&stream) == true);
+
+	String_Destroy(&out);
 }
 
 tsFinalize;

@@ -48,21 +48,6 @@ tsCase(Acute, "Destruction") {
 		this->s.len == 0);
 }
 
-tsCase(Acute, "StackString()") {
-	String s = StackString(16);
-
-	Assert($("Non-empty buffer"),
-		s.buf != NULL);
-
-	Assert($("Size is 16"),
-		String_GetSize(&s) == 16);
-
-	Assert($("Length = 0"),
-		s.len == 0);
-
-	String_Destroy(&s);
-}
-
 tsCase(Acute, "Appending (2)") {
 	String s = String_New(0);
 	String append = $("Test.");
@@ -90,18 +75,18 @@ tsCase(Acute, "Appending (3)") {
 	String s = String_New(1);
 	String_Append(&s, $("Hello World."));
 
-	Assert($("Not empty"),
-		s.len > 0);
+	Assert($("Not empty"), s.len > 0);
+	Assert($("Equals"), String_Equals(s, $("Hello World.")));
 
 	String_Destroy(&s);
 }
 
 tsCase(Acute, "Appending (4)") {
-	String s = StackString(16);
+	String s = String_New(16);
 	String_Append(&s, $("Hello World."));
 
-	Assert($("Not empty"),
-		s.len > 0);
+	Assert($("Not empty"), s.len > 0);
+	Assert($("Equals"), String_Equals(s, $("Hello World.")));
 
 	String_Destroy(&s);
 }

@@ -183,10 +183,10 @@ def(void, Process) {
 		ssize_t len = Unicode_CalcWidth(&key.c);
 
 		if (len == 0) {
-			ch = StackString(1);
+			ch = String_New(1);
 			String_Append(&ch, key.c);
 		} else {
-			ch = StackString(len);
+			ch = String_New(len);
 			String_Append(&ch, key.c);
 
 			while (--len) {
@@ -226,5 +226,7 @@ def(void, Process) {
 				throw(CommandExceedsAllowedLength);
 			}
 		}
+
+		String_Destroy(&ch);
 	}
 }
