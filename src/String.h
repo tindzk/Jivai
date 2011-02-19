@@ -27,6 +27,7 @@ enum {
 class {
 	/* Character buffer including offset. */
 	char *buf;
+	size_t ofs;
 	size_t len;
 	bool readonly;
 };

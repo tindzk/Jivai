@@ -23,9 +23,7 @@ class {
 
 def(void, Init);
 def(void *, Alloc, size_t size);
-def(bool, Contains, void *addr);
 def(void *, Realloc, void *addr, size_t newSize);
-def(size_t, GetOffset, void *addr);
 def(size_t, GetSize, void *addr);
 def(void, Free, void *addr);
 

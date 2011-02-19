@@ -7,7 +7,7 @@ def(size_t, GetSize) {
 		return 0;
 	}
 
-	return Arena_GetSize(Arena_GetInstance(), this->buf);
+	return Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs);
 }
 
 def(size_t, GetFree) {
@@ -15,7 +15,7 @@ def(size_t, GetFree) {
 		return 0;
 	}
 
-	return Arena_GetSize(Arena_GetInstance(), this->buf) - this->len;
+	return Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs) - this->len;
 }
 
 def(void, Free) {
@@ -33,11 +33,12 @@ def(void, Destroy) {
 
 	/* Is the buffer safe to delete? */
 	if (call(IsWritable)) {
-		Arena_Free(Arena_GetInstance(), this->buf);
+		Arena_Free(Arena_GetInstance(), this->buf - this->ofs);
 	}
 
 	this->buf = (void *) 0xdeadbeef;
 	this->len = 0;
+	this->ofs = 0;
 	this->readonly = true;
 }
 
@@ -61,8 +62,10 @@ def(void, Resize, size_t length) {
 		this->buf = buf;
 		this->readonly = false;
 	} else {
-		this->buf = Arena_Realloc(Arena_GetInstance(), this->buf, length);
+		this->buf = Arena_Realloc(Arena_GetInstance(), this->buf - this->ofs, length);
 	}
+
+	this->ofs = 0;
 
 	if (this->len > length) {
 		/* The string was shortened. */
@@ -85,7 +88,7 @@ def(void, Align, size_t length) {
 		return;
 	}
 
-	size_t size = Arena_GetSize(Arena_GetInstance(), this->buf);
+	size_t size = Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs);
 
 	if (size == 0) {
 		call(Resize, length);
@@ -151,6 +154,7 @@ overload sdef(self, Slice, self s, ssize_t offset, ssize_t length) {
 	return (self) {
 		.len = right - offset,
 		.buf = s.buf + offset,
+		.ofs = offset,
 		.readonly = true
 	};
 }
@@ -219,6 +223,7 @@ overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
 	}
 
 	dest->buf += offset;
+	dest->ofs  = offset;
 	dest->len  = right - offset;
 }
 
@@ -227,17 +232,16 @@ def(void, Shift) {
 		throw(IsReadOnly);
 	}
 
-	size_t ofs = Arena_GetOffset(Arena_GetInstance(), this->buf);
-
-	if (ofs == 0) {
+	if (this->ofs == 0) {
 		return;
 	}
 
 	if (this->len > 0) {
-		Memory_Move(this->buf - ofs, this->buf, this->len);
+		Memory_Move(this->buf - this->ofs, this->buf, this->len);
 	}
 
-	this->buf -= ofs;
+	this->buf -= this->ofs;
+	this->ofs  = 0;
 }
 
 def(void, Delete, ssize_t offset, ssize_t length) {
@@ -285,12 +289,8 @@ overload sdef(void, Prepend, self *dest, char c) {
 def(void, Copy, self src) {
 	if (this->readonly && src.readonly) {
 		this->buf = src.buf;
-		this->len = src.len;
-
-		return;
-	}
-
-	if (src.len > 0) {
+		this->ofs = 0;
+	} else if (src.len > 0) {
 		call(Align, src.len);
 		Memory_Move(this->buf, src.buf, src.len);
 	}
@@ -409,7 +409,7 @@ overload sdef(bool, Split, self s, char c, String *res) {
 		if (pos == s.len || s.buf[pos] == c) {
 			res->buf = s.buf + offset;
 			res->len = pos   - offset;
-
+			res->ofs = offset;
 			res->readonly = true;
 
 			break;
@@ -666,6 +666,7 @@ overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, b
 
 	*out = (self) {
 		.buf = s.buf + posLeft,
+		.ofs = posLeft,
 		.len = posRight - posLeft
 	};
 

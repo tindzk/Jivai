@@ -18,18 +18,12 @@ static def(ArenaSegment *, GetSegment, void *addr) {
 	}
 
 	forward (i, this->upper) {
-		if (addr >= this->allocs[i].addr &&
-			addr <= this->allocs[i].addr + this->allocs[i].size)
-		{
+		if (addr == this->allocs[i].addr) {
 			return &this->allocs[i];
 		}
 	}
 
 	return NULL;
-}
-
-def(bool, Contains, void *addr) {
-	return call(GetSegment, addr) != NULL;
 }
 
 def(void *, Alloc, size_t size) {
@@ -87,16 +81,6 @@ def(void *, Realloc, void *addr, size_t newSize) {
 	item->size = newSize;
 
 	return item->addr + ofs;
-}
-
-def(size_t, GetOffset, void *addr) {
-	ArenaSegment *item = call(GetSegment, addr);
-
-	if (item == NULL) {
-		throw(NotAllocated);
-	}
-
-	return addr - item->addr;
 }
 
 def(size_t, GetSize, void *addr) {
