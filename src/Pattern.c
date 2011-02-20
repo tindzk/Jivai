@@ -127,8 +127,9 @@ static def(size_t, AnyOf, size_t offset, String pattern) {
 static def(void, Relocate, size_t begin, size_t shift) {
 	call(Emit, ref(Token_End));
 
-	if (begin + shift           > this->code->size
-	 || this->code->len - begin > this->code->len) {
+	if (begin + shift           > scall(CharArray_GetSize, this->code) ||
+		this->code->len - begin > this->code->len)
+	{
 		throw(OffsetOverflow);
 	}
 
