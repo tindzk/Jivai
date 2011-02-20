@@ -19,7 +19,7 @@ int main(void) {
 	 */
 	forward (i, s.len) {
 		/* Put the current character into a string. */
-		String c = StackString(1);
+		String c = String_New(1);
 		String_Append(&c, s.buf[i]);
 
 		String fmt = String_Format(
@@ -31,6 +31,8 @@ int main(void) {
 
 			/* The last character has the position s.len-1. */
 			(i == s.len - 1) ? $("\n") : $(""));
+
+		String_Destroy(&c);
 
 		/* String_Print() and String_Format() do not demand a
 		 * pointer because the `String()' macro expands to
