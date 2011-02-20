@@ -15,7 +15,7 @@ record(self) {
 };
 
 static inline self* ClientConnection_New(size_t dataSize) {
-	return Memory_Alloc(sizeof(self) + dataSize);
+	return Pool_Alloc(Pool_GetInstance(), sizeof(self) + dataSize);
 }
 
 static inline void* ClientConnection_GetData(self *$this) {

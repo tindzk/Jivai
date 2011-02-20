@@ -40,8 +40,8 @@ record(FmtString) {
 #undef self
 
 #import "Char.h"
+#import "Pool.h"
 #import "Array.h"
-#import "Arena.h"
 #import "Memory.h"
 #import "Exception.h"
 
@@ -132,7 +132,7 @@ static inline sdef(self, New, size_t size) {
 	}
 
 	return (self) {
-		.buf = Arena_Alloc(Arena_GetInstance(), size)
+		.buf = Pool_Alloc(Pool_GetInstance(), size)
 	};
 }
 
@@ -157,7 +157,7 @@ static inline sdef(char *, ToNulBuf, self s, char *buf) {
 
 static inline sdef(char *, ToNulHeap, self s) {
 	return scall(ToNulBuf, s,
-		Arena_Alloc(Arena_GetInstance(), s.len + 1));
+		Pool_Alloc(Pool_GetInstance(), s.len + 1));
 }
 
 static inline sdef(self, Disown, self s) {

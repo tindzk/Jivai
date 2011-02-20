@@ -194,13 +194,15 @@
 		return (Instance(self)) &obj;                                                      \
 	}                                                                                      \
 	static inline Instance(self) tripleConcat(self, _, New)(void) {                        \
-		return (Instance(self)) (self *) Memory_Alloc(sizeof(self));                       \
+		return (Instance(self)) (self *) Pool_Alloc(Pool_GetInstance(), sizeof(self));     \
 	}                                                                                      \
 	static inline void tripleConcat(self, _, Free)(Instance(self) instance) {              \
-		Memory_Free(instance.object);                                                      \
+		Pool_Free(Pool_GetInstance(), instance.object);                                    \
 	}                                                                                      \
 	static inline Instance(self) tripleConcat(self, _, Clone)(Instance(self) instance) {   \
-		return (Instance(self)) (self *) Memory_Clone(instance.object, sizeof(self));      \
+		self *ptr = Pool_Alloc(Pool_GetInstance(), sizeof(self));                          \
+		Memory_Copy(ptr, instance.object, sizeof(self));                                   \
+		return (Instance(self)) ptr;                                                       \
 	}
 
 #define SingletonPrototype(name) \

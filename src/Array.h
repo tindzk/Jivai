@@ -14,7 +14,7 @@
 		GenericInstance generic;                                                            \
 	} Instance(name) transparentUnion;                                                      \
 	static inline name* tripleConcat(name, _, New)(size_t items) {                          \
-		name *res = Memory_Alloc(sizeof(name) + items * sizeof(type));                      \
+		name *res = Pool_Alloc(Pool_GetInstance(), sizeof(name) + items * sizeof(type));    \
 		res->len  = 0;                                                                      \
 		res->size = items;                                                                  \
 		return res;                                                                         \
@@ -22,7 +22,7 @@
 	static inline void tripleConcat(name, _, Free)                                          \
 		(Instance(name) $this)                                                              \
 	{                                                                                       \
-		Memory_Free($this.object);                                                          \
+		Pool_Free(Pool_GetInstance(), $this.object);                                        \
 	}                                                                                       \
 	static inline void tripleConcat(name, _, Delete)                                        \
 		(Instance(name) $this, size_t idx)                                                  \
@@ -38,7 +38,8 @@
 	static inline void tripleConcat(name, _, Resize)                                        \
 		(union { name **object } transparentUnion $this, size_t items)                      \
 	{                                                                                       \
-		*$this.object = Memory_Realloc(*$this.object, sizeof(name) + items * sizeof(type)); \
+		*$this.object = Pool_Realloc(Pool_GetInstance(), *$this.object,                     \
+			sizeof(name) + items * sizeof(type));                                           \
 		(*$this.object)->size = items;                                                      \
 		if ((*$this.object)->len > items) {                                                 \
 			(*$this.object)->len = items;                                                   \

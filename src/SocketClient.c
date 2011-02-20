@@ -10,7 +10,7 @@ def(void, Init) {
 def(void, Destroy) {
 	if (this->conn != NULL) {
 		SocketConnection_Close(this->conn);
-		Memory_Free(this->conn);
+		Pool_Free(Pool_GetInstance(), this->conn);
 	}
 }
 

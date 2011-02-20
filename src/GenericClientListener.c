@@ -18,7 +18,7 @@ def(void, OnDestroy) {
 		SocketClient_Destroy(conn->client);
 		SocketClient_Free(conn->client);
 
-		Memory_Free(conn);
+		Pool_Free(Pool_GetInstance(), conn);
 	};
 
 	DoublyLinkedList_Destroy(&this->connections, destroy);
@@ -57,7 +57,7 @@ def(void, OnDisconnect, SocketClientInstance client) {
 
 		DoublyLinkedList_Remove(&this->connections, conn);
 
-		Memory_Free(conn);
+		Pool_Free(Pool_GetInstance(), conn);
 	}
 }
 

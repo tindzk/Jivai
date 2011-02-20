@@ -7,7 +7,7 @@ def(size_t, GetSize) {
 		return 0;
 	}
 
-	return Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs);
+	return Pool_GetSize(Pool_GetInstance(), this->buf - this->ofs);
 }
 
 def(size_t, GetFree) {
@@ -15,7 +15,7 @@ def(size_t, GetFree) {
 		return 0;
 	}
 
-	return Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs) - this->len;
+	return Pool_GetSize(Pool_GetInstance(), this->buf - this->ofs) - this->len;
 }
 
 def(void, Free) {
@@ -33,7 +33,7 @@ def(void, Destroy) {
 
 	/* Is the buffer safe to delete? */
 	if (call(IsWritable)) {
-		Arena_Free(Arena_GetInstance(), this->buf - this->ofs);
+		Pool_Free(Pool_GetInstance(), this->buf - this->ofs);
 	}
 
 	this->buf = (void *) 0xdeadbeef;
@@ -53,7 +53,7 @@ def(void, Resize, size_t length) {
 		call(Destroy);
 		this->buf = NULL;
 	} else if (!call(IsWritable)) {
-		char *buf = Arena_Alloc(Arena_GetInstance(), length);
+		char *buf = Pool_Alloc(Pool_GetInstance(), length);
 
 		if (realLength > 0) {
 			Memory_Copy(buf, this->buf, realLength);
@@ -62,7 +62,7 @@ def(void, Resize, size_t length) {
 		this->buf = buf;
 		this->readonly = false;
 	} else {
-		this->buf = Arena_Realloc(Arena_GetInstance(), this->buf - this->ofs, length);
+		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf - this->ofs, length);
 	}
 
 	this->ofs = 0;
@@ -88,7 +88,7 @@ def(void, Align, size_t length) {
 		return;
 	}
 
-	size_t size = Arena_GetSize(Arena_GetInstance(), this->buf - this->ofs);
+	size_t size = Pool_GetSize(Pool_GetInstance(), this->buf - this->ofs);
 
 	if (size == 0) {
 		call(Resize, length);
@@ -112,7 +112,7 @@ sdef(self, Clone, self s) {
 	self out = { .len = s.len };
 
 	if (s.len > 0) {
-		out.buf = Arena_Alloc(Arena_GetInstance(), s.len);
+		out.buf = Pool_Alloc(Pool_GetInstance(), s.len);
 		Memory_Copy(out.buf, s.buf, s.len);
 	}
 
@@ -189,7 +189,7 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 				dest->buf + offset,
 				right     - offset);
 		} else {
-			char *buf = Arena_Alloc(Arena_GetInstance(), right - offset);
+			char *buf = Pool_Alloc(Pool_GetInstance(), right - offset);
 
 			Memory_Copy(buf,
 				dest->buf + offset,

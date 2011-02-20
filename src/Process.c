@@ -89,7 +89,7 @@ overload def(int, Spawn, float *time) {
 
 		if (execve(argv[0], argv, environ) < 0) {
 			for (size_t i = 0; argv[i] != NULL; i++) {
-				Arena_Free(Arena_GetInstance(), argv[i]);
+				Pool_Free(Pool_GetInstance(), argv[i]);
 				argv[i] = NULL;
 			}
 
@@ -113,7 +113,7 @@ overload def(int, Spawn, float *time) {
 		}
 	} else {
 		for (size_t i = 0; argv[i] != NULL; i++) {
-			Arena_Free(Arena_GetInstance(), argv[i]);
+			Pool_Free(Pool_GetInstance(), argv[i]);
 			argv[i] = NULL;
 		}
 
@@ -121,7 +121,7 @@ overload def(int, Spawn, float *time) {
 	}
 
 	for (size_t i = 0; argv[i] != NULL; i++) {
-		Arena_Free(Arena_GetInstance(), argv[i]);
+		Pool_Free(Pool_GetInstance(), argv[i]);
 	}
 
 	return ret;
