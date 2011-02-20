@@ -105,6 +105,10 @@ def(void, Align, size_t length) {
 }
 
 sdef(self, Clone, self s) {
+	if (Memory_IsRoData(s.buf)) {
+		return s;
+	}
+
 	self out = { .len = s.len };
 
 	if (s.len > 0) {

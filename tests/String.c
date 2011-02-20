@@ -114,6 +114,9 @@ tsCase(Acute, "Cloning") {
 
 	String cloned = String_Clone(s);
 
+	Assert($("Inherit rodata pointer"),
+		cloned.buf == s.buf);
+
 	String_Destroy(&cloned);
 
 	Assert($("Original string still accessible"),
@@ -196,7 +199,7 @@ tsCase(Acute, "Formatted appending") {
 }
 
 tsCase(Acute, "Format") {
-	String s = String_Format(FmtString($("Hel!%lo %."), $("World")));
+	String s = String_Format($("Hel!%lo %."), $("World"));
 
 	String expected = $("Hel%lo World.");
 
