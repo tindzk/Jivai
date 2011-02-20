@@ -42,17 +42,15 @@ def(void, Destroy) {
 	this->readonly = true;
 }
 
-/* Resizes the string's buffer to be `length' characters long. If 0 is supplied,
- * the buffer is freed. */
+/* Resizes the string's buffer to be `length' characters long. */
 def(void, Resize, size_t length) {
 	size_t realLength = (this->len > length)
 		? length
 		: this->len;
 
-	if (length == 0) {
-		call(Destroy);
-		this->buf = NULL;
-	} else if (!call(IsWritable)) {
+	if (call(IsWritable)) {
+		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf - this->ofs, length);
+	} else {
 		char *buf = Pool_Alloc(Pool_GetInstance(), length);
 
 		if (realLength > 0) {
@@ -61,8 +59,6 @@ def(void, Resize, size_t length) {
 
 		this->buf = buf;
 		this->readonly = false;
-	} else {
-		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf - this->ofs, length);
 	}
 
 	this->ofs = 0;

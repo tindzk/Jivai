@@ -95,15 +95,14 @@ tsCase(Acute, "Resizing") {
 	String s = String_New(1);
 	String_Append(&s, 'a');
 
-	/* Free the buffer. It differs from Destroy() by setting the buffer to NULL
-	 * as opposed to 0xdeadbeef.
-	 */
 	String_Resize(&s, 0);
 
-	Assert($("Length is 0"),    s.len == 0);
-	Assert($("Buffer is NULL"), s.buf == NULL);
+	Assert($("Length is 0"),
+		s.len == 0);
 
-	/* Although the buffer was already freed by Resize(), this is valid. */
+	Assert($("Buffer not NULL"),
+		s.buf != NULL);
+
 	String_Destroy(&s);
 
 	Assert($("Empty buffer"),
