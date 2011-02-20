@@ -1,11 +1,12 @@
 #import <Array.h>
 #import <String.h>
 #import <Integer.h>
+#import <Terminal.h>
 
-typedef struct {
+record(Item) {
 	String field1;
 	String field2;
-} Item;
+};
 
 Array(Item, ItemArray);
 
@@ -22,19 +23,20 @@ int main(void) {
 	 * the situation that every time Array_Push() is called,
 	 * more memory is requested from the kernel.
 	 */
-	for (size_t i = 0; i < 50; i++) {
+	forward (i, 50) {
 		Item item = {
-			String_Clone(Int32_ToString(i)),
-			String_Clone(Int32_ToString(i + 5))
+			Integer_ToString(i),
+			Integer_ToString(i + 5)
 		};
 
 		ItemArray_Push(&arr, item);
 	}
 
-	for (size_t i = 0; i < arr->len; i++) {
-		String_FmtPrint($("%:%\n"),
-			arr->buf[i].field1,
-			arr->buf[i].field2);
+	forward (i, arr->len) {
+		String_Print(arr->buf[i].field1);
+		String_Print($(":"));
+		String_Print(arr->buf[i].field2);
+		String_Print($("\n"));
 	}
 
 	foreach (item, arr) {
