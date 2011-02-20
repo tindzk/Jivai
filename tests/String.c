@@ -142,6 +142,26 @@ tsCase(Acute, "Copying") {
 }
 
 tsCase(Acute, "Copying") {
+	String s = String_New(0);
+	String_Append(&s, $("Hello World."));
+	String_Append(&s, $("Hello World."));
+
+	Assert($("Heap-allocated"),
+		!Memory_IsRoData(s.buf));
+
+	String cut = String_Slice(s, 1, 5);
+
+	String dest = String_New(0);
+	String_Copy(&dest, cut);
+
+	Assert($("Does not point to copy"),
+		dest.buf != cut.buf);
+
+	String_Destroy(&dest);
+	String_Destroy(&s);
+}
+
+tsCase(Acute, "Copying") {
 	String s = String_New(1);
 
 	String copy = $("Hello World.");

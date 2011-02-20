@@ -287,7 +287,7 @@ overload sdef(void, Prepend, self *dest, char c) {
 }
 
 def(void, Copy, self src) {
-	if (this->readonly && src.readonly) {
+	if (this->readonly && Memory_IsRoData(src.buf)) {
 		this->buf = src.buf;
 		this->ofs = 0;
 	} else if (src.len > 0) {
@@ -303,12 +303,8 @@ overload sdef(void, Append, self *dest, self s) {
 		return;
 	}
 
-	if (dest->len == 0 && s.readonly) {
-		scall(Destroy, dest);
-
-		dest->buf = s.buf;
-		dest->len = s.len;
-
+	if (dest->len == 0 && dest->readonly && Memory_IsRoData(s.buf)) {
+		*dest = s;
 		return;
 	}
 
