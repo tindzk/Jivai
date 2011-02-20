@@ -78,7 +78,6 @@ overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, char c);
 overload sdef(ssize_t, ReverseFind, self s, ssize_t offset, self needle);
 overload sdef(ssize_t, Find, self s, ssize_t offset, ssize_t length, self needle);
 overload sdef(self, Trim, self s, short type);
-sdef(self, Format, self fmt, ...);
 overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out);
 sdef(self, Cut, self s, self left, self right);
 def(bool, Filter, self s1, self s2);
@@ -135,6 +134,15 @@ static inline sdef(self, New, size_t size) {
 		.buf = Pool_Alloc(Pool_GetInstance(), size)
 	};
 }
+
+static inline sdef(self, Format, FmtString fmt) {
+	self res = scall(New, 0);
+	scall(Append, &res, fmt);
+	return res;
+}
+
+#define String_Format(...) \
+	String_Format(FmtString(__VA_ARGS__))
 
 static inline sdef(self, FromNul, char *s) {
 	return (self) {

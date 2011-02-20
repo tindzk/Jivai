@@ -327,24 +327,43 @@ overload sdef(void, Append, self *dest, FmtString s) {
 	s.val++;
 #endif
 
-	forward (i, s.fmt.len) {
-		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
-			String_Append(dest, '%');
-			i++;
-			continue;
-		}
+	String *val = s.val;
 
+	size_t len = 0;
+
+	forward (i, s.fmt.len) {
 		if (s.fmt.buf[i] == '%') {
+			if (i == 0 || s.fmt.buf[i - 1] != '!') {
 #if String_FmtChecks
-			if (s.val->len == (size_t) -1) {
-				throw(ElementMismatch);
-			}
+				if (s.val->len == (size_t) -1) {
+					throw(ElementMismatch);
+				}
 #endif
 
-			String_Append(dest, *s.val);
-			s.val++;
+				len += s.val->len;
+				s.val++;
+			}
 		} else {
-			String_Append(dest, s.fmt.buf[i]);
+			len++;
+		}
+	}
+
+	scall(Align, dest, len);
+
+	forward (i, s.fmt.len) {
+		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
+			dest->buf[dest->len] = '%';
+			dest->len++, i++;
+		} else if (s.fmt.buf[i] == '%') {
+			if (val->len > 0) {
+				Memory_Copy(dest->buf + dest->len, val->buf, val->len);
+				dest->len += val->len;
+			}
+
+			val++;
+		} else {
+			dest->buf[dest->len] = s.fmt.buf[i];
+			dest->len++;
 		}
 	}
 }
@@ -580,51 +599,6 @@ overload sdef(self, Trim, self s, short type) {
 	}
 
 	return scall(Slice, s, lpos, rpos - lpos);
-}
-
-sdef(self, Format, self fmt, ...) {
-	size_t length = 0;
-	VarArg argptr;
-	self param;
-
-	VarArg_Start(argptr, fmt);
-
-	forward (i, fmt.len) {
-		if (fmt.buf[i] == '%') {
-			if (i == 0 || fmt.buf[i - 1] != '!') {
-				length += VarArg_Get(argptr, self).len;
-			}
-		} else {
-			length++;
-		}
-	}
-
-	VarArg_End(argptr);
-
-	self res = String_New(length);
-
-	VarArg_Start(argptr, fmt);
-
-	forward (i, fmt.len) {
-		if (i + 1 != fmt.len && fmt.buf[i] == '!' && fmt.buf[i + 1] == '%') {
-			res.buf[res.len] = '%';
-			res.len++;
-		} else if (fmt.buf[i] == '%') {
-			param = VarArg_Get(argptr, self);
-
-			if (param.len > 0) {
-				Memory_Copy(res.buf + res.len, param.buf, param.len);
-				res.len += param.len;
-			}
-		} else {
-			res.buf[res.len] = fmt.buf[i];
-			res.len++;
-		}
-	}
-
-	VarArg_End(argptr);
-
-	return res;
 }
 
 overload sdef(ssize_t, Between, self s, ssize_t offset, self left, self right, bool leftAligned, self *out) {

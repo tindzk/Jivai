@@ -195,6 +195,18 @@ tsCase(Acute, "Formatted appending") {
 	String_Destroy(&s);
 }
 
+tsCase(Acute, "Format") {
+	String s = String_Format(FmtString($("Hel!%lo %."), $("World")));
+
+	String expected = $("Hel%lo World.");
+
+	/* Make sure String_Format() doesn't allocate too much. */
+	Assert($("Size"),   String_GetSize(&s) == expected.len);
+	Assert($("Equals"), String_Equals(s, expected));
+
+	String_Destroy(&s);
+}
+
 tsCase(Acute, "Appending") {
 	String s = $("Hello ");
 	String_Append(&s, $("World."));
