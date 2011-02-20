@@ -141,7 +141,8 @@ static inline sdef(self, FromNul, char *s) {
 		.buf = s,
 		.len = (s != NULL)
 			? strlen(s)
-			: 0
+			: 0,
+		.readonly = true
 	};
 }
 
