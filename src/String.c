@@ -18,10 +18,6 @@ def(size_t, GetFree) {
 	return Pool_GetSize(Pool_GetInstance(), this->buf - this->ofs) - this->len;
 }
 
-def(void, Free) {
-	Memory_FreePtr(this);
-}
-
 static inline def(bool, IsWritable) {
 	return !this->readonly && this->buf != NULL;
 }

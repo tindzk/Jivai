@@ -51,7 +51,6 @@ Array(self, StringArray);
 
 def(size_t, GetSize);
 def(size_t, GetFree);
-def(void, Free);
 def(void, Destroy);
 def(void, Resize, size_t length);
 def(void, Align, size_t length);
