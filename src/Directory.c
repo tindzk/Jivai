@@ -2,7 +2,7 @@
 
 #define self Directory
 
-def(void, Init, String path) {
+def(void, Init, ProtString path) {
 	this->fd = Kernel_open(path,
 		FileStatus_Directory |
 		FileStatus_ReadOnly, 0);

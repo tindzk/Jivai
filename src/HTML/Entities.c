@@ -4,7 +4,7 @@
 
 /* Taken from http://www.w3.org/TR/REC-html40/sgml/entities.html */
 static struct {
-	String entity;
+	ProtString entity;
 	int c;
 } entities[] = {
 	{ $("AElig"), 198 },
@@ -277,7 +277,7 @@ sdef(String, Decode, String s) {
 			}
 		} else {
 			if (s.buf[i] == ';') {
-				String entity = String_Slice(s, pos, i - pos);
+				ProtString entity = String_Slice(s.prot, pos, i - pos);
 
 				if (entity.buf[0] == '#') {
 					if (entity.len < 3) {
@@ -294,7 +294,7 @@ sdef(String, Decode, String s) {
 					String s = String_New(4);
 					Unicode_ToMultiByte(c, &s);
 
-					String_Append(&res, s);
+					String_Append(&res, s.prot);
 
 					String_Destroy(&s);
 				} else {
@@ -312,7 +312,7 @@ sdef(String, Decode, String s) {
 						String s = String_New(4);
 						Unicode_ToMultiByte(entities[j].c, &s);
 
-						String_Append(&res, s);
+						String_Append(&res, s.prot);
 
 						String_Destroy(&s);
 					}
@@ -324,7 +324,7 @@ sdef(String, Decode, String s) {
 			}
 
 			when (error) {
-				String_Append(&res, String_Slice(s, pos - 1, i - pos + 2));
+				String_Append(&res, String_Slice(s.prot, pos - 1, i - pos + 2));
 				ampersand = false;
 			}
 		}
@@ -333,8 +333,8 @@ sdef(String, Decode, String s) {
     return res;
 }
 
-overload sdef(void, Encode, String s, String *out) {
-	for (size_t i = 0; i < s.len; i++) {
+overload sdef(void, Encode, ProtString s, String *out) {
+	forward (i, s.len) {
 		switch (s.buf[i]) {
 			case '&':
 				String_Append(out, $("&amp;"));
@@ -362,7 +362,7 @@ overload sdef(void, Encode, String s, String *out) {
 	}
 }
 
-overload sdef(String, Encode, String s) {
+overload sdef(String, Encode, ProtString s) {
 	String res = String_New(s.len * HTML_Entities_GrowthFactor);
 	HTML_Entities_Encode(s, &res);
 

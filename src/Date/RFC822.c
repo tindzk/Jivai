@@ -2,9 +2,9 @@
 
 #define self Date_RFC822
 
-static const String pattern = $("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
+static const ProtString pattern = $("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
 
-static const String weekdays[] = {
+static const ProtString weekdays[] = {
 	$("Sun"),
 	$("Mon"),
 	$("Tue"),
@@ -14,7 +14,7 @@ static const String weekdays[] = {
 	$("Sat")
 };
 
-static const String months[] = {
+static const ProtString months[] = {
 	$(""),
 	$("Jan"),
 	$("Feb"),
@@ -41,8 +41,8 @@ sdef(self, Empty) {
 	return res;
 }
 
-sdef(self, Parse, String s) {
-	String weekday, day, month, year, hour, minute, second;
+sdef(self, Parse, ProtString s) {
+	ProtString weekday, day, month, year, hour, minute, second;
 
 	Pattern regex;
 	Pattern_Init(&regex);
@@ -111,14 +111,22 @@ sdef(String, ToString, self $this) {
 		$this.date.month = 0;
 	}
 
+	String day    = Number_Format($this.date.day,    2);
+	String year   = Number_Format($this.date.year,   4);
+	String hour   = Number_Format($this.time.hour,   2);
+	String minute = Number_Format($this.time.minute, 2);
+	String second = Number_Format($this.time.second, 2);
+
 	String out = String_Format($("%, % % % %:%:% GMT"),
-		weekdays[$this.weekday],
-		Number_Format($this.date.day,    2),
-		months[$this.date.month],
-		Number_Format($this.date.year,   4),
-		Number_Format($this.time.hour,   2),
-		Number_Format($this.time.minute, 2),
-		Number_Format($this.time.second, 2));
+		weekdays[$this.weekday], day.prot,
+		months[$this.date.month], year.prot, hour.prot,
+		minute.prot, second.prot);
+
+	String_Destroy(&second);
+	String_Destroy(&minute);
+	String_Destroy(&hour);
+	String_Destroy(&year);
+	String_Destroy(&day);
 
 	return out;
 }

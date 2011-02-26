@@ -41,10 +41,10 @@ set(ref(ItemType)) {
 record(ref(Entry)) {
 	long inode;
 	ref(ItemType) type;
-	String name;
+	ProtString name;
 };
 
-def(void, Init, String path);
+def(void, Init, ProtString path);
 def(void, Destroy);
 def(bool, Read, ref(Entry) *res);
 
