@@ -5,8 +5,8 @@
 def(void, Init, Stream stream) {
 	this->stream = stream;
 	this->eof    = false;
-	this->inbuf  = $("");
-	this->outbuf = $("");
+	this->inbuf  = String_New(0);
+	this->outbuf = String_New(0);
 
 	this->inbufThreshold = 0;
 }
@@ -35,7 +35,7 @@ def(size_t, Read, void *buf, size_t len) {
 		return 0;
 	}
 
-	size_t size = String_GetSize(&this->inbuf);
+	size_t size = String_GetSize(this->inbuf);
 
 	if (this->inbuf.len == 0 && !this->eof) {
 		this->inbuf.len = delegate(this->stream, read,
@@ -80,15 +80,16 @@ def(size_t, Write, void *buf, size_t len) {
 		return 0;
 	}
 
-	String tmp = $("");
-
-	size_t size = String_GetSize(&this->outbuf);
+	size_t size = String_GetSize(this->outbuf);
 
 	if (this->outbuf.len + len > size) {
+		size_t bufLength = size - this->outbuf.len;
+
 		/* Jam-pack the buffer first. */
-		tmp.buf = buf;
-		tmp.len = size - this->outbuf.len;
-		String_Append(&this->outbuf, tmp);
+		String_Append(&this->outbuf, (ProtString) {
+			.buf = buf,
+			.len = bufLength
+		});
 
 		/* Flush the buffer. */
 		delegate(this->stream, write,
@@ -98,26 +99,26 @@ def(size_t, Write, void *buf, size_t len) {
 		this->outbuf.len = 0;
 
 		/* Handle the remaining chunk. */
-		if (len - tmp.len > 0) {
+		if (len - len > 0) {
 			BufferedStream_Write(this,
-				buf + tmp.len,
-				len - tmp.len);
+				buf + bufLength,
+				len - bufLength);
 		}
 	} else {
-		tmp.buf = buf;
-		tmp.len = len;
-		String_Append(&this->outbuf, tmp);
+		String_Append(&this->outbuf, (ProtString) {
+			.buf = buf,
+			.len = len
+		});
 	}
 
 	return len;
 }
 
-def(String, Flush) {
-	String res = $("");
+def(ProtString, Flush) {
+	ProtString res = $("");
 
 	if (this->inbuf.len > 0) {
-		res.len = this->inbuf.len;
-		res.buf = this->inbuf.buf;
+		res = this->inbuf.prot;
 		this->inbuf.len = 0;
 	}
 

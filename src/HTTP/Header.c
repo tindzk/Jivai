@@ -6,7 +6,7 @@ def(void, Init, ref(Events) events) {
 	this->events = events;
 }
 
-def(void, ParseMethod, String s) {
+def(void, ParseMethod, ProtString s) {
 	if (s.len == 0) {
 		throw(RequestMalformed);
 	}
@@ -20,7 +20,7 @@ def(void, ParseMethod, String s) {
 	callback(this->events.onMethod, method);
 }
 
-def(void, ParseVersion, String s) {
+def(void, ParseVersion, ProtString s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
@@ -30,7 +30,7 @@ def(void, ParseVersion, String s) {
 	callback(this->events.onVersion, version);
 }
 
-def(void, ParseStatus, String s) {
+def(void, ParseStatus, ProtString s) {
 	s32 code = Int32_Parse(s);
 
 	if (code == 0) {
@@ -46,7 +46,7 @@ def(void, ParseStatus, String s) {
 	callback(this->events.onStatus, status);
 }
 
-def(void, ParseUri, String s) {
+def(void, ParseUri, ProtString s) {
 	if (s.len == 0) {
 		throw(EmptyRequestUri);
 	}
@@ -54,11 +54,12 @@ def(void, ParseUri, String s) {
 	ssize_t pos = String_Find(s, '?');
 
 	if (hasCallback(this->events.onPath)) {
-		String path =
+		ProtString path =
 			(pos != String_NotFound)
 				? String_Slice(s, 0, pos)
-				: String_Disown(s);
+				: s;
 
+		bool free = false;
 		size_t len = HTTP_Query_GetAbsoluteLength(path);
 
 		if (len <= path.len) {
@@ -69,13 +70,16 @@ def(void, ParseUri, String s) {
 			HTTP_Query_Unescape(path, decoded.buf, true);
 			decoded.len = len;
 
-			path = decoded;
+			path = decoded.prot;
+			free = true;
 		}
 
 		try {
 			callback(this->events.onPath, path);
 		} clean finally {
-			String_Destroy(&path);
+			if (free) {
+				String_Destroy((String *) &path);
+			}
 		} tryEnd;
 	}
 
@@ -89,7 +93,7 @@ def(void, ParseUri, String s) {
 	}
 }
 
-def(void, ParseHeaderLine, String s) {
+def(void, ParseHeaderLine, ProtString s) {
 	if (hasCallback(this->events.onHeader)) {
 		ssize_t pos;
 
@@ -119,7 +123,7 @@ def(void, ParseHeaderLine, String s) {
  *   >0         actual request length, including last \r\n\r\n
  */
 
-sdef(ssize_t, GetLength, String str) {
+sdef(ssize_t, GetLength, ProtString str) {
 	const char *s, *e;
 	ssize_t len = 0;
 
@@ -138,7 +142,7 @@ sdef(ssize_t, GetLength, String str) {
 	return len;
 }
 
-def(void, Parse, ref(Type) type, String s) {
+def(void, Parse, ref(Type) type, ProtString s) {
 	ssize_t pos1stLine = String_Find(s, '\n');
 
 	if (pos1stLine == String_NotFound) {
@@ -158,16 +162,16 @@ def(void, Parse, ref(Type) type, String s) {
 			throw(RequestMalformed);
 		}
 
-		String method = String_Slice(s, 0, posMethod);
+		ProtString method = String_Slice(s, 0, posMethod);
 		call(ParseMethod, method);
 
-		String version = String_Slice(s,
+		ProtString version = String_Slice(s,
 			pos1stLine - $("HTTP/1.1").len,
 			$("HTTP/1.1").len);
 
 		call(ParseVersion, version);
 
-		String path = String_Slice(s,
+		ProtString path = String_Slice(s,
 			method.len + 1,
 			pos1stLine - version.len - (method.len + 1) - 1);
 
@@ -179,7 +183,7 @@ def(void, Parse, ref(Type) type, String s) {
 			throw(RequestMalformed);
 		}
 
-		String version = String_Slice(s, 0, posVersion);
+		ProtString version = String_Slice(s, 0, posVersion);
 		call(ParseVersion, version);
 
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
@@ -188,11 +192,9 @@ def(void, Parse, ref(Type) type, String s) {
 			throw(RequestMalformed);
 		}
 
-		String code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
+		ProtString code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
 		call(ParseStatus, code);
 	}
-
-	String res = $("");
 
 	size_t len;
 	size_t last = pos2ndLine;
@@ -206,21 +208,10 @@ def(void, Parse, ref(Type) type, String s) {
 			}
 
 			if (len > 0) {
-				String_Copy(&res,
-					String_Slice(s, last + 1, len));
-
-				try {
-					call(ParseHeaderLine, res);
-				} clean finally {
-					if (e != 0) {
-						String_Destroy(&res);
-					}
-				} tryEnd;
+				call(ParseHeaderLine, String_Slice(s, last + 1, len));
 			}
 
 			last = i;
 		}
 	}
-
-	String_Destroy(&res);
 }

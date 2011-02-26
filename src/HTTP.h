@@ -5,11 +5,11 @@
 
 #define self HTTP
 
-DefineCallback(ref(OnPath), void, String);
+DefineCallback(ref(OnPath), void, ProtString);
 DefineCallback(ref(OnStatus), void, ref(Status));
 DefineCallback(ref(OnMethod), void, ref(Method));
 DefineCallback(ref(OnVersion), void, ref(Version));
-DefineCallback(ref(OnHeader), void, String, String);
-DefineCallback(ref(OnParameter), String *, String);
+DefineCallback(ref(OnHeader), void, ProtString, ProtString);
+DefineCallback(ref(OnParameter), String *, ProtString);
 
 #undef self

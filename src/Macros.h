@@ -57,8 +57,17 @@
 #define Method(ret, method, ...) \
 	ret (*method)(GenericInstance $this, ## __VA_ARGS__)
 
-#define Instance(name) \
+#define InstName(name) \
 	simpleConcat(name, Instance)
+
+#define ImplName(name) \
+	simpleConcat(name, Impl)
+
+#define Instance(name) \
+	typedef union {                    \
+		name *object;                  \
+		GenericInstance generic;       \
+	} InstName(name) transparentUnion; \
 
 #define Interface(name)               \
 	struct name##Interface;           \
@@ -80,11 +89,8 @@
 #define implements(name, method) \
 	(name).impl->method != NULL
 
-#define ImplName \
-	simpleConcat(self, Impl)
-
 #define Impl(name) \
-	name##Interface ImplName
+	name##Interface ImplName(self)
 
 #define DefineAs(name, implName)        \
 	static inline def(name, As##name) { \
@@ -99,9 +105,9 @@
 #define ExportImpl(name)                             \
 	extern Impl(name);                               \
 	static inline sdef(name##Interface *, GetImpl) { \
-		return &ImplName;                            \
+		return &ImplName(self);                      \
 	}                                                \
-	DefineAs(name, ImplName);
+	DefineAs(name, ImplName(self));
 
 #define ExportAnonImpl(module, name)                 \
 	name##Interface simpleConcat(module, Impl);      \
@@ -123,7 +129,7 @@
 	DefineAs(name, ImplExName(name));
 
 #define def(ret, method, ...) \
-	ret ref(method)(__unused Instance(self) $this, ## __VA_ARGS__)
+	ret ref(method)(__unused InstName(self) $this, ## __VA_ARGS__)
 
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
@@ -156,62 +162,59 @@
  * http://blog.nelhage.com/2010/10/using-haskells-newtype-in-c/
  */
 
-#define BasicInstance(name)                                                                   \
-	static inline Instance(name) tripleConcat(name, _, FromObject)(name *object) {            \
-		return (Instance(name)) { .object = object };                                         \
+#define InstanceMethods(name)                                                                 \
+	static inline InstName(name) tripleConcat(name, _, FromObject)(name *object) {            \
+		return (InstName(name)) { .object = object };                                         \
 	}                                                                                         \
-	static inline name* tripleConcat(name, _, GetObject)(Instance(name) instance) {           \
+	static inline name* tripleConcat(name, _, GetObject)(InstName(name) instance) {           \
 		return instance.object;                                                               \
 	}                                                                                         \
-	static inline Instance(name) tripleConcat(name, _, Null)() {                              \
-		return (Instance(name)) { .object = NULL };                                           \
+	static inline InstName(name) tripleConcat(name, _, Null)() {                              \
+		return (InstName(name)) { .object = NULL };                                           \
 	}                                                                                         \
-	static inline bool tripleConcat(name, _, IsNull)(Instance(name) instance) {               \
+	static inline bool tripleConcat(name, _, IsNull)(InstName(name) instance) {               \
 		return instance.object == NULL;                                                       \
 	}                                                                                         \
-	static inline GenericInstance tripleConcat(name, _, ToGeneric)(Instance(name) instance) { \
+	static inline GenericInstance tripleConcat(name, _, ToGeneric)(InstName(name) instance) { \
 		return (GenericInstance) { .object = instance.object };                               \
 	}
 
-#define class                          \
-	typedef struct self self;          \
-	typedef union {                    \
-		struct self *object;           \
-		GenericInstance generic;       \
-	} Instance(self) transparentUnion; \
-	BasicInstance(self)                \
+#define class                 \
+	typedef struct self self; \
+	Instance(self);           \
+	InstanceMethods(self);    \
 	struct self
 
 /* This cannot be included in `class' as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
 #define ExtendClass                                                                        \
-	static inline bool tripleConcat(self, _, Equals)(Instance(self) a, Instance(self) b) { \
+	static inline bool tripleConcat(self, _, Equals)(InstName(self) a, InstName(self) b) { \
 		return a.object == b.object;                                                       \
 	}                                                                                      \
-	static alwaysInline Instance(self) tripleConcat(self, _, NewStack)(void) {             \
+	static alwaysInline InstName(self) tripleConcat(self, _, NewStack)(void) {             \
 		self obj;                                                                          \
-		return (Instance(self)) &obj;                                                      \
+		return (InstName(self)) &obj;                                                      \
 	}                                                                                      \
-	static inline Instance(self) tripleConcat(self, _, New)(void) {                        \
-		return (Instance(self)) (self *) Pool_Alloc(Pool_GetInstance(), sizeof(self));     \
+	static inline InstName(self) tripleConcat(self, _, New)(void) {                        \
+		return (InstName(self)) (self *) Pool_Alloc(Pool_GetInstance(), sizeof(self));     \
 	}                                                                                      \
-	static inline void tripleConcat(self, _, Free)(Instance(self) instance) {              \
+	static inline void tripleConcat(self, _, Free)(InstName(self) instance) {              \
 		Pool_Free(Pool_GetInstance(), instance.object);                                    \
 	}                                                                                      \
-	static inline Instance(self) tripleConcat(self, _, Clone)(Instance(self) instance) {   \
+	static inline InstName(self) tripleConcat(self, _, Clone)(InstName(self) instance) {   \
 		self *ptr = Pool_Alloc(Pool_GetInstance(), sizeof(self));                          \
 		Memory_Copy(ptr, instance.object, sizeof(self));                                   \
-		return (Instance(self)) ptr;                                                       \
+		return (InstName(self)) ptr;                                                       \
 	}
 
 #define SingletonPrototype(name) \
-	Instance(name) tripleConcat(name, _, GetInstance)(void)
+	InstName(name) tripleConcat(name, _, GetInstance)(void)
 
 #define Singleton(name, ...)                                       \
 	SingletonPrototype(name) {                                     \
 		static name object;                                        \
-		static Instance(name) instance;                            \
+		static InstName(name) instance;                            \
 		if (tripleConcat(name, _, IsNull)(instance)) {             \
 			instance = tripleConcat(name, _, FromObject)(&object); \
 			tripleConcat(name, _, Init)(instance, ## __VA_ARGS__); \
@@ -221,7 +224,7 @@
 
 #define SingletonDestructor(name)                 \
 	Destructor {                                  \
-		Instance(self) instance =                 \
+		InstName(self) instance =                 \
 			tripleConcat(name, _, GetInstance)(); \
 		tripleConcat(name, _, Destroy)(instance); \
 	}

@@ -35,12 +35,12 @@ class {
 };
 
 def(void, Init, ref(Events) events);
-def(void, ParseMethod, String s);
-def(void, ParseVersion, String s);
-def(void, ParseStatus, String s);
-def(void, ParseUri, String s);
-def(void, ParseHeaderLine, String s);
-sdef(ssize_t, GetLength, String str);
-def(void, Parse, ref(Type) type, String s);
+def(void, ParseMethod, ProtString s);
+def(void, ParseVersion, ProtString s);
+def(void, ParseStatus, ProtString s);
+def(void, ParseUri, ProtString s);
+def(void, ParseHeaderLine, ProtString s);
+sdef(ssize_t, GetLength, ProtString str);
+def(void, Parse, ref(Type) type, ProtString s);
 
 #undef self

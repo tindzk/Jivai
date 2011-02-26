@@ -56,7 +56,7 @@ def(void, OnMethod, HTTP_Method method) {
 	this->method = method;
 }
 
-def(void, OnPath, String path) {
+def(void, OnPath, ProtString path) {
 	String_Copy(&this->path, path);
 }
 
@@ -65,7 +65,7 @@ def(void, OnPath, String path) {
  * http://localhost:8080/?test=abc&test2=def
  */
 
-def(String *, OnQueryParameter, String name) {
+def(String *, OnQueryParameter, ProtString name) {
 	if (String_Equals(name, $("test"))) {
 		/* test's value will be put into this variable. */
 		return &this->paramTest;
@@ -81,7 +81,7 @@ def(String *, OnQueryParameter, String name) {
  * Treat body-submitted parameters equally like URL-supplied ones.
  */
 
-def(String *, OnBodyParameter, String name) {
+def(String *, OnBodyParameter, ProtString name) {
 	return call(OnQueryParameter, name);
 }
 
@@ -97,9 +97,8 @@ def(void, OnRespond, bool persistent) {
 	}
 
 	if (this->method != HTTP_Method_Head) {
-		String tmp;
-		String_Append(&this->resp, tmp = String_Format(
-			$(
+		String_Append(&this->resp,
+			FmtString($(
 				"<form action=\"/\" method=\"post\">"
 				"<input type=\"text\" name=\"test\" /><br />"
 				"<input type=\"text\" name=\"test2\" /><br />"
@@ -110,9 +109,10 @@ def(void, OnRespond, bool persistent) {
 				"test=%<br />"
 				"test2=%<br />"
 			),
-			this->path, this->paramTest, this->paramTest2));
 
-		String_Destroy(&tmp);
+			this->path.prot,
+			this->paramTest.prot,
+			this->paramTest2.prot));
 	}
 
 	String strLength = Integer_ToString(this->resp.len);
@@ -132,7 +132,7 @@ def(void, OnRespond, bool persistent) {
 			? $("Connection: Keep-Alive")
 			: $("Connection: Close"),
 
-		strLength);
+		strLength.prot);
 
 	String_Destroy(&strLength);
 
@@ -163,7 +163,7 @@ def(void, Init, SocketConnection *conn) {
 	this->version    = HTTP_Version_1_0;
 	this->gotData    = false;
 	this->persistent = false;
-	this->path       = $("");
+	this->path       = String_New(0);
 
 	/* paramTest and paramTest2 must not be longer than 256 bytes,
 	 * otherwise an `HTTP_Query_ExceedsPermittedLengthException'

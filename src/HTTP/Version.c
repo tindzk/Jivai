@@ -2,7 +2,7 @@
 
 #define self HTTP_Version
 
-sdef(String, ToString, self version) {
+sdef(ProtString, ToString, self version) {
 	switch (version) {
 		case ref(1_0):
 			return $("HTTP/1.0");
@@ -17,7 +17,7 @@ sdef(String, ToString, self version) {
 	return $("");
 }
 
-sdef(self, FromString, String s) {
+sdef(self, FromString, ProtString s) {
 	if (String_Equals(s, $("HTTP/1.1"))) {
 		return ref(1_1);
 	} else if (String_Equals(s, $("HTTP/1.0"))) {

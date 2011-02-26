@@ -2,7 +2,7 @@
 
 #define self Kernel
 
-sdef(ssize_t, open, String path, int flags, int mode) {
+sdef(ssize_t, open, ProtString path, int flags, int mode) {
 	return syscall(__NR_open, String_ToNul(path), flags, mode);
 }
 
@@ -35,45 +35,45 @@ sdef(bool, llseek, ssize_t fd, u64 offset, u64 *pos, int whence) {
 		pos, whence) == 0;
 }
 
-sdef(bool, mkdir, String path, int flags) {
+sdef(bool, mkdir, ProtString path, int flags) {
 	return syscall(__NR_mkdir, String_ToNul(path), flags) == 0;
 }
 
-sdef(bool, unlink, String path) {
+sdef(bool, unlink, ProtString path) {
 	return syscall(__NR_unlink, String_ToNul(path)) == 0;
 }
 
-sdef(bool, rmdir, String path) {
+sdef(bool, rmdir, ProtString path) {
 	return syscall(__NR_rmdir, String_ToNul(path)) == 0;
 }
 
-sdef(ssize_t, readlink, String path, char *buf, size_t size) {
+sdef(ssize_t, readlink, ProtString path, char *buf, size_t size) {
 	return syscall(__NR_readlink, String_ToNul(path), buf, size);
 }
 
-sdef(bool, setxattr, String path, String name, char *buf, size_t size, int flags) {
+sdef(bool, setxattr, ProtString path, ProtString name, char *buf, size_t size, int flags) {
 	return syscall(__NR_setxattr,
 		String_ToNul(path),
 		String_ToNul(name),
 		buf, size, flags) == 0;
 }
 
-sdef(bool, fsetxattr, ssize_t fd, String name, char *buf, size_t size, int flags) {
+sdef(bool, fsetxattr, ssize_t fd, ProtString name, char *buf, size_t size, int flags) {
 	return syscall(__NR_fsetxattr, fd, String_ToNul(name), buf, size, flags) == 0;
 }
 
-sdef(ssize_t, getxattr, String path, String name, char *buf, size_t size) {
+sdef(ssize_t, getxattr, ProtString path, ProtString name, char *buf, size_t size) {
 	return syscall(__NR_getxattr,
 		String_ToNul(path),
 		String_ToNul(name),
 		buf, size);
 }
 
-sdef(ssize_t, fgetxattr, ssize_t fd, String name, char *buf, size_t size) {
+sdef(ssize_t, fgetxattr, ssize_t fd, ProtString name, char *buf, size_t size) {
 	return syscall(__NR_fgetxattr, fd, String_ToNul(name), buf, size);
 }
 
-sdef(bool, symlink, String path1, String path2) {
+sdef(bool, symlink, ProtString path1, ProtString path2) {
 	return syscall(__NR_readlink,
 		String_ToNul(path1),
 		String_ToNul(path2)) == 0;
@@ -86,7 +86,7 @@ sdef(bool, utimensat, int dirfd, String path, Time_UnixEpoch t, int flags) {
 		flags) == 0;
 }
 
-sdef(bool, chdir, String path) {
+sdef(bool, chdir, ProtString path) {
 	return syscall(__NR_chdir, String_ToNul(path)) == 0;
 }
 
@@ -94,11 +94,11 @@ sdef(bool, fchdir, ssize_t fd) {
 	return syscall(__NR_fchdir, fd) == 0;
 }
 
-sdef(bool, lstat, String path, Stat *attr) {
+sdef(bool, lstat, ProtString path, Stat *attr) {
 	return syscall(__NR_lstat, String_ToNul(path), attr) == 0;
 }
 
-sdef(bool, stat, String path, Stat *attr) {
+sdef(bool, stat, ProtString path, Stat *attr) {
 	return syscall(__NR_stat, String_ToNul(path), attr) == 0;
 }
 
@@ -106,7 +106,7 @@ sdef(size_t, getcwd, char *buf, size_t size) {
 	return syscall(__NR_getcwd, buf, size);
 }
 
-sdef(bool, stat64, String path, Stat64 *attr) {
+sdef(bool, stat64, ProtString path, Stat64 *attr) {
 	return syscall(__NR_stat64, String_ToNul(path), attr) == 0;
 }
 
@@ -114,7 +114,7 @@ sdef(bool, fstat64, ssize_t fd, Stat64 *attr) {
 	return syscall(__NR_fstat64, fd, attr) == 0;
 }
 
-sdef(bool, truncate64, String path, u64 len) {
+sdef(bool, truncate64, ProtString path, u64 len) {
 	return syscall(__NR_truncate64, String_ToNul(path), len) == 0;
 }
 

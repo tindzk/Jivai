@@ -2,7 +2,7 @@
 
 #define self FileStream
 
-def(void, Open, String path, int mode) {
+def(void, Open, ProtString path, int mode) {
 	File_Open(this, path, mode);
 }
 

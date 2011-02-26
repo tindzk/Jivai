@@ -2,8 +2,8 @@
 
 #define self StringStream
 
-def(void, Init, String *s) {
-	this->str    = s;
+def(void, Init, ProtStringInstance s) {
+	this->str    = s.object;
 	this->offset = 0;
 }
 

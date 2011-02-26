@@ -75,8 +75,8 @@ static void BFD_ReadSymtab(bfd *abfd) {
 }
 
 void BFD_TranslateAddress(bfd *abfd, bfd_vma pc, BFD_Item *cur) {
-	cur->function = $("");
-	cur->filename = $("");
+	cur->function = String_New(0);
+	cur->filename = String_New(0);
 	cur->addr     = (long long unsigned int) pc;
 	cur->line     = 0;
 

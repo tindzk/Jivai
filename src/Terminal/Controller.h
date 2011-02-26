@@ -9,6 +9,6 @@ class {
 };
 
 def(void, Init, Terminal *term);
-def(void, Render, String s, ...);
+def(void, Render, ProtString s, ...);
 
 #undef self

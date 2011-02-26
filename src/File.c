@@ -27,7 +27,7 @@ self* ref(StdIn)  = &stdIn;
 self* ref(StdOut) = &stdOut;
 self* ref(StdErr) = &stdErr;
 
-def(void, Open, String path, int mode) {
+def(void, Open, ProtString path, int mode) {
 	errno = 0;
 
 	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
@@ -67,13 +67,13 @@ def(void, Close) {
 	Kernel_close(this->fd);
 }
 
-def(void, SetXattr, String name, String value) {
+def(void, SetXattr, ProtString name, ProtString value) {
 	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
 		throw(SettingAttributeFailed);
 	}
 }
 
-overload def(String, GetXattr, String name) {
+overload def(String, GetXattr, ProtString name) {
 	errno = 0;
 
 	ssize_t size = Kernel_fgetxattr(this->fd, name, NULL, 0);
@@ -97,10 +97,10 @@ overload def(String, GetXattr, String name) {
 	return res;
 }
 
-overload def(void, GetXattr, String name, String *value) {
+overload def(void, GetXattr, ProtString name, String *value) {
 	errno = 0;
 
-	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, String_GetSize(value));
+	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, String_GetSize(*value));
 
 	if (size == -1) {
 		if (errno == ENODATA) {
@@ -180,7 +180,7 @@ overload def(size_t, Read, void *buf, size_t len) {
 }
 
 inline overload def(void, Read, String *res) {
-	res->len = call(Read, res->buf, String_GetSize(res));
+	res->len = call(Read, res->buf, String_GetSize(*res));
 }
 
 overload def(size_t, Write, void *buf, size_t len) {
@@ -205,7 +205,7 @@ overload def(size_t, Write, void *buf, size_t len) {
 	return res;
 }
 
-overload def(size_t, Write, String s) {
+overload def(size_t, Write, ProtString s) {
 	return call(Write, s.buf, s.len);
 }
 
@@ -239,15 +239,15 @@ def(u64, Tell) {
 	return call(Seek, 0L, ref(SeekType_Cur));
 }
 
-void ref(GetContents)(String path, String *res) {
+sdef(void, GetContents, ProtString path, String *res) {
 	File file;
-	ref(Open)(&file, path, FileStatus_ReadOnly);
+	scall(Open, &file, path, FileStatus_ReadOnly);
 
 	size_t len = 0;
-	size_t size = String_GetSize(res);
+	size_t size = String_GetSize(*res);
 
 	do {
-		len = ref(Read)(
+		len = scall(Read,
 			File_FromObject(&file),
 			res->buf + res->len,
 			size - res->len);

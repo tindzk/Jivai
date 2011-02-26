@@ -8,28 +8,19 @@
 		size_t len;                                                                            \
 		type buf[0];                                                                           \
 	};                                                                                         \
-	typedef union {                                                                            \
-		name *object;                                                                          \
-		GenericInstance generic;                                                               \
-	} Instance(name) transparentUnion;                                                         \
+	Instance(name);                                                                            \
 	static inline name* tripleConcat(name, _, New)(size_t items) {                             \
 		name *res = Pool_Alloc(Pool_GetInstance(), sizeof(name) + items * sizeof(type));       \
 		res->len  = 0;                                                                         \
 		return res;                                                                            \
 	}                                                                                          \
-	static inline size_t tripleConcat(name, _, GetSize)                                        \
-		(Instance(name) $this)                                                                 \
-	{                                                                                          \
+	static inline size_t tripleConcat(name, _, GetSize)(InstName(name) $this) {                \
 		return (Pool_GetSize(Pool_GetInstance(), $this.object) - sizeof(name)) / sizeof(type); \
 	}                                                                                          \
-	static inline void tripleConcat(name, _, Free)                                             \
-		(Instance(name) $this)                                                                 \
-	{                                                                                          \
+	static inline void tripleConcat(name, _, Free)(InstName(name) $this) {                     \
 		Pool_Free(Pool_GetInstance(), $this.object);                                           \
 	}                                                                                          \
-	static inline void tripleConcat(name, _, Delete)                                           \
-		(Instance(name) $this, size_t idx)                                                     \
-	{                                                                                          \
+	static inline void tripleConcat(name, _, Delete)(InstName(name) $this, size_t idx) {       \
 		if ($this.object->len - idx - 1 > 0) {                                                 \
 			Memory_Copy(                                                                       \
 				 $this.object->buf + idx,                                                      \

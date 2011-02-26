@@ -11,7 +11,7 @@ def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLengt
 	this->maxBodyLength   = maxBodyLength;
 	this->maxHeaderLength = maxHeaderLength;
 
-	this->body   = $("");
+	this->body   = String_New(0);
 	this->header = String_New(maxHeaderLength);
 
 	this->state   = ref(State_Header);
@@ -76,17 +76,17 @@ static def(void, OnVersion, HTTP_Version version) {
 	callback(this->events.onVersion, version);
 }
 
-static def(void, OnHeader, String name, String value) {
+static def(void, OnHeader, ProtString name, ProtString value) {
 	callback(this->events.onHeader, name, value);
 
-	String_ToLower(&name);
+	String_ToLower((String *) &name);
 
 	if (String_Equals(name, $("connection"))) {
-		String_ToLower(&value);
+		String_ToLower((String *) &value);
 
-		String elem = $("");
+		ProtString elem = $("");
 		while (String_Split(value, ',', &elem)) {
-			String chunk = String_Trim(elem);
+			ProtString chunk = String_Trim(elem);
 
 			if (String_Equals(chunk, $("close"))) {
 				this->headers.persistentConnection = false;
@@ -96,7 +96,7 @@ static def(void, OnHeader, String name, String value) {
 		}
 	} else {
 		if (this->method == HTTP_Method_Post) {
-			String_ToLower(&value);
+			String_ToLower((String *) &value);
 
 			if (String_Equals(name, $("content-type"))) {
 				if (String_BeginsWith(value, $("application/x-www-form-urlencoded"))) {
@@ -162,7 +162,7 @@ def(ref(Result), ReadHeader) {
 	for (;;) {
 		/* Do this now because the buffer might already contain the next
 		 * request. */
-		requestOffset = HTTP_Header_GetLength(this->header);
+		requestOffset = HTTP_Header_GetLength(this->header.prot);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -179,7 +179,7 @@ def(ref(Result), ReadHeader) {
 		 */
 		String_Shift(&this->header);
 
-		size_t free = String_GetFree(&this->header);
+		size_t free = String_GetFree(this->header);
 
 		if (free == 0) {
 			/* The buffer is full, but the request is still incomplete. */
@@ -199,7 +199,7 @@ def(ref(Result), ReadHeader) {
 
 	/* This is the case when this->header.len >= this->header.size. */
 	if (requestOffset == 0) {
-		requestOffset = HTTP_Header_GetLength(this->header);
+		requestOffset = HTTP_Header_GetLength(this->header.prot);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -212,7 +212,7 @@ def(ref(Result), ReadHeader) {
 	}
 
 	/* Trim the request and update requestOffset accordingly. */
-	String cleaned = String_Trim(this->header, String_TrimLeft);
+	ProtString cleaned = String_Trim(this->header.prot, String_TrimLeft);
 	size_t ofs = this->header.len - cleaned.len;
 	String_FastCrop(&this->header, ofs);
 	requestOffset -= ofs;
@@ -227,7 +227,7 @@ def(ref(Result), ReadHeader) {
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
 	HTTP_Header_Parse(&header, HTTP_Header_Type_Request,
-		String_Slice(this->header, 0, requestOffset));
+		String_Slice(this->header.prot, 0, requestOffset));
 
 	if (this->headers.contentLength > 0) {
 		/* The request has a body. */
@@ -238,7 +238,7 @@ def(ref(Result), ReadHeader) {
 			if (this->header.len - requestOffset >= this->headers.contentLength) {
 				/* We have the whole body in this->header. */
 				String_Copy(&this->body,
-					String_Slice(this->header, requestOffset, this->headers.contentLength));
+					String_Slice(this->header.prot, requestOffset, this->headers.contentLength));
 
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
@@ -247,7 +247,7 @@ def(ref(Result), ReadHeader) {
 			} else {
 				/* The body is only partial. */
 				String_Copy(&this->body,
-					String_Slice(this->header, requestOffset));
+					String_Slice(this->header.prot, requestOffset));
 
 				/* See comment below. */
 				this->header.len = 0;
@@ -292,10 +292,10 @@ def(ref(Result), ReadBody) {
 		/* TODO */
 	} else {
 		/* Get the remaining chunks (if any). */
-		while (String_GetFree(&this->body) > 0) {
+		while (String_GetFree(this->body) > 0) {
 			ssize_t len = SocketConnection_Read(this->conn,
-				this->body.buf  + this->body.len,
-				String_GetFree(&this->body));
+				this->body.buf + this->body.len,
+				String_GetFree(this->body));
 
 			if (len == -1) {
 				return ref(Result_Incomplete);
@@ -312,7 +312,7 @@ def(ref(Result), ReadBody) {
 				HTTP_Query qry;
 				HTTP_Query_Init(&qry, this->events.onBodyParameter);
 				HTTP_Query_SetAutoResize(&qry, true);
-				HTTP_Query_Decode(&qry, this->body, true);
+				HTTP_Query_Decode(&qry, this->body.prot, true);
 			}
 		} clean finally {
 			this->state = ref(State_Header);

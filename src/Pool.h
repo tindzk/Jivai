@@ -32,16 +32,16 @@ class {
 };
 
 def(void, Init);
-def(ref(Session) *, CreateSession, String name);
+def(ref(Session) *, CreateSession, ProtString name);
 def(size_t, Dispose, ref(Session) *sess);
-def(void, Push, ref(Session) *sess, String name);
+def(void, Push, ref(Session) *sess, ProtString name);
 def(void, Pop, ref(Session) *sess);
 def(void *, Alloc, size_t size);
 def(void *, Realloc, void *addr, size_t size);
 def(size_t, Free, void *addr);
 def(size_t, GetSize, void *addr);
 def(void *, Clone, void *addr);
-def(void, Bundle, String name);
+def(void, Bundle, ProtString name);
 def(void, Commit);
 
 SingletonPrototype(self);

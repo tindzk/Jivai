@@ -42,7 +42,7 @@ typedef union {
 	Generic *object;
 } GenericInstance transparentUnion;
 
-BasicInstance(Generic);
+InstanceMethods(Generic);
 
 /* Inline functions cannot be used as Pool's methods are not available yet. */
 #define Generic_New(size) (GenericInstance) { .object = Pool_Alloc(Pool_GetInstance(), size) }

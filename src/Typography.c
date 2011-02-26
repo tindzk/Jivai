@@ -37,7 +37,7 @@ static def(void, Flush, String *value) {
 		node->line = this->line;
 
 		ref(Text) *text = (ref(Text) *) &node->data;
-		text->value = String_Clone(*value);
+		text->value = String_Clone(value->prot);
 
 		value->len = 0;
 	}
@@ -53,9 +53,9 @@ static def(void, Read, size_t st) {
 
 	bool prevstate = NONE;
 
-	String name    = $("");
-	String value   = $("");
-	String options = $("");
+	String name    = String_New(0);
+	String value   = String_New(0);
+	String options = String_New(0);
 
 	while (!delegate(this->stream, isEof)) {
 		if (next == '\0') {
@@ -107,8 +107,8 @@ static def(void, Read, size_t st) {
 
 					ref(Item) *item = (ref(Item) *) &this->node->data;
 
-					item->name    = String_Clone(String_Trim(name));
-					item->options = String_Clone(options);
+					item->name    = String_Clone(String_Trim(name.prot));
+					item->options = String_Clone(options.prot);
 
 					options.len = 0;
 					name.len    = 0;
@@ -118,7 +118,7 @@ static def(void, Read, size_t st) {
 					state = prevstate;
 				} else if (cur != '\\') {
 					String_Append(&value, '.');
-					String_Append(&value, name);
+					String_Append(&value, name.prot);
 
 					name.len = 0;
 

@@ -2,7 +2,7 @@
 
 #define self HTTP_Method
 
-sdef(self, FromString, String s) {
+sdef(self, FromString, ProtString s) {
 	if (String_Equals(s, $("GET"))) {
 		return ref(Get);
 	} else if (String_Equals(s, $("POST"))) {
@@ -14,7 +14,7 @@ sdef(self, FromString, String s) {
 	return ref(Unset);
 }
 
-sdef(String, ToString, self method) {
+sdef(ProtString, ToString, self method) {
 	switch (method) {
 		case ref(Head):
 			return $("HEAD");

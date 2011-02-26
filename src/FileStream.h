@@ -5,7 +5,7 @@
 
 #define FileStreamInstance FileInstance
 
-def(void, Open, String path, int mode);
+def(void, Open, ProtString path, int mode);
 def(void, Close);
 def(size_t, Read, void *buf, size_t len);
 def(size_t, Write, void *buf, size_t len);

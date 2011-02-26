@@ -43,11 +43,11 @@ extern self* ref(StdIn);
 extern self* ref(StdOut);
 extern self* ref(StdErr);
 
-def(void, Open, String path, int mode);
+def(void, Open, ProtString path, int mode);
 def(void, Close);
-def(void, SetXattr, String name, String value);
-overload def(String, GetXattr, String name);
-overload def(void, GetXattr, String name, String *value);
+def(void, SetXattr, ProtString name, ProtString value);
+overload def(String, GetXattr, ProtString name);
+overload def(void, GetXattr, ProtString name, String *value);
 overload def(void, Truncate, u64 length);
 overload def(void, Truncate);
 def(Stat64, GetStat);
@@ -55,11 +55,11 @@ def(u64, GetSize);
 overload def(size_t, Read, void *buf, size_t len);
 overload def(void, Read, String *res);
 overload def(size_t, Write, void *buf, size_t len);
-overload def(size_t, Write, String s);
+overload def(size_t, Write, ProtString s);
 overload def(size_t, Write, char c);
 def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
-void ref(GetContents)(String path, String *res);
+sdef(void, GetContents, ProtString path, String *res);
 
 #define File_Read(obj, ...) \
 	File_Read(File_FromObject(obj), ## __VA_ARGS__)

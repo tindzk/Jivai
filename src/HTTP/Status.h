@@ -4,8 +4,8 @@
 
 record(ref(Item)) {
 	u16 code;
-	String msg;
-	String descr;
+	ProtString msg;
+	ProtString descr;
 };
 
 #define HTTP_Status_Item(code, msg, descr) \

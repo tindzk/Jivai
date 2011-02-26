@@ -25,7 +25,7 @@ String Number_Format(s32 number, size_t decimals) {
 	}
 
 	String strNumber = Integer_ToString(number);
-	String_Append(&res, strNumber);
+	String_Append(&res, strNumber.prot);
 	String_Destroy(&strNumber);
 
 	return res;

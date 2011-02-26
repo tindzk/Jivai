@@ -2,7 +2,7 @@
 
 #define self NetworkAddress
 
-struct in_addr NetworkAddress_ResolveHost(String hostname) {
+sdef(struct in_addr, ResolveHost, ProtString hostname) {
 	struct addrinfo *host;
 
 	if (getaddrinfo(String_ToNul(hostname), NULL, NULL, &host)) {
@@ -39,7 +39,7 @@ static size_t i2a(char *dest, size_t x) {
 }
 
 /* Taken from diet libc (dietlibc-0.32/libcruft/inet_ntoa_r.c). */
-String NetworkAddress_ToString(NetworkAddress addr) {
+sdef(String, ToString, NetworkAddress addr) {
 	String out = String_New(15);
 
 	unsigned char *ip = (unsigned char *) &addr.ip;

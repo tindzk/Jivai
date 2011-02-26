@@ -10,7 +10,7 @@ int main(void) {
 	 *   String s = String_Clone($("Allocated on heap."));
 	 *   String_Destroy(&s);
 	 */
-	String s = $("Hello world!");
+	ProtString s = $("Hello world!");
 
 	/* This loop only serves the purpose of illustrating String's
 	 * capabilities. In practice, you'd rather do something like:
@@ -27,7 +27,7 @@ int main(void) {
 			$("%%"),
 
 			/* Will be put in place of the first '%'. */
-			c,
+			c.prot,
 
 			/* The last character has the position s.len-1. */
 			(i == s.len - 1) ? $("\n") : $(""));
@@ -38,7 +38,7 @@ int main(void) {
 		 * pointer because the `String()' macro expands to
 		 * a compound literal like: (String) { ... }.
 		 */
-		String_Print(fmt);
+		String_Print(fmt.prot);
 
 		/* String_Format() returns a heap-allocated string! */
 		String_Destroy(&fmt);

@@ -16,19 +16,23 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 			File_Write(File_StdErr, true);
 			String_Destroy(&hex);
 		} else {
-			File_Write(File_StdErr, items[i].function);
+			File_Write(File_StdErr, items[i].function.prot);
 			File_Write(File_StdErr, $("("));
 
 			if (items[i].filename.len > 0) {
-				ssize_t pos = String_ReverseFind(items[i].filename, '/');
+				ssize_t pos = String_ReverseFind(items[i].filename.prot, '/');
 
 				if (pos != -1) {
 					String_Crop(&items[i].filename, pos + 1);
 				}
 
-				File_Write(File_StdErr, items[i].filename);
+				String line = Integer_ToString(items[i].line);
+
+				File_Write(File_StdErr, items[i].filename.prot);
 				File_Write(File_StdErr, $(":"));
-				File_Write(File_StdErr, Integer_ToString(items[i].line));
+				File_Write(File_StdErr, line.prot);
+
+				String_Destroy(&line);
 			}
 
 			File_Write(File_StdErr, $(")"));

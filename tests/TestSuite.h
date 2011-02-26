@@ -20,12 +20,12 @@ record(ref(Method)) {
 	ref(MethodType) type;
 	void *addr;
 
-	String name;
+	ProtString name;
 	size_t level;
 };
 
 Interface(ITestSuite) {
-	String name;
+	ProtString name;
 	size_t size;
 	TestSuite_Method *first;
 	TestSuite_Method *last;
@@ -85,7 +85,7 @@ class {
 	tripleConcat(self, _MethodCase, __LINE__)
 
 #define tsCaseMethod \
-	void tsCaseName(__unused Instance(self) $this, __unused TestSuite *ts)
+	void tsCaseName(__unused InstName(self) $this, __unused TestSuite *ts)
 
 #define tsCase(caseLevel, descr)                \
 	tsCaseMethod;                               \
@@ -97,14 +97,11 @@ class {
 	};                                          \
 	tsCaseMethod
 
-#define ImplName \
-	simpleConcat(self, Impl)
-
-#define tsFinalize                                              \
-	TestSuite_Method ref(MethodLast) tsSection = { };           \
-	Constructor {                                               \
-		ImplName.last = &ref(MethodLast);                       \
-		TestSuite_AddSuite(TestSuite_GetInstance(), &ImplName); \
+#define tsFinalize                                                    \
+	TestSuite_Method ref(MethodLast) tsSection = { };                 \
+	Constructor {                                                     \
+		ImplName(self).last = &ref(MethodLast);                       \
+		TestSuite_AddSuite(TestSuite_GetInstance(), &ImplName(self)); \
 	}
 
 #define Assert(descr, expr) \
@@ -120,6 +117,6 @@ SingletonPrototype(self);
 def(void, Init);
 def(void, Destroy);
 def(void, AddSuite, ITestSuiteInterface *suite);
-def(void, Assert, String descr, bool succeeded);
+def(void, Assert, ProtString descr, bool succeeded);
 
 #undef self

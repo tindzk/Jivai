@@ -8,7 +8,7 @@ set(self) {
 	ref(Unset)
 };
 
-sdef(String, ToString, self version);
-sdef(self, FromString, String s);
+sdef(ProtString, ToString, self version);
+sdef(self, FromString, ProtString s);
 
 #undef self

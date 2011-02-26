@@ -6,15 +6,15 @@
 // @exc Overflow
 // @exc Underflow
 
-s8  Int8_Parse(String s);
-s16 Int16_Parse(String s);
-s32 Int32_Parse(String s);
-s64 Int64_Parse(String s);
+s8  Int8_Parse(ProtString s);
+s16 Int16_Parse(ProtString s);
+s32 Int32_Parse(ProtString s);
+s64 Int64_Parse(ProtString s);
 
-u8  UInt8_Parse(String s);
-u16 UInt16_Parse(String s);
-u32 UInt32_Parse(String s);
-u64 UInt64_Parse(String s);
+u8  UInt8_Parse(ProtString s);
+u16 UInt16_Parse(ProtString s);
+u32 UInt32_Parse(ProtString s);
+u64 UInt64_Parse(ProtString s);
 
 size_t Int8_CountDigits(s8 num);
 size_t Int16_CountDigits(s16 num);

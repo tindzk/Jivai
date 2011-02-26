@@ -26,7 +26,7 @@ def(void, AddSuite, ITestSuiteInterface *suite) {
 	TestSuites_Push(&this->suites, suite);
 }
 
-def(void, Assert, String descr, bool succeeded) {
+def(void, Assert, ProtString descr, bool succeeded) {
 	if (succeeded) {
 		this->success++;
 	} else {

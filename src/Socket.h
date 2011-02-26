@@ -34,7 +34,7 @@ def(void, SetCloexecFlag, bool enable);
 def(void, SetReusableFlag, bool enable);
 def(void, Listen, unsigned short port, int maxconns);
 def(void, SetLinger);
-def(SocketConnection, Connect, String hostname, unsigned short port);
+def(SocketConnection, Connect, ProtString hostname, unsigned short port);
 def(SocketConnection, Accept);
 def(void, Destroy);
 

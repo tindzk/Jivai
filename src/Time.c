@@ -13,19 +13,19 @@ sdef(self, Empty) {
 }
 
 sdef(short, Compare, self a, self b) {
-	short hour = Int16_Compare(a.hour, b.hour);
+	short hour = Integer_Compare(a.hour, b.hour);
 
 	if (hour != 0) {
 		return hour;
 	}
 
-	short minute = Int16_Compare(a.minute, b.minute);
+	short minute = Integer_Compare(a.minute, b.minute);
 
 	if (minute != 0) {
 		return minute;
 	}
 
-	return Int16_Compare(a.second, b.second);
+	return Integer_Compare(a.second, b.second);
 }
 
 inline sdef(bool, Equals, self a, self b) {
@@ -48,7 +48,7 @@ sdef(String, Format, self time) {
 	String second = Number_Format(time.second, 2);
 
 	String fmt = String_Format($("%:%:%"),
-		hour, minute, second);
+		hour.prot, minute.prot, second.prot);
 
 	String_Destroy(&second);
 	String_Destroy(&minute);

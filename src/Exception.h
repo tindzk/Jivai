@@ -33,18 +33,18 @@
  */
 record(ref(Record)) {
 #if Exception_SaveOrigin
-	String func;
+	ProtString func;
 #endif
 
 #if Exception_SaveMessage
-	String msg;
+	ProtString msg;
 #endif
 
 #if Exception_SaveData
 	void *data;
 #endif
 
-	String scode;
+	ProtString scode;
 
 #if Exception_SaveTrace
 	void *trace[Exception_TraceSize];

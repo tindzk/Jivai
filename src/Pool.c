@@ -11,7 +11,7 @@ def(void, Init) {
 	this->bundling = ref(Bundling_Disabled);
 }
 
-def(ref(Session) *, CreateSession, __unused String name) {
+def(ref(Session) *, CreateSession, __unused ProtString name) {
 	ref(Session) *sess = Memory_Alloc(sizeof(ref(Session)));
 
 	sess->alloc     = NULL;
@@ -51,7 +51,7 @@ def(size_t, Dispose, ref(Session) *sess) {
 	return size;
 }
 
-def(void, Push, ref(Session) *sess, __unused String name) {
+def(void, Push, ref(Session) *sess, __unused ProtString name) {
 	sess->prevStack = this->sess;
 	this->sess = sess;
 }
@@ -184,7 +184,7 @@ def(void *, Clone, void *addr) {
 	return call(Alloc, alloc->size);
 }
 
-def(void, Bundle, __unused String name) {
+def(void, Bundle, __unused ProtString name) {
 	if (this->sess == NULL) {
 		throw(NoSession);
 	}

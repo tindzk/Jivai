@@ -11,20 +11,20 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 		Typography_Node *child = node->buf[i];
 
 		if (child->type == Typography_NodeType_Text) {
-			Terminal_FmtArgPrint(this->term,
-				Typography_Text(child)->value, argptr);
+			ProtString value = Typography_Text(child)->value.prot;
+			Terminal_FmtArgPrint(this->term, value, argptr);
 		} else if (child->type == Typography_NodeType_Item) {
-			String name = Typography_Item(child)->name;
+			ProtString name = Typography_Item(child)->name.prot;
 
 			Terminal_Style style = Terminal_GetStyle(this->term);
 
 			if (String_Equals(name, $("fg")) ||
 				String_Equals(name, $("bg")))
 			{
-				String strColor = Typography_Item(child)->options;
+				ProtString strColor = Typography_Item(child)->options.prot;
 
 				if (String_Equals(strColor, $("%"))) {
-					strColor = VarArg_Get(*argptr, String);
+					strColor = VarArg_Get(*argptr, ProtString);
 				}
 
 				int color = Terminal_ResolveColorName(
@@ -49,7 +49,7 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 	}
 }
 
-def(void, Render, String s, ...) {
+def(void, Render, ProtString s, ...) {
 	Typography tyo;
 	Typography_Init(&tyo);
 	Typography_Parse(&tyo, String_AsStream(&s));
