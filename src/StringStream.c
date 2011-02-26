@@ -35,8 +35,8 @@ def(bool, IsEof) {
 }
 
 Impl(Stream) = {
-	share(Read,  read),
-	share(Write, write),
-	share(Close, close),
-	share(IsEof, isEof)
+	.read  = (void *) ref(Read),
+	.write = (void *) ref(Write),
+	.close = (void *) ref(Close),
+	.isEof = (void *) ref(IsEof)
 };

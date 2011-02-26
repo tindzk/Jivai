@@ -140,12 +140,12 @@ def(ClientConnection_Status, OnData, SocketClient *client) {
 }
 
 Impl(ClientListener) = {
-	share(OnInit,       onInit),
-	share(OnDestroy,    onDestroy),
-	share(OnConnect,    onClientConnect),
-	share(OnAccept,     onClientAccept),
-	share(OnDisconnect, onClientDisconnect),
-	share(OnData,       onPush)
+	.onInit             = (void *) ref(OnInit),
+	.onDestroy          = (void *) ref(OnDestroy),
+	.onClientConnect    = (void *) ref(OnConnect),
+	.onClientAccept     = (void *) ref(OnAccept),
+	.onClientDisconnect = (void *) ref(OnDisconnect),
+	.onPush             = (void *) ref(OnData)
 };
 
 ExportImpl(ClientListener);

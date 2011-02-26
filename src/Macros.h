@@ -77,12 +77,6 @@
 	};                                \
 	record(name##Interface)
 
-#define shareSize \
-	.size = sizeof(self)
-
-#define share(src, dest) \
-	.dest = (void *) ref(src)
-
 #define delegate(name, method, ...) \
 	(name).impl->method((name).inst, ## __VA_ARGS__)
 

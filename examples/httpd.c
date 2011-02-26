@@ -267,12 +267,11 @@ def(ClientConnection_Status, Pull) {
 }
 
 Impl(Connection) = {
-	shareSize,
-
-	share(Init,    init),
-	share(Destroy, destroy),
-	share(Push,    push),
-	share(Pull,    pull)
+	.size    = sizeof(self),
+	.init    = (void *) ref(Init),
+	.destroy = (void *) ref(Destroy),
+	.push    = (void *) ref(Push),
+	.pull    = (void *) ref(Pull)
 };
 
 ExportImpl(Connection);
