@@ -19,6 +19,9 @@
 #define noReturn \
 	__attribute__((noreturn))
 
+#define mustUseResult \
+	__attribute__((warn_unused_result))
+
 #define __malloc \
 	__attribute__((malloc))
 

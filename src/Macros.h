@@ -125,8 +125,14 @@
 #define def(ret, method, ...) \
 	ret ref(method)(__unused InstName(self) $this, ## __VA_ARGS__)
 
+#define rdef(ret, method, ...) \
+	mustUseResult ret ref(method)(__unused InstName(self) $this, ## __VA_ARGS__)
+
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
+
+#define rsdef(ret, method, ...) \
+	mustUseResult ret ref(method)(__VA_ARGS__)
 
 #define this $this.object
 

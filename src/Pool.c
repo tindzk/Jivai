@@ -11,7 +11,7 @@ def(void, Init) {
 	this->bundling = ref(Bundling_Disabled);
 }
 
-def(ref(Session) *, CreateSession, __unused ProtString name) {
+rdef(ref(Session) *, CreateSession, __unused ProtString name) {
 	ref(Session) *sess = Memory_Alloc(sizeof(ref(Session)));
 
 	sess->alloc     = NULL;
@@ -23,7 +23,7 @@ def(ref(Session) *, CreateSession, __unused ProtString name) {
 	return sess;
 }
 
-def(size_t, Dispose, ref(Session) *sess) {
+rdef(size_t, Dispose, ref(Session) *sess) {
 	size_t size = 0;
 
 	for (ref(Allocation) *cur = sess->alloc; cur != NULL; ) {
@@ -65,7 +65,7 @@ def(void, Pop, ref(Session) *sess) {
 	sess->prevStack = NULL;
 }
 
-def(void *, Alloc, size_t size) {
+__malloc rdef(void *, Alloc, size_t size) {
 	ref(Allocation) *alloc = Memory_Alloc(sizeof(ref(Allocation)) + size);
 
 	alloc->size = size;
@@ -100,7 +100,7 @@ def(void *, Alloc, size_t size) {
 	return alloc->buf;
 }
 
-def(void *, Realloc, void *addr, size_t size) {
+__malloc rdef(void *, Realloc, void *addr, size_t size) {
 	ref(Allocation) *old   = addr - sizeof(ref(Allocation));
 	ref(Allocation) *alloc = Memory_Realloc(old, sizeof(ref(Allocation)) + size);
 
@@ -174,12 +174,12 @@ def(size_t, Free, void *addr) {
 	return size;
 }
 
-def(size_t, GetSize, void *addr) {
+rdef(size_t, GetSize, void *addr) {
 	ref(Allocation) *alloc = addr - sizeof(ref(Allocation));
 	return alloc->size;
 }
 
-def(void *, Clone, void *addr) {
+__malloc rdef(void *, Clone, void *addr) {
 	ref(Allocation) *alloc = addr - sizeof(ref(Allocation));
 	return call(Alloc, alloc->size);
 }

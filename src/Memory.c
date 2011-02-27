@@ -15,7 +15,7 @@
  * and the program will segfault in this circumstance, presumably).
  */
 
-bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen) {
+rsdef(bool, Overlaps, void *dst, const void *src, size_t dstlen, size_t srclen) {
 	if (dstlen == 0 || srclen == 0) {
 		return false;
 	}
@@ -39,7 +39,7 @@ bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen) {
 	return true;
 }
 
-void* __malloc Memory_Alloc(size_t size) {
+__malloc rsdef(void *, Alloc, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
 		throw(OutOfBounds);
@@ -57,7 +57,7 @@ void* __malloc Memory_Alloc(size_t size) {
 	return pMem;
 }
 
-void Memory_FreePtr(void *pMem) {
+sdef(void, FreePtr, void *pMem) {
 #if Memory_PointerChecks
 	if (pMem == NULL) {
 		throw(NullPointer);
@@ -67,7 +67,7 @@ void Memory_FreePtr(void *pMem) {
 	free(pMem);
 }
 
-void* __malloc Memory_Realloc(void *pMem, size_t size) {
+__malloc rsdef(void *, Realloc, void *pMem, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
 		throw(OutOfBounds);
@@ -91,7 +91,7 @@ void* __malloc Memory_Realloc(void *pMem, size_t size) {
 	return res;
 }
 
-void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len) {
+sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0) {
 		throw(OutOfBounds);
@@ -111,7 +111,7 @@ void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len)
 	memcpy(pDest, pSource, len);
 }
 
-void* __malloc Memory_Clone(void *pSource, size_t size) {
+__malloc rsdef(void *, Clone, void *pSource, size_t size) {
 #if Memory_BoundaryChecks
 	if (size == 0) {
 		throw(OutOfBounds);
@@ -137,7 +137,7 @@ void* __malloc Memory_Clone(void *pSource, size_t size) {
 	return pDest;
 }
 
-bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
+rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len) {
 	if (len == 0) {
 		return true;
 	}
@@ -151,7 +151,7 @@ bool Memory_Equals(void *ptr1, void *ptr2, size_t len) {
 	return memcmp(ptr1, ptr2, len) == 0;
 }
 
-void* Memory_Move(void *pDest, void *pSource, size_t len) {
+rsdef(void *, Move, void *pDest, void *pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0) {
 		throw(OutOfBounds);

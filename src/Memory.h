@@ -26,21 +26,20 @@
 extern void *_etext;
 extern void *__data_start;
 
-static inline bool Memory_IsRoData(void *ptr) {
+static inline rsdef(bool, IsRoData, void *ptr) {
 	return
 		ptr > (void *) &_etext &&
 		ptr < (void *) &__data_start;
 }
 
-void Memory0(void *e);
-bool Memory_Overlaps(void *dst, const void *src, size_t dstlen, size_t srclen);
-void* __malloc Memory_Alloc(size_t size);
-void Memory_FreePtr(void *pMem);
-void* __malloc Memory_Realloc(void *pMem, size_t size);
-void Memory_Copy(void *restrict pDest, const void *restrict pSource, size_t len);
-void* __malloc Memory_Clone(void *pSource, size_t len);
-bool Memory_Equals(void *ptr1, void *ptr2, size_t num);
-void* Memory_Move(void *pDest, void *pSource, size_t num);
+rsdef(bool, Overlaps, void *dst, const void *src, size_t dstlen, size_t srclen);
+__malloc rsdef(void *, Alloc, size_t size);
+sdef(void, FreePtr, void *pMem);
+__malloc rsdef(void *, Realloc, void *pMem, size_t size);
+sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len);
+__malloc rsdef(void *, Clone, void *pSource, size_t size);
+rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len);
+rsdef(void *, Move, void *pDest, void *pSource, size_t len);
 
 #define Memory_Free(pMem)                \
 	do {                                 \

@@ -32,15 +32,15 @@ class {
 };
 
 def(void, Init);
-def(ref(Session) *, CreateSession, ProtString name);
-def(size_t, Dispose, ref(Session) *sess);
+rdef(ref(Session) *, CreateSession, ProtString name);
+rdef(size_t, Dispose, ref(Session) *sess);
 def(void, Push, ref(Session) *sess, ProtString name);
 def(void, Pop, ref(Session) *sess);
-def(void *, Alloc, size_t size);
-def(void *, Realloc, void *addr, size_t size);
+__malloc rdef(void *, Alloc, size_t size);
+__malloc rdef(void *, Realloc, void *addr, size_t size);
 def(size_t, Free, void *addr);
-def(size_t, GetSize, void *addr);
-def(void *, Clone, void *addr);
+rdef(size_t, GetSize, void *addr);
+__malloc rdef(void *, Clone, void *addr);
 def(void, Bundle, ProtString name);
 def(void, Commit);
 
