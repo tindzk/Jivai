@@ -412,7 +412,7 @@ overload sdef(bool, Split, ProtString s, char c, ProtString *res) {
 	return true;
 }
 
-overload sdef(StringArray *, Split, ProtString s, char c) {
+overload sdef(ProtStringArray *, Split, ProtString s, char c) {
 	size_t chunks = 1;
 	forward (i, s.len) {
 		if (s.buf[i] == c) {
@@ -420,7 +420,7 @@ overload sdef(StringArray *, Split, ProtString s, char c) {
 		}
 	}
 
-	StringArray *res = StringArray_New(chunks);
+	ProtStringArray *res = ProtStringArray_New(chunks);
 
 	ProtString elem = $("");
 	while (String_Split(s, c, &elem)) {
@@ -947,7 +947,8 @@ overload sdef(short, NaturalCompare, ProtString a, ProtString b, bool foldcase, 
 }
 
 #undef self
-#define self StringArray
+
+#define self ProtStringArray
 
 def(ssize_t, Find, ProtString needle) {
 	forward (i, this->len) {
@@ -987,6 +988,14 @@ def(bool, Contains, ProtString needle) {
 	return call(Find, needle) != -1;
 }
 
+#undef self
+
+#define self StringArray
+
 def(void, Destroy) {
+	forward (i, this->len) {
+		String_Destroy(&this->buf[i]);
+	}
+
 	this->len = 0;
 }

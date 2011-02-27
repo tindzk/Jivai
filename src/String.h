@@ -58,7 +58,8 @@ record(FmtString) {
 
 #define self String
 
-Array(ProtString, StringArray);
+Array(String, StringArray);
+Array(ProtString, ProtStringArray);
 
 sdef(size_t, GetSize, String s);
 sdef(size_t, GetFree, String s);
@@ -83,7 +84,7 @@ sdef(bool, RangeEquals, ProtString s, ssize_t offset, ProtString needle, ssize_t
 def(void, ToLower);
 def(void, ToUpper);
 overload sdef(bool, Split, ProtString s, char c, ProtString *res);
-overload sdef(StringArray *, Split, ProtString s, char c);
+overload sdef(ProtStringArray *, Split, ProtString s, char c);
 overload sdef(ssize_t, Find, ProtString s, ssize_t offset, ssize_t length, char c);
 overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, char c);
 overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, ProtString needle);
@@ -317,11 +318,12 @@ static inline overload sdef(short, NaturalCompare, ProtString a, ProtString b) {
 
 #undef self
 
-#define self StringArray
-
+#define self ProtStringArray
 def(ssize_t, Find, ProtString needle);
 def(String, Join, ProtString separator);
 def(bool, Contains, ProtString needle);
-def(void, Destroy);
+#undef self
 
+#define self StringArray
+def(void, Destroy);
 #undef self
