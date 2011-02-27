@@ -99,7 +99,7 @@ def(size_t, Write, void *buf, size_t len) {
 		this->outbuf.len = 0;
 
 		/* Handle the remaining chunk. */
-		if (len - len > 0) {
+		if (len - bufLength > 0) {
 			BufferedStream_Write(this,
 				buf + bufLength,
 				len - bufLength);
