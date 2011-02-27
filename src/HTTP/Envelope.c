@@ -4,10 +4,10 @@
 
 def(void, Init) {
 	this->contentLength = -1;
-	this->location      = $("");
-	this->contentType   = $("");
-	this->cookieName    = $("");
-	this->cookieValue   = $("");
+	this->location      = String_New(0);
+	this->contentType   = String_New(0);
+	this->cookieName    = String_New(0);
+	this->cookieValue   = String_New(0);
 	this->version       = HTTP_Version_1_1;
 	this->status        = HTTP_Status_Success_Ok;
 	this->persistent    = false;
@@ -30,16 +30,16 @@ def(s64, GetContentLength) {
 }
 
 def(void, SetLocation, String url) {
-	String_Copy(&this->location, url);
+	String_Assign(&this->location, &url);
 }
 
 def(void, SetContentType, String contentType) {
-	String_Copy(&this->contentType, contentType);
+	String_Assign(&this->contentType, &contentType);
 }
 
 def(void, SetCookie, String name, String value) {
-	String_Copy(&this->cookieName,  name);
-	String_Copy(&this->cookieValue, value);
+	String_Assign(&this->cookieName,  &name);
+	String_Assign(&this->cookieValue, &value);
 }
 
 def(void, SetVersion, HTTP_Version version) {
@@ -70,37 +70,37 @@ def(String, GetString) {
 	String strCode = Integer_ToString(st.code);
 	String_Append(&s, FmtString($("% % %\r\n"),
 		HTTP_Version_ToString(this->version),
-		strCode, st.msg));
+		strCode.prot, st.msg));
 	String_Destroy(&strCode);
 
 	if (this->contentLength != -1) {
 		String strValue = Integer_ToString(this->contentLength);
 		String_Append(&s, FmtString($("Content-Length: %\r\n"),
-			strValue));
+			strValue.prot));
 		String_Destroy(&strValue);
 	}
 
 	if (this->contentType.len != 0) {
 		String_Append(&s, FmtString($("Content-Type: %\r\n"),
-			this->contentType));
+			this->contentType.prot));
 	}
 
 	if (this->lastModified.date.day != 0) {
 		String tmp = Date_RFC822_ToString(this->lastModified);
-		String_Append(&s, FmtString($("Last-Modified: %\r\n"), tmp));
+		String_Append(&s, FmtString($("Last-Modified: %\r\n"), tmp.prot));
 		String_Destroy(&tmp);
 	}
 
 	if (this->location.len > 0) {
 		String_Append(&s, FmtString($("Location: %\r\n"),
-			this->location));
+			this->location.prot));
 	}
 
 	if (this->cookieName.len > 0) {
 		String_Append(&s, FmtString(
 			$("Set-Cookie: %=%; path=/\r\n"),
-			this->cookieName,
-			this->cookieValue));
+			this->cookieName.prot,
+			this->cookieValue.prot));
 	}
 
 	String_Append(&s, this->persistent
