@@ -151,7 +151,7 @@ rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len) {
 	return memcmp(ptr1, ptr2, len) == 0;
 }
 
-rsdef(void *, Move, void *pDest, void *pSource, size_t len) {
+sdef(void, Move, void *pDest, void *pSource, size_t len) {
 #if Memory_BoundaryChecks
 	if (len == 0) {
 		throw(OutOfBounds);
@@ -164,5 +164,5 @@ rsdef(void *, Move, void *pDest, void *pSource, size_t len) {
 	}
 #endif
 
-	return memmove(pDest, pSource, len);
+	memmove(pDest, pSource, len);
 }

@@ -39,7 +39,7 @@ __malloc rsdef(void *, Realloc, void *pMem, size_t size);
 sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len);
 __malloc rsdef(void *, Clone, void *pSource, size_t size);
 rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len);
-rsdef(void *, Move, void *pDest, void *pSource, size_t len);
+sdef(void, Move, void *pDest, void *pSource, size_t len);
 
 #define Memory_Free(pMem)                \
 	do {                                 \
