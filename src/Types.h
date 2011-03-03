@@ -50,7 +50,7 @@ InstanceMethods(Generic);
 
 record(GenericCallback) {
 	GenericInstance context;
-	void *cb;
+	void (*cb)(GenericInstance context);
 };
 
 static inline GenericCallback Callback(GenericInstance context, void *cb) {
