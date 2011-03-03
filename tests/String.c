@@ -281,12 +281,11 @@ tsCase(Acute, "Split") {
 	String_Append(&s, $("Hello World."));
 	String_Append(&s, $("Hello World."));
 
-	StringArray *parts = String_Split(s.prot, ' ');
+	ProtStringArray *parts = String_Split(s.prot, ' ');
 
 	String_Destroy(&s);
 
-	StringArray_Destroy(parts); /* Optional. */
-	StringArray_Free(parts);
+	ProtStringArray_Free(parts);
 }
 
 tsCase(Acute, "Split") {
@@ -318,25 +317,25 @@ tsCase(Acute, "Joining") {
 	ProtString orig3 = $("abc ab a");
 	ProtString orig4 = $("abc ab a ");
 
-	StringArray *items  = String_Split(orig,  ' ');
-	StringArray *items2 = String_Split(orig2, ' ');
-	StringArray *items3 = String_Split(orig3, ' ');
-	StringArray *items4 = String_Split(orig4, ' ');
+	ProtStringArray *items  = String_Split(orig,  ' ');
+	ProtStringArray *items2 = String_Split(orig2, ' ');
+	ProtStringArray *items3 = String_Split(orig3, ' ');
+	ProtStringArray *items4 = String_Split(orig4, ' ');
 
-	String joined  = StringArray_Join(items,  $(" "));
-	String joined2 = StringArray_Join(items2, $(" "));
-	String joined3 = StringArray_Join(items3, $(" "));
-	String joined4 = StringArray_Join(items4, $(" "));
+	String joined  = ProtStringArray_Join(items,  $(" "));
+	String joined2 = ProtStringArray_Join(items2, $(" "));
+	String joined3 = ProtStringArray_Join(items3, $(" "));
+	String joined4 = ProtStringArray_Join(items4, $(" "));
 
 	Assert($("Empty"),         String_Equals(orig,  joined.prot));
 	Assert($("Non-empty"),     String_Equals(orig2, joined2.prot));
 	Assert($("Non-empty (2)"), String_Equals(orig3, joined3.prot));
 	Assert($("Non-empty (3)"), String_Equals(orig4, joined4.prot));
 
-	StringArray_Free(items4);
-	StringArray_Free(items3);
-	StringArray_Free(items2);
-	StringArray_Free(items);
+	ProtStringArray_Free(items4);
+	ProtStringArray_Free(items3);
+	ProtStringArray_Free(items2);
+	ProtStringArray_Free(items);
 
 	String_Destroy(&joined4);
 	String_Destroy(&joined3);
