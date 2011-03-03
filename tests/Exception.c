@@ -8,16 +8,22 @@ class {
 	size_t cntTry;
 	size_t cntEnd;
 	size_t cntFinally;
+
+	void *old;
 };
 
 tsRegister("Exception handling") {
 	return true;
 }
 
+extern ExceptionManager __exc_mgr;
+
 tsInit {
 	this->cntTry     = 0;
 	this->cntEnd     = 0;
 	this->cntFinally = 0;
+
+	this->old = __exc_mgr.cur;
 }
 
 def(void, Reset) {
@@ -96,6 +102,11 @@ tsCase(Acute, "Empty exception block") {
 	try {
 	} clean finally {
 	} tryEnd;
+}
+
+tsCase(Acute, "Safety") {
+	Assert($("No stack corruption"),
+		__exc_mgr.cur == this->old);
 }
 
 tsFinalize;
