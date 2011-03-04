@@ -31,7 +31,7 @@ class {
 	ref(Bundling) bundling; /* Bundling mode.      */
 };
 
-def(void, Init);
+rsdef(self, New);
 rdef(ref(Session) *, CreateSession, ProtString name);
 rdef(size_t, Dispose, ref(Session) *sess);
 def(void, Push, ref(Session) *sess, ProtString name);

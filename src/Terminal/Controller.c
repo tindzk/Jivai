@@ -2,8 +2,10 @@
 
 #define self Terminal_Controller
 
-def(void, Init, Terminal *term) {
-	this->term = term;
+rsdef(self, New, Terminal *term) {
+	return (self) {
+		.term = term
+	};
 }
 
 static def(void, Print, Typography_Node *node, VarArg *argptr) {

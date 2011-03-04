@@ -2,12 +2,14 @@
 
 #define self SocketSession
 
-def(void, Init, SocketConnection *conn) {
-	this->conn    = conn;
-	this->op.type = ref(OperationType_Idle);
+rsdef(self, New, SocketConnection *conn) {
+	return (self) {
+		.conn    = conn,
+		.op.type = ref(OperationType_Idle)
+	};
 }
 
-def(void, Write, String s, ref(OnDone) onDone) {
+def(void, Write, ProtString s, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
 		throw(NotIdle);
 	}

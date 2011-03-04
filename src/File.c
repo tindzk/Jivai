@@ -179,7 +179,7 @@ overload def(size_t, Read, void *buf, size_t len) {
 	return res;
 }
 
-inline overload def(void, Read, String *res) {
+overload def(void, Read, String *res) {
 	res->len = call(Read, res->buf, String_GetSize(*res));
 }
 
@@ -203,14 +203,6 @@ overload def(size_t, Write, void *buf, size_t len) {
 	}
 
 	return res;
-}
-
-overload def(size_t, Write, ProtString s) {
-	return call(Write, s.buf, s.len);
-}
-
-overload def(size_t, Write, char c) {
-	return call(Write, &c, 1);
 }
 
 def(u64, Seek, u64 offset, ref(SeekType) whence) {

@@ -5,7 +5,7 @@
 #define self Terminal_Buffer
 
 record(ref(Chunk)) {
-	String value;
+	CarrierString value;
 	int color;
 	int font;
 	size_t line;
@@ -21,12 +21,12 @@ class {
 	size_t max;
 };
 
-def(void, Init, Terminal *term, size_t spacing);
+rsdef(self, New, Terminal *term, size_t spacing);
 def(void, Destroy);
 def(size_t, Count);
 def(size_t, AddChunk, ref(Chunk) chunk);
 def(void, ChangeAttr, size_t id, int color, int font);
-def(void, ChangeValue, size_t id, String s);
+def(void, ChangeValue, size_t id, CarrierString s);
 def(void, Redraw);
 def(void, Clear);
 

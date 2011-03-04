@@ -59,7 +59,7 @@ class {
 	} headers;
 };
 
-def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
+rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 def(void, Destroy);
 def(void, BindMethod, HTTP_OnMethod onMethod);
 def(void, BindVersion, HTTP_OnVersion onVersion);

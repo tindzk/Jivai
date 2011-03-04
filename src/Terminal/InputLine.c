@@ -2,19 +2,21 @@
 
 #define self Terminal_InputLine
 
-def(void, Init, Terminal *term) {
-	this->term = term;
+rsdef(self, New, Terminal *term) {
+	return (self) {
+		.term = term,
 
-	this->onKeyUp    = (ref(OnKeyUp))    EmptyCallback();
-	this->onKeyDown  = (ref(OnKeyDown))  EmptyCallback();
-	this->onKeyLeft  = (ref(OnKeyLeft))  EmptyCallback();
-	this->onKeyRight = (ref(OnKeyRight)) EmptyCallback();
-	this->onKeyBack  = (ref(OnKeyBack))  EmptyCallback();
-	this->onKeyPress = (ref(OnKeyPress)) EmptyCallback();
-	this->onKeyEnter = (ref(OnKeyEnter)) EmptyCallback();
+		.onKeyUp    = (ref(OnKeyUp))    EmptyCallback(),
+		.onKeyDown  = (ref(OnKeyDown))  EmptyCallback(),
+		.onKeyLeft  = (ref(OnKeyLeft))  EmptyCallback(),
+		.onKeyRight = (ref(OnKeyRight)) EmptyCallback(),
+		.onKeyBack  = (ref(OnKeyBack))  EmptyCallback(),
+		.onKeyPress = (ref(OnKeyPress)) EmptyCallback(),
+		.onKeyEnter = (ref(OnKeyEnter)) EmptyCallback(),
 
-	this->pos  = 0;
-	this->line = String_New(150);
+		.pos  = 0,
+		.line = String_New(150),
+	};
 }
 
 def(void, Destroy) {
@@ -37,15 +39,15 @@ overload def(void, ClearLine) {
 	call(ClearLine, true);
 }
 
-def(void, Print, String s) {
+def(void, Print, ProtString s) {
 	Terminal_Print(this->term, s);
 
 	String_Append(&this->line, s);
 	this->pos += s.len;
 }
 
-def(void, SetValue, String s) {
-	if (!String_Equals(this->line, s)) {
+def(void, SetValue, ProtString s) {
+	if (!String_Equals(this->line.prot, s)) {
 		call(ClearLine);
 		call(Print, s);
 	}
@@ -72,7 +74,7 @@ def(void, DeletePreceding) {
 				return;
 			}
 
-			String rest = String_Slice(this->line, this->pos);
+			ProtString rest = String_Slice(this->line.prot, this->pos);
 			this->line.len = this->pos - width;
 
 			call(Print, rest);
@@ -87,7 +89,7 @@ def(void, DeleteSucceeding) {
 	if (this->pos < this->line.len) {
 		Terminal_DeleteUntilEol(this->term);
 
-		String rest = String_Slice(this->line, this->pos + 1);
+		ProtString rest = String_Slice(this->line.prot, this->pos + 1);
 		this->line.len = this->pos;
 
 		call(Print, rest);
@@ -171,7 +173,7 @@ def(void, Process) {
 		Terminal_Print(this->term, $("\n"));
 
 		if (hasCallback(this->onKeyEnter)) {
-			String line = String_Disown(this->line);
+			ProtString line = this->line.prot;
 
 			this->pos      = 0;
 			this->line.len = 0;
@@ -194,21 +196,21 @@ def(void, Process) {
 			}
 		}
 
-		bool handled = callbackRet(this->onKeyPress, false, ch);
+		bool handled = callbackRet(this->onKeyPress, false, ch.prot);
 
 		if (!handled) {
 			if (this->pos == this->line.len) { /* EOL */
-				call(Print, ch);
+				call(Print, ch.prot);
 			} else {
 				String rest =
 					String_Clone(
 						String_Slice(
-							this->line, this->pos));
+							this->line.prot, this->pos));
 
 				String_Crop(&this->line, 0, this->pos);
 
-				call(Print, ch);
-				call(Print, rest);
+				call(Print, ch.prot);
+				call(Print, rest.prot);
 
 				size_t n = Unicode_Count(this->line,
 					this->line.len - rest.len,
@@ -219,7 +221,7 @@ def(void, Process) {
 				String_Destroy(&rest);
 			}
 
-			if (this->line.len == this->line.size) {
+			if (this->line.len == String_GetSize(this->line)) {
 				this->line.len = 0;
 				this->pos      = 0;
 

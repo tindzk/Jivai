@@ -2,8 +2,10 @@
 
 #define self Typography
 
-def(void, Init) {
-	Tree_Init(&this->tree, (void *) ref(DestroyNode));
+rsdef(self, New) {
+	self res;
+	Tree_Init(&res.tree, (void *) ref(DestroyNode));
+	return res;
 }
 
 def(void, Destroy) {

@@ -2,12 +2,16 @@
 
 #define self Terminal_Selection
 
-def(void, Init, Terminal *term) {
-	this->term = term;
-	this->cur  = 0;
+rsdef(self, New, Terminal *term) {
+	self res;
 
-	Terminal_Buffer_Init(&this->termbuf, term, 2);
-	Terminal_HideCursor(this->term);
+	res.term    = term;
+	res.cur     = 0;
+	res.termbuf = Terminal_Buffer_New(term, 2);
+
+	Terminal_HideCursor(res.term);
+
+	return res;
 }
 
 def(void, Destroy) {
@@ -29,7 +33,7 @@ def(void, OnSelect, size_t id) {
 	this->cur = id;
 }
 
-def(void, Add, String caption, bool selected) {
+def(void, Add, ProtString caption, bool selected) {
 	Terminal_Buffer_Chunk chunk;
 
 	String strCount =
@@ -41,8 +45,9 @@ def(void, Add, String caption, bool selected) {
 		: Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
 	chunk.value =
-		String_Format($("(%) %"),
-			strCount, caption);
+		String_ToCarrier(
+			String_Format($("(%) %"),
+				strCount.prot, caption));
 
 	String_Destroy(&strCount);
 

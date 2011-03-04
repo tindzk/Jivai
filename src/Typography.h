@@ -44,7 +44,7 @@ class {
 	ref(Node) *node;
 };
 
-def(void, Init);
+rsdef(self, New);
 def(void, Destroy);
 sdef(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);

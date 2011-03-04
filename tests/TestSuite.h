@@ -114,7 +114,7 @@ typedef void (ref(MethodTestCase))(GenericInstance, TestSuiteInstance);
 
 SingletonPrototype(self);
 
-def(void, Init);
+rsdef(self, New);
 def(void, Destroy);
 def(void, AddSuite, ITestSuiteInterface *suite);
 def(void, Assert, ProtString descr, bool succeeded);

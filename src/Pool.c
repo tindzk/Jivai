@@ -5,10 +5,12 @@
 
 Singleton(self);
 
-def(void, Init) {
-	this->sess = NULL;
-	this->last = NULL;
-	this->bundling = ref(Bundling_Disabled);
+rsdef(self, New) {
+	return (self) {
+		.sess = NULL,
+		.last = NULL,
+		.bundling = ref(Bundling_Disabled)
+	};
 }
 
 rdef(ref(Session) *, CreateSession, __unused ProtString name) {

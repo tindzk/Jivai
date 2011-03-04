@@ -47,7 +47,7 @@ tsCase(Acute, "Bundling") {
 
 	Pool_Pop(Pool_GetInstance(), sess);
 
-	Pool_Dispose(Pool_GetInstance(), sess);
+	(void) Pool_Dispose(Pool_GetInstance(), sess);
 }
 
 tsFinalize;

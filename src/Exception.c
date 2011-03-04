@@ -45,8 +45,7 @@ sdef(void, Print, int code) {
 		__exc_mgr.e.scode);
 #endif
 
-	Terminal term;
-	Terminal_Init(&term, File_StdIn, File_StdErr, false);
+	Terminal term = Terminal_New(File_StdIn, File_StdErr, false);
 	Terminal_PrintFmt(&term, fmt);
 	Terminal_Destroy(&term);
 }

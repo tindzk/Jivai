@@ -55,11 +55,17 @@ def(u64, GetSize);
 overload def(size_t, Read, void *buf, size_t len);
 overload def(void, Read, String *res);
 overload def(size_t, Write, void *buf, size_t len);
-overload def(size_t, Write, ProtString s);
-overload def(size_t, Write, char c);
 def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
 sdef(void, GetContents, ProtString path, String *res);
+
+static inline overload def(size_t, Write, ProtString s) {
+	return call(Write, s.buf, s.len);
+}
+
+static inline overload def(size_t, Write, char c) {
+	return call(Write, &c, 1);
+}
 
 #define File_Read(obj, ...) \
 	File_Read(File_FromObject(obj), ## __VA_ARGS__)

@@ -8,7 +8,7 @@ class {
 	Terminal *term;
 };
 
-def(void, Init, Terminal *term);
+rsdef(self, New, Terminal *term);
 def(void, Render, ProtString s, ...);
 
 #undef self

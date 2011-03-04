@@ -2,26 +2,28 @@
 
 #define self HTTP_Server
 
-def(void, Init, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
-	this->headers.boundary = String_New(0);
+rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength) {
+	return (self) {
+		.headers.boundary = String_New(0),
 
-	this->headers.contentType   = HTTP_ContentType_Unset;
-	this->headers.contentLength = 0;
+		.headers.contentType   = HTTP_ContentType_Unset,
+		.headers.contentLength = 0,
 
-	this->maxBodyLength   = maxBodyLength;
-	this->maxHeaderLength = maxHeaderLength;
+		.maxBodyLength   = maxBodyLength,
+		.maxHeaderLength = maxHeaderLength,
 
-	this->body   = String_New(0);
-	this->header = String_New(maxHeaderLength);
+		.body   = String_New(0),
+		.header = String_New(maxHeaderLength),
 
-	this->state   = ref(State_Header);
-	this->conn    = conn;
-	this->cleanup = false;
+		.state   = ref(State_Header),
+		.conn    = conn,
+		.cleanup = false,
 
-	this->headers.persistentConnection = false;
+		.headers.persistentConnection = false,
 
-	this->events = (typeof(this->events)) {
-		.onMethod = { EmptyCallback() }
+		.events = {
+			.onMethod = { EmptyCallback() }
+		}
 	};
 }
 

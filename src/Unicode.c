@@ -25,7 +25,7 @@ sdef(size_t, CalcWidth, const char *src) {
 	return bytes;
 }
 
-sdef(size_t, Next, String s, size_t offset) {
+sdef(size_t, Next, ProtString s, size_t offset) {
 	if (offset >= s.len) {
 		return 0;
 	}
@@ -41,7 +41,7 @@ sdef(size_t, Next, String s, size_t offset) {
 	return 0;
 }
 
-sdef(size_t, Prev, String s, size_t offset) {
+sdef(size_t, Prev, ProtString s, size_t offset) {
 	size_t tries = 0;
 	size_t width = 0;
 
@@ -64,7 +64,7 @@ sdef(size_t, Prev, String s, size_t offset) {
 	return width;
 }
 
-overload sdef(size_t, Count, String s, size_t offset, size_t len) {
+overload sdef(size_t, Count, ProtString s, size_t offset, size_t len) {
 	size_t i   = offset;
 	size_t cnt = 0;
 
@@ -82,7 +82,7 @@ overload sdef(size_t, Count, String s, size_t offset, size_t len) {
 	return cnt;
 }
 
-overload sdef(size_t, Count, String s) {
+overload sdef(size_t, Count, ProtString s) {
 	return Unicode_Count(s, 0, s.len);
 }
 
@@ -96,7 +96,7 @@ sdef(void, Shrink, String *s, size_t len) {
 			break;
 		}
 
-		size_t width = Unicode_Next(*s, offset);
+		size_t width = Unicode_Next(s->prot, offset);
 
 		if (width == 0) {
 			break;

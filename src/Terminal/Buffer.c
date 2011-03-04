@@ -2,19 +2,21 @@
 
 #define self Terminal_Buffer
 
-def(void, Init, Terminal *term, size_t spacing) {
-	this->term    = term;
-	this->spacing = spacing;
-	this->lines   = 0;
-	this->max     = Terminal_GetSize().cols;
-	this->chunks  = scall(Chunks_New, 0);
+rsdef(self, New, Terminal *term, size_t spacing) {
+	return (self) {
+		.term    = term,
+		.spacing = spacing,
+		.lines   = 0,
+		.max     = Terminal_GetSize().cols,
+		.chunks  = scall(Chunks_New, 0)
+	};
 }
 
 def(void, Destroy) {
 	call(Clear);
 
 	foreach (chunk, this->chunks) {
-		String_Destroy(&chunk->value);
+		CarrierString_Destroy(&chunk->value);
 	}
 
 	scall(Chunks_Free, this->chunks);
@@ -25,7 +27,7 @@ static def(size_t, GetCurrentLineLength) {
 
 	foreach (chunk, this->chunks) {
 		if (chunk->line == this->lines) {
-			len += Unicode_Count(chunk->value);
+			len += Unicode_Count(chunk->value.prot);
 
 			if (!isLast(chunk, this->chunks)) {
 				len += this->spacing;
@@ -55,7 +57,7 @@ def(size_t, Count) {
 def(size_t, AddChunk, ref(Chunk) chunk) {
 	size_t len = call(GetCurrentLineLength);
 
-	size_t width = Unicode_Count(chunk.value);
+	size_t width = Unicode_Count(chunk.value.prot);
 
 	if (len + width > this->max) {
 		this->lines++;
@@ -72,15 +74,19 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 
 	if (width > this->max) {
 		if (this->max > 3) {
-			Unicode_Shrink(&chunk.value, this->max - 3);
-			String_Append(&chunk.value, $("..."));
+			String s = CarrierString_Flush(&chunk.value);
+
+			Unicode_Shrink(&s, this->max - 3);
+			String_Append(&s, $("..."));
+
+			CarrierString_Assign(&chunk.value, String_ToCarrier(s));
 		}
 	}
 
 	Terminal_Print(this->term,
 		chunk.color,
 		chunk.font,
-		chunk.value);
+		chunk.value.prot);
 
 	scall(Chunks_Push, &this->chunks, chunk);
 
@@ -96,12 +102,12 @@ def(void, ChangeAttr, size_t id, int color, int font) {
 	this->chunks->buf[id].font  = font;
 }
 
-def(void, ChangeValue, size_t id, String s) {
+def(void, ChangeValue, size_t id, CarrierString s) {
 	if (id >= this->chunks->len) {
 		return;
 	}
 
-	String_Copy(&this->chunks->buf[id].value, s);
+	CarrierString_Assign(&this->chunks->buf[id].value, s);
 }
 
 def(void, Redraw) {
@@ -115,7 +121,7 @@ def(void, Redraw) {
 	bool first = true;
 
 	foreach (chunk, this->chunks) {
-		size_t width = Unicode_Count(chunk->value);
+		size_t width = Unicode_Count(chunk->value.prot);
 
 		/* Item width including spacing. */
 		size_t fullItemWidth = width;
@@ -146,7 +152,7 @@ def(void, Redraw) {
 		Terminal_Print(this->term,
 			chunk->color,
 			chunk->font,
-			chunk->value);
+			chunk->value.prot);
 	}
 }
 
@@ -162,7 +168,7 @@ def(void, Clear) {
 	this->lines = 0;
 
 	reverse (i, this->chunks->len) {
-		String_Destroy(&this->chunks->buf[i].value);
+		CarrierString_Destroy(&this->chunks->buf[i].value);
 	}
 
 	this->chunks->len = 0;

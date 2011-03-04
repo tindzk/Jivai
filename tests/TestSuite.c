@@ -5,20 +5,22 @@
 Singleton(self);
 SingletonDestructor(self);
 
-def(void, Init) {
-	Terminal_Init(&this->term, File_StdIn, File_StdOut, true);
-	Terminal_Configure(&this->term, true, true);
+rsdef(self, New) {
+	self res;
 
-	Terminal_Controller_Init(&this->controller, &this->term);
+	res.term = Terminal_New(File_StdIn, File_StdOut, true);
+	Terminal_Configure(&res.term, true, true);
 
-	this->suites = TestSuites_New(128);
+	res.controller = Terminal_Controller_New(&res.term);
 
-	this->acuteFailed = false;
+	res.suites = TestSuites_New(128);
+	res.acuteFailed = false;
+
+	return res;
 }
 
 def(void, Destroy) {
 	Terminal_Destroy(&this->term);
-
 	TestSuites_Free(this->suites);
 }
 

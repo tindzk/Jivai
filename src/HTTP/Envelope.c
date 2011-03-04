@@ -2,23 +2,25 @@
 
 #define self HTTP_Envelope
 
-def(void, Init) {
-	this->contentLength = -1;
-	this->location      = String_New(0);
-	this->contentType   = String_New(0);
-	this->cookieName    = String_New(0);
-	this->cookieValue   = String_New(0);
-	this->version       = HTTP_Version_1_1;
-	this->status        = HTTP_Status_Success_Ok;
-	this->persistent    = false;
-	this->lastModified  = Date_RFC822_Empty();
+rsdef(self, New) {
+	return (self) {
+		.contentLength = -1,
+		.location      = CarrierString_New(),
+		.contentType   = CarrierString_New(),
+		.cookieName    = CarrierString_New(),
+		.cookieValue   = CarrierString_New(),
+		.version       = HTTP_Version_1_1,
+		.status        = HTTP_Status_Success_Ok,
+		.persistent    = false,
+		.lastModified  = Date_RFC822_Empty()
+	};
 }
 
 def(void, Destroy) {
-	String_Destroy(&this->contentType);
-	String_Destroy(&this->location);
-	String_Destroy(&this->cookieName);
-	String_Destroy(&this->cookieValue);
+	CarrierString_Destroy(&this->contentType);
+	CarrierString_Destroy(&this->location);
+	CarrierString_Destroy(&this->cookieName);
+	CarrierString_Destroy(&this->cookieValue);
 }
 
 def(void, SetContentLength, s64 len) {
@@ -29,17 +31,17 @@ def(s64, GetContentLength) {
 	return this->contentLength;
 }
 
-def(void, SetLocation, String url) {
-	String_Assign(&this->location, &url);
+def(void, SetLocation, CarrierString url) {
+	CarrierString_Assign(&this->location, url);
 }
 
-def(void, SetContentType, String contentType) {
-	String_Assign(&this->contentType, &contentType);
+def(void, SetContentType, CarrierString contentType) {
+	CarrierString_Assign(&this->contentType, contentType);
 }
 
-def(void, SetCookie, String name, String value) {
-	String_Assign(&this->cookieName,  &name);
-	String_Assign(&this->cookieValue, &value);
+def(void, SetCookie, CarrierString name, CarrierString value) {
+	CarrierString_Assign(&this->cookieName,  name);
+	CarrierString_Assign(&this->cookieValue, value);
 }
 
 def(void, SetVersion, HTTP_Version version) {

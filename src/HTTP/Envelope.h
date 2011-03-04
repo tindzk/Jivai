@@ -8,24 +8,24 @@
 #define self HTTP_Envelope
 
 class {
-	s64          contentLength;
-	String       location;
-	String       contentType;
-	String       cookieName;
-	String       cookieValue;
-	HTTP_Version version;
-	HTTP_Status  status;
-	bool         persistent;
-	Date_RFC822  lastModified;
+	s64           contentLength;
+	CarrierString location;
+	CarrierString contentType;
+	CarrierString cookieName;
+	CarrierString cookieValue;
+	HTTP_Version  version;
+	HTTP_Status   status;
+	bool          persistent;
+	Date_RFC822   lastModified;
 };
 
-def(void, Init);
+rsdef(self, New);
 def(void, Destroy);
 def(void, SetContentLength, s64 len);
 def(s64, GetContentLength);
-def(void, SetLocation, String url);
-def(void, SetContentType, String contentType);
-def(void, SetCookie, String name, String value);
+def(void, SetLocation, CarrierString url);
+def(void, SetContentType, CarrierString contentType);
+def(void, SetCookie, CarrierString name, CarrierString value);
 def(void, SetVersion, HTTP_Version version);
 def(void, SetStatus, HTTP_Status status);
 def(void, SetPersistent, bool value);

@@ -131,7 +131,7 @@ class {
 #define CTRLKEY(x) \
 	((x) - 96)
 
-def(void, Init, File *in, File *out, bool assumeVT100);
+rsdef(self, New, File *in, File *out, bool assumeVT100);
 def(void, Configure, bool echo, bool signal);
 def(void, Destroy);
 def(void, ResetVT100);

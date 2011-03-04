@@ -6,13 +6,13 @@ class {
 	bool interrupt;
 };
 
-def(void, OnKeyEnter, String s) {
+def(void, OnKeyEnter, ProtString s) {
 	String_Print($("\nBuffer contains: '"));
 	String_Print(s);
 	String_Print($("'\n"));
 }
 
-def(bool, OnKeyPress, String ch) {
+def(bool, OnKeyPress, ProtString ch) {
 	if (ch.buf[0] == CTRLKEY('c')) {
 		String_Print($("Shutting down...\n"));
 		this->interrupt = true;
@@ -28,12 +28,10 @@ def(bool, OnKeyPress, String ch) {
 #undef self
 
 int main(void) {
-	Terminal term;
-	Terminal_Init(&term, File_StdIn, File_StdOut, true);
+	Terminal term = Terminal_New(File_StdIn, File_StdOut, true);
 	Terminal_Configure(&term, false, false);
 
-	Terminal_InputLine line;
-	Terminal_InputLine_Init(&line, &term);
+	Terminal_InputLine line = Terminal_InputLine_New(&term);
 
 	App app;
 	app.interrupt = false;
