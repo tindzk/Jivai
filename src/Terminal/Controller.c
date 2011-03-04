@@ -52,8 +52,7 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 }
 
 def(void, Render, ProtString s, ...) {
-	Typography tyo;
-	Typography_Init(&tyo);
+	Typography tyo = Typography_New(&tyo);
 	Typography_Parse(&tyo, String_AsStream(&s));
 
 	VarArg argptr;

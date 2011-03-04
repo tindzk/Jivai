@@ -62,54 +62,69 @@ record(ExceptionManager) {
 	ref(Record) e;
 };
 
-ExceptionManager __exc_mgr;
+extern ExceptionManager __exc_mgr;
 
-sdef(void, Init);
-sdef(void, Raise, int code);
-sdef(void, Push, ref(Buffer) *buf);
-sdef(void, Pop);
-sdef(ref(Record) *, GetMeta);
 sdef(void, Print, int code);
+sdef(void, Shutdown, int code);
+
+static inline sdef(void, Raise, int code) {
+	if (__exc_mgr.cur == NULL) {
+		scall(Shutdown, code);
+	}
+
+	longjmp(__exc_mgr.cur->jmpBuffer, code);
+}
+
+static inline sdef(void, Push, ref(Buffer) *buf) {
+	buf->prev = __exc_mgr.cur;
+	__exc_mgr.cur = buf;
+}
+
+static inline sdef(void, Pop) {
+	if (__exc_mgr.cur != NULL) {
+		__exc_mgr.cur = __exc_mgr.cur->prev;
+	}
+}
+
+static inline sdef(ref(Record) *, GetMeta) {
+	return &__exc_mgr.e;
+}
 
 #if Exception_SaveOrigin
-#define Exception_SetOrigin() \
-	__exc_mgr.e.func = $(__func__)
+	#define Exception_SetOrigin() \
+		__exc_mgr.e.func = $(__func__)
 #else
-#define Exception_SetOrigin() \
-	do { } while(0)
+	#define Exception_SetOrigin()
 #endif
 
 #if Exception_SaveTrace
-#undef self
+	#undef self
 
 #import "Backtrace.h"
 
-#define Exception_SetTrace()     \
-	__exc_mgr.e.traceItems =     \
-		Backtrace_GetTrace(      \
-			__exc_mgr.e.trace,   \
-			Exception_TraceSize)
-#else
-#define Exception_SetTrace(e) \
-	do { } while (0)
+	#define Exception_SetTrace()     \
+		__exc_mgr.e.traceItems =     \
+			Backtrace_GetTrace(      \
+				__exc_mgr.e.trace,   \
+				Exception_TraceSize)
 
-#define self Exception
+	#define self Exception
+#else
+	#define Exception_SetTrace(e)
 #endif
 
 #if Exception_SaveData
-#define Exception_SetData(_data) \
-	__exc_mgr.e.ptr = _data
+	#define Exception_SetData(_data) \
+		__exc_mgr.e.ptr = _data
 #else
-#define Exception_SetData(_data) \
-	do { } while (0)
+	#define Exception_SetData(_data)
 #endif
 
 #if Exception_SaveMessage
-#define Exception_SetMessage(_msg) \
-	__exc_mgr.e.msg = _msg
+	#define Exception_SetMessage(_msg) \
+		__exc_mgr.e.msg = _msg
 #else
-#define Exception_SetMessage(_msg) \
-	do { } while (0)
+	#define Exception_SetMessage(_msg)
 #endif
 
 #define Exception_SetCode(c) \
