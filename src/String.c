@@ -263,14 +263,11 @@ overload sdef(void, Prepend, self *dest, char c) {
 	scall(Destroy, &tmp);
 }
 
-def(void, Assign, StringInstance src) {
+def(void, Assign, String src) {
 	call(Destroy);
 
-	this->buf = src.object->buf;
-	this->len = src.object->len;
-
-	src.object->buf = (void *) 0xdeadbeef;
-	src.object->len = 0;
+	this->buf = src.buf;
+	this->len = src.len;
 }
 
 def(void, Copy, ProtString src) {

@@ -31,6 +31,18 @@ record(ProtString) {
 
 Instance(ProtString);
 
+typedef union CarrierString {
+	ProtString prot;
+	struct {
+		char   *buf;
+		size_t len;
+		size_t ofs;
+		bool   isProt;
+	};
+} CarrierString;
+
+Instance(CarrierString);
+
 typedef union self {
 	ProtString prot;
 	struct {
@@ -75,7 +87,7 @@ def(void, Shift);
 def(void, Delete, ssize_t offset, ssize_t length);
 overload sdef(void, Prepend, self *dest, ProtString s);
 overload sdef(void, Prepend, self *dest, char c);
-def(void, Assign, StringInstance src);
+def(void, Assign, String src);
 def(void, Copy, ProtString src);
 overload sdef(void, Append, self *dest, ProtString s);
 overload sdef(void, Append, self *dest, char c);
@@ -143,6 +155,68 @@ static inline sdef(self, New, size_t size) {
 	return (self) {
 		.buf = Pool_Alloc(Pool_GetInstance(), size)
 	};
+}
+
+static inline overload rsdef(CarrierString, ToCarrier, String s) {
+	return (CarrierString) {
+		.buf = s.buf,
+		.len = s.len,
+		.ofs = s.ofs,
+		.isProt = false
+	};
+}
+
+static inline overload rsdef(CarrierString, ToCarrier, ProtString s) {
+	return (CarrierString) {
+		.buf = s.buf,
+		.len = s.len,
+		.ofs = s.ofs,
+		.isProt = true
+	};
+}
+
+static inline CarrierString CarrierString_New(void) {
+	return (CarrierString) {
+		.isProt = true
+	};
+}
+
+static inline void CarrierString_Destroy(CarrierStringInstance $this) {
+	if (!this->isProt) {
+		if (this->buf != NULL) {
+			Pool_Free(Pool_GetInstance(), this->buf - this->ofs);
+		}
+
+		this->isProt = true;
+	}
+
+	this->buf = NULL;
+	this->len = 0;
+}
+
+static inline void CarrierString_Assign(CarrierStringInstance $this, CarrierString src) {
+	CarrierString_Destroy(this);
+	*this = src;
+}
+
+static inline String CarrierString_Flush(CarrierStringInstance $this) {
+	String res;
+
+	 if (this->isProt) {
+		res = String_Clone(this->prot);
+	 } else {
+		res = (String) {
+			.buf = this->buf,
+			.len = this->len,
+			.ofs = this->ofs
+		};
+	 }
+
+	this->buf = NULL;
+	this->len = 0;
+	this->isProt = true;
+
+	return res;
 }
 
 static inline sdef(self, Format, FmtString fmt) {
