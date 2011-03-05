@@ -70,8 +70,9 @@ record(FmtString) {
 
 #define self String
 
-Array(String, StringArray);
-Array(ProtString, ProtStringArray);
+Array(       String,        StringArray);
+Array(   ProtString,    ProtStringArray);
+Array(CarrierString, CarrierStringArray);
 
 sdef(size_t, GetSize, String s);
 sdef(size_t, GetFree, String s);
