@@ -155,6 +155,9 @@
 #define getIndex(name, arr) \
 	(size_t) ((arr)->buf + (arr)->len - (name) - 1)
 
+#define isEven(name, arr) \
+	(getIndex(name, arr) % 2) == 0
+
 #define isLast(name, arr) \
 	((name) + 1 == (arr)->buf + (arr)->len)
 
