@@ -9,13 +9,16 @@ set(ref(State)) {
 	ref(State_Depth)
 };
 
-def(void, Init, size_t depthWidth, StreamInterface *stream, void *context) {
-	this->depthWidth = depthWidth;
+rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context) {
+	self res = {
+		.stream  = stream,
+		.context = context,
+		.depthWidth = depthWidth
+	};
 
-	this->stream  = stream;
-	this->context = context;
+	Tree_Init(&res.tree, (void *) ref(DestroyNode));
 
-	Tree_Init(&this->tree, (void *) ref(DestroyNode));
+	return res;
 }
 
 def(void, Destroy) {

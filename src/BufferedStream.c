@@ -2,13 +2,14 @@
 
 #define self BufferedStream
 
-def(void, Init, Stream stream) {
-	this->stream = stream;
-	this->eof    = false;
-	this->inbuf  = String_New(0);
-	this->outbuf = String_New(0);
-
-	this->inbufThreshold = 0;
+rsdef(self, New, Stream stream) {
+	return (self) {
+		.stream = stream,
+		.eof    = false,
+		.inbuf  = String_New(0),
+		.outbuf = String_New(0),
+		.inbufThreshold = 0
+	};
 }
 
 def(void, Destroy) {

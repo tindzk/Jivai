@@ -15,7 +15,7 @@ class {
 	String outbuf;
 };
 
-def(void, Init, Stream stream);
+rsdef(self, New, Stream stream);
 def(void, Destroy);
 def(void, SetInputBuffer, size_t size, size_t threshold);
 def(void, SetOutputBuffer, size_t size);

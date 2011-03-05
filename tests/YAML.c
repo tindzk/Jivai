@@ -18,13 +18,10 @@ tsCase(Acute, "Memory") {
 	File file;
 	FileStream_Open(&file, $("../examples/YAML.yml"), FileStatus_ReadOnly);
 
-	BufferedStream stream;
-	BufferedStream_Init(&stream, File_AsStream(&file));
+	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	YAML yml;
-	YAML_Init(&yml, 4, &BufferedStreamImpl, &stream);
-
+	YAML yml = YAML_New(4, &BufferedStreamImpl, &stream);
 	YAML_Parse(&yml);
 
 	Assert($("Empty buffer"), BufferedStream_Flush(&stream).len == 0);

@@ -45,10 +45,22 @@ class {
 #define YAML_Section(node) \
 	((YAML_Section *) &(node)->data)
 
+static inline sdef(ProtString, Section_GetName, YAML_Node *node) {
+	return YAML_Section(node)->name.prot;
+}
+
 #define YAML_Item(node) \
 	((YAML_Item *) &(node)->data)
 
-def(void, Init, size_t depthWidth, StreamInterface *stream, void *context);
+static inline sdef(ProtString, Item_GetKey, YAML_Node *node) {
+	return YAML_Item(node)->key.prot;
+}
+
+static inline sdef(ProtString, Item_GetValue, YAML_Node *node) {
+	return YAML_Item(node)->value.prot;
+}
+
+rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context);
 def(void, Destroy);
 void ref(DestroyNode)(ref(Node) *node);
 def(ref(Node) *, GetRoot);
