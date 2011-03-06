@@ -1,5 +1,4 @@
 #import <YAML.h>
-#import <Terminal.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
@@ -16,18 +15,18 @@ void PrintTree(YAML_Node *node, int depth) {
 
 	if (node->type == YAML_NodeType_Section) {
 		String_Print($("section: "));
-		String_Print(YAML_Section(node)->name);
+		String_Print(YAML_Section_GetName(node));
 	} else if (node->type == YAML_NodeType_Item) {
 		String_Print($("key: "));
 
 		if (YAML_Item(node)->key.len == 0) {
 			String_Print($("(empty)"));
 		} else {
-			String_Print(YAML_Item(node)->key);
+			String_Print(YAML_Item_GetKey(node));
 		}
 
 		String_Print($(" value: "));
-		String_Print(YAML_Item(node)->value);
+		String_Print(YAML_Item_GetValue(node));
 	}
 
 	forward (i, node->len) {
@@ -39,12 +38,10 @@ int main(void) {
 	File file;
 	FileStream_Open(&file, $("YAML.yml"), FileStatus_ReadOnly);
 
-	BufferedStream stream;
-	BufferedStream_Init(&stream, File_AsStream(&file));
+	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	YAML yml;
-	YAML_Init(&yml, 4, &BufferedStreamImpl, &stream);
+	YAML yml = YAML_New(4, &BufferedStreamImpl, &stream);
 	YAML_Parse(&yml);
 
 	/* Print the final tree. */

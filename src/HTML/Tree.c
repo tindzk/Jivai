@@ -2,11 +2,12 @@
 
 #define self HTML_Tree
 
-def(void, Init) {
-	Tree_Init(&this->tree, (void *) ref(DestroyNode));
-
-	this->node  = (ref(Node) *) &this->tree.root;
-	this->depth = 0;
+rsdef(self, New) {
+	return (self) {
+		.tree  = Tree_New((void *) ref(DestroyNode)),
+		.depth = 0,
+		.node  = NULL
+	};
 }
 
 def(void, Destroy) {
@@ -40,7 +41,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
 
 		this->depth--;
 	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
-		this->node = Tree_AddNode(this->node);
+		this->node = Tree_AddNode(&this->tree, this->node);
 
 		this->node->type  = ref(NodeType_Tag);
 		this->node->value = String_Clone(value);
@@ -48,7 +49,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
 
 		this->depth++;
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
-		ref(Node) *node = Tree_AddNode(this->node);
+		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
 		node->type  = ref(NodeType_Value);
 		node->value = HTML_Entities_Decode(value);

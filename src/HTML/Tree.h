@@ -38,7 +38,7 @@ class {
 	size_t depth;
 };
 
-def(void, Init);
+rsdef(self, New);
 def(void, Destroy);
 sdef(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);

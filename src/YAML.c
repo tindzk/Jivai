@@ -10,15 +10,12 @@ set(ref(State)) {
 };
 
 rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context) {
-	self res = {
+	return (self) {
+		.tree    = Tree_New((void *) ref(DestroyNode)),
 		.stream  = stream,
 		.context = context,
 		.depthWidth = depthWidth
 	};
-
-	Tree_Init(&res.tree, (void *) ref(DestroyNode));
-
-	return res;
 }
 
 def(void, Destroy) {
@@ -51,12 +48,15 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 
 	if (depth > this->depth) {
 		if (this->node->len == 0) {
-			this->node = Tree_AddCustomNode(this->node,
-				sizeof(ref(Node)) + size);
+			this->node =
+				(ref(Node) *) Tree_AddCustomNode(&this->tree,
+					(Tree_Node *) this->node,
+					sizeof(ref(Node)) + size);
 		} else {
-			this->node = Tree_AddCustomNode(
-				this->node->buf[this->node->len - 1],
-				sizeof(ref(Node)) + size);
+			this->node =
+				(ref(Node) *) Tree_AddCustomNode(&this->tree,
+					(Tree_Node *) this->node->buf[this->node->len - 1],
+					sizeof(ref(Node)) + size);
 		}
 
 		this->node->type = ref(NodeType_Node);
@@ -92,8 +92,11 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 		}
 	}
 
-	ref(Node) *node = Tree_AddCustomNode(this->node,
-		sizeof(ref(Node)) + size);
+	ref(Node) *node =
+		(ref(Node) *)
+			Tree_AddCustomNode(&this->tree,
+			(Tree_Node *) this->node,
+			sizeof(ref(Node)) + size);
 
 	node->type = type;
 

@@ -10,7 +10,7 @@
 	/* Children nodes. */  \
 	struct type **buf;     \
                            \
-	/* Parent nodes. */    \
+	/* Parent node. */     \
 	struct type *parent
 
 record(ref(Node)) {
@@ -24,13 +24,13 @@ class {
 	ref(DestroyNode) destroyNode;
 };
 
-def(void, Init, ref(DestroyNode) destroyNode);
+rsdef(self, New, ref(DestroyNode) destroyNode);
 def(void, Destroy);
 def(void, Reset);
 def(void, FreeNodes, ref(Node) *node);
-sdef(ref(Node) *, AddCustomNode, void *ptrNode, size_t size);
+def(ref(Node) *, AddCustomNode, ref(Node) *node, size_t size);
 
-#define Tree_AddNode(node) \
-	(typeof(node)) Tree_AddCustomNode(node, sizeof(typeof(*(node))))
+#define Tree_AddNode($this, node) \
+	(typeof(node)) Tree_AddCustomNode($this, (Tree_Node *) (node), sizeof(typeof(*(node))))
 
 #undef self

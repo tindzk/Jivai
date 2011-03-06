@@ -2,7 +2,6 @@
 
 #import <File.h>
 #import <Integer.h>
-#import <Terminal.h>
 #import <Typography.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
@@ -11,7 +10,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	String strDepth = Integer_ToString(depth);
 
 	String_Print($("depth="));
-	String_Print(strDepth);
+	String_Print(strDepth.prot);
 
 	String_Destroy(&strDepth);
 
@@ -22,16 +21,16 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	if (node->type == Typography_NodeType_Text) {
 		String_Print($("value: "));
 
-		String_Print(Typography_Text(node)->value);
+		String_Print(Typography_Text(node)->value.prot);
 	} else if (node->type == Typography_NodeType_Item) {
 		String_Print($("name: "));
 
-		String_Print(Typography_Item(node)->name);
+		String_Print(Typography_Item(node)->name.prot);
 
 		String_Print($(" options: "));
 
 		if (Typography_Item(node)->options.len > 0) {
-			String_Print(Typography_Item(node)->options);
+			String_Print(Typography_Item(node)->options.prot);
 		} else {
 			String_Print($("(empty)"));
 		}
@@ -39,25 +38,21 @@ void PrintTree(Typography_Node *node, size_t depth) {
 
 	String_Print($("\n"));
 
-	for (size_t i = 0; i < node->len; i++) {
+	forward (i, node->len) {
 		PrintTree(node->buf[i], depth + 1);
 	}
 }
 
-int main(__unused int argc, __unused char *argv[]) {
+int main(void) {
 	File file;
-	FileStream_Open(&file,
-		$("Typography.tyo"),
-		FileStatus_ReadOnly);
+	File_Open(&file, $("Typography.tyo"), FileStatus_ReadOnly);
 
-	BufferedStream stream;
-	BufferedStream_Init(&stream, File_AsStream(&file));
+	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	Typography tyo;
+	Typography tyo = Typography_New();
 
 	try {
-		Typography_Init(&tyo);
 		Typography_Parse(&tyo, BufferedStream_AsStream(&stream));
 
 		PrintTree(Typography_GetRoot(&tyo), 0);
@@ -65,11 +60,6 @@ int main(__unused int argc, __unused char *argv[]) {
 		Typography_Destroy(&tyo);
 	} clean catchAny {
 		Exception_Print(e);
-
-#if Exception_SaveTrace
-		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
-#endif
-
 		excReturn ExitStatus_Failure;
 	} finally {
 		BufferedStream_Destroy(&stream);

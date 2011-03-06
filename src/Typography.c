@@ -3,9 +3,9 @@
 #define self Typography
 
 rsdef(self, New) {
-	self res;
-	Tree_Init(&res.tree, (void *) ref(DestroyNode));
-	return res;
+	return (self) {
+		.tree = Tree_New((void *) ref(DestroyNode))
+	};
 }
 
 def(void, Destroy) {
@@ -31,9 +31,11 @@ def(ref(Node) *, GetRoot) {
 
 static def(void, Flush, String *value) {
 	if (value->len > 0) {
-		ref(Node) *node = Tree_AddCustomNode(this->node,
-			sizeof(ref(Node)) +
-			sizeof(ref(Text)));
+		ref(Node) *node =
+			(ref(Node) *) Tree_AddCustomNode(&this->tree,
+				(Tree_Node *) this->node,
+				sizeof(ref(Node)) +
+				sizeof(ref(Text)));
 
 		node->type = ref(NodeType_Text);
 		node->line = this->line;
@@ -100,9 +102,11 @@ static def(void, Read, size_t st) {
 				} else if (cur == '{') {
 					call(Flush, &value);
 
-					this->node = Tree_AddCustomNode(this->node,
-						sizeof(ref(Node)) +
-						sizeof(ref(Item)));
+					this->node =
+						(ref(Node) *) Tree_AddCustomNode(&this->tree,
+							(Tree_Node *) this->node,
+							sizeof(ref(Node)) +
+							sizeof(ref(Item)));
 
 					this->node->type = ref(NodeType_Item);
 					this->node->line = this->line;
@@ -184,12 +188,11 @@ out:
 }
 
 def(void, Parse, Stream stream) {
-	this->line = 0;
-
+	this->line   = 0;
+	this->node   = NULL;
 	this->stream = stream;
 
 	Tree_Reset(&this->tree);
-	this->node = (ref(Node) *) &this->tree.root;
 
 	call(Read, 0);
 }

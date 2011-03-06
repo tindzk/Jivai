@@ -2,12 +2,13 @@
 
 #define self Tree
 
-def(void, Init, ref(DestroyNode) destroyNode) {
-	this->destroyNode = destroyNode;
-
-	this->root.len    = 0;
-	this->root.buf    = NULL;
-	this->root.parent = NULL;
+rsdef(self, New, ref(DestroyNode) destroyNode) {
+	return (self) {
+		.destroyNode = destroyNode,
+		.root.len    = 0,
+		.root.buf    = NULL,
+		.root.parent = NULL
+	};
 }
 
 def(void, Destroy) {
@@ -27,7 +28,7 @@ def(void, FreeNodes, ref(Node) *node) {
 		return;
 	}
 
-	for (size_t i = 0; i < node->len; i++) {
+	forward (i, node->len) {
 		this->destroyNode(node->buf[i]);
 		call(FreeNodes, node->buf[i]);
 		Pool_Free(Pool_GetInstance(), node->buf[i]);
@@ -37,8 +38,10 @@ def(void, FreeNodes, ref(Node) *node) {
 	node->len = 0;
 }
 
-sdef(ref(Node) *, AddCustomNode, void *ptrNode, size_t size) {
-	ref(Node) *node = ptrNode;
+def(ref(Node) *, AddCustomNode, ref(Node) *node, size_t size) {
+	if (node == NULL) {
+		node = &this->root;
+	}
 
 	if (node->len == 0) {
 		node->buf = Pool_Alloc(Pool_GetInstance(), sizeof(ref(Node) *));

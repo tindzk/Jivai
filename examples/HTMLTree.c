@@ -66,8 +66,7 @@ int main(void) {
 	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	HTML_Tree tree;
-	HTML_Tree_Init(&tree);
+	HTML_Tree tree = HTML_Tree_New();
 
 	HTML_Tokenizer html;
 	HTML_Tokenizer_Init(&html, Callback(&tree, &HTML_Tree_ProcessToken));
