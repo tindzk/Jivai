@@ -195,16 +195,6 @@
 	static inline bool tripleConcat(self, _, Equals)(InstName(self) a, InstName(self) b) { \
 		return a.object == b.object;                                                       \
 	}                                                                                      \
-	static alwaysInline InstName(self) tripleConcat(self, _, NewStack)(void) {             \
-		self obj;                                                                          \
-		return (InstName(self)) &obj;                                                      \
-	}                                                                                      \
-	static inline InstName(self) tripleConcat(self, _, New)(void) {                        \
-		return (InstName(self)) (self *) Pool_Alloc(Pool_GetInstance(), sizeof(self));     \
-	}                                                                                      \
-	static inline void tripleConcat(self, _, Free)(InstName(self) instance) {              \
-		Pool_Free(Pool_GetInstance(), instance.object);                                    \
-	}                                                                                      \
 	static inline InstName(self) tripleConcat(self, _, Clone)(InstName(self) instance) {   \
 		self *ptr = Pool_Alloc(Pool_GetInstance(), sizeof(self));                          \
 		Memory_Copy(ptr, instance.object, sizeof(self));                                   \
