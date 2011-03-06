@@ -57,7 +57,7 @@ __malloc rsdef(void *, Alloc, size_t size) {
 	return pMem;
 }
 
-sdef(void, FreePtr, void *pMem) {
+sdef(void, Free, void *pMem) {
 #if Memory_PointerChecks
 	if (pMem == NULL) {
 		throw(NullPointer);
