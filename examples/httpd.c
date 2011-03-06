@@ -15,7 +15,6 @@
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
-#import <Terminal.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
 #import <Connection.h>
@@ -173,7 +172,7 @@ def(void, Init, SocketConnection *conn) {
 	this->paramTest  = String_New(256);
 	this->paramTest2 = String_New(256);
 
-	HTTP_Server_Init(&this->server, conn, 2048, 4096);
+	this->server = HTTP_Server_New(conn, 2048, 4096);
 
 	HTTP_Server_BindVersion(&this->server, Callback(this, Request_OnHttpVersion));
 	HTTP_Server_BindMethod(&this->server, Callback(this, Request_OnMethod));
@@ -321,7 +320,9 @@ int main(void) {
 		Exception_Print(e);
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
+		Backtrace_PrintTrace(
+			Exception_GetTraceBuffer(),
+			Exception_GetTraceLength());
 #endif
 
 		excReturn ExitStatus_Failure;

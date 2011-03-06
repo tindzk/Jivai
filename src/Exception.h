@@ -52,6 +52,7 @@ record(ExceptionManager) {
 
 extern ExceptionManager __exc_mgr;
 
+sdef(String, Format, int code);
 sdef(void, Print, int code);
 sdef(void, Shutdown, int code);
 

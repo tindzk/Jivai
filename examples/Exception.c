@@ -1,5 +1,4 @@
 #import <String.h>
-#import <Terminal.h>
 #import <Exception.h>
 
 #define self Example

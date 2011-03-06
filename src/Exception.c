@@ -7,23 +7,27 @@ ExceptionManager __exc_mgr = {
 	.cur = NULL
 };
 
-sdef(void, Print, int code) {
+sdef(String, Format, int code) {
 #if Exception_SaveOrigin
-	FmtString fmt = FmtString(
-		$("Uncaught exception %.% (in %)\n"),
+	return String_Format(
+		$("Uncaught exception %.% (in %)"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.details.scode,
 		Exception_GetOrigin());
 #else
-	FmtString fmt = FmtString(
-		$("Uncaught exception %.%\n"),
+	return String_Format(
+		$("Uncaught exception %.%"),
 		String_FromNul(Manifest_ResolveName(code)),
 		__exc_mgr.details.scode);
 #endif
+}
 
-	Terminal term = Terminal_New(File_StdIn, File_StdErr, false);
-	Terminal_PrintFmt(&term, fmt);
-	Terminal_Destroy(&term);
+sdef(void, Print, int code) {
+	String msg = scall(Format, code);
+	File_Write(File_StdErr, msg.prot);
+	String_Destroy(&msg);
+
+	File_Write(File_StdErr, $("\n"));
 }
 
 sdef(void, Shutdown, int code) {

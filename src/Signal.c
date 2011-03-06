@@ -47,51 +47,53 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 
 	if (signal == SIGALRM) {
 		code = ref(SigAlrm);
-		__exc_mgr.e.scode = $("excSigAlrm");
+		__exc_mgr.details.scode = $("excSigAlrm");
 	} else if (signal == SIGBUS) {
 		code = ref(SigBus);
-		__exc_mgr.e.scode = $("excSigBus");
+		__exc_mgr.details.scode = $("excSigBus");
 	} else if (signal == SIGFPE) {
 		code = ref(SigFpe);
-		__exc_mgr.e.scode = $("excSigFpe");
+		__exc_mgr.details.scode = $("excSigFpe");
 	} else if (signal == SIGILL) {
 		code = ref(SigIll);
-		__exc_mgr.e.scode = $("excSigIll");
+		__exc_mgr.details.scode = $("excSigIll");
 	} else if (signal == SIGINT) {
 		code = ref(SigInt);
-		__exc_mgr.e.scode = $("excSigInt");
+		__exc_mgr.details.scode = $("excSigInt");
 	} else if (signal == SIGQUIT) {
 		code = ref(SigQuit);
-		__exc_mgr.e.scode = $("excSigQuit");
+		__exc_mgr.details.scode = $("excSigQuit");
 	} else if (signal == SIGSEGV) {
 		code = ref(SigSegv);
-		__exc_mgr.e.scode = $("excSigSegv");
+		__exc_mgr.details.scode = $("excSigSegv");
 	} else if (signal == SIGTERM) {
 		code = ref(SigTerm);
-		__exc_mgr.e.scode = $("excSigTerm");
+		__exc_mgr.details.scode = $("excSigTerm");
 	} else if (signal == SIGPIPE) {
 		code = ref(SigPipe);
-		__exc_mgr.e.scode = $("excSigPipe");
+		__exc_mgr.details.scode = $("excSigPipe");
 	} else {
 		code = ref(Unknown);
-		__exc_mgr.e.scode = $("excUnknown");
+		__exc_mgr.details.scode = $("excUnknown");
 	}
 
 #if Exception_SaveTrace
-	__exc_mgr.e.traceItems = Backtrace_GetTrace(__exc_mgr.e.trace, Exception_TraceSize);
+	__exc_mgr.details.trace.len = Backtrace_GetTrace(
+		__exc_mgr.details.trace.buf,
+		Exception_TraceSize);
 
 	/* Overwrite the first trace item with the address from which the signal was raised. */
 	ref(UserContext) *uc = (ref(UserContext) *) ucontext;
 
 	#if defined(__i386__)
-		__exc_mgr.e.trace[0] = (void *) uc->uc_mcontext.eip;
+		__exc_mgr.details.trace.buf[0] = (void *) uc->uc_mcontext.eip;
 	#elif defined(__x86_64__)
-		__exc_mgr.e.trace[0] = (void *) uc->uc_mcontext.rip;
+		__exc_mgr.details.trace.buf[0] = (void *) uc->uc_mcontext.rip;
 	#endif
 #endif
 
 #if Exception_SaveOrigin
-	__exc_mgr.e.func = $(__func__);
+	__exc_mgr.details.func = $(__func__);
 #endif
 
 	Exception_Raise(code);
