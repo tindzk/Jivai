@@ -1,4 +1,3 @@
-#import <Terminal.h>
 #import <HTML/Tree.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
@@ -16,16 +15,18 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 		if (node->type == HTML_Tree_NodeType_Tag) {
 			IndentTree(level);
 
-			String_Print(tmp = String_Format($("tag=%\n"), node->value));
+			tmp = String_Format($("tag=%\n"), node->value.prot);
+			String_Print(tmp.prot);
 			String_Destroy(&tmp);
 
 			for (size_t i = 0; i < node->attrs->len; i++) {
 				IndentTree(level + 1);
 
-				String_Print(tmp = String_Format(
+				tmp = String_Format(
 					$("name=\"%\" value=\"%\"\n"),
-					node->attrs->buf[i].name, node->attrs->buf[i].value));
-
+					node->attrs->buf[i].name.prot,
+					node->attrs->buf[i].value.prot);
+				String_Print(tmp.prot);
 				String_Destroy(&tmp);
 			}
 
@@ -37,10 +38,11 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 			 * of whitespaces. In some cases this is useful, but not for
 			 * printing trees.
 			 */
-			String value = String_Trim(node->value);
+			ProtString value = String_Trim(node->value.prot);
 
 			if (value.len > 0) {
-				String_Print(tmp = String_Format($("value=\"%\"\n"), value));
+				tmp = String_Format($("value=\"%\"\n"), value);
+				String_Print(tmp.prot);
 				String_Destroy(&tmp);
 			} else {
 				String_Print($("value={empty}\n"));
@@ -61,8 +63,7 @@ int main(void) {
 
 	} tryEnd;
 
-	BufferedStream stream;
-	BufferedStream_Init(&stream, File_AsStream(&file));
+	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
 	HTML_Tree tree;

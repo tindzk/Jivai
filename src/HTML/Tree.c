@@ -30,7 +30,7 @@ def(ref(Node) *, GetRoot) {
 	return (ref(Node) *) &this->tree.root;
 }
 
-def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
+def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
 			throw(IllegalNesting);
@@ -58,7 +58,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	{
 		ref(Attr) item = {
 			.name  = String_Clone(value),
-			.value = $("")
+			.value = String_New(0)
 		};
 
 		scall(Attrs_Push, &this->node->attrs, item);
@@ -68,10 +68,10 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, String value) {
 	}
 }
 
-sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name) {
+sdef(ref(Attr) *, GetAttr, ref(Node) *node, ProtString name) {
 	if (node->type == ref(NodeType_Tag)) {
 		forward (i, node->attrs->len) {
-			if (String_Equals(node->attrs->buf[i].name, name)) {
+			if (String_Equals(node->attrs->buf[i].name.prot, name)) {
 				return &node->attrs->buf[i];
 			}
 		}
@@ -81,14 +81,14 @@ sdef(ref(Attr) *, GetAttr, ref(Node) *node, String name) {
 }
 
 sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
-	String *s;
 	bool found;
+	ProtString *s;
 	VarArg argptr;
 
 	VarArg_Start(argptr, node);
 
 	while (true) {
-		s = VarArg_Get(argptr, String *);
+		s = VarArg_Get(argptr, ProtString *);
 
 		if (s == NULL) {
 			break;
@@ -98,7 +98,7 @@ sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 
 		forward (i, node->len) {
 			if (node->buf[i]->type == ref(NodeType_Tag)) {
-				if (String_Equals(*s, node->buf[i]->value)) {
+				if (String_Equals(*s, node->buf[i]->value.prot)) {
 					node = node->buf[i];
 					found = true;
 					break;
