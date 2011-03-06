@@ -38,35 +38,36 @@
 // @exc StatFailed
 // @exc TruncatingFailed
 
-overload sdef(bool, Exists, String path, bool follow);
-overload sdef(bool, Exists, String path);
+overload sdef(bool, Exists, ProtString path, bool follow);
+overload sdef(bool, Exists, ProtString path);
 sdef(String, GetCwd);
-sdef(Stat64, GetStat, String path);
-sdef(u64, GetSize, String path);
-overload sdef(bool, IsFile, String path);
+sdef(Stat64, GetStat, ProtString path);
+sdef(u64, GetSize, ProtString path);
+overload sdef(bool, IsFile, ProtString path);
 overload sdef(bool, IsFile, Stat64 attr);
-overload sdef(bool, IsDirectory, String path);
+overload sdef(bool, IsDirectory, ProtString path);
 overload sdef(bool, IsDirectory, Stat64 attr);
-overload sdef(void, Truncate, String path, u64 length);
-overload sdef(void, Truncate, String path);
-overload sdef(String, GetFilename, String path, bool verify);
-overload sdef(String, GetFilename, String path);
-overload sdef(String, GetDirectory, String path, bool verify);
-overload sdef(String, GetDirectory, String path);
-sdef(String, Resolve, String path);
-overload sdef(void, Create, String path, int mode, bool recursive);
-overload sdef(void, Create, String path, bool recursive);
-overload sdef(void, Create, String path, int mode);
-overload sdef(void, Create, String path);
-sdef(void, Delete, String path);
-sdef(void, DeleteDirectory, String path);
-sdef(void, ReadLink, String path, String *out);
-sdef(void, Symlink, String path1, String path2);
-sdef(void, SetXattr, String path, String name, String value);
-overload sdef(String, GetXattr, String path, String name);
-overload sdef(void, GetXattr, String path, String name, String *value);
-overload sdef(void, SetTime, String path, time_t timestamp, long nano, bool followSymlink);
-overload sdef(void, SetTime, String path, time_t timestamp, bool followSymlink);
-overload sdef(void, SetTime, String path, time_t timestamp);
+overload sdef(void, Truncate, ProtString path, u64 length);
+overload sdef(void, Truncate, ProtString path);
+sdef(ProtString, GetExtension, ProtString path);
+overload sdef(ProtString, GetFilename, ProtString path, bool verify);
+overload sdef(ProtString, GetFilename, ProtString path);
+overload sdef(ProtString, GetDirectory, ProtString path, bool verify);
+overload sdef(ProtString, GetDirectory, ProtString path);
+sdef(String, Resolve, ProtString path);
+overload sdef(void, Create, ProtString path, int mode, bool recursive);
+overload sdef(void, Create, ProtString path, bool recursive);
+overload sdef(void, Create, ProtString path, int mode);
+overload sdef(void, Create, ProtString path);
+sdef(void, Delete, ProtString path);
+sdef(void, DeleteDirectory, ProtString path);
+sdef(void, ReadLink, ProtString path, String *out);
+sdef(void, Symlink, ProtString path1, ProtString path2);
+sdef(void, SetXattr, ProtString path, ProtString name, ProtString value);
+overload sdef(String, GetXattr, ProtString path, ProtString name);
+overload sdef(void, GetXattr, ProtString path, ProtString name, String *value);
+overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool followSymlink);
+overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink);
+overload sdef(void, SetTime, ProtString path, time_t timestamp);
 
 #undef self

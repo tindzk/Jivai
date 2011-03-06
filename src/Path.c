@@ -2,7 +2,7 @@
 
 #define self Path
 
-overload sdef(bool, Exists, String path, bool follow) {
+overload sdef(bool, Exists, ProtString path, bool follow) {
 	Stat attr;
 
 	if (follow) {
@@ -12,7 +12,7 @@ overload sdef(bool, Exists, String path, bool follow) {
 	return Kernel_lstat(path, &attr);
 }
 
-inline overload sdef(bool, Exists, String path) {
+inline overload sdef(bool, Exists, ProtString path) {
 	return scall(Exists, path, false);
 }
 
@@ -27,7 +27,7 @@ sdef(String, GetCwd) {
 	return s;
 }
 
-sdef(Stat64, GetStat, String path) {
+sdef(Stat64, GetStat, ProtString path) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -53,11 +53,11 @@ sdef(Stat64, GetStat, String path) {
 	return attr;
 }
 
-sdef(u64, GetSize, String path) {
+sdef(u64, GetSize, ProtString path) {
 	return scall(GetStat, path).size;
 }
 
-inline overload sdef(bool, IsFile, String path) {
+inline overload sdef(bool, IsFile, ProtString path) {
 	return scall(GetStat, path).mode & FileMode_Regular;
 }
 
@@ -65,7 +65,7 @@ inline overload sdef(bool, IsFile, Stat64 attr) {
 	return attr.mode & FileMode_Regular;
 }
 
-overload sdef(bool, IsDirectory, String path) {
+overload sdef(bool, IsDirectory, ProtString path) {
 	bool res = false;
 
 	try {
@@ -85,7 +85,7 @@ inline overload sdef(bool, IsDirectory, Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 
-overload sdef(void, Truncate, String path, u64 length) {
+overload sdef(void, Truncate, ProtString path, u64 length) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -107,11 +107,21 @@ overload sdef(void, Truncate, String path, u64 length) {
 	}
 }
 
-inline overload sdef(void, Truncate, String path) {
+inline overload sdef(void, Truncate, ProtString path) {
 	scall(Truncate, path, 0);
 }
 
-overload sdef(String, GetFilename, String path, bool verify) {
+sdef(ProtString, GetExtension, ProtString path) {
+	ssize_t pos = String_ReverseFind(path, '.');
+
+	if (pos != String_NotFound) {
+		return String_Slice(path, pos + 1);
+	}
+
+	return $("");
+}
+
+overload sdef(ProtString, GetFilename, ProtString path, bool verify) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -123,21 +133,21 @@ overload sdef(String, GetFilename, String path, bool verify) {
 	ssize_t pos = String_ReverseFind(path, '/');
 
 	if (pos == String_NotFound) {
-		return String_Disown(path);
+		return path;
 	}
 
 	if ((size_t) pos + 1 >= path.len) {
-		return String_Disown(path);
+		return path;
 	}
 
 	return String_Slice(path, pos + 1);
 }
 
-inline overload sdef(String, GetFilename, String path) {
+inline overload sdef(ProtString, GetFilename, ProtString path) {
 	return scall(GetFilename, path, true);
 }
 
-overload sdef(String, GetDirectory, String path, bool verify) {
+overload sdef(ProtString, GetDirectory, ProtString path, bool verify) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -151,7 +161,7 @@ overload sdef(String, GetDirectory, String path, bool verify) {
 	}
 
 	if (verify && scall(IsDirectory, path)) {
-		return String_Disown(path);
+		return path;
 	}
 
 	ssize_t pos = String_ReverseFind(path, '/');
@@ -163,12 +173,12 @@ overload sdef(String, GetDirectory, String path, bool verify) {
 	return String_Slice(path, 0, pos);
 }
 
-inline overload sdef(String, GetDirectory, String path) {
+inline overload sdef(ProtString, GetDirectory, ProtString path) {
 	return scall(GetDirectory, path, true);
 }
 
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
-sdef(String, Resolve, String path) {
+sdef(String, Resolve, ProtString path) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -181,7 +191,7 @@ sdef(String, Resolve, String path) {
 
 	bool isDir = scall(IsDirectory, path);
 
-	String dirpath = !isDir
+	ProtString dirpath = !isDir
 		? scall(GetDirectory, path, false)
 		: path;
 
@@ -203,7 +213,7 @@ sdef(String, Resolve, String path) {
 	return res;
 }
 
-overload sdef(void, Create, String path, int mode, bool recursive) {
+overload sdef(void, Create, ProtString path, int mode, bool recursive) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -257,7 +267,7 @@ overload sdef(void, Create, String path, int mode, bool recursive) {
 	}
 }
 
-inline overload sdef(void, Create, String path, bool recursive) {
+inline overload sdef(void, Create, ProtString path, bool recursive) {
 	scall(Create, path,
 		Permission_OwnerRead    |
 		Permission_OwnerWrite   |
@@ -269,15 +279,15 @@ inline overload sdef(void, Create, String path, bool recursive) {
 		Permission_OthersExecute, recursive);
 }
 
-inline overload sdef(void, Create, String path, int mode) {
+inline overload sdef(void, Create, ProtString path, int mode) {
 	scall(Create, path, mode, false);
 }
 
-inline overload sdef(void, Create, String path) {
+inline overload sdef(void, Create, ProtString path) {
 	scall(Create, path, false);
 }
 
-sdef(void, Delete, String path) {
+sdef(void, Delete, ProtString path) {
 	errno = 0;
 
 	if (!Kernel_unlink(path)) {
@@ -295,7 +305,7 @@ sdef(void, Delete, String path) {
 	}
 }
 
-sdef(void, DeleteDirectory, String path) {
+sdef(void, DeleteDirectory, ProtString path) {
 	errno = 0;
 
 	if (!Kernel_rmdir(path)) {
@@ -315,10 +325,10 @@ sdef(void, DeleteDirectory, String path) {
 	}
 }
 
-sdef(void, ReadLink, String path, String *out) {
+sdef(void, ReadLink, ProtString path, String *out) {
 	errno = 0;
 
-	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(out));
+	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(*out));
 
 	if (len == -1) {
 		if (errno == EACCES) {
@@ -337,7 +347,7 @@ sdef(void, ReadLink, String path, String *out) {
 	out->len = len;
 }
 
-sdef(void, Symlink, String path1, String path2) {
+sdef(void, Symlink, ProtString path1, ProtString path2) {
 	errno = 0;
 
 	if (!Kernel_symlink(path1, path2)) {
@@ -349,13 +359,13 @@ sdef(void, Symlink, String path1, String path2) {
 	}
 }
 
-sdef(void, SetXattr, String path, String name, String value) {
+sdef(void, SetXattr, ProtString path, ProtString name, ProtString value) {
 	if (!Kernel_setxattr(path, name, value.buf, value.len, 0)) {
 		throw(SettingAttributeFailed);
 	}
 }
 
-overload sdef(String, GetXattr, String path, String name) {
+overload sdef(String, GetXattr, ProtString path, ProtString name) {
 	errno = 0;
 
 	ssize_t size = Kernel_getxattr(path, name, NULL, 0);
@@ -379,10 +389,10 @@ overload sdef(String, GetXattr, String path, String name) {
 	return res;
 }
 
-overload sdef(void, GetXattr, String path, String name, String *value) {
+overload sdef(void, GetXattr, ProtString path, ProtString name, String *value) {
 	errno = 0;
 
-	ssize_t size = Kernel_getxattr(path, name, value->buf, String_GetSize(value));
+	ssize_t size = Kernel_getxattr(path, name, value->buf, String_GetSize(*value));
 
 	if (size < 0) {
 		if (errno == ENODATA) {
@@ -397,7 +407,7 @@ overload sdef(void, GetXattr, String path, String name, String *value) {
 	value->len = size;
 }
 
-overload sdef(void, SetTime, String path, time_t timestamp, long nano, bool followSymlink) {
+overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool followSymlink) {
 	Time_UnixEpoch t;
 
 	t.sec  = timestamp;
@@ -424,10 +434,10 @@ overload sdef(void, SetTime, String path, time_t timestamp, long nano, bool foll
 	}
 }
 
-inline overload sdef(void, SetTime, String path, time_t timestamp, bool followSymlink) {
+inline overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink) {
 	scall(SetTime, path, timestamp, 0, followSymlink);
 }
 
-inline overload sdef(void, SetTime, String path, time_t timestamp) {
+inline overload sdef(void, SetTime, ProtString path, time_t timestamp) {
 	scall(SetTime, path, timestamp, 0, false);
 }
