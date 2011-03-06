@@ -79,9 +79,9 @@ sdef(bool, symlink, ProtString path1, ProtString path2) {
 		String_ToNul(path2)) == 0;
 }
 
-sdef(bool, utimensat, int dirfd, String path, Time_UnixEpoch t, int flags) {
+sdef(bool, utimensat, int dirfd, ProtString path, Time_UnixEpoch t, int flags) {
 	return syscall(__NR_utimensat, dirfd,
-		path,
+		String_ToNul(path),
 		(const Time_UnixEpoch[2]) {t, t},
 		flags) == 0;
 }

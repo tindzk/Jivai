@@ -187,7 +187,7 @@ sdef(bool, fsetxattr, ssize_t fd, ProtString name, char *buf, size_t size, int f
 sdef(ssize_t, getxattr, ProtString path, ProtString name, char *buf, size_t size);
 sdef(ssize_t, fgetxattr, ssize_t fd, ProtString name, char *buf, size_t size);
 sdef(bool, symlink, ProtString path1, ProtString path2);
-sdef(bool, utimensat, int dirfd, String path, Time_UnixEpoch t, int flags);
+sdef(bool, utimensat, int dirfd, ProtString path, Time_UnixEpoch t, int flags);
 sdef(bool, chdir, ProtString path);
 sdef(bool, fchdir, ssize_t fd);
 sdef(bool, lstat, ProtString path, Stat *attr);
