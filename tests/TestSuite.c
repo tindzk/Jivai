@@ -1,3 +1,4 @@
+#import <Main.h>
 #import "TestSuite.h"
 
 #define self TestSuite
@@ -166,8 +167,6 @@ def(bool, Run) {
 	return !this->acuteFailed;
 }
 
-int main(void) {
-	return TestSuite_Run(TestSuite_GetInstance())
-		? ExitStatus_Success
-		: ExitStatus_Failure;
+bool Main(__unused ProtString base, __unused ProtStringArray *args) {
+	return TestSuite_Run(TestSuite_GetInstance());
 }

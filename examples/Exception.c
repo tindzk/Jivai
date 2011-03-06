@@ -1,3 +1,4 @@
+#import <Main.h>
 #import <String.h>
 #import <Exception.h>
 
@@ -17,20 +18,14 @@ void func1(void) {
 	func2();
 }
 
-int main(void) {
+bool Main(__unused ProtString base, __unused ProtStringArray *args) {
 	try {
 		func1();
 	} clean catch(Example, CustomException) {
 		String_Print($("CustomException caught.\n"));
-
-#if Exception_SaveTrace
-		Backtrace_PrintTrace(
-			Exception_GetTraceBuffer(),
-			Exception_GetTraceLength());
-#endif
 	} finally {
 		String_Print($("finally block.\n"));
 	} tryEnd;
 
-	return ExitStatus_Success;
+	return true;
 }
