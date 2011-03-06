@@ -11,8 +11,6 @@ rsdef(self, New) {
 	res.term = Terminal_New(File_StdIn, File_StdOut, true);
 	Terminal_Configure(&res.term, true, true);
 
-	res.controller = Terminal_Controller_New(&res.term);
-
 	res.suites = TestSuites_New(128);
 	res.acuteFailed = false;
 
@@ -118,6 +116,8 @@ static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst)
 }
 
 def(bool, Run) {
+	this->controller = Terminal_Controller_New(&this->term);
+
 	this->acuteFailed = false;
 
 	foreach (suite, this->suites) {
