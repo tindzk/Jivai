@@ -9,7 +9,7 @@
 
 #define self HTML_Entities
 
-sdef(String, Decode, String s);
+sdef(String, Decode, ProtString s);
 overload sdef(void, Encode, ProtString s, String *out);
 overload sdef(String, Encode, ProtString s);
 

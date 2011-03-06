@@ -261,7 +261,7 @@ static struct {
 	{ $("zwnj"), 8204 }
 };
 
-sdef(String, Decode, String s) {
+sdef(String, Decode, ProtString s) {
 	String res = String_New(s.len);
 
 	bool ampersand = false;
@@ -277,7 +277,7 @@ sdef(String, Decode, String s) {
 			}
 		} else {
 			if (s.buf[i] == ';') {
-				ProtString entity = String_Slice(s.prot, pos, i - pos);
+				ProtString entity = String_Slice(s, pos, i - pos);
 
 				if (entity.buf[0] == '#') {
 					if (entity.len < 3) {
@@ -324,7 +324,7 @@ sdef(String, Decode, String s) {
 			}
 
 			when (error) {
-				String_Append(&res, String_Slice(s.prot, pos - 1, i - pos + 2));
+				String_Append(&res, String_Slice(s, pos - 1, i - pos + 2));
 				ampersand = false;
 			}
 		}
