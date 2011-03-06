@@ -4,19 +4,12 @@
 #import "Macros.h"
 #import "String.h"
 #import "Runtime.h"
+#import "Backtrace.h"
 
 #define self Exception
 
 #ifndef Exception_SaveOrigin
 #define Exception_SaveOrigin 1
-#endif
-
-#ifndef Exception_SaveData
-#define Exception_SaveData 0
-#endif
-
-#ifndef Exception_SaveMessage
-#define Exception_SaveMessage 0
 #endif
 
 #ifndef Exception_SaveTrace
@@ -27,31 +20,6 @@
 #define Exception_TraceSize 15
 #endif
 
-/* This structure contains more detailed information about the most
- * recently thrown exception. The exception itself is only supplied
- * in a numerical code via longjmp(). See Exception_Raise().
- */
-record(ref(Record)) {
-#if Exception_SaveOrigin
-	ProtString func;
-#endif
-
-#if Exception_SaveMessage
-	ProtString msg;
-#endif
-
-#if Exception_SaveData
-	void *data;
-#endif
-
-	ProtString scode;
-
-#if Exception_SaveTrace
-	void *trace[Exception_TraceSize];
-	size_t traceItems;
-#endif
-};
-
 record(ref(Buffer)) {
 	struct ref(Buffer) *prev; /* Linked list. */
 	jmp_buf jmpBuffer;
@@ -59,7 +27,27 @@ record(ref(Buffer)) {
 
 record(ExceptionManager) {
 	ref(Buffer) *cur;
-	ref(Record) e;
+
+	/* This structure contains more detailed information about the most
+	 * recently thrown exception. The exception itself is only supplied
+	 * in a numerical code via longjmp(). See Exception_Raise().
+	 */
+	struct {
+#if Exception_SaveOrigin
+		ProtString func;
+#endif
+
+#if Exception_SaveTrace
+		struct {
+			void *buf[Exception_TraceSize];
+			size_t len;
+		} trace;
+#endif
+
+		ProtString scode;
+		ProtString msg;
+		void *data;
+	} details;
 };
 
 extern ExceptionManager __exc_mgr;
@@ -86,54 +74,59 @@ static inline sdef(void, Pop) {
 	}
 }
 
-static inline sdef(ref(Record) *, GetMeta) {
-	return &__exc_mgr.e;
+static inline sdef(void, SetMessage, ProtString msg) {
+	__exc_mgr.details.msg = msg;
+}
+
+static inline sdef(ProtString, GetMessage) {
+	return __exc_mgr.details.msg;
+}
+
+static inline sdef(void, SetData, void *data) {
+	__exc_mgr.details.data = data;
+}
+
+static inline sdef(void *, GetData) {
+	return __exc_mgr.details.data;
 }
 
 #if Exception_SaveOrigin
-	#define Exception_SetOrigin() \
-		__exc_mgr.e.func = $(__func__)
+	static inline void Exception_SetOrigin(ProtString func) {
+		__exc_mgr.details.func = func;
+	}
+
+	static inline ProtString Exception_GetOrigin(void) {
+		return __exc_mgr.details.func;
+	}
 #else
-	#define Exception_SetOrigin()
+	static inline void Exception_SetOrigin(__unused ProtString func) { }
+	static inline ProtString Exception_GetOrigin(void) {
+		return $("");
+	}
 #endif
 
 #if Exception_SaveTrace
-	#undef self
-
-#import "Backtrace.h"
-
-	#define Exception_SetTrace()     \
-		__exc_mgr.e.traceItems =     \
-			Backtrace_GetTrace(      \
-				__exc_mgr.e.trace,   \
+	#define Exception_SetTrace()             \
+		__exc_mgr.details.trace.len =        \
+			Backtrace_GetTrace(              \
+				__exc_mgr.details.trace.buf, \
 				Exception_TraceSize)
 
-	#define self Exception
+	static inline sdef(void **, GetTraceBuffer) {
+		return __exc_mgr.details.trace.buf;
+	}
+
+	static inline sdef(size_t, GetTraceLength) {
+		return __exc_mgr.details.trace.len;
+	}
 #else
 	#define Exception_SetTrace(e)
 #endif
 
-#if Exception_SaveData
-	#define Exception_SetData(_data) \
-		__exc_mgr.e.ptr = _data
-#else
-	#define Exception_SetData(_data)
-#endif
-
-#if Exception_SaveMessage
-	#define Exception_SetMessage(_msg) \
-		__exc_mgr.e.msg = _msg
-#else
-	#define Exception_SetMessage(_msg)
-#endif
-
-#define Exception_SetCode(c) \
-	__exc_mgr.e.scode = $(#c)
-
-#define Exception_SetException(c) \
-	Exception_SetTrace();         \
-	Exception_SetOrigin();        \
-	Exception_SetCode(c);
+#define Exception_SetException(c)     \
+	Exception_SetTrace();             \
+	Exception_SetOrigin($(__func__)); \
+	__exc_mgr.details.scode = $(#c)
 
 #define throw(e)                   \
 	do {                           \

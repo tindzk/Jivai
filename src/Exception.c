@@ -12,13 +12,13 @@ sdef(void, Print, int code) {
 	FmtString fmt = FmtString(
 		$("Uncaught exception %.% (in %)\n"),
 		String_FromNul(Manifest_ResolveName(code)),
-		__exc_mgr.e.scode,
-		__exc_mgr.e.func);
+		__exc_mgr.details.scode,
+		Exception_GetOrigin());
 #else
 	FmtString fmt = FmtString(
 		$("Uncaught exception %.%\n"),
 		String_FromNul(Manifest_ResolveName(code)),
-		__exc_mgr.e.scode);
+		__exc_mgr.details.scode);
 #endif
 
 	Terminal term = Terminal_New(File_StdIn, File_StdErr, false);

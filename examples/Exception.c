@@ -1,4 +1,5 @@
 #import <String.h>
+#import <Terminal.h>
 #import <Exception.h>
 
 #define self Example
@@ -24,7 +25,9 @@ int main(void) {
 		String_Print($("CustomException caught.\n"));
 
 #if Exception_SaveTrace
-		Backtrace_PrintTrace(__exc_mgr.e.trace, __exc_mgr.e.traceItems);
+		Backtrace_PrintTrace(
+			Exception_GetTraceBuffer(),
+			Exception_GetTraceLength());
 #endif
 	} finally {
 		String_Print($("finally block.\n"));

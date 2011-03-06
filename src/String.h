@@ -60,6 +60,11 @@ record(FmtString) {
 	ProtString *val;
 };
 
+#define $(s) ((ProtString) {                     \
+	.buf = (sizeof(s) == 1) ? NULL : (char *) s, \
+	.len = sizeof(s) - 1                         \
+})
+
 #undef self
 
 #import "Char.h"
@@ -139,11 +144,6 @@ overload sdef(short, NaturalCompare, ProtString a, ProtString b, bool foldcase, 
 		}                       \
 	}
 #endif
-
-#define $(s) ((ProtString) {                     \
-	.buf = (sizeof(s) == 1) ? NULL : (char *) s, \
-	.len = sizeof(s) - 1                         \
-})
 
 #define String_ToNul(s) \
 	String_ToNulBuf(s, alloca((s).len + 1))
