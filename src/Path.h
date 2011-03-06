@@ -39,26 +39,16 @@
 // @exc TruncatingFailed
 
 overload sdef(bool, Exists, ProtString path, bool follow);
-overload sdef(bool, Exists, ProtString path);
 sdef(String, GetCwd);
 sdef(Stat64, GetStat, ProtString path);
 sdef(u64, GetSize, ProtString path);
-overload sdef(bool, IsFile, ProtString path);
-overload sdef(bool, IsFile, Stat64 attr);
 overload sdef(bool, IsDirectory, ProtString path);
-overload sdef(bool, IsDirectory, Stat64 attr);
 overload sdef(void, Truncate, ProtString path, u64 length);
-overload sdef(void, Truncate, ProtString path);
 sdef(ProtString, GetExtension, ProtString path);
 overload sdef(ProtString, GetFilename, ProtString path, bool verify);
-overload sdef(ProtString, GetFilename, ProtString path);
 overload sdef(ProtString, GetDirectory, ProtString path, bool verify);
-overload sdef(ProtString, GetDirectory, ProtString path);
 sdef(String, Resolve, ProtString path);
 overload sdef(void, Create, ProtString path, int mode, bool recursive);
-overload sdef(void, Create, ProtString path, bool recursive);
-overload sdef(void, Create, ProtString path, int mode);
-overload sdef(void, Create, ProtString path);
 sdef(void, Delete, ProtString path);
 sdef(void, DeleteDirectory, ProtString path);
 sdef(void, ReadLink, ProtString path, String *out);
@@ -67,7 +57,61 @@ sdef(void, SetXattr, ProtString path, ProtString name, ProtString value);
 overload sdef(String, GetXattr, ProtString path, ProtString name);
 overload sdef(void, GetXattr, ProtString path, ProtString name, String *value);
 overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool followSymlink);
-overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink);
-overload sdef(void, SetTime, ProtString path, time_t timestamp);
+
+static inline overload sdef(bool, Exists, ProtString path) {
+	return scall(Exists, path, false);
+}
+
+static inline overload sdef(bool, IsFile, ProtString path) {
+	return scall(GetStat, path).mode & FileMode_Regular;
+}
+
+static inline overload sdef(bool, IsFile, Stat64 attr) {
+	return attr.mode & FileMode_Regular;
+}
+
+static inline overload sdef(bool, IsDirectory, Stat64 attr) {
+	return attr.mode & FileMode_Directory;
+}
+
+static inline overload sdef(void, Truncate, ProtString path) {
+	scall(Truncate, path, 0);
+}
+
+static inline overload sdef(ProtString, GetFilename, ProtString path) {
+	return scall(GetFilename, path, true);
+}
+
+static inline overload sdef(ProtString, GetDirectory, ProtString path) {
+	return scall(GetDirectory, path, true);
+}
+
+static inline overload sdef(void, Create, ProtString path, bool recursive) {
+	scall(Create, path,
+		Permission_OwnerRead    |
+		Permission_OwnerWrite   |
+		Permission_OwnerExecute |
+		Permission_GroupRead    |
+		Permission_GroupWrite   |
+		Permission_GroupExecute |
+		Permission_OthersRead   |
+		Permission_OthersExecute, recursive);
+}
+
+static inline overload sdef(void, Create, ProtString path, int mode) {
+	scall(Create, path, mode, false);
+}
+
+static inline overload sdef(void, Create, ProtString path) {
+	scall(Create, path, false);
+}
+
+static inline overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink) {
+	scall(SetTime, path, timestamp, 0, followSymlink);
+}
+
+static inline overload sdef(void, SetTime, ProtString path, time_t timestamp) {
+	scall(SetTime, path, timestamp, 0, false);
+}
 
 #undef self

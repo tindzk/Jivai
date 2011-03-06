@@ -12,10 +12,6 @@ overload sdef(bool, Exists, ProtString path, bool follow) {
 	return Kernel_lstat(path, &attr);
 }
 
-inline overload sdef(bool, Exists, ProtString path) {
-	return scall(Exists, path, false);
-}
-
 sdef(String, GetCwd) {
 	String s = String_New(512);
 	ssize_t len;
@@ -57,14 +53,6 @@ sdef(u64, GetSize, ProtString path) {
 	return scall(GetStat, path).size;
 }
 
-inline overload sdef(bool, IsFile, ProtString path) {
-	return scall(GetStat, path).mode & FileMode_Regular;
-}
-
-inline overload sdef(bool, IsFile, Stat64 attr) {
-	return attr.mode & FileMode_Regular;
-}
-
 overload sdef(bool, IsDirectory, ProtString path) {
 	bool res = false;
 
@@ -79,10 +67,6 @@ overload sdef(bool, IsDirectory, ProtString path) {
 	} tryEnd;
 
 	return res;
-}
-
-inline overload sdef(bool, IsDirectory, Stat64 attr) {
-	return attr.mode & FileMode_Directory;
 }
 
 overload sdef(void, Truncate, ProtString path, u64 length) {
@@ -105,10 +89,6 @@ overload sdef(void, Truncate, ProtString path, u64 length) {
 			throw(TruncatingFailed);
 		}
 	}
-}
-
-inline overload sdef(void, Truncate, ProtString path) {
-	scall(Truncate, path, 0);
 }
 
 sdef(ProtString, GetExtension, ProtString path) {
@@ -143,10 +123,6 @@ overload sdef(ProtString, GetFilename, ProtString path, bool verify) {
 	return String_Slice(path, pos + 1);
 }
 
-inline overload sdef(ProtString, GetFilename, ProtString path) {
-	return scall(GetFilename, path, true);
-}
-
 overload sdef(ProtString, GetDirectory, ProtString path, bool verify) {
 	if (path.len == 0) {
 		throw(EmptyPath);
@@ -171,10 +147,6 @@ overload sdef(ProtString, GetDirectory, ProtString path, bool verify) {
 	}
 
 	return String_Slice(path, 0, pos);
-}
-
-inline overload sdef(ProtString, GetDirectory, ProtString path) {
-	return scall(GetDirectory, path, true);
 }
 
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
@@ -265,26 +237,6 @@ overload sdef(void, Create, ProtString path, int mode, bool recursive) {
 			}
 		}
 	}
-}
-
-inline overload sdef(void, Create, ProtString path, bool recursive) {
-	scall(Create, path,
-		Permission_OwnerRead    |
-		Permission_OwnerWrite   |
-		Permission_OwnerExecute |
-		Permission_GroupRead    |
-		Permission_GroupWrite   |
-		Permission_GroupExecute |
-		Permission_OthersRead   |
-		Permission_OthersExecute, recursive);
-}
-
-inline overload sdef(void, Create, ProtString path, int mode) {
-	scall(Create, path, mode, false);
-}
-
-inline overload sdef(void, Create, ProtString path) {
-	scall(Create, path, false);
 }
 
 sdef(void, Delete, ProtString path) {
@@ -432,12 +384,4 @@ overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool 
 			throw(SettingTimeFailed);
 		}
 	}
-}
-
-inline overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink) {
-	scall(SetTime, path, timestamp, 0, followSymlink);
-}
-
-inline overload sdef(void, SetTime, ProtString path, time_t timestamp) {
-	scall(SetTime, path, timestamp, 0, false);
 }
