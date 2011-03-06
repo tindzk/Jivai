@@ -7,9 +7,7 @@ class {
 	void *data;
 };
 
-ExtendClass;
-
-def(void, Init);
+rsdef(self *, New);
 def(void, Destroy);
 def(void, SetData, void *data);
 def(void *, GetData);

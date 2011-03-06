@@ -44,13 +44,11 @@ def(void, DestroyClient, SocketClientInstance client) {
 	delegate(this->listener, onClientDisconnect, client);
 
 	SocketClient_Destroy(client);
-	SocketClient_Free(client);
 }
 
 def(void, AcceptClient) {
-	SocketClientInstance client = SocketClient_New();
+	SocketClient *client = SocketClient_New();
 
-	SocketClient_Init(client);
 	SocketClient_Accept(client, &this->socket);
 
 	delegate(this->listener, onClientAccept, client);

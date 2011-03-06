@@ -16,8 +16,6 @@ def(void, OnDestroy) {
 		this->connection->destroy(ClientConnection_GetData(conn));
 
 		SocketClient_Destroy(conn->client);
-		SocketClient_Free(conn->client);
-
 		Pool_Free(Pool_GetInstance(), conn);
 	};
 
@@ -85,8 +83,6 @@ static def(ClientConnection_Status, OnData, SocketClientInstance client, bool pu
 
 			/* Close the connection. */
 			SocketClient_Destroy(client);
-
-			SocketClient_Free(client);
 		}
 	}
 
