@@ -25,7 +25,7 @@ set(ref(State)) {
 	ref(State_Comment)   = Bit(5)
 };
 
-DefineCallback(ref(OnToken), void, ref(TokenType), String);
+DefineCallback(ref(OnToken), void, ref(TokenType), ProtString);
 
 class {
 	ref(OnToken) onToken;
