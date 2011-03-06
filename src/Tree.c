@@ -30,25 +30,25 @@ def(void, FreeNodes, ref(Node) *node) {
 	for (size_t i = 0; i < node->len; i++) {
 		this->destroyNode(node->buf[i]);
 		call(FreeNodes, node->buf[i]);
-		Memory_Free(node->buf[i]);
+		Pool_Free(Pool_GetInstance(), node->buf[i]);
 	}
 
-	Memory_Free(node->buf);
+	Pool_Free(Pool_GetInstance(), node->buf);
 	node->len = 0;
 }
 
-sdef(void *, AddCustomNode, void *ptrNode, size_t size) {
+sdef(ref(Node) *, AddCustomNode, void *ptrNode, size_t size) {
 	ref(Node) *node = ptrNode;
 
 	if (node->len == 0) {
-		node->buf = New(ref(Node) *);
+		node->buf = Pool_Alloc(Pool_GetInstance(), sizeof(ref(Node) *));
 	} else {
-		node->buf = Memory_Realloc(
+		node->buf = Pool_Realloc(Pool_GetInstance(),
 			node->buf,
 			(node->len + 1) * sizeof(ref(Node) *));
 	}
 
-	ref(Node) *res = node->buf[node->len] = Memory_Alloc(size);
+	ref(Node) *res = node->buf[node->len] = Pool_Alloc(Pool_GetInstance(), size);
 
 	res->len    = 0;
 	res->buf    = NULL;

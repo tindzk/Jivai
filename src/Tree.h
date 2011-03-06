@@ -1,4 +1,5 @@
-#import "Memory.h"
+#import "String.h"
+#import "Pool.h"
 
 #define self Tree
 
@@ -27,9 +28,9 @@ def(void, Init, ref(DestroyNode) destroyNode);
 def(void, Destroy);
 def(void, Reset);
 def(void, FreeNodes, ref(Node) *node);
-sdef(void *, AddCustomNode, void *ptrNode, size_t size);
+sdef(ref(Node) *, AddCustomNode, void *ptrNode, size_t size);
 
 #define Tree_AddNode(node) \
-	Tree_AddCustomNode(node, sizeof(typeof(*(node))))
+	(typeof(node)) Tree_AddCustomNode(node, sizeof(typeof(*(node))))
 
 #undef self
