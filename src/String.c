@@ -993,6 +993,14 @@ def(void, Destroy) {
 	forward (i, this->len) {
 		String_Destroy(&this->buf[i]);
 	}
+}
 
-	this->len = 0;
+#undef self
+
+#define self CarrierStringArray
+
+def(void, Destroy) {
+	forward (i, this->len) {
+		CarrierString_Destroy(&this->buf[i]);
+	}
 }

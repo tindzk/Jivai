@@ -402,3 +402,7 @@ def(bool, Contains, ProtString needle);
 #define self StringArray
 def(void, Destroy);
 #undef self
+
+#define self CarrierStringArray
+def(void, Destroy);
+#undef self
