@@ -20,13 +20,14 @@
 #define Exception_TraceSize 15
 #endif
 
-record(ref(Buffer)) {
-	struct ref(Buffer) *prev; /* Linked list. */
+/* Stack frame. */
+record(ref(Frame)) {
+	struct ref(Frame) *prev; /* Linked list. */
 	jmp_buf jmpBuffer;
 };
 
 record(ExceptionManager) {
-	ref(Buffer) *cur;
+	ref(Frame) *cur;
 
 	/* This structure contains more detailed information about the most
 	 * recently thrown exception. The exception itself is only supplied
@@ -64,7 +65,7 @@ static inline sdef(void, Raise, int code) {
 	longjmp(__exc_mgr.cur->jmpBuffer, code);
 }
 
-static inline sdef(void, Push, ref(Buffer) *buf) {
+static inline sdef(void, Push, ref(Frame) *buf) {
 	buf->prev = __exc_mgr.cur;
 	__exc_mgr.cur = buf;
 }
@@ -142,10 +143,10 @@ static inline sdef(void *, GetData) {
 	bool __exc_ignore_finally = false;      \
 	void *__exc_return_ptr = && __exc_done; \
 	                                        \
-	Exception_Buffer __exc_buffer;          \
-	Exception_Push(&__exc_buffer);          \
+	Exception_Frame __exc_frame;            \
+	Exception_Push(&__exc_frame);           \
 	                                        \
-	int e = setjmp(__exc_buffer.jmpBuffer); \
+	int e = setjmp(__exc_frame.jmpBuffer);  \
 	if (e == 0) {
 
 #define clean                              \

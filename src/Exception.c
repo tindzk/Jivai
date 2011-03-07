@@ -1,5 +1,4 @@
 #import "Exception.h"
-#import "Terminal.h"
 
 #define self Exception
 
