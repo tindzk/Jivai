@@ -126,7 +126,7 @@ static def(void, OnHeader, ProtString name, ProtString value) {
 
 				try {
 					this->headers.contentLength = UInt64_Parse(value);
-				} clean catchModule(Integer) {
+				} catchModule(Integer) {
 					throw(BodyTooLarge);
 				} finally {
 
@@ -316,7 +316,7 @@ def(ref(Result), ReadBody) {
 				HTTP_Query_SetAutoResize(&qry, true);
 				HTTP_Query_Decode(&qry, this->body.prot, true);
 			}
-		} clean finally {
+		} finally {
 			this->state = ref(State_Header);
 		} tryEnd;
 	}

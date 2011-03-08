@@ -43,7 +43,7 @@ def(void, Start) {
 		this->cntTry++;
 		call(ThrowExc);
 		this->cntTry++; /* Must be ignored. */
-	} clean finally {
+	} finally {
 		this->cntFinally++;
 	} tryEnd;
 
@@ -57,7 +57,7 @@ tsCase(Acute, "Finally block with an exception thrown") {
 	try {
 		call(Start);
 		this->cntTry++; /* Must be ignored. */
-	} clean catchAny {
+	} catchAny {
 	} finally {
 	} tryEnd;
 
@@ -72,7 +72,7 @@ def(void, StartSecondTest) {
 
 	try {
 		this->cntTry++;
-	} clean finally {
+	} finally {
 		this->cntFinally++;
 	} tryEnd;
 
@@ -82,7 +82,7 @@ def(void, StartSecondTest) {
 tsCase(Acute, "Finally block without an exception thrown") {
 	try {
 		call(StartSecondTest);
-	} clean catchAny {
+	} catchAny {
 	} finally {
 	} tryEnd;
 
@@ -100,7 +100,7 @@ tsCase(Acute, "Empty exception block") {
 	 */
 
 	try {
-	} clean finally {
+	} finally {
 	} tryEnd;
 }
 

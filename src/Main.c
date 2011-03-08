@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 		ret = Main(base, args)
 			? ExitStatus_Success
 			: ExitStatus_Failure;
-	} clean catch(Signal, SigInt) {
+	} catch(Signal, SigInt) {
 
 	} catchAny {
 		Exception_Print(e);

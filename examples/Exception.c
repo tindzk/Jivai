@@ -21,7 +21,7 @@ void func1(void) {
 bool Main(__unused ProtString base, __unused ProtStringArray *args) {
 	try {
 		func1();
-	} clean catch(Example, CustomException) {
+	} catch(Example, CustomException) {
 		String_Print($("CustomException caught.\n"));
 	} finally {
 		String_Print($("finally block.\n"));

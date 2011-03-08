@@ -76,7 +76,7 @@ def(void, ParseUri, ProtString s) {
 
 		try {
 			callback(this->events.onPath, path);
-		} clean finally {
+		} finally {
 			if (free) {
 				String_Destroy((String *) &path);
 			}

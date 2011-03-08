@@ -57,23 +57,23 @@ sdef(String, Format, int code);
 sdef(void, Print, int code);
 sdef(void, Shutdown, int code);
 
-static inline sdef(void, Raise, int code) {
-	if (__exc_mgr.cur == NULL) {
-		scall(Shutdown, code);
-	}
-
-	longjmp(__exc_mgr.cur->jmpBuffer, code);
-}
-
 static inline sdef(void, Push, ref(Frame) *buf) {
 	buf->prev = __exc_mgr.cur;
 	__exc_mgr.cur = buf;
 }
 
-static inline sdef(void, Pop) {
-	if (__exc_mgr.cur != NULL) {
-		__exc_mgr.cur = __exc_mgr.cur->prev;
+static inline sdef(void, Pop, int code) {
+	if (__exc_mgr.cur == NULL) {
+		scall(Shutdown, code);
 	}
+
+	__exc_mgr.cur = __exc_mgr.cur->prev;
+}
+
+static inline sdef(void, Raise, int code) {
+	ref(Frame) *cur = __exc_mgr.cur;
+	scall(Pop, code);
+	longjmp(cur->jmpBuffer, code);
 }
 
 static inline sdef(void, SetMessage, ProtString msg) {
@@ -147,11 +147,7 @@ static inline sdef(void *, GetData) {
 	Exception_Push(&__exc_frame);           \
 	                                        \
 	int e = setjmp(__exc_frame.jmpBuffer);  \
-	if (e == 0) {
-
-#define clean                              \
-		Exception_Pop();                   \
-	} else if (Exception_Pop(), false) { }
+	if (e == 0)
 
 #define catch(module, code) \
 	else if (e == module##_##code)
@@ -168,7 +164,10 @@ static inline sdef(void *, GetData) {
 		__exc_rethrow = true;    \
 	}                            \
 	__exc_finally:               \
-	if (!__exc_ignore_finally) {
+	if (!__exc_ignore_finally) { \
+		if (e == 0) {            \
+			Exception_Pop(-1);   \
+		}                        \
 
 #define tryEnd                  \
 		if (__exc_rethrow) {    \
@@ -183,7 +182,7 @@ static inline sdef(void *, GetData) {
 #define __exc_label \
 	simpleConcat(__exc_return_label, __LINE__)
 
-/* Goes to finally block and then returns. */
+/* Goes to finally block and returns to __exc_label. */
 #define __exc_goto_finally             \
 	__exc_return_ptr = && __exc_label; \
 	goto __exc_finally;                \
