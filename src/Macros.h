@@ -180,7 +180,10 @@
 	}                                                                                         \
 	static inline GenericInstance tripleConcat(name, _, ToGeneric)(InstName(name) instance) { \
 		return (GenericInstance) { .object = instance.object };                               \
-	}
+	}                                                                                         \
+	static inline bool tripleConcat(name, _, Equals)(InstName(name) a, InstName(name) b) {    \
+		return a.object == b.object;                                                          \
+	}                                                                                         \
 
 #define class                 \
 	typedef struct self self; \
@@ -192,9 +195,6 @@
  * structure's final size is not yet determinable.
  */
 #define ExtendClass                                                                        \
-	static inline bool tripleConcat(self, _, Equals)(InstName(self) a, InstName(self) b) { \
-		return a.object == b.object;                                                       \
-	}                                                                                      \
 	static inline InstName(self) tripleConcat(self, _, Clone)(InstName(self) instance) {   \
 		self *ptr = Pool_Alloc(Pool_GetInstance(), sizeof(self));                          \
 		Memory_Copy(ptr, instance.object, sizeof(self));                                   \

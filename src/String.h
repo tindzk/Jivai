@@ -53,7 +53,6 @@ typedef union self {
 } self;
 
 Instance(self);
-InstanceMethods(self);
 
 record(FmtString) {
 	ProtString fmt;
