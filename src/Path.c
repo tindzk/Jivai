@@ -58,7 +58,7 @@ overload sdef(bool, IsDirectory, ProtString path) {
 
 	try {
 		res = scall(GetStat, path).mode & FileMode_Directory;
-	} clean catch(Path, NonExistentPath) {
+	} catch(Path, NonExistentPath) {
 		/* Ignore. */
 	} catch(Path, NotDirectory) {
 		/* Ignore. */
