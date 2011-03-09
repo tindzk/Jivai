@@ -153,7 +153,7 @@
 		name++)
 
 #define getIndex(name, arr) \
-	(size_t) ((arr)->buf + (arr)->len - (name) - 1)
+	(size_t) ((name) - (arr)->buf)
 
 #define isEven(name, arr) \
 	(getIndex(name, arr) % 2) == 0
