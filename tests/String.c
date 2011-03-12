@@ -56,7 +56,7 @@ tsCase(Acute, "Appending (2)") {
 
 	try {
 		String_Append(&s, append);
-	} clean catch(String, DoubleFree) {
+	} catch(String, DoubleFree) {
 		caught = true;
 	} finally {
 	} tryEnd;
@@ -206,7 +206,7 @@ tsCase(Acute, "Formatted appending") {
 
 	try {
 		String_Append(&s, FmtString($("Hello %.")));
-	} clean catch(String, ElementMismatch) {
+	} catch(String, ElementMismatch) {
 		caught = true;
 	} finally {
 	} tryEnd;
@@ -257,7 +257,7 @@ tsCase(Acute, "Double frees") {
 
 	try {
 		String_Destroy(&s);
-	} clean catch(String, DoubleFree) {
+	} catch(String, DoubleFree) {
 		caught = true;
 	} finally {
 
