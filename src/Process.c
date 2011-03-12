@@ -27,7 +27,7 @@
  * This file is based upon vmchecker/testing/pa/tracker.c by Claudiu Gheorghe.
  */
 
-def(void, Init, String cmd) {
+def(void, Init, ProtString cmd) {
 	this->cmd    = String_Clone(cmd);
 	this->params = StringArray_New(0);
 	this->stdOut = -1;
@@ -40,18 +40,18 @@ def(void, Destroy) {
 	StringArray_Free(this->params);
 }
 
-def(void, AddParameter, String param) {
+def(void, AddParameter, ProtString param) {
 	StringArray_Push(&this->params, String_Clone(param));
 }
 
 def(String, GetCommandLine) {
 	String out = String_New(128);
 
-	String_Append(&out, this->cmd);
+	String_Append(&out, this->cmd.prot);
 	String_Append(&out, ' ');
 
 	foreach (param, this->params) {
-		String_Append(&out, *param);
+		String_Append(&out, param->prot);
 
 		if (!isLast(param, this->params)) {
 			String_Append(&out, ' ');
@@ -68,12 +68,12 @@ def(void, MapStdOut, int fd) {
 overload def(int, Spawn, float *time) {
 	char *argv[this->params->len + 1];
 
-	argv[0] = String_ToNulHeap(this->cmd);
+	argv[0] = String_ToNulHeap(this->cmd.prot);
 
 	size_t i;
 
 	for (i = 0; i < this->params->len; i++) {
-		argv[i + 1] = String_ToNulHeap(this->params->buf[i]);
+		argv[i + 1] = String_ToNulHeap(this->params->buf[i].prot);
 	}
 
 	argv[i + 1] = NULL;

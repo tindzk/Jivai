@@ -18,9 +18,9 @@ class {
 	int stdOut;
 };
 
-def(void, Init, String cmd);
+def(void, Init, ProtString cmd);
 def(void, Destroy);
-def(void, AddParameter, String param);
+def(void, AddParameter, ProtString param);
 def(String, GetCommandLine);
 def(void, MapStdOut, int fd);
 overload def(int, Spawn, float *time);
