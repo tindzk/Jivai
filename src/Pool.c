@@ -12,7 +12,7 @@ rsdef(self, New) {
 	};
 }
 
-rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *parent) {
+overload rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *parent) {
 	ref(Session) *sess = Memory_Alloc(sizeof(ref(Session)));
 
 	sess->hasParent = false;
@@ -42,6 +42,10 @@ rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *pare
 	}
 
 	return sess;
+}
+
+overload rdef(ref(Session) *, CreateSession, ProtString name) {
+	return call(CreateSession, name, this->sess);
 }
 
 static def(size_t, _Free, ref(Allocation) *alloc);

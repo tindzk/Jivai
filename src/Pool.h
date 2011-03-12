@@ -39,7 +39,8 @@ class {
 };
 
 rsdef(self, New);
-rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *parent);
+overload rdef(ref(Session) *, CreateSession, ProtString name, ref(Session) *parent);
+overload rdef(ref(Session) *, CreateSession, ProtString name);
 rdef(size_t, Dispose, ref(Session) *sess);
 rdef(ref(Session) *, SetSession, ref(Session) *sess);
 def(void, Link, void *alloc, void *parent);
