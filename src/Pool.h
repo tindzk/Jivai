@@ -33,16 +33,19 @@ set(ref(Bundling)) {
 };
 
 class {
-	ref(Session)    *sess;      /* Current session.    */
-	ref(Allocation) *baseAlloc; /* Current allocation. */
-	ref(Bundling)   bundling;   /* Bundling mode.      */
+	ref(Session)    *sess;        /* Current session.    */
+	ref(Session)    *sessDefault; /* Default session.    */
+	ref(Allocation) *baseAlloc;   /* Current allocation. */
+	ref(Bundling)   bundling;     /* Bundling mode.      */
 };
 
 rsdef(self, New);
 overload rdef(ref(Session) *, CreateSession, ProtString name, ref(Session) *parent);
 overload rdef(ref(Session) *, CreateSession, ProtString name);
 rdef(size_t, Dispose, ref(Session) *sess);
-rdef(ref(Session) *, SetSession, ref(Session) *sess);
+overload rdef(ref(Session) *, SetSession, ref(Session) *sess, bool isDefault);
+overload rdef(ref(Session) *, SetSession, ref(Session) *sess);
+rdef(ref(Session) *, GetDefaultSession);
 def(void, Link, void *alloc, void *parent);
 __malloc rdef(void *, Alloc, size_t size);
 __malloc rdef(void *, Realloc, void *addr, size_t size);

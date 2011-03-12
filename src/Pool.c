@@ -75,6 +75,10 @@ rdef(size_t, Dispose, ref(Session) *sess) {
 		}
 	}
 
+	if (this->sessDefault == sess) {
+		this->sessDefault = NULL;
+	}
+
 	if (sess->prev != NULL) {
 		if (sess->hasParent) {
 			sess->prev->child = sess->next;
@@ -96,11 +100,23 @@ rdef(size_t, Dispose, ref(Session) *sess) {
 	return size;
 }
 
-rdef(ref(Session) *, SetSession, ref(Session) *sess) {
+overload rdef(ref(Session) *, SetSession, ref(Session) *sess, bool isDefault) {
 	ref(Session) *old = this->sess;
 	this->sess = sess;
 
+	if (isDefault) {
+		this->sessDefault = sess;
+	}
+
 	return old;
+}
+
+overload rdef(ref(Session) *, SetSession, ref(Session) *sess) {
+	return call(SetSession, sess, false);
+}
+
+rdef(ref(Session) *, GetDefaultSession) {
+	return this->sessDefault;
 }
 
 static def(void, _Link, ref(Allocation) *alloc, ref(Allocation) *parent) {
