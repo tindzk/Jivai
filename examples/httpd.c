@@ -286,7 +286,7 @@ bool startServer(Server *server, ClientListener listener) {
 		Server_Init(server, 8080, listener);
 		String_Print($("Server started.\n"));
 		excReturn true;
-	} clean catch(Socket, AddressInUse) {
+	} catch(Socket, AddressInUse) {
 		String_Print($("The address is already in use!\n"));
 		excReturn false;
 	} finally {
@@ -314,7 +314,7 @@ int main(void) {
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch(Signal, SigInt) {
+	} catch(Signal, SigInt) {
 		String_Print($("Server shutdown.\n"));
 	} catchAny {
 		Exception_Print(e);
