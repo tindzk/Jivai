@@ -989,6 +989,20 @@ def(bool, Contains, ProtString needle) {
 
 #define self StringArray
 
+def(ssize_t, Find, ProtString needle) {
+	forward (i, this->len) {
+		if (String_Equals(this->buf[i].prot, needle)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+def(bool, Contains, ProtString needle) {
+	return call(Find, needle) != -1;
+}
+
 def(void, Destroy) {
 	forward (i, this->len) {
 		String_Destroy(&this->buf[i]);

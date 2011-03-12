@@ -399,6 +399,8 @@ def(bool, Contains, ProtString needle);
 #undef self
 
 #define self StringArray
+def(ssize_t, Find, ProtString needle);
+def(bool, Contains, ProtString needle);
 def(void, Destroy);
 #undef self
 
