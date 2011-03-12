@@ -18,7 +18,11 @@ void func1(void) {
 	func2();
 }
 
-bool Main(__unused ProtString base, __unused ProtStringArray *args) {
+bool Main (
+	__unused ProtString base,
+	__unused ProtStringArray *args,
+	__unused ProtStringArray *env
+) {
 	try {
 		func1();
 	} catch(Example, CustomException) {

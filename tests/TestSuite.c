@@ -167,6 +167,10 @@ def(bool, Run) {
 	return !this->acuteFailed;
 }
 
-bool Main(__unused ProtString base, __unused ProtStringArray *args) {
+bool Main (
+	__unused ProtString base,
+	__unused ProtStringArray *args,
+	__unused ProtStringArray *env
+) {
 	return TestSuite_Run(TestSuite_GetInstance());
 }
