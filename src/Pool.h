@@ -2,21 +2,28 @@
 
 #define self Pool
 
-// @exc NoSession
-// @exc StackCorruption
+// @exc HasParent
+// @exc NotBundling
+// @exc AlreadyBundling
+
+struct ref(Session);
 
 record(ref(Allocation)) {
-	ref(Allocation) *prev;
-	ref(Allocation) *next;
-	ref(Allocation) *freeNext;
-	size_t          size;
-	char            buf[];
+	bool hasParent;
+	ref(Allocation)     *prev;  /* If `hasParent' is true, this contains the parent. */
+	ref(Allocation)     *next;  /* Next allocation.          */
+	ref(Allocation)     *child; /* Child allocation.         */
+	struct ref(Session) *sess;  /* Session points here.      */
+	size_t              size;   /* Size of allocated buffer. */
+	char                buf[];  /* Buffer.                   */
 };
 
 record(ref(Session)) {
-	ref(Allocation) *alloc;     /* First allocation.     */
-	ref(Session)    *prevStack; /* Previous session.     */
-	ref(Session)    *prevCreat; /* Last created session. */
+	bool hasParent;
+	ref(Session)    *prev;  /* Previous or parent session. */
+	ref(Session)    *next;  /* Next session.               */
+	ref(Session)    *child; /* Child session.              */
+	ref(Allocation) *alloc; /* First allocation.           */
 };
 
 set(ref(Bundling)) {
@@ -26,16 +33,16 @@ set(ref(Bundling)) {
 };
 
 class {
-	ref(Session)  *sess;    /* Current session.    */
-	ref(Session)  *last;    /* Last added session. */
-	ref(Bundling) bundling; /* Bundling mode.      */
+	ref(Session)    *sess;      /* Current session.    */
+	ref(Allocation) *baseAlloc; /* Current allocation. */
+	ref(Bundling)   bundling;   /* Bundling mode.      */
 };
 
 rsdef(self, New);
-rdef(ref(Session) *, CreateSession, ProtString name);
+rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *parent);
 rdef(size_t, Dispose, ref(Session) *sess);
-def(void, Push, ref(Session) *sess, ProtString name);
-def(void, Pop, ref(Session) *sess);
+rdef(ref(Session) *, SetSession, ref(Session) *sess);
+def(void, Link, void *alloc, void *parent);
 __malloc rdef(void *, Alloc, size_t size);
 __malloc rdef(void *, Realloc, void *addr, size_t size);
 def(size_t, Free, void *addr);
