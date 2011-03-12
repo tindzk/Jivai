@@ -32,7 +32,7 @@ class {
 	bool nonblocking;
 };
 
-ExtendClass;
+MemoryHelpers(self);
 
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);

@@ -194,11 +194,17 @@
 /* This cannot be included in `class' as sizeof() is needed and the
  * structure's final size is not yet determinable.
  */
-#define ExtendClass                                                                        \
-	static inline InstName(self) tripleConcat(self, _, Clone)(InstName(self) instance) {   \
-		self *ptr = Pool_Alloc(Pool_GetInstance(), sizeof(self));                          \
-		Memory_Copy(ptr, instance.object, sizeof(self));                                   \
-		return (InstName(self)) ptr;                                                       \
+#define MemoryHelpers(name)                                           \
+	static inline name* tripleConcat(name, _, Alloc)(void) {          \
+		return (name *) Pool_Alloc(Pool_GetInstance(), sizeof(name)); \
+	}                                                                 \
+	static inline void tripleConcat(name, _, Free)(name *ptr) {       \
+		Pool_Free(Pool_GetInstance(), ptr);                           \
+	}                                                                 \
+	static inline name* tripleConcat(name, _, Clone)(name *src) {     \
+		name *dest = Pool_Alloc(Pool_GetInstance(), sizeof(name));    \
+		Memory_Move(dest, src, sizeof(name));                         \
+		return dest;                                                  \
 	}
 
 #define SingletonPrototype(name) \
