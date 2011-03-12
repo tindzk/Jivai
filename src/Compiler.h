@@ -26,7 +26,7 @@
 	__attribute__((malloc))
 
 #define alwaysInline \
-	__attribute__((used, always_inline))
+	__attribute__((unused, always_inline))
 
 #define transparentUnion \
 	__attribute__((transparent_union))
