@@ -45,7 +45,6 @@ record(ExceptionManager) {
 		} trace;
 #endif
 
-		ProtString scode;
 		ProtString msg;
 		void *data;
 	} details;
@@ -125,10 +124,9 @@ static inline sdef(void *, GetData) {
 	#define Exception_SetTrace(e)
 #endif
 
-#define Exception_SetException(c)     \
-	Exception_SetTrace();             \
-	Exception_SetOrigin($(__func__)); \
-	__exc_mgr.details.scode = $(#c)
+#define Exception_SetException(c)    \
+	Exception_SetTrace();            \
+	Exception_SetOrigin($(__func__)) \
 
 #define throw(e)                   \
 	do {                           \

@@ -11,13 +11,13 @@ sdef(String, Format, int code) {
 	return String_Format(
 		$("Uncaught exception %.% (in %)"),
 		String_FromNul(Manifest_ResolveName(code)),
-		__exc_mgr.details.scode,
+		String_FromNul(Manifest_ResolveCode(code)),
 		Exception_GetOrigin());
 #else
 	return String_Format(
 		$("Uncaught exception %.%"),
 		String_FromNul(Manifest_ResolveName(code)),
-		__exc_mgr.details.scode);
+		String_FromNul(Manifest_ResolveCode(code)));
 #endif
 }
 
