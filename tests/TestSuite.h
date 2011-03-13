@@ -34,7 +34,7 @@ Interface(ITestSuite) {
 Array(ITestSuiteInterface *, TestSuites);
 
 class {
-	Terminal term;
+	Terminal *term;
 	Terminal_Controller controller;
 
 	TestSuites *suites;

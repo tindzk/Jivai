@@ -7,20 +7,19 @@ Singleton(self);
 SingletonDestructor(self);
 
 rsdef(self, New) {
-	self res;
-
-	res.term = Terminal_New(File_StdIn, File_StdOut, true);
-	Terminal_Configure(&res.term, true, true);
-
-	res.suites = TestSuites_New(128);
-	res.acuteFailed = false;
-
-	return res;
+	return (self) {
+		.suites = TestSuites_New(128),
+		.acuteFailed = false
+	};
 }
 
 def(void, Destroy) {
-	Terminal_Destroy(&this->term);
 	TestSuites_Free(this->suites);
+}
+
+def(void, SetTerminal, Terminal *term) {
+	this->term       = term;
+	this->controller = Terminal_Controller_New(term);
 }
 
 def(void, AddSuite, ITestSuiteInterface *suite) {
@@ -113,7 +112,7 @@ static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst)
 		}
 	}
 
-	Terminal_Print(&this->term, '\n');
+	Terminal_Print(this->term, '\n');
 }
 
 def(ITestSuiteInterface *, ResolveSuite, RdString name) {
@@ -166,12 +165,10 @@ def(void, _Run, ITestSuiteInterface *suite) {
 		}
 	}
 
-	Terminal_Print(&this->term, '\n');
+	Terminal_Print(this->term, '\n');
 }
 
 def(void, Run, RdString name) {
-	this->controller = Terminal_Controller_New(&this->term);
-
 	ITestSuiteInterface *suite = call(ResolveSuite, name);
 
 	if (suite == NULL) {
@@ -186,8 +183,6 @@ def(void, Run, RdString name) {
 }
 
 def(void, RunAll) {
-	this->controller = Terminal_Controller_New(&this->term);
-
 	each(suite, this->suites) {
 		call(_Run, *suite);
 	}
@@ -197,18 +192,22 @@ def(bool, Successful) {
 	return !this->acuteFailed;
 }
 
-bool Main (
-	__unused RdString base,
-	__unused RdStringArray *args,
-	__unused RdStringArray *env
-) {
+#undef self
+
+#define self Application
+
+def(bool, Run) {
+	Terminal_Configure(&this->term, true, true);
+
 	TestSuiteInstance inst = TestSuite_GetInstance();
 
-	if (args->len == 0) {
+	TestSuite_SetTerminal(inst, &this->term);
+
+	if (this->args->len == 0) {
 		TestSuite_RunAll(inst);
 	} else {
-		fwd(i, args->len) {
-			TestSuite_Run(inst, args->buf[i]);
+		fwd(i, this->args->len) {
+			TestSuite_Run(inst, this->args->buf[i]);
 		}
 	}
 

@@ -1,4 +1,4 @@
-#import "String.h"
 #import "Signal.h"
+#import "Application.h"
 
-bool Main(RdString base, RdStringArray *args, RdStringArray *env);
+int main(int argc, char *argv[], char *envp[]);

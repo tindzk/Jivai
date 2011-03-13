@@ -3,27 +3,13 @@
 int main(int argc, char *argv[], char *envp[]) {
 	Signal0();
 
-	size_t envItems = 0;
-	for (char **cur = envp; *cur != NULL; cur++) {
-		envItems++;
-	}
-
-	RdString      base  = String_FromNul(argv[0]);
-	RdStringArray *env  = RdStringArray_New(envItems);
-	RdStringArray *args = RdStringArray_New(argc - 1);
-
-	for (int i = 1; i < argc; i++) {
-		RdStringArray_Push(&args, String_FromNul(argv[i]));
-	}
-
-	fwd(i, envItems) {
-		RdStringArray_Push(&env, String_FromNul(envp[i]));
-	}
+	Application app;
+	Application_Init(&app, argc, argv, envp);
 
 	int ret = ExitStatus_Success;
 
 	try {
-		ret = Main(base, args, env)
+		ret = Application_Run(&app)
 			? ExitStatus_Success
 			: ExitStatus_Failure;
 	} catch(Signal, SigInt) {
@@ -39,8 +25,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 		ret = ExitStatus_Failure;
 	} finally {
-		RdStringArray_Free(args);
-		RdStringArray_Free(env);
+		Application_Destroy(&app);
 	} tryEnd;
 
 	return ret;
