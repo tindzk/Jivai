@@ -2,7 +2,8 @@
 
 #define self GenericClientListener
 
-def(void, Init, ConnectionInterface *conn) {
+def(void, Init, ConnectionInterface *conn, Logger *logger) {
+	this->logger     = logger;
 	this->connection = conn;
 }
 
@@ -31,7 +32,8 @@ def(void, OnAccept, SocketClientInstance client) {
 
 	this->connection->init(
 		ClientConnection_GetData(conn),
-		SocketClient_GetConn(client));
+		SocketClient_GetConn(client),
+		this->logger);
 
 	/* Also save the client pointer because it's needed to force the
 	 * closing of a connection. Otherwise the associated data could

@@ -1,4 +1,5 @@
 #import "Block.h"
+#import "Logger.h"
 #import "Server.h"
 #import "Connection.h"
 #import "ClientConnection.h"
@@ -7,11 +8,12 @@
 #define self GenericClientListener
 
 class {
-	ClientConnections    connections;
+	Logger              *logger;
+	ClientConnections   connections;
 	ConnectionInterface *connection;
 };
 
-def(void, Init, ConnectionInterface *conn);
+def(void, Init, ConnectionInterface *conn, Logger *logger);
 def(void, OnInit);
 def(void, OnDestroy);
 def(bool, OnConnect);
