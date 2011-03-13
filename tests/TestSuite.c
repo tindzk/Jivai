@@ -116,54 +116,84 @@ static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst)
 	Terminal_Print(&this->term, '\n');
 }
 
-def(bool, Run) {
-	this->controller = Terminal_Controller_New(&this->term);
-
-	this->acuteFailed = false;
-
+def(ITestSuiteInterface *, ResolveSuite, RdString name) {
 	each(suite, this->suites) {
-		bool run = call(RunSuite, *suite);
-
-		Terminal_Controller_Render(&this->controller,
-			$(".fg[blue]{.b{% suite .i{%...}}}\n\n"),
-
-			run
-				? $("Running")
-				: $("Skipping"),
-
-			(*suite)->name);
-
-		if (run) {
-			GenericInstance inst =
-				((*suite)->size > 0)
-					? Generic_New((*suite)->size)
-					: Generic_Null();
-
-			this->failure = 0;
-			this->success = 0;
-
-			call(InitSuite,    *suite, inst);
-			call(RunTestSuite, *suite, inst);
-			call(DestroySuite, *suite, inst);
-
-			String strSuccess = Integer_ToString(this->success);
-			String strFailure = Integer_ToString(this->failure);
-
-			Terminal_Controller_Render(&this->controller,
-				$(".fg[cyan]{.u{Results:} .fg[green]{%} succeeeded, .fg[red]{%} failed}\n"),
-				strSuccess, strFailure);
-
-			String_Destroy(&strFailure);
-			String_Destroy(&strSuccess);
-
-			if (!Generic_IsNull(inst)) {
-				Generic_Free(inst);
-			}
+		if (String_Equals((*suite)->name, name)) {
+			return *suite;
 		}
-
-		Terminal_Print(&this->term, '\n');
 	}
 
+	return NULL;
+}
+
+def(void, _Run, ITestSuiteInterface *suite) {
+	bool run = call(RunSuite, suite);
+
+	Terminal_Controller_Render(&this->controller,
+		$(".fg[blue]{.b{% suite .i{%...}}}\n\n"),
+
+		run
+			? $("Running")
+			: $("Skipping"),
+
+		suite->name);
+
+	if (run) {
+		GenericInstance inst =
+			(suite->size > 0)
+				? Generic_New(suite->size)
+				: Generic_Null();
+
+		this->failure = 0;
+		this->success = 0;
+
+		call(InitSuite,    suite, inst);
+		call(RunTestSuite, suite, inst);
+		call(DestroySuite, suite, inst);
+
+		String strSuccess = Integer_ToString(this->success);
+		String strFailure = Integer_ToString(this->failure);
+
+		Terminal_Controller_Render(&this->controller,
+			$(".fg[cyan]{.u{Results:} .fg[green]{%} succeeeded, .fg[red]{%} failed}\n"),
+			strSuccess, strFailure);
+
+		String_Destroy(&strFailure);
+		String_Destroy(&strSuccess);
+
+		if (!Generic_IsNull(inst)) {
+			Generic_Free(inst);
+		}
+	}
+
+	Terminal_Print(&this->term, '\n');
+}
+
+def(void, Run, RdString name) {
+	this->controller = Terminal_Controller_New(&this->term);
+
+	ITestSuiteInterface *suite = call(ResolveSuite, name);
+
+	if (suite == NULL) {
+		Terminal_Controller_Render(&this->controller,
+			$(".fg[red]{.b{Error:} Test suite .i{%} not found!}\n"),
+			name);
+
+		return;
+	}
+
+	call(_Run, suite);
+}
+
+def(void, RunAll) {
+	this->controller = Terminal_Controller_New(&this->term);
+
+	each(suite, this->suites) {
+		call(_Run, *suite);
+	}
+}
+
+def(bool, Successful) {
 	return !this->acuteFailed;
 }
 
@@ -172,5 +202,15 @@ bool Main (
 	__unused RdStringArray *args,
 	__unused RdStringArray *env
 ) {
-	return TestSuite_Run(TestSuite_GetInstance());
+	TestSuiteInstance inst = TestSuite_GetInstance();
+
+	if (args->len == 0) {
+		TestSuite_RunAll(inst);
+	} else {
+		fwd(i, args->len) {
+			TestSuite_Run(inst, args->buf[i]);
+		}
+	}
+
+	return TestSuite_Successful(inst);
 }
