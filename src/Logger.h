@@ -26,13 +26,14 @@ class {
 	int levels;
 };
 
-static inline def(bool, IsEnabled, ref(Level) level) {
+static alwaysInline def(bool, IsEnabled, ref(Level) level) {
 	return !BitMask_Has(Logger_DisabledLevels, level)
 		 && BitMask_Has(this->levels, level);
 }
 
-def(void, Init, ref(Printer) printer, int levels);
-RdString ref(ResolveLevel)(ref(Level) level);
+rsdef(self, New, ref(Printer) printer);
+def(void, SetLevels, int levels);
+sdef(RdString, ResolveLevel, ref(Level) level);
 
 #define Logger_Log(this, level, fmt, ...)       \
 	do {                                        \

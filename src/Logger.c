@@ -2,35 +2,37 @@
 
 #define self Logger
 
-def(void, Init, ref(Printer) printer, int levels) {
-	this->printer = printer;
-	this->levels  = levels;
+static RdString levels[] = {
+	[ref(Level_Fatal)] = $("Fatal"),
+	[ref(Level_Crit)]  = $("Crit"),
+	[ref(Level_Error)] = $("Error"),
+	[ref(Level_Warn)]  = $("Warn"),
+	[ref(Level_Info)]  = $("Info"),
+	[ref(Level_Debug)] = $("Debug"),
+	[ref(Level_Trace)] = $("Trace")
+};
+
+rsdef(self, New, ref(Printer) printer) {
+	return (self) {
+		.printer = printer,
+		.levels  =
+			Logger_Level_Fatal |
+			Logger_Level_Crit  |
+			Logger_Level_Error |
+			Logger_Level_Warn  |
+			Logger_Level_Info  |
+			Logger_Level_Trace
+	};
 }
 
-RdString ref(ResolveLevel)(ref(Level) level) {
-	switch (level) {
-		case ref(Level_Fatal):
-			return $("Fatal");
+def(void, SetLevels, int levels) {
+	this->levels = levels;
+}
 
-		case ref(Level_Crit):
-			return $("Crit");
-
-		case ref(Level_Error):
-			return $("Error");
-
-		case ref(Level_Warn):
-			return $("Warn");
-
-		case ref(Level_Info):
-			return $("Info");
-
-		case ref(Level_Debug):
-			return $("Debug");
-
-		case ref(Level_Trace):
-			return $("Trace");
-
-		default:
-			return $("Unknown");
+sdef(RdString, ResolveLevel, ref(Level) level) {
+	if (level > ref(Level_Trace)) {
+		return $("Unknown");
 	}
+
+	return levels[level];
 }
