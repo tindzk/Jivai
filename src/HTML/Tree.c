@@ -18,7 +18,7 @@ sdef(void, DestroyNode, ref(Node) *node) {
 	String_Destroy(&node->value);
 
 	if (node->type == ref(NodeType_Tag)) {
-		foreach (item, node->attrs) {
+		each(item, node->attrs) {
 			String_Destroy(&item->name);
 			String_Destroy(&item->value);
 		}
@@ -71,7 +71,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
 
 sdef(ref(Attr) *, GetAttr, ref(Node) *node, ProtString name) {
 	if (node->type == ref(NodeType_Tag)) {
-		forward (i, node->attrs->len) {
+		fwd(i, node->attrs->len) {
 			if (String_Equals(node->attrs->buf[i].name.prot, name)) {
 				return &node->attrs->buf[i];
 			}
@@ -97,7 +97,7 @@ sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 
 		found = false;
 
-		forward (i, node->len) {
+		fwd(i, node->len) {
 			if (node->buf[i]->type == ref(NodeType_Tag)) {
 				if (String_Equals(*s, node->buf[i]->value.prot)) {
 					node = node->buf[i];
@@ -147,7 +147,7 @@ sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...) {
 }
 
 sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *)) {
-	forward (i, node->len) {
+	fwd(i, node->len) {
 		cb(node->buf[i]);
 	}
 }

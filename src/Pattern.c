@@ -585,7 +585,7 @@ def(bool, Match, RdString s, RdString **caps) {
 		/* Pattern is anchored (must match from the start). */
 		return call(_Match, 0, s, s.len, caps);
 	} else {
-		forward (i, s.len) {
+		fwd(i, s.len) {
 			this->ofs = i;
 
 			if (call(_Match, 0, s, s.len, caps)) {

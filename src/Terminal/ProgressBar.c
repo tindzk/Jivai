@@ -68,12 +68,12 @@ def(void, Render, size_t percent, String msg) {
 	String strPercent = Integer_ToString(percent);
 
 	String progress = String_New(this->block.len * width);
-	forward (i, width) {
+	fwd(i, width) {
 		String_Append(&progress, this->block);
 	}
 
 	String empty = String_New(this->empty.len * remaining);
-	forward (i, remaining) {
+	fwd(i, remaining) {
 		String_Append(&empty, this->empty);
 	}
 
@@ -86,7 +86,7 @@ def(void, Render, size_t percent, String msg) {
 	String_Destroy(&empty);
 
 	this->lines = 1;
-	forward (i, msg.len) {
+	fwd(i, msg.len) {
 		if (msg.buf[i] == '\n') {
 			this->lines++;
 		}

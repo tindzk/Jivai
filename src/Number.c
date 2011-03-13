@@ -11,7 +11,7 @@ String Number_Format(s32 number, size_t decimals) {
 
 	/* n = 10^(decimals-1) */
 	int n = 1;
-	repeat (decimals - 1) {
+	rpt(decimals - 1) {
 		n *= 10;
 	}
 

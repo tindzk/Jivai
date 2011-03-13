@@ -98,7 +98,7 @@ static RdString _reserved[] = {
 sdef(String, Encode, RdString param) {
 	String res = String_New(param.len * 1.3);
 
-	forward (i, param.len) {
+	fwd(i, param.len) {
 		size_t c = param.buf[i];
 
 		if (c < nElems(_reserved) && _reserved[c].len != 0) {
@@ -115,7 +115,7 @@ def(void, Decode, RdString s, bool isFormUri) {
 	String name  = String_New(0);
 	size_t start = 0;
 
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		if (s.buf[i] == '=') {
 			RdString tmp = String_Slice(s, start, i - start);
 

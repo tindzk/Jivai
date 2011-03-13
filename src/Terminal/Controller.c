@@ -9,7 +9,7 @@ rsdef(self, New, Terminal *term) {
 }
 
 static def(void, Print, Typography_Node *node, VarArg *argptr) {
-	forward (i, node->len) {
+	fwd(i, node->len) {
 		Typography_Node *child = node->buf[i];
 
 		if (child->type == Typography_NodeType_Text) {

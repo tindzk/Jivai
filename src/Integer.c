@@ -7,13 +7,13 @@
 		type res = 0;                                \
 		size_t c = 0;                                \
 		bool neg = (s.len > 0 && s.buf[0] == '-');   \
-		reverse (i, s.len) {                         \
+		bwd(i, s.len) {                              \
 			if (!Char_IsDigit(s.buf[i])) {           \
 				continue;                            \
 			}                                        \
 			type digit = Char_ParseDigit(s.buf[i]);  \
 			if (digit) {                             \
-				repeat (c) {                         \
+				rpt(c) {                             \
 					if (digit * 10 / 10 != digit) {  \
 						if (neg) {                   \
 							throw(Underflow);        \

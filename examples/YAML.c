@@ -8,7 +8,7 @@ void PrintTree(YAML_Node *node, int depth) {
 	{
 		String_Print($("\n"));
 
-		repeat (depth) {
+		rpt(depth) {
 			String_Print($("  "));
 		}
 	}
@@ -29,7 +29,7 @@ void PrintTree(YAML_Node *node, int depth) {
 		String_Print(YAML_Item_GetValue(node));
 	}
 
-	forward (i, node->len) {
+	fwd(i, node->len) {
 		PrintTree(node->buf[i], depth + 1);
 	}
 }

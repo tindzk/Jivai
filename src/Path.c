@@ -195,7 +195,7 @@ overload sdef(void, Create, RdString path, int mode, bool recursive) {
 	}
 
 	if (recursive) {
-		forward (i, path.len) {
+		fwd(i, path.len) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
 				errno = 0;
 

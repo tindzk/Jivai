@@ -267,7 +267,7 @@ sdef(String, Decode, RdString s) {
 	bool ampersand = false;
 	size_t pos = 0;
 
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		if (!ampersand) {
 			if (s.buf[i] == '&') {
 				pos = i + 1;
@@ -334,7 +334,7 @@ sdef(String, Decode, RdString s) {
 }
 
 overload sdef(void, Encode, RdString s, String *out) {
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		switch (s.buf[i]) {
 			case '&':
 				String_Append(out, $("&amp;"));

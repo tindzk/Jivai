@@ -14,7 +14,7 @@ String Charset_Latin1ToUTF8(String s) {
 
 	String res = String_New(s.len * 1.2);
 
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		unsigned short c = *(unsigned char *) &s.buf[i];
 
 		if (Charset_IsHighBitSet(c)) {

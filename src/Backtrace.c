@@ -6,7 +6,7 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 
 	File_Write(File_StdErr, $("Traceback (most recent call first):\n"));
 
-	reverse (i, size) {
+	bwd(i, size) {
 		File_Write(File_StdErr, $("\tat "));
 
 		if (items[i].function.len == 0) {

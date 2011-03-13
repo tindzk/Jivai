@@ -23,7 +23,7 @@ int main(void) {
 	 * the situation that every time Array_Push() is called,
 	 * more memory is requested from the kernel.
 	 */
-	forward (i, 50) {
+	fwd(i, 50) {
 		Item item = {
 			Integer_ToString(i),
 			Integer_ToString(i + 5)
@@ -32,14 +32,14 @@ int main(void) {
 		ItemArray_Push(&arr, item);
 	}
 
-	forward (i, arr->len) {
+	fwd(i, arr->len) {
 		String_Print(arr->buf[i].field1);
 		String_Print($(":"));
 		String_Print(arr->buf[i].field2);
 		String_Print($("\n"));
 	}
 
-	foreach (item, arr) {
+	each(item, arr) {
 		String_Destroy(&item->field1);
 		String_Destroy(&item->field2);
 	}

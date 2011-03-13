@@ -50,7 +50,7 @@ def(String, GetCommandLine) {
 	String_Append(&out, this->cmd.prot);
 	String_Append(&out, ' ');
 
-	foreach (param, this->params) {
+	each(param, this->params) {
 		String_Append(&out, param->prot);
 
 		if (!isLast(param, this->params)) {

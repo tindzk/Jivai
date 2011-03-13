@@ -234,7 +234,7 @@ def(void, PrintFmt, FmtString s) {
 	s.val++;
 #endif
 
-	forward (i, s.fmt.len) {
+	fwd(i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
 			File_Write(this->out, '%');
 			i++;
@@ -254,7 +254,7 @@ def(void, PrintFmt, FmtString s) {
 }
 
 def(void, FmtArgPrint, RdString fmt, VarArg *argptr) {
-	forward (i, fmt.len) {
+	fwd(i, fmt.len) {
 		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
 			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
 		{

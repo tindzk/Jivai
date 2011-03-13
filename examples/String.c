@@ -1,5 +1,4 @@
 #import <String.h>
-#import <Terminal.h>
 
 int main(void) {
 	/* Define a string on the stack, i.e. there is no need to
@@ -10,14 +9,14 @@ int main(void) {
 	 *   String s = String_Clone($("Allocated on heap."));
 	 *   String_Destroy(&s);
 	 */
-	ProtString s = $("Hello world!");
+	RdString s = $("Hello world!");
 
 	/* This loop only serves the purpose of illustrating String's
 	 * capabilities. In practice, you'd rather do something like:
 	 *   String_Print(s);
 	 *   String_Print($("\n"));
 	 */
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		/* Put the current character into a string. */
 		String c = String_New(1);
 		String_Append(&c, s.buf[i]);
@@ -27,7 +26,7 @@ int main(void) {
 			$("%%"),
 
 			/* Will be put in place of the first '%'. */
-			c.prot,
+			c.rd,
 
 			/* The last character has the position s.len-1. */
 			(i == s.len - 1) ? $("\n") : $(""));
@@ -38,7 +37,7 @@ int main(void) {
 		 * pointer because the `String()' macro expands to
 		 * a compound literal like: (String) { ... }.
 		 */
-		String_Print(fmt.prot);
+		String_Print(fmt.rd);
 
 		/* String_Format() returns a heap-allocated string! */
 		String_Destroy(&fmt);

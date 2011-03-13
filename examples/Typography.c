@@ -14,7 +14,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 
 	String_Destroy(&strDepth);
 
-	repeat (depth) {
+	rpt(depth) {
 		String_Print($("    "));
 	}
 
@@ -38,7 +38,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 
 	String_Print($("\n"));
 
-	forward (i, node->len) {
+	fwd(i, node->len) {
 		PrintTree(node->buf[i], depth + 1);
 	}
 }

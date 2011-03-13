@@ -186,7 +186,7 @@ overload def(void, Request, ref(Requests) *items) {
 
 	String s = String_New(items->len * 128);
 
-	forward (i, items->len) {
+	fwd(i, items->len) {
 		call(_CreateRequest, items->buf[i], &s);
 	}
 

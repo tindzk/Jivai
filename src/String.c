@@ -307,7 +307,7 @@ overload sdef(void, Append, self *dest, FmtString s) {
 
 	size_t len = 0;
 
-	forward (i, s.fmt.len) {
+	fwd(i, s.fmt.len) {
 		if (s.fmt.buf[i] == '%') {
 			if (i == 0 || s.fmt.buf[i - 1] != '!') {
 #if String_FmtChecks
@@ -326,7 +326,7 @@ overload sdef(void, Append, self *dest, FmtString s) {
 
 	scall(Align, dest, len);
 
-	forward (i, s.fmt.len) {
+	fwd(i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
 			dest->buf[dest->len] = '%';
 			dest->len++, i++;
@@ -376,13 +376,13 @@ sdef(bool, RangeEquals, RdString s, ssize_t offset, RdString needle, ssize_t nee
 }
 
 def(void, ToLower) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		this->buf[i] = (char) Char_ToLower(this->buf[i]);
 	}
 }
 
 def(void, ToUpper) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		this->buf[i] = (char) Char_ToUpper(this->buf[i]);
 	}
 }
@@ -411,7 +411,7 @@ overload sdef(bool, Split, RdString s, char c, RdString *res) {
 
 overload sdef(RdStringArray *, Split, RdString s, char c) {
 	size_t chunks = 1;
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		if (s.buf[i] == c) {
 			chunks++;
 		}
@@ -463,7 +463,7 @@ overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, char c) {
 		throw(BufferOverflow);
 	}
 
-	reverse (i, offset + 1) {
+	bwd(i, offset + 1) {
 		if (s.buf[i] == c) {
 			return i;
 		}
@@ -487,7 +487,7 @@ overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, RdString needle)
 
 	size_t cnt = 0;
 
-	reverse (i, offset + 1) {
+	bwd(i, offset + 1) {
 		if (s.buf[i] == needle.buf[needle.len - cnt - 1]) {
 			cnt++;
 
@@ -948,7 +948,7 @@ overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool
 #define self RdStringArray
 
 def(ssize_t, Find, RdString needle) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		if (String_Equals(this->buf[i], needle)) {
 			return i;
 		}
@@ -960,7 +960,7 @@ def(ssize_t, Find, RdString needle) {
 def(String, Join, RdString separator) {
 	size_t len = 0;
 
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		len += this->buf[i].len;
 
 		if (i != this->len - 1) {
@@ -970,7 +970,7 @@ def(String, Join, RdString separator) {
 
 	String res = String_New(len);
 
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		String_Append(&res, this->buf[i]);
 
 		if (i != this->len - 1) {
@@ -990,7 +990,7 @@ def(bool, Contains, RdString needle) {
 #define self StringArray
 
 def(ssize_t, Find, RdString needle) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		if (String_Equals(this->buf[i].rd, needle)) {
 			return i;
 		}
@@ -1004,7 +1004,7 @@ def(bool, Contains, RdString needle) {
 }
 
 def(void, Destroy) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		String_Destroy(&this->buf[i]);
 	}
 }
@@ -1014,7 +1014,7 @@ def(void, Destroy) {
 #define self CarrierStringArray
 
 def(void, Destroy) {
-	forward (i, this->len) {
+	fwd(i, this->len) {
 		CarrierString_Destroy(&this->buf[i]);
 	}
 }

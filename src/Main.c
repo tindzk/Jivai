@@ -16,7 +16,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		RdStringArray_Push(&args, String_FromNul(argv[i]));
 	}
 
-	forward (i, envItems) {
+	fwd(i, envItems) {
 		RdStringArray_Push(&env, String_FromNul(envp[i]));
 	}
 

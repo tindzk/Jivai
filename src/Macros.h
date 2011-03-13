@@ -24,13 +24,13 @@
 #define range(i, lower, upper) \
 	for (typeof(lower) i = (lower); i <= (upper); i++)
 
-#define repeat(n) \
-	for (size_t __repeat_i = (n); __repeat_i; __repeat_i--)
+#define rpt(n) \
+	for (size_t __rpt_i = (n); __rpt_i; __rpt_i--)
 
-#define forward(i, cnt) \
+#define fwd(i, cnt) \
 	for (typeof(cnt) i = 0; i < (cnt); i++)
 
-#define reverse(i, cnt) \
+#define bwd(i, cnt) \
 	if (cnt) for (typeof(cnt) i = (cnt); i--;)
 
 #define _simpleConcat(x, y) \
@@ -146,7 +146,7 @@
  * we don't declare an index variable, this macro can be nested
  * safely.
  */
-#define foreach(name, arr)                            \
+#define each(name, arr)                               \
 	for (                                             \
 		typeof((arr)->buf[0]) *name = &(arr)->buf[0]; \
 		name < &(arr)->buf[(arr)->len];               \

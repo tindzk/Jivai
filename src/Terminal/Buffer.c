@@ -15,7 +15,7 @@ rsdef(self, New, Terminal *term, size_t spacing) {
 def(void, Destroy) {
 	call(Clear);
 
-	foreach (chunk, this->chunks) {
+	each(chunk, this->chunks) {
 		CarrierString_Destroy(&chunk->value);
 	}
 
@@ -25,7 +25,7 @@ def(void, Destroy) {
 static def(size_t, GetCurrentLineLength) {
 	size_t len = 0;
 
-	foreach (chunk, this->chunks) {
+	each(chunk, this->chunks) {
 		if (chunk->line == this->lines) {
 			len += Unicode_Count(chunk->value.prot);
 
@@ -41,7 +41,7 @@ static def(size_t, GetCurrentLineLength) {
 static def(size_t, CountChunksOnCurrentLine) {
 	size_t chunks = 0;
 
-	foreach (chunk, this->chunks) {
+	each(chunk, this->chunks) {
 		if (chunk->line == this->lines) {
 			chunks++;
 		}
@@ -64,7 +64,7 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 		Terminal_Print(this->term, '\n');
 	} else {
 		if (call(CountChunksOnCurrentLine) > 0) {
-			repeat (this->spacing) {
+			rpt(this->spacing) {
 				Terminal_Print(this->term, ' ');
 			}
 		}
@@ -120,7 +120,7 @@ def(void, Redraw) {
 	size_t len = 0; /* Line length. */
 	bool first = true;
 
-	foreach (chunk, this->chunks) {
+	each(chunk, this->chunks) {
 		size_t width = Unicode_Count(chunk->value.prot);
 
 		/* Item width including spacing. */
@@ -138,7 +138,7 @@ def(void, Redraw) {
 			Terminal_Print(this->term, '\n');
 		} else {
 			if (!first) {
-				repeat (this->spacing) {
+				rpt(this->spacing) {
 					Terminal_Print(this->term, ' ');
 				}
 			}

@@ -49,7 +49,7 @@ def(void, Assert, RdString descr, bool succeeded) {
 }
 
 static def(void *, Resolve, ITestSuiteInterface *suite, ref(MethodType) type) {
-	forward(i, suite->last - suite->first) {
+	fwd(i, suite->last - suite->first) {
 		ref(Method) *method = &suite->first[i];
 
 		if (method->type == type) {
@@ -85,7 +85,7 @@ static def(void, DestroySuite, ITestSuiteInterface *suite, GenericInstance inst)
 }
 
 static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst) {
-	forward(i, suite->last - suite->first) {
+	fwd(i, suite->last - suite->first) {
 		ref(Method) *method = &suite->first[i];
 
 		if (method->type == ref(MethodType_TestCase)) {
@@ -121,7 +121,7 @@ def(bool, Run) {
 
 	this->acuteFailed = false;
 
-	foreach (suite, this->suites) {
+	each(suite, this->suites) {
 		bool run = call(RunSuite, *suite);
 
 		Terminal_Controller_Render(&this->controller,

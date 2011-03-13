@@ -45,7 +45,7 @@ float Float_Parse(RdString s, char sep) {
 	RdString sdigit   = s;
 	RdString sdecimal = $("");
 
-	forward (i, s.len) {
+	fwd(i, s.len) {
 		if (s.buf[i] == sep) {
 			sdigit   = String_Slice(s, 0, i);
 			sdecimal = String_Slice(s, i + 1);
@@ -58,7 +58,7 @@ float Float_Parse(RdString s, char sep) {
 	float decimal = Int32_Parse(sdecimal);
 	size_t digits = Integer_CountDigits((s32) decimal);
 
-	repeat (digits) {
+	rpt(digits) {
 		decimal /= 10;
 	}
 
