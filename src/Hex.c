@@ -33,7 +33,7 @@ overload sdef(s8, ToInteger, char c) {
 	}
 }
 
-overload sdef(s64, ToInteger, ProtString s) {
+overload sdef(s64, ToInteger, RdString s) {
 	s64 total      = 0;
 	u64 multiplier = 1;
 

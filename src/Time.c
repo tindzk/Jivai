@@ -48,7 +48,7 @@ sdef(String, Format, self time) {
 	String second = Number_Format(time.second, 2);
 
 	String fmt = String_Format($("%:%:%"),
-		hour.prot, minute.prot, second.prot);
+		hour.rd, minute.rd, second.rd);
 
 	String_Destroy(&second);
 	String_Destroy(&minute);

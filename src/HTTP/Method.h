@@ -9,7 +9,7 @@ set(self) {
 	ref(Unset)
 };
 
-sdef(self, FromString, ProtString s);
-sdef(ProtString, ToString, self method);
+sdef(self, FromString, RdString s);
+sdef(RdString, ToString, self method);
 
 #undef self

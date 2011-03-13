@@ -41,7 +41,7 @@ static def(void, Flush, String *value) {
 		node->line = this->line;
 
 		ref(Text) *text = (ref(Text) *) &node->data;
-		text->value = String_Clone(value->prot);
+		text->value = String_Clone(value->rd);
 
 		value->len = 0;
 	}
@@ -113,8 +113,8 @@ static def(void, Read, size_t st) {
 
 					ref(Item) *item = (ref(Item) *) &this->node->data;
 
-					item->name    = String_Clone(String_Trim(name.prot));
-					item->options = String_Clone(options.prot);
+					item->name    = String_Clone(String_Trim(name.rd));
+					item->options = String_Clone(options.rd);
 
 					options.len = 0;
 					name.len    = 0;
@@ -124,7 +124,7 @@ static def(void, Read, size_t st) {
 					state = prevstate;
 				} else if (cur != '\\') {
 					String_Append(&value, '.');
-					String_Append(&value, name.prot);
+					String_Append(&value, name.rd);
 
 					name.len = 0;
 

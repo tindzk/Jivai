@@ -2,7 +2,7 @@
 
 #define self StringStream
 
-def(void, Init, ProtStringInstance s) {
+def(void, Init, RdStringInstance s) {
 	this->str    = s.object;
 	this->offset = 0;
 }

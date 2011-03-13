@@ -16,27 +16,27 @@ tsRegister("Number") {
 
 tsCase(Acute, "Format") {
 	String s = Number_Format(12345678, 2);
-	Assert($("12345678"), String_Equals(s.prot, $("12345678")));
+	Assert($("12345678"), String_Equals(s.rd, $("12345678")));
 	String_Destroy(&s);
 
 	s = Number_Format(0, 2);
-	Assert($("0"), String_Equals(s.prot, $("00")));
+	Assert($("0"), String_Equals(s.rd, $("00")));
 	String_Destroy(&s);
 
 	s = Number_Format(1, 5);
-	Assert($("1"), String_Equals(s.prot, $("00001")));
+	Assert($("1"), String_Equals(s.rd, $("00001")));
 	String_Destroy(&s);
 
 	s = Number_Format(-12345678, 2);
-	Assert($("-123456789"), String_Equals(s.prot, $("-12345678")));
+	Assert($("-123456789"), String_Equals(s.rd, $("-12345678")));
 	String_Destroy(&s);
 
 	s = Number_Format(-123, 2);
-	Assert($("-123"), String_Equals(s.prot, $("-123")));
+	Assert($("-123"), String_Equals(s.rd, $("-123")));
 	String_Destroy(&s);
 
 	s = Number_Format(-1, 2);
-	Assert($("-1"), String_Equals(s.prot, $("-01")));
+	Assert($("-1"), String_Equals(s.rd, $("-01")));
 	String_Destroy(&s);
 }
 

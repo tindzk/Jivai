@@ -3,7 +3,7 @@
 #define self Integer
 
 #define DefineParseString(type, name)                \
-	type name(ProtString s) {                        \
+	type name(RdString s) {                          \
 		type res = 0;                                \
 		size_t c = 0;                                \
 		bool neg = (s.len > 0 && s.buf[0] == '-');   \

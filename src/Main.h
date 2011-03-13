@@ -1,4 +1,4 @@
 #import "String.h"
 #import "Signal.h"
 
-bool Main(ProtString base, ProtStringArray *args, ProtStringArray *env);
+bool Main(RdString base, RdStringArray *args, RdStringArray *env);

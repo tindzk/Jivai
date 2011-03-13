@@ -14,9 +14,9 @@ class {
 
 def(void, Init, HTTP_OnParameter onParameter);
 def(void, SetAutoResize, bool value);
-sdef(size_t, GetAbsoluteLength, ProtString s);
-sdef(void, Unescape, ProtString src, char *dst, bool isFormUri);
-sdef(String, Encode, ProtString param);
-def(void, Decode, ProtString s, bool isFormUri);
+sdef(size_t, GetAbsoluteLength, RdString s);
+sdef(void, Unescape, RdString src, char *dst, bool isFormUri);
+sdef(String, Encode, RdString param);
+def(void, Decode, RdString s, bool isFormUri);
 
 #undef self

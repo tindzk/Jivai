@@ -2,7 +2,7 @@
 
 #define self NetworkAddress
 
-sdef(struct in_addr, ResolveHost, ProtString hostname) {
+sdef(struct in_addr, ResolveHost, RdString hostname) {
 	struct addrinfo *host;
 
 	if (getaddrinfo(String_ToNul(hostname), NULL, NULL, &host)) {

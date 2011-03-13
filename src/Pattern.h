@@ -107,7 +107,7 @@ class {
 
 def(void, Init);
 def(void, Destroy);
-def(void, Compile, ProtString pattern);
+def(void, Compile, RdString pattern);
 
 /*
  * Returns true if there is a match, otherwise false.
@@ -120,8 +120,8 @@ def(void, Compile, ProtString pattern);
  * captures.
  */
 
-#define Pattern_Result(...) (ProtString*[]) { __VA_ARGS__ }
+#define Pattern_Result(...) (RdString*[]) { __VA_ARGS__ }
 
-def(bool, Match, ProtString s, ProtString **caps);
+def(bool, Match, RdString s, RdString **caps);
 
 #undef self

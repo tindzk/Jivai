@@ -9,6 +9,6 @@ class {
 };
 
 rsdef(self, New, Terminal *term);
-def(void, Render, ProtString s, ...);
+def(void, Render, RdString s, ...);
 
 #undef self

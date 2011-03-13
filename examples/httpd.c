@@ -55,7 +55,7 @@ def(void, OnMethod, HTTP_Method method) {
 	this->method = method;
 }
 
-def(void, OnPath, ProtString path) {
+def(void, OnPath, RdString path) {
 	String_Copy(&this->path, path);
 }
 
@@ -64,7 +64,7 @@ def(void, OnPath, ProtString path) {
  * http://localhost:8080/?test=abc&test2=def
  */
 
-def(String *, OnQueryParameter, ProtString name) {
+def(String *, OnQueryParameter, RdString name) {
 	if (String_Equals(name, $("test"))) {
 		/* test's value will be put into this variable. */
 		return &this->paramTest;
@@ -80,7 +80,7 @@ def(String *, OnQueryParameter, ProtString name) {
  * Treat body-submitted parameters equally like URL-supplied ones.
  */
 
-def(String *, OnBodyParameter, ProtString name) {
+def(String *, OnBodyParameter, RdString name) {
 	return call(OnQueryParameter, name);
 }
 
@@ -109,9 +109,9 @@ def(void, OnRespond, bool persistent) {
 				"test2=%<br />"
 			),
 
-			this->path.prot,
-			this->paramTest.prot,
-			this->paramTest2.prot));
+			this->path.rd,
+			this->paramTest.rd,
+			this->paramTest2.rd));
 	}
 
 	String strLength = Integer_ToString(this->resp.len);
@@ -131,7 +131,7 @@ def(void, OnRespond, bool persistent) {
 			? $("Connection: Keep-Alive")
 			: $("Connection: Close"),
 
-		strLength.prot);
+		strLength.rd);
 
 	String_Destroy(&strLength);
 

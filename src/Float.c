@@ -41,9 +41,9 @@ String Float_ToString(float num, double precision, char sep) {
 	return res;
 }
 
-float Float_Parse(ProtString s, char sep) {
-	ProtString sdigit   = s;
-	ProtString sdecimal = $("");
+float Float_Parse(RdString s, char sep) {
+	RdString sdigit   = s;
+	RdString sdecimal = $("");
 
 	forward (i, s.len) {
 		if (s.buf[i] == sep) {

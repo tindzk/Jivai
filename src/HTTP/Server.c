@@ -78,7 +78,7 @@ static def(void, OnVersion, HTTP_Version version) {
 	callback(this->events.onVersion, version);
 }
 
-static def(void, OnHeader, ProtString name, ProtString value) {
+static def(void, OnHeader, RdString name, RdString value) {
 	callback(this->events.onHeader, name, value);
 
 	String_ToLower((String *) &name);
@@ -86,9 +86,9 @@ static def(void, OnHeader, ProtString name, ProtString value) {
 	if (String_Equals(name, $("connection"))) {
 		String_ToLower((String *) &value);
 
-		ProtString elem = $("");
+		RdString elem = $("");
 		while (String_Split(value, ',', &elem)) {
-			ProtString chunk = String_Trim(elem);
+			RdString chunk = String_Trim(elem);
 
 			if (String_Equals(chunk, $("close"))) {
 				this->headers.persistentConnection = false;
@@ -164,7 +164,7 @@ def(ref(Result), ReadHeader) {
 	for (;;) {
 		/* Do this now because the buffer might already contain the next
 		 * request. */
-		requestOffset = HTTP_Header_GetLength(this->header.prot);
+		requestOffset = HTTP_Header_GetLength(this->header.rd);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -201,7 +201,7 @@ def(ref(Result), ReadHeader) {
 
 	/* This is the case when this->header.len >= this->header.size. */
 	if (requestOffset == 0) {
-		requestOffset = HTTP_Header_GetLength(this->header.prot);
+		requestOffset = HTTP_Header_GetLength(this->header.rd);
 
 		if (requestOffset == -1) {
 			/* The request is malformed. */
@@ -214,7 +214,7 @@ def(ref(Result), ReadHeader) {
 	}
 
 	/* Trim the request and update requestOffset accordingly. */
-	ProtString cleaned = String_Trim(this->header.prot, String_TrimLeft);
+	RdString cleaned = String_Trim(this->header.rd, String_TrimLeft);
 	size_t ofs = this->header.len - cleaned.len;
 	String_FastCrop(&this->header, ofs);
 	requestOffset -= ofs;
@@ -229,7 +229,7 @@ def(ref(Result), ReadHeader) {
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);
 	HTTP_Header_Parse(&header, HTTP_Header_Type_Request,
-		String_Slice(this->header.prot, 0, requestOffset));
+		String_Slice(this->header.rd, 0, requestOffset));
 
 	if (this->headers.contentLength > 0) {
 		/* The request has a body. */
@@ -240,7 +240,7 @@ def(ref(Result), ReadHeader) {
 			if (this->header.len - requestOffset >= this->headers.contentLength) {
 				/* We have the whole body in this->header. */
 				String_Copy(&this->body,
-					String_Slice(this->header.prot, requestOffset, this->headers.contentLength));
+					String_Slice(this->header.rd, requestOffset, this->headers.contentLength));
 
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
@@ -249,7 +249,7 @@ def(ref(Result), ReadHeader) {
 			} else {
 				/* The body is only partial. */
 				String_Copy(&this->body,
-					String_Slice(this->header.prot, requestOffset));
+					String_Slice(this->header.rd, requestOffset));
 
 				/* See comment below. */
 				this->header.len = 0;
@@ -314,7 +314,7 @@ def(ref(Result), ReadBody) {
 				HTTP_Query qry;
 				HTTP_Query_Init(&qry, this->events.onBodyParameter);
 				HTTP_Query_SetAutoResize(&qry, true);
-				HTTP_Query_Decode(&qry, this->body.prot, true);
+				HTTP_Query_Decode(&qry, this->body.rd, true);
 			}
 		} finally {
 			this->state = ref(State_Header);

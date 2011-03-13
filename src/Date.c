@@ -25,7 +25,7 @@ const short ref(AddedDaysPerMonth)[] = {
 	(31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31)
 };
 
-const ProtString ref(MonthNames)[] = {
+const RdString ref(MonthNames)[] = {
 	$(""),
 	$("January"),
 	$("Februray"),
@@ -41,7 +41,7 @@ const ProtString ref(MonthNames)[] = {
 	$("December")
 };
 
-const ProtString ref(WeekDays)[] = {
+const RdString ref(WeekDays)[] = {
 	$("Sunday"),
 	$("Monday"),
 	$("Tuesday"),
@@ -185,12 +185,12 @@ sdef(short, GetWeekDay, self date) {
 }
 
 sdef(String, Format, self date, bool wday) {
-	ProtString month = ref(MonthNames)[date.month];
+	RdString month = ref(MonthNames)[date.month];
 
 	String day  = Integer_ToString(date.day);
 	String year = Integer_ToString(date.year);
 
-	ProtString suffix;
+	RdString suffix;
 
 	if (date.day == 1) {
 		suffix = $("st");
@@ -207,10 +207,10 @@ sdef(String, Format, self date, bool wday) {
 	if (wday) {
 		res = String_Format($("%, % %%, %"),
 			ref(WeekDays)[scall(GetWeekDay, date)],
-			month, day.prot, suffix, year.prot);
+			month, day.rd, suffix, year.rd);
 	} else {
 		res = String_Format($("% %%, %"),
-			month, day.prot, suffix, year.prot);
+			month, day.rd, suffix, year.rd);
 	}
 
 	String_Destroy(&year);

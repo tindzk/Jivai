@@ -45,8 +45,8 @@ enum {
 
 const short ref(DaysPerMonth)[13];
 const short ref(AddedDaysPerMonth)[13];
-const ProtString ref(MonthNames)[13];
-const ProtString ref(WeekDays)[8];
+const RdString ref(MonthNames)[13];
+const RdString ref(WeekDays)[8];
 
 sdef(self, Empty);
 sdef(bool, IsLeapYear, int year);

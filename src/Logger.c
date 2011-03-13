@@ -7,7 +7,7 @@ def(void, Init, ref(Printer) printer, int levels) {
 	this->levels  = levels;
 }
 
-ProtString ref(ResolveLevel)(ref(Level) level) {
+RdString ref(ResolveLevel)(ref(Level) level) {
 	switch (level) {
 		case ref(Level_Fatal):
 			return $("Fatal");

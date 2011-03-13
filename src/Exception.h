@@ -35,7 +35,7 @@ record(ExceptionManager) {
 	 */
 	struct {
 #if Exception_SaveOrigin
-		ProtString func;
+		OmniString func;
 #endif
 
 #if Exception_SaveTrace
@@ -45,7 +45,7 @@ record(ExceptionManager) {
 		} trace;
 #endif
 
-		ProtString msg;
+		OmniString msg;
 		void *data;
 	} details;
 };
@@ -75,11 +75,11 @@ static inline sdef(void, Raise, int code) {
 	longjmp(cur->jmpBuffer, code);
 }
 
-static inline sdef(void, SetMessage, ProtString msg) {
+static inline sdef(void, SetMessage, OmniString msg) {
 	__exc_mgr.details.msg = msg;
 }
 
-static inline sdef(ProtString, GetMessage) {
+static inline sdef(OmniString, GetMessage) {
 	return __exc_mgr.details.msg;
 }
 
@@ -92,16 +92,16 @@ static inline sdef(void *, GetData) {
 }
 
 #if Exception_SaveOrigin
-	static inline void Exception_SetOrigin(ProtString func) {
+	static inline void Exception_SetOrigin(OmniString func) {
 		__exc_mgr.details.func = func;
 	}
 
-	static inline ProtString Exception_GetOrigin(void) {
-		return __exc_mgr.details.func;
+	static inline RdString Exception_GetOrigin(void) {
+		return __exc_mgr.details.func.rd;
 	}
 #else
-	static inline void Exception_SetOrigin(__unused ProtString func) { }
-	static inline ProtString Exception_GetOrigin(void) {
+	static inline void Exception_SetOrigin(__unused OmniString func) { }
+	static inline RdString Exception_GetOrigin(void) {
 		return $("");
 	}
 #endif
@@ -124,9 +124,9 @@ static inline sdef(void *, GetData) {
 	#define Exception_SetTrace(e)
 #endif
 
-#define Exception_SetException(c)    \
-	Exception_SetTrace();            \
-	Exception_SetOrigin($(__func__)) \
+#define Exception_SetException(c)     \
+	Exception_SetTrace();             \
+	Exception_SetOrigin($$(__func__)) \
 
 #define throw(e)                   \
 	do {                           \

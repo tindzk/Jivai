@@ -13,7 +13,7 @@ record(self) {
 	unsigned short port;
 };
 
-sdef(struct in_addr, ResolveHost, ProtString hostname);
+sdef(struct in_addr, ResolveHost, RdString hostname);
 sdef(String, ToString, NetworkAddress addr);
 
 #undef self

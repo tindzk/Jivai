@@ -145,7 +145,7 @@ sdef(String, Format, self dt) {
 	String date = Date_Format(dt.date, true);
 	String time = Time_Format(dt.time);
 
-	String fmt = String_Format($("% %"), date.prot, time.prot);
+	String fmt = String_Format($("% %"), date.rd, time.rd);
 
 	String_Destroy(&time);
 	String_Destroy(&date);

@@ -171,31 +171,31 @@ record(EpollEvent) {
 
 #define self Kernel
 
-sdef(ssize_t, open, ProtString path, int flags, int mode);
+sdef(ssize_t, open, RdString path, int flags, int mode);
 sdef(bool, close, ssize_t fd);
 sdef(void, exit, int status);
 sdef(ssize_t, read, ssize_t fd, char *buf, size_t len);
 sdef(ssize_t, write, ssize_t fd, char *buf, size_t len);
 sdef(ssize_t, getdents, ssize_t fd, char *buf, size_t len);
 sdef(bool, llseek, ssize_t fd, u64 offset, u64 *pos, int whence);
-sdef(bool, mkdir, ProtString path, int flags);
-sdef(bool, unlink, ProtString path);
-sdef(bool, rmdir, ProtString path);
-sdef(ssize_t, readlink, ProtString path, char *buf, size_t size);
-sdef(bool, setxattr, ProtString path, ProtString name, char *buf, size_t size, int flags);
-sdef(bool, fsetxattr, ssize_t fd, ProtString name, char *buf, size_t size, int flags);
-sdef(ssize_t, getxattr, ProtString path, ProtString name, char *buf, size_t size);
-sdef(ssize_t, fgetxattr, ssize_t fd, ProtString name, char *buf, size_t size);
-sdef(bool, symlink, ProtString path1, ProtString path2);
-sdef(bool, utimensat, int dirfd, ProtString path, Time_UnixEpoch t, int flags);
-sdef(bool, chdir, ProtString path);
+sdef(bool, mkdir, RdString path, int flags);
+sdef(bool, unlink, RdString path);
+sdef(bool, rmdir, RdString path);
+sdef(ssize_t, readlink, RdString path, char *buf, size_t size);
+sdef(bool, setxattr, RdString path, RdString name, char *buf, size_t size, int flags);
+sdef(bool, fsetxattr, ssize_t fd, RdString name, char *buf, size_t size, int flags);
+sdef(ssize_t, getxattr, RdString path, RdString name, char *buf, size_t size);
+sdef(ssize_t, fgetxattr, ssize_t fd, RdString name, char *buf, size_t size);
+sdef(bool, symlink, RdString path1, RdString path2);
+sdef(bool, utimensat, int dirfd, RdString path, Time_UnixEpoch t, int flags);
+sdef(bool, chdir, RdString path);
 sdef(bool, fchdir, ssize_t fd);
-sdef(bool, lstat, ProtString path, Stat *attr);
-sdef(bool, stat, ProtString path, Stat *attr);
+sdef(bool, lstat, RdString path, Stat *attr);
+sdef(bool, stat, RdString path, Stat *attr);
 sdef(size_t, getcwd, char *buf, size_t size);
-sdef(bool, stat64, ProtString path, Stat64 *attr);
+sdef(bool, stat64, RdString path, Stat64 *attr);
 sdef(bool, fstat64, ssize_t fd, Stat64 *attr);
-sdef(bool, truncate64, ProtString path, u64 len);
+sdef(bool, truncate64, RdString path, u64 len);
 sdef(bool, ftruncate64, ssize_t fd, u64 len);
 sdef(bool, clock_gettime, int id, Time_UnixEpoch *res);
 sdef(ssize_t, epoll_create, size_t n);

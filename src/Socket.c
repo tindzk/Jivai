@@ -97,7 +97,7 @@ def(void, SetLinger) {
 	}
 }
 
-def(SocketConnection, Connect, ProtString hostname, unsigned short port) {
+def(SocketConnection, Connect, RdString hostname, unsigned short port) {
 	struct sockaddr_in addr;
 
 	addr.sin_family = PF_INET;

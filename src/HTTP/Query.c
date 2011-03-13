@@ -11,7 +11,7 @@ def(void, SetAutoResize, bool value) {
 	this->autoResize = value;
 }
 
-sdef(size_t, GetAbsoluteLength, ProtString s) {
+sdef(size_t, GetAbsoluteLength, RdString s) {
 	size_t cnt = 0;
 
 	for (size_t i = 0; i < s.len; i++) {
@@ -45,7 +45,7 @@ sdef(size_t, GetAbsoluteLength, ProtString s) {
  * http://ftp.ics.uci.edu/pub/ietf/html/rfc1866.txt
  */
 
-sdef(void, Unescape, ProtString src, char *dst, bool isFormUri) {
+sdef(void, Unescape, RdString src, char *dst, bool isFormUri) {
 	int high, low;
 
 	for (size_t i = 0; i < src.len; i++) {
@@ -73,7 +73,7 @@ sdef(void, Unescape, ProtString src, char *dst, bool isFormUri) {
 	}
 }
 
-static ProtString _reserved[] = {
+static RdString _reserved[] = {
 	['!']  = $("%21"),
 	['*']  = $("%2A"),
 	['\''] = $("%27"),
@@ -95,7 +95,7 @@ static ProtString _reserved[] = {
 	[' ']  = $("+")
 };
 
-sdef(String, Encode, ProtString param) {
+sdef(String, Encode, RdString param) {
 	String res = String_New(param.len * 1.3);
 
 	forward (i, param.len) {
@@ -111,13 +111,13 @@ sdef(String, Encode, ProtString param) {
 	return res;
 }
 
-def(void, Decode, ProtString s, bool isFormUri) {
+def(void, Decode, RdString s, bool isFormUri) {
 	String name  = String_New(0);
 	size_t start = 0;
 
 	forward (i, s.len) {
 		if (s.buf[i] == '=') {
-			ProtString tmp = String_Slice(s, start, i - start);
+			RdString tmp = String_Slice(s, start, i - start);
 
 			size_t len = scall(GetAbsoluteLength, tmp);
 			String_Align(&name, len);
@@ -133,7 +133,7 @@ def(void, Decode, ProtString s, bool isFormUri) {
 				}
 			}
 
-			ProtString escaped = String_Slice(s, start, i - start);
+			RdString escaped = String_Slice(s, start, i - start);
 
 			if (escaped.len == 0) {
 				goto next;
@@ -150,7 +150,7 @@ def(void, Decode, ProtString s, bool isFormUri) {
 				goto next;
 			}
 
-			String *value = callbackRet(this->onParameter, NULL, name.prot);
+			String *value = callbackRet(this->onParameter, NULL, name.rd);
 
 			if (value == NULL) {
 				/* Ignore parameter. */

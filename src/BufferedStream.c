@@ -87,7 +87,7 @@ def(size_t, Write, void *buf, size_t len) {
 		size_t bufLength = size - this->outbuf.len;
 
 		/* Jam-pack the buffer first. */
-		String_Append(&this->outbuf, (ProtString) {
+		String_Append(&this->outbuf, (RdString) {
 			.buf = buf,
 			.len = bufLength
 		});
@@ -106,7 +106,7 @@ def(size_t, Write, void *buf, size_t len) {
 				len - bufLength);
 		}
 	} else {
-		String_Append(&this->outbuf, (ProtString) {
+		String_Append(&this->outbuf, (RdString) {
 			.buf = buf,
 			.len = len
 		});
@@ -115,11 +115,11 @@ def(size_t, Write, void *buf, size_t len) {
 	return len;
 }
 
-def(ProtString, Flush) {
-	ProtString res = $("");
+def(RdString, Flush) {
+	RdString res = $("");
 
 	if (this->inbuf.len > 0) {
-		res = this->inbuf.prot;
+		res = this->inbuf.rd;
 		this->inbuf.len = 0;
 	}
 

@@ -81,7 +81,7 @@ sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *uconte
 #endif
 
 #if Exception_SaveOrigin
-	Exception_SetOrigin($(__func__));
+	Exception_SetOrigin($$(__func__));
 #endif
 
 	Exception_Raise(code);

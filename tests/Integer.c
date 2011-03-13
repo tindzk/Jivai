@@ -173,21 +173,21 @@ tsCase(Acute, "Parsing Int64") {
 
 tsCase(Acute, "Int32 conversion") {
 	String s = Int32_ToString(-123456789);
-	Assert($("Negative numbers"), String_Equals(s.prot, $("-123456789")));
+	Assert($("Negative numbers"), String_Equals(s.rd, $("-123456789")));
 	String_Destroy(&s);
 
 	s = Int32_ToString(123456789);
-	Assert($("Positive numbers"), String_Equals(s.prot, $("123456789")));
+	Assert($("Positive numbers"), String_Equals(s.rd, $("123456789")));
 	String_Destroy(&s);
 }
 
 tsCase(Acute, "Int64 conversion") {
 	String s = Int64_ToString(-12345678987654321);
-	Assert($("Negative numbers"), String_Equals(s.prot, $("-12345678987654321")));
+	Assert($("Negative numbers"), String_Equals(s.rd, $("-12345678987654321")));
 	String_Destroy(&s);
 
 	s = Int64_ToString(12345678987654321);
-	Assert($("Positive numbers"), String_Equals(s.prot, $("12345678987654321")));
+	Assert($("Positive numbers"), String_Equals(s.rd, $("12345678987654321")));
 	String_Destroy(&s);
 }
 

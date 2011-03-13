@@ -23,7 +23,7 @@ class {
 		union {
 			struct {
 				size_t offset;
-				ProtString s;
+				RdString s;
 				ref(OnDone) onDone;
 			} buffer;
 
@@ -38,7 +38,7 @@ class {
 };
 
 rsdef(self, New, SocketConnection *conn);
-def(void, Write, ProtString s, ref(OnDone) onDone);
+def(void, Write, RdString s, ref(OnDone) onDone);
 def(void, SendFile, File file, u64 length, ref(OnDone) onDone);
 def(void, Continue);
 def(void, Flush);

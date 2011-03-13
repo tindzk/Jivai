@@ -38,31 +38,31 @@
 // @exc StatFailed
 // @exc TruncatingFailed
 
-overload sdef(bool, Exists, ProtString path, bool follow);
+overload sdef(bool, Exists, RdString path, bool follow);
 sdef(String, GetCwd);
-sdef(Stat64, GetStat, ProtString path);
-sdef(u64, GetSize, ProtString path);
-overload sdef(bool, IsDirectory, ProtString path);
-overload sdef(void, Truncate, ProtString path, u64 length);
-sdef(ProtString, GetExtension, ProtString path);
-overload sdef(ProtString, GetFilename, ProtString path, bool verify);
-overload sdef(ProtString, GetDirectory, ProtString path, bool verify);
-sdef(String, Resolve, ProtString path);
-overload sdef(void, Create, ProtString path, int mode, bool recursive);
-sdef(void, Delete, ProtString path);
-sdef(void, DeleteDirectory, ProtString path);
-sdef(void, ReadLink, ProtString path, String *out);
-sdef(void, Symlink, ProtString path1, ProtString path2);
-sdef(void, SetXattr, ProtString path, ProtString name, ProtString value);
-overload sdef(String, GetXattr, ProtString path, ProtString name);
-overload sdef(void, GetXattr, ProtString path, ProtString name, String *value);
-overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool followSymlink);
+sdef(Stat64, GetStat, RdString path);
+sdef(u64, GetSize, RdString path);
+overload sdef(bool, IsDirectory, RdString path);
+overload sdef(void, Truncate, RdString path, u64 length);
+sdef(RdString, GetExtension, RdString path);
+overload sdef(RdString, GetFilename, RdString path, bool verify);
+overload sdef(RdString, GetDirectory, RdString path, bool verify);
+sdef(String, Resolve, RdString path);
+overload sdef(void, Create, RdString path, int mode, bool recursive);
+sdef(void, Delete, RdString path);
+sdef(void, DeleteDirectory, RdString path);
+sdef(void, ReadLink, RdString path, String *out);
+sdef(void, Symlink, RdString path1, RdString path2);
+sdef(void, SetXattr, RdString path, RdString name, RdString value);
+overload sdef(String, GetXattr, RdString path, RdString name);
+overload sdef(void, GetXattr, RdString path, RdString name, String *value);
+overload sdef(void, SetTime, RdString path, time_t timestamp, long nano, bool followSymlink);
 
-static inline overload sdef(bool, Exists, ProtString path) {
+static inline overload sdef(bool, Exists, RdString path) {
 	return scall(Exists, path, false);
 }
 
-static inline overload sdef(bool, IsFile, ProtString path) {
+static inline overload sdef(bool, IsFile, RdString path) {
 	return scall(GetStat, path).mode & FileMode_Regular;
 }
 
@@ -74,19 +74,19 @@ static inline overload sdef(bool, IsDirectory, Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 
-static inline overload sdef(void, Truncate, ProtString path) {
+static inline overload sdef(void, Truncate, RdString path) {
 	scall(Truncate, path, 0);
 }
 
-static inline overload sdef(ProtString, GetFilename, ProtString path) {
+static inline overload sdef(RdString, GetFilename, RdString path) {
 	return scall(GetFilename, path, true);
 }
 
-static inline overload sdef(ProtString, GetDirectory, ProtString path) {
+static inline overload sdef(RdString, GetDirectory, RdString path) {
 	return scall(GetDirectory, path, true);
 }
 
-static inline overload sdef(void, Create, ProtString path, bool recursive) {
+static inline overload sdef(void, Create, RdString path, bool recursive) {
 	scall(Create, path,
 		Permission_OwnerRead    |
 		Permission_OwnerWrite   |
@@ -98,19 +98,19 @@ static inline overload sdef(void, Create, ProtString path, bool recursive) {
 		Permission_OthersExecute, recursive);
 }
 
-static inline overload sdef(void, Create, ProtString path, int mode) {
+static inline overload sdef(void, Create, RdString path, int mode) {
 	scall(Create, path, mode, false);
 }
 
-static inline overload sdef(void, Create, ProtString path) {
+static inline overload sdef(void, Create, RdString path) {
 	scall(Create, path, false);
 }
 
-static inline overload sdef(void, SetTime, ProtString path, time_t timestamp, bool followSymlink) {
+static inline overload sdef(void, SetTime, RdString path, time_t timestamp, bool followSymlink) {
 	scall(SetTime, path, timestamp, 0, followSymlink);
 }
 
-static inline overload sdef(void, SetTime, ProtString path, time_t timestamp) {
+static inline overload sdef(void, SetTime, RdString path, time_t timestamp) {
 	scall(SetTime, path, timestamp, 0, false);
 }
 

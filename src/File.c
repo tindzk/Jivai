@@ -27,7 +27,7 @@ self* ref(StdIn)  = &stdIn;
 self* ref(StdOut) = &stdOut;
 self* ref(StdErr) = &stdErr;
 
-def(void, Open, ProtString path, int mode) {
+def(void, Open, RdString path, int mode) {
 	errno = 0;
 
 	if ((this->fd = Kernel_open(path, mode, 0666)) == -1) {
@@ -67,13 +67,13 @@ def(void, Close) {
 	Kernel_close(this->fd);
 }
 
-def(void, SetXattr, ProtString name, ProtString value) {
+def(void, SetXattr, RdString name, RdString value) {
 	if (!Kernel_fsetxattr(this->fd, name, value.buf, value.len, 0)) {
 		throw(SettingAttributeFailed);
 	}
 }
 
-overload def(String, GetXattr, ProtString name) {
+overload def(String, GetXattr, RdString name) {
 	errno = 0;
 
 	ssize_t size = Kernel_fgetxattr(this->fd, name, NULL, 0);
@@ -97,7 +97,7 @@ overload def(String, GetXattr, ProtString name) {
 	return res;
 }
 
-overload def(void, GetXattr, ProtString name, String *value) {
+overload def(void, GetXattr, RdString name, String *value) {
 	errno = 0;
 
 	ssize_t size = Kernel_fgetxattr(this->fd, name, value->buf, String_GetSize(*value));
@@ -231,7 +231,7 @@ def(u64, Tell) {
 	return call(Seek, 0L, ref(SeekType_Cur));
 }
 
-sdef(void, GetContents, ProtString path, String *res) {
+sdef(void, GetContents, RdString path, String *res) {
 	File file;
 	scall(Open, &file, path, FileStatus_ReadOnly);
 

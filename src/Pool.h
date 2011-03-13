@@ -40,8 +40,8 @@ class {
 };
 
 rsdef(self, New);
-overload rdef(ref(Session) *, CreateSession, ProtString name, ref(Session) *parent);
-overload rdef(ref(Session) *, CreateSession, ProtString name);
+overload rdef(ref(Session) *, CreateSession, RdString name, ref(Session) *parent);
+overload rdef(ref(Session) *, CreateSession, RdString name);
 rdef(size_t, Dispose, ref(Session) *sess);
 overload rdef(ref(Session) *, SetSession, ref(Session) *sess, bool isDefault);
 overload rdef(ref(Session) *, SetSession, ref(Session) *sess);
@@ -52,7 +52,7 @@ __malloc rdef(void *, Realloc, void *addr, size_t size);
 def(size_t, Free, void *addr);
 rdef(size_t, GetSize, void *addr);
 __malloc rdef(void *, Clone, void *addr);
-def(void, Bundle, ProtString name);
+def(void, Bundle, RdString name);
 def(void, Commit);
 
 SingletonPrototype(self);

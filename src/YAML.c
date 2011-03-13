@@ -107,12 +107,12 @@ def(void *, Store, size_t depth, ref(NodeType) type, size_t size) {
 	return &node->data;
 }
 
-static def(void, AddSection, size_t depth, ProtString s) {
+static def(void, AddSection, size_t depth, RdString s) {
 	ref(Section) *section = call(Store, depth, ref(NodeType_Section), sizeof(ref(Section)));
 	section->name = String_Clone(s);
 }
 
-static def(void, AddItem, size_t depth, ProtString key, ProtString value) {
+static def(void, AddItem, size_t depth, RdString key, RdString value) {
 	ref(Item) *item = call(Store, depth, ref(NodeType_Item), sizeof(ref(Item)));
 
 	item->key   = String_Clone(key);
@@ -167,7 +167,7 @@ def(void, Parse) {
 				} else if (buf.len > 0 && buf.buf[buf.len - 1] == ':') {
 					if (c == '\n') {
 						buf.len--; /* Remove the colon. */
-						call(AddSection, whitespaces / this->depthWidth, buf.prot);
+						call(AddSection, whitespaces / this->depthWidth, buf.rd);
 
 						buf.len = 0;
 						whitespaces = 0;
@@ -178,7 +178,7 @@ def(void, Parse) {
 						prevState = ref(State_Key);
 					} else if (c != ' ' && c != '\t') {
 						buf.len--; /* Remove the colon. */
-						String_Copy(&key, buf.prot);
+						String_Copy(&key, buf.rd);
 
 						buf.len = 0;
 						state = ref(State_Value);
@@ -187,7 +187,7 @@ def(void, Parse) {
 					}
 				} else if (c == '\n') {
 					if (buf.len > 0) {
-						call(AddItem, whitespaces / this->depthWidth, $(""), buf.prot);
+						call(AddItem, whitespaces / this->depthWidth, $(""), buf.rd);
 						buf.len = 0;
 					}
 
@@ -204,7 +204,7 @@ def(void, Parse) {
 					state = ref(State_Comment);
 					prevState = ref(State_Value);
 				} else if (c == '\n') {
-					call(AddItem, whitespaces / this->depthWidth, key.prot, String_Trim(buf.prot));
+					call(AddItem, whitespaces / this->depthWidth, key.rd, String_Trim(buf.rd));
 
 					buf.len = 0;
 					whitespaces = 0;

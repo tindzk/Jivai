@@ -72,37 +72,37 @@ def(String, GetString) {
 	String strCode = Integer_ToString(st.code);
 	String_Append(&s, FmtString($("% % %\r\n"),
 		HTTP_Version_ToString(this->version),
-		strCode.prot, st.msg));
+		strCode.rd, st.msg));
 	String_Destroy(&strCode);
 
 	if (this->contentLength != -1) {
 		String strValue = Integer_ToString(this->contentLength);
 		String_Append(&s, FmtString($("Content-Length: %\r\n"),
-			strValue.prot));
+			strValue.rd));
 		String_Destroy(&strValue);
 	}
 
 	if (this->contentType.len != 0) {
 		String_Append(&s, FmtString($("Content-Type: %\r\n"),
-			this->contentType.prot));
+			this->contentType.rd));
 	}
 
 	if (this->lastModified.date.day != 0) {
 		String tmp = Date_RFC822_ToString(this->lastModified);
-		String_Append(&s, FmtString($("Last-Modified: %\r\n"), tmp.prot));
+		String_Append(&s, FmtString($("Last-Modified: %\r\n"), tmp.rd));
 		String_Destroy(&tmp);
 	}
 
 	if (this->location.len > 0) {
 		String_Append(&s, FmtString($("Location: %\r\n"),
-			this->location.prot));
+			this->location.rd));
 	}
 
 	if (this->cookieName.len > 0) {
 		String_Append(&s, FmtString(
 			$("Set-Cookie: %=%; path=/\r\n"),
-			this->cookieName.prot,
-			this->cookieValue.prot));
+			this->cookieName.rd,
+			this->cookieValue.rd));
 	}
 
 	String_Append(&s, this->persistent

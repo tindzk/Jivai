@@ -8,16 +8,16 @@ int main(int argc, char *argv[], char *envp[]) {
 		envItems++;
 	}
 
-	ProtString       base = String_FromNul(argv[0]);
-	ProtStringArray *env  = ProtStringArray_New(envItems);
-	ProtStringArray *args = ProtStringArray_New(argc - 1);
+	RdString      base  = String_FromNul(argv[0]);
+	RdStringArray *env  = RdStringArray_New(envItems);
+	RdStringArray *args = RdStringArray_New(argc - 1);
 
 	for (int i = 1; i < argc; i++) {
-		ProtStringArray_Push(&args, String_FromNul(argv[i]));
+		RdStringArray_Push(&args, String_FromNul(argv[i]));
 	}
 
 	forward (i, envItems) {
-		ProtStringArray_Push(&env, String_FromNul(envp[i]));
+		RdStringArray_Push(&env, String_FromNul(envp[i]));
 	}
 
 	int ret = ExitStatus_Success;
@@ -39,8 +39,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
 		ret = ExitStatus_Failure;
 	} finally {
-		ProtStringArray_Free(args);
-		ProtStringArray_Free(env);
+		RdStringArray_Free(args);
+		RdStringArray_Free(env);
 	} tryEnd;
 
 	return ret;

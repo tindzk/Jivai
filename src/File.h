@@ -43,11 +43,11 @@ extern self* ref(StdIn);
 extern self* ref(StdOut);
 extern self* ref(StdErr);
 
-def(void, Open, ProtString path, int mode);
+def(void, Open, RdString path, int mode);
 def(void, Close);
-def(void, SetXattr, ProtString name, ProtString value);
-overload def(String, GetXattr, ProtString name);
-overload def(void, GetXattr, ProtString name, String *value);
+def(void, SetXattr, RdString name, RdString value);
+overload def(String, GetXattr, RdString name);
+overload def(void, GetXattr, RdString name, String *value);
 overload def(void, Truncate, u64 length);
 overload def(void, Truncate);
 def(Stat64, GetStat);
@@ -57,9 +57,9 @@ overload def(void, Read, String *res);
 overload def(size_t, Write, void *buf, size_t len);
 def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
-sdef(void, GetContents, ProtString path, String *res);
+sdef(void, GetContents, RdString path, String *res);
 
-static inline overload def(size_t, Write, ProtString s) {
+static inline overload def(size_t, Write, RdString s) {
 	return call(Write, s.buf, s.len);
 }
 

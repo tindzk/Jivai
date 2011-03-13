@@ -23,7 +23,7 @@ sdef(String, Format, int code) {
 
 sdef(void, Print, int code) {
 	String msg = scall(Format, code);
-	File_Write(File_StdErr, msg.prot);
+	File_Write(File_StdErr, msg.rd);
 	String_Destroy(&msg);
 
 	File_Write(File_StdErr, $("\n"));

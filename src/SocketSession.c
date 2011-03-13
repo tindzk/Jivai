@@ -9,7 +9,7 @@ rsdef(self, New, SocketConnection *conn) {
 	};
 }
 
-def(void, Write, ProtString s, ref(OnDone) onDone) {
+def(void, Write, RdString s, ref(OnDone) onDone) {
 	if (!call(IsIdle)) {
 		throw(NotIdle);
 	}

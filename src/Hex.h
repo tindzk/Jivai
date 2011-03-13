@@ -4,6 +4,6 @@
 
 sdef(String, ToString, u64 hex);
 overload sdef(s8, ToInteger, char c);
-overload sdef(s64, ToInteger, ProtString s);
+overload sdef(s64, ToInteger, RdString s);
 
 #undef self

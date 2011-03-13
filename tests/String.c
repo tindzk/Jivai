@@ -50,7 +50,7 @@ tsCase(Acute, "Destruction") {
 
 tsCase(Acute, "Appending (2)") {
 	String s = String_New(0);
-	ProtString append = $("Test.");
+	RdString append = $("Test.");
 
 	size_t caught = false;
 
@@ -71,7 +71,7 @@ tsCase(Acute, "Appending (3)") {
 	String_Append(&s, $("Hello World."));
 
 	Assert($("Not empty"), s.len > 0);
-	Assert($("Equals"), String_Equals(s.prot, $("Hello World.")));
+	Assert($("Equals"), String_Equals(s.rd, $("Hello World.")));
 
 	String_Destroy(&s);
 }
@@ -81,7 +81,7 @@ tsCase(Acute, "Appending (4)") {
 	String_Append(&s, $("Hello World."));
 
 	Assert($("Not empty"), s.len > 0);
-	Assert($("Equals"), String_Equals(s.prot, $("Hello World.")));
+	Assert($("Equals"), String_Equals(s.rd, $("Hello World.")));
 
 	String_Destroy(&s);
 }
@@ -105,7 +105,7 @@ tsCase(Acute, "Resizing") {
 }
 
 tsCase(Acute, "Cloning") {
-	ProtString s = $("Hello World.");
+	RdString s = $("Hello World.");
 
 	String cloned = String_Clone(s);
 
@@ -124,7 +124,7 @@ tsCase(Acute, "Copying") {
 	Assert($("Empty buffer"),
 		s.buf == NULL);
 
-	ProtString copy = $("Hello World.");
+	RdString copy = $("Hello World.");
 
 	/* Multiple calls to check whether there are any leaks. */
 	String_Copy(&s, copy);
@@ -147,7 +147,7 @@ tsCase(Acute, "Copying") {
 	Assert($("Heap-allocated"),
 		!Memory_IsRoData(s.buf));
 
-	ProtString cut = String_Slice(s.prot, 1, 5);
+	RdString cut = String_Slice(s.rd, 1, 5);
 
 	String dest = String_New(0);
 	String_Copy(&dest, cut);
@@ -162,7 +162,7 @@ tsCase(Acute, "Copying") {
 tsCase(Acute, "Copying") {
 	String s = String_New(1);
 
-	ProtString copy = $("Hello World.");
+	RdString copy = $("Hello World.");
 
 	String_Copy(&s, copy);
 	String_Copy(&s, copy);
@@ -184,9 +184,9 @@ tsCase(Acute, "Copying") {
 	String copy = String_New(1);
 	String_Append(&copy, $("Hello World."));
 
-	String_Copy(&s, copy.prot);
-	String_Copy(&s, copy.prot);
-	String_Copy(&s, copy.prot);
+	String_Copy(&s, copy.rd);
+	String_Copy(&s, copy.rd);
+	String_Copy(&s, copy.rd);
 
 	Assert($("Does not point to copy"),
 		s.buf != copy.buf);
@@ -219,11 +219,11 @@ tsCase(Acute, "Formatted appending") {
 tsCase(Acute, "Format") {
 	String s = String_Format($("Hel!%lo %."), $("World"));
 
-	ProtString expected = $("Hel%lo World.");
+	RdString expected = $("Hel%lo World.");
 
 	/* Make sure String_Format() doesn't allocate too much. */
 	Assert($("Size"),   String_GetSize(s) == expected.len);
-	Assert($("Equals"), String_Equals(s.prot, expected));
+	Assert($("Equals"), String_Equals(s.rd, expected));
 
 	String_Destroy(&s);
 }
@@ -234,7 +234,7 @@ tsCase(Acute, "Appending") {
 	String_Copy(&s, $("Hello "));
 	String_Append(&s, $("World."));
 
-	Assert($("Equals"), String_Equals(s.prot, $("Hello World.")));
+	Assert($("Equals"), String_Equals(s.rd, $("Hello World.")));
 
 	String_Destroy(&s);
 }
@@ -268,11 +268,11 @@ tsCase(Acute, "Double frees") {
 
 /* Append to sliced. */
 tsCase(Acute, "Slicing") {
-	ProtString s = $("Hello World.");
+	RdString s = $("Hello World.");
 
 	String sliced = String_Clone(String_Slice(s, 2, 4));
 	String_Append(&sliced, $("Hi."));
-	Assert($("Equals"), String_Equals(sliced.prot, $("llo Hi.")));
+	Assert($("Equals"), String_Equals(sliced.rd, $("llo Hi.")));
 	String_Destroy(&sliced);
 }
 
@@ -281,11 +281,11 @@ tsCase(Acute, "Split") {
 	String_Append(&s, $("Hello World."));
 	String_Append(&s, $("Hello World."));
 
-	ProtStringArray *parts = String_Split(s.prot, ' ');
+	RdStringArray *parts = String_Split(s.rd, ' ');
 
 	String_Destroy(&s);
 
-	ProtStringArray_Free(parts);
+	RdStringArray_Free(parts);
 }
 
 tsCase(Acute, "Split") {
@@ -293,49 +293,49 @@ tsCase(Acute, "Split") {
 	String_Append(&s, $("Hello World."));
 	String_Append(&s, $("Hello World."));
 
-	ProtString part = $("");
-	Assert($("Return value"), String_Split(s.prot, ' ', &part));
+	RdString part = $("");
+	Assert($("Return value"), String_Split(s.rd, ' ', &part));
 	Assert($("off=0 len=5"), part.buf == s.buf && part.len == 5);
 
-	Assert($("Return value"), String_Split(s.prot, ' ', &part));
+	Assert($("Return value"), String_Split(s.rd, ' ', &part));
 	Assert($("off=6 len=11"), part.buf == s.buf + 6 && part.len == 11);
 
-	Assert($("Return value"), String_Split(s.prot, ' ', &part));
+	Assert($("Return value"), String_Split(s.rd, ' ', &part));
 	Assert($("off=18 len=6"), part.buf == s.buf + 18 && part.len == 6);
 
 	String_Destroy(&s);
 }
 
 tsCase(Acute, "Split with empty string") {
-	ProtString part = $("");
+	RdString part = $("");
 	Assert($("Return value"), String_Split($(""), ' ', &part) == false);
 }
 
 tsCase(Acute, "Joining") {
-	ProtString orig  = $("");
-	ProtString orig2 = $(" ");
-	ProtString orig3 = $("abc ab a");
-	ProtString orig4 = $("abc ab a ");
+	RdString orig  = $("");
+	RdString orig2 = $(" ");
+	RdString orig3 = $("abc ab a");
+	RdString orig4 = $("abc ab a ");
 
-	ProtStringArray *items  = String_Split(orig,  ' ');
-	ProtStringArray *items2 = String_Split(orig2, ' ');
-	ProtStringArray *items3 = String_Split(orig3, ' ');
-	ProtStringArray *items4 = String_Split(orig4, ' ');
+	RdStringArray *items  = String_Split(orig,  ' ');
+	RdStringArray *items2 = String_Split(orig2, ' ');
+	RdStringArray *items3 = String_Split(orig3, ' ');
+	RdStringArray *items4 = String_Split(orig4, ' ');
 
-	String joined  = ProtStringArray_Join(items,  $(" "));
-	String joined2 = ProtStringArray_Join(items2, $(" "));
-	String joined3 = ProtStringArray_Join(items3, $(" "));
-	String joined4 = ProtStringArray_Join(items4, $(" "));
+	String joined  = RdStringArray_Join(items,  $(" "));
+	String joined2 = RdStringArray_Join(items2, $(" "));
+	String joined3 = RdStringArray_Join(items3, $(" "));
+	String joined4 = RdStringArray_Join(items4, $(" "));
 
-	Assert($("Empty"),         String_Equals(orig,  joined.prot));
-	Assert($("Non-empty"),     String_Equals(orig2, joined2.prot));
-	Assert($("Non-empty (2)"), String_Equals(orig3, joined3.prot));
-	Assert($("Non-empty (3)"), String_Equals(orig4, joined4.prot));
+	Assert($("Empty"),         String_Equals(orig,  joined.rd));
+	Assert($("Non-empty"),     String_Equals(orig2, joined2.rd));
+	Assert($("Non-empty (2)"), String_Equals(orig3, joined3.rd));
+	Assert($("Non-empty (3)"), String_Equals(orig4, joined4.rd));
 
-	ProtStringArray_Free(items4);
-	ProtStringArray_Free(items3);
-	ProtStringArray_Free(items2);
-	ProtStringArray_Free(items);
+	RdStringArray_Free(items4);
+	RdStringArray_Free(items3);
+	RdStringArray_Free(items2);
+	RdStringArray_Free(items);
 
 	String_Destroy(&joined4);
 	String_Destroy(&joined3);

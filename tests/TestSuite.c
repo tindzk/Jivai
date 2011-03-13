@@ -27,7 +27,7 @@ def(void, AddSuite, ITestSuiteInterface *suite) {
 	TestSuites_Push(&this->suites, suite);
 }
 
-def(void, Assert, ProtString descr, bool succeeded) {
+def(void, Assert, RdString descr, bool succeeded) {
 	if (succeeded) {
 		this->success++;
 	} else {
@@ -168,9 +168,9 @@ def(bool, Run) {
 }
 
 bool Main (
-	__unused ProtString base,
-	__unused ProtStringArray *args,
-	__unused ProtStringArray *env
+	__unused RdString base,
+	__unused RdStringArray *args,
+	__unused RdStringArray *env
 ) {
 	return TestSuite_Run(TestSuite_GetInstance());
 }

@@ -162,7 +162,7 @@ def(void, Restore, ref(Style) style) {
 	}
 }
 
-sdef(size_t, ResolveColorName, ProtString name, bool bg) {
+sdef(size_t, ResolveColorName, RdString name, bool bg) {
 	int color = 0;
 
 	if (String_Equals(name, $("black"))) {
@@ -205,7 +205,7 @@ sdef(ref(Size), GetSize) {
 	return res;
 }
 
-overload def(void, Print, int color, int font, ProtString s) {
+overload def(void, Print, int color, int font, RdString s) {
 	/* Setup the stream with the given color if possible. */
 	if (this->isVT100) {
 		call(SetVT100Font,  font);
@@ -221,7 +221,7 @@ overload def(void, Print, int color, int font, ProtString s) {
 	}
 }
 
-overload def(void, Print, ProtString s) {
+overload def(void, Print, RdString s) {
 	File_Write(this->out, s);
 }
 
@@ -253,7 +253,7 @@ def(void, PrintFmt, FmtString s) {
 	}
 }
 
-def(void, FmtArgPrint, ProtString fmt, VarArg *argptr) {
+def(void, FmtArgPrint, RdString fmt, VarArg *argptr) {
 	forward (i, fmt.len) {
 		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
 			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
@@ -263,14 +263,14 @@ def(void, FmtArgPrint, ProtString fmt, VarArg *argptr) {
 		} else if (fmt.buf[i] == '$') {
 			call(PrintFmt, VarArg_Get(*argptr, FmtString));
 		} else if (fmt.buf[i] == '%') {
-			File_Write(this->out, VarArg_Get(*argptr, ProtString));
+			File_Write(this->out, VarArg_Get(*argptr, RdString));
 		} else {
 			File_Write(this->out, fmt.buf[i]);
 		}
 	}
 }
 
-def(void, FmtPrint, ProtString fmt, ...) {
+def(void, FmtPrint, RdString fmt, ...) {
 	VarArg argptr;
 	VarArg_Start(argptr, fmt);
 	call(FmtArgPrint, fmt, &argptr);
@@ -284,7 +284,7 @@ def(void, DeleteLine, size_t n) {
 		String s = Integer_ToString(n);
 
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, s.prot);
+		File_Write(this->out, s.rd);
 		File_Write(this->out, $("M"));
 
 		String_Destroy(&s);
@@ -306,7 +306,7 @@ def(void, MoveUp, size_t n) {
 		String s = Integer_ToString(n);
 
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, s.prot);
+		File_Write(this->out, s.rd);
 		File_Write(this->out, $("A"));
 
 		String_Destroy(&s);
@@ -320,7 +320,7 @@ def(void, MoveDown, size_t n) {
 		String s = Integer_ToString(n);
 
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, s.prot);
+		File_Write(this->out, s.rd);
 		File_Write(this->out, $("B"));
 
 		String_Destroy(&s);
@@ -334,7 +334,7 @@ def(void, MoveLeft, size_t n) {
 		String s = Integer_ToString(n);
 
 		File_Write(this->out, $("\33["));
-		File_Write(this->out, s.prot);
+		File_Write(this->out, s.rd);
 		File_Write(this->out, $("D"));
 
 		String_Destroy(&s);
@@ -349,7 +349,7 @@ def(void, MoveRight, size_t n) {
 			String s = Integer_ToString(n);
 
 			File_Write(this->out, $("\33["));
-			File_Write(this->out, s.prot);
+			File_Write(this->out, s.rd);
 			File_Write(this->out, $("C"));
 
 			String_Destroy(&s);

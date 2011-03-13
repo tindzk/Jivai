@@ -94,7 +94,7 @@ def(void, Align, size_t length) {
 	}
 }
 
-sdef(self, Clone, ProtString s) {
+sdef(self, Clone, RdString s) {
 	self out = { .len = s.len };
 
 	if (s.len > 0) {
@@ -105,7 +105,7 @@ sdef(self, Clone, ProtString s) {
 	return out;
 }
 
-sdef(char, CharAt, ProtString s, ssize_t offset) {
+sdef(char, CharAt, RdString s, ssize_t offset) {
 	if (offset < 0) {
 		offset += s.len;
 	}
@@ -117,7 +117,7 @@ sdef(char, CharAt, ProtString s, ssize_t offset) {
 	return s.buf[offset];
 }
 
-overload sdef(ProtString, Slice, ProtString s, ssize_t offset, ssize_t length) {
+overload sdef(RdString, Slice, RdString s, ssize_t offset, ssize_t length) {
 	size_t right;
 
 	if (offset < 0) {
@@ -137,7 +137,7 @@ overload sdef(ProtString, Slice, ProtString s, ssize_t offset, ssize_t length) {
 		throw(BufferOverflow);
 	}
 
-	return (ProtString) {
+	return (RdString) {
 		.len = right - offset,
 		.buf = s.buf + offset,
 		.ofs = offset
@@ -249,17 +249,17 @@ def(void, Delete, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-overload sdef(void, Prepend, self *dest, ProtString s) {
-	self tmp = scall(Concat, s, dest->prot);
-	scall(Copy, dest, tmp.prot);
+overload sdef(void, Prepend, self *dest, RdString s) {
+	self tmp = scall(Concat, s, dest->rd);
+	scall(Copy, dest, tmp.rd);
 	scall(Destroy, &tmp);
 }
 
 overload sdef(void, Prepend, self *dest, char c) {
 	self tmp = String_New(dest->len + 1);
 	scall(Append, &tmp, c);
-	scall(Append, &tmp, dest->prot);
-	scall(Copy, dest, tmp.prot);
+	scall(Append, &tmp, dest->rd);
+	scall(Copy, dest, tmp.rd);
 	scall(Destroy, &tmp);
 }
 
@@ -270,7 +270,7 @@ def(void, Assign, String src) {
 	this->len = src.len;
 }
 
-def(void, Copy, ProtString src) {
+def(void, Copy, RdString src) {
 	if (src.len > 0) {
 		call(Align, src.len);
 		Memory_Move(this->buf, src.buf, src.len);
@@ -279,7 +279,7 @@ def(void, Copy, ProtString src) {
 	this->len = src.len;
 }
 
-overload sdef(void, Append, self *dest, ProtString s) {
+overload sdef(void, Append, self *dest, RdString s) {
 	if (s.len == 0) {
 		return;
 	}
@@ -303,7 +303,7 @@ overload sdef(void, Append, self *dest, FmtString s) {
 	s.val++;
 #endif
 
-	ProtString *val = s.val;
+	RdString *val = s.val;
 
 	size_t len = 0;
 
@@ -344,7 +344,7 @@ overload sdef(void, Append, self *dest, FmtString s) {
 	}
 }
 
-sdef(bool, RangeEquals, ProtString s, ssize_t offset, ProtString needle, ssize_t needleOffset) {
+sdef(bool, RangeEquals, RdString s, ssize_t offset, RdString needle, ssize_t needleOffset) {
 	if (needle.len == 0) {
 		return true;
 	}
@@ -387,7 +387,7 @@ def(void, ToUpper) {
 	}
 }
 
-overload sdef(bool, Split, ProtString s, char c, ProtString *res) {
+overload sdef(bool, Split, RdString s, char c, RdString *res) {
 	size_t offset = (res->buf != NULL)
 		? res->buf - s.buf + res->len + 1
 		: 0;
@@ -409,7 +409,7 @@ overload sdef(bool, Split, ProtString s, char c, ProtString *res) {
 	return true;
 }
 
-overload sdef(ProtStringArray *, Split, ProtString s, char c) {
+overload sdef(RdStringArray *, Split, RdString s, char c) {
 	size_t chunks = 1;
 	forward (i, s.len) {
 		if (s.buf[i] == c) {
@@ -417,9 +417,9 @@ overload sdef(ProtStringArray *, Split, ProtString s, char c) {
 		}
 	}
 
-	ProtStringArray *res = ProtStringArray_New(chunks);
+	RdStringArray *res = RdStringArray_New(chunks);
 
-	ProtString elem = $("");
+	RdString elem = $("");
 	while (String_Split(s, c, &elem)) {
 		res->buf[res->len] = elem;
 		res->len++;
@@ -428,7 +428,7 @@ overload sdef(ProtStringArray *, Split, ProtString s, char c) {
 	return res;
 }
 
-overload sdef(ssize_t, Find, ProtString s, ssize_t offset, ssize_t length, char c) {
+overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
 	if (offset < 0) {
@@ -450,7 +450,7 @@ overload sdef(ssize_t, Find, ProtString s, ssize_t offset, ssize_t length, char 
 	return ref(NotFound);
 }
 
-overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, char c) {
+overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, char c) {
 	if (s.len == 0) {
 		return ref(NotFound);
 	}
@@ -472,7 +472,7 @@ overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, char c) {
 	return ref(NotFound);
 }
 
-overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, ProtString needle) {
+overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, RdString needle) {
 	if (s.len == 0) {
 		return ref(NotFound);
 	}
@@ -505,7 +505,7 @@ overload sdef(ssize_t, ReverseFind, ProtString s, ssize_t offset, ProtString nee
 	return ref(NotFound);
 }
 
-overload sdef(ssize_t, Find, ProtString s, ssize_t offset, ssize_t length, ProtString needle) {
+overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdString needle) {
 	size_t right;
 
 	if (offset < 0) {
@@ -544,7 +544,7 @@ overload sdef(ssize_t, Find, ProtString s, ssize_t offset, ssize_t length, ProtS
 	return ref(NotFound);
 }
 
-overload sdef(ProtString, Trim, ProtString s, short type) {
+overload sdef(RdString, Trim, RdString s, short type) {
 	size_t i, lpos = 0;
 
 	if (BitMask_Has(type, ref(TrimLeft))) {
@@ -558,7 +558,7 @@ overload sdef(ProtString, Trim, ProtString s, short type) {
 	}
 
 	if (lpos == s.len) {
-		return (ProtString) { .buf = s.buf };
+		return (RdString) { .buf = s.buf };
 	}
 
 	size_t rpos = s.len;
@@ -576,7 +576,7 @@ overload sdef(ProtString, Trim, ProtString s, short type) {
 	return scall(Slice, s, lpos, rpos - lpos);
 }
 
-overload sdef(ssize_t, Between, ProtString s, ssize_t offset, ProtString left, ProtString right, bool leftAligned, ProtString *out) {
+overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdString right, bool leftAligned, RdString *out) {
 	ssize_t posLeft, posRight;
 
 	if (offset < 0) {
@@ -609,7 +609,7 @@ overload sdef(ssize_t, Between, ProtString s, ssize_t offset, ProtString left, P
 		}
 	}
 
-	*out = (ProtString) {
+	*out = (RdString) {
 		.buf = s.buf + posLeft,
 		.ofs = posLeft,
 		.len = posRight - posLeft
@@ -618,7 +618,7 @@ overload sdef(ssize_t, Between, ProtString s, ssize_t offset, ProtString left, P
 	return posRight + right.len;
 }
 
-sdef(ProtString, Cut, ProtString s, ProtString left, ProtString right) {
+sdef(RdString, Cut, RdString s, RdString left, RdString right) {
 	ssize_t posLeft = scall(Find, s, left);
 
 	if (posLeft == ref(NotFound)) {
@@ -634,59 +634,59 @@ sdef(ProtString, Cut, ProtString s, ProtString left, ProtString right) {
 	return scall(Slice, s, posLeft, posRight - posLeft);
 }
 
-def(bool, Filter, ProtString s1, ProtString s2) {
+def(bool, Filter, RdString s1, RdString s2) {
 	ssize_t left, right;
 
-	if ((left = scall(Find, this->prot, s1)) == ref(NotFound)) {
+	if ((left = scall(Find, this->rd, s1)) == ref(NotFound)) {
 		return false;
 	}
 
 	String out = String_New(0);
 
 	if (left > 0) {
-		out = String_Clone(String_Slice(this->prot, 0, left - 1));
+		out = String_Clone(String_Slice(this->rd, 0, left - 1));
 	}
 
 	left += s1.len;
 
-	if ((right = scall(Find, this->prot, left, s2)) == ref(NotFound)) {
+	if ((right = scall(Find, this->rd, left, s2)) == ref(NotFound)) {
 		return false;
 	}
 
-	scall(Append, &out, String_Slice(this->prot, left, right - left));
-	scall(Append, &out, String_Slice(this->prot, right + s2.len));
+	scall(Append, &out, String_Slice(this->rd, left, right - left));
+	scall(Append, &out, String_Slice(this->rd, right + s2.len));
 
-	scall(Copy, this, out.prot);
+	scall(Copy, this, out.rd);
 
 	scall(Destroy, &out);
 
 	return true;
 }
 
-def(bool, Outside, ProtString left, ProtString right) {
+def(bool, Outside, RdString left, RdString right) {
 	ssize_t posLeft, posRight;
 
-	if ((posLeft = scall(Find, this->prot, left)) == ref(NotFound)) {
+	if ((posLeft = scall(Find, this->rd, left)) == ref(NotFound)) {
 		return false;
 	}
 
-	if ((posRight = scall(Find, this->prot, posLeft + left.len, right)) == ref(NotFound)) {
+	if ((posRight = scall(Find, this->rd, posLeft + left.len, right)) == ref(NotFound)) {
 		return false;
 	}
 
 	self out = String_New(posLeft + this->len - posRight - right.len);
 
-	scall(Append, &out, String_Slice(this->prot, 0, posLeft));
-	scall(Append, &out, String_Slice(this->prot, posRight + right.len));
+	scall(Append, &out, String_Slice(this->rd, 0, posLeft));
+	scall(Append, &out, String_Slice(this->rd, posRight + right.len));
 
-	scall(Copy, this, out.prot);
+	scall(Copy, this, out.rd);
 
 	scall(Destroy, &out);
 
 	return true;
 }
 
-overload sdef(self, Concat, ProtString a, ProtString b) {
+overload sdef(self, Concat, RdString a, RdString b) {
 	self res = String_New(a.len + b.len);
 
 	if (a.len > 0) {
@@ -702,7 +702,7 @@ overload sdef(self, Concat, ProtString a, ProtString b) {
 	return res;
 }
 
-overload sdef(self, Concat, ProtString s, char c) {
+overload sdef(self, Concat, RdString s, char c) {
 	self res = String_New(s.len + 1);
 
 	if (s.len > 0) {
@@ -716,12 +716,12 @@ overload sdef(self, Concat, ProtString s, char c) {
 	return res;
 }
 
-overload sdef(bool, Replace, self *dest, ssize_t offset, ProtString needle, ProtString replacement) {
+overload sdef(bool, Replace, self *dest, ssize_t offset, RdString needle, RdString replacement) {
 	if (offset < 0) {
 		offset += dest->len;
 	}
 
-	ssize_t pos = scall(Find, dest->prot, offset, needle);
+	ssize_t pos = scall(Find, dest->rd, offset, needle);
 
 	if (pos == ref(NotFound)) {
 		return false;
@@ -735,18 +735,18 @@ overload sdef(bool, Replace, self *dest, ssize_t offset, ProtString needle, Prot
 
 	self out = String_New(len);
 
-	scall(Append, &out, String_Slice(dest->prot, 0, pos));
+	scall(Append, &out, String_Slice(dest->rd, 0, pos));
 	scall(Append, &out, replacement);
-	scall(Append, &out, String_Slice(dest->prot, pos + needle.len));
+	scall(Append, &out, String_Slice(dest->rd, pos + needle.len));
 
-	scall(Copy, dest, out.prot);
+	scall(Copy, dest, out.rd);
 
 	scall(Destroy, &out);
 
 	return true;
 }
 
-overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, ProtString needle, ProtString replacement) {
+overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdString replacement) {
 	if (offset < 0) {
 		offset += dest->len;
 	}
@@ -770,7 +770,7 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, ProtString needle, P
 			if (cnt == needle.len) {
 				size_t cur = i - needle.len + 1;
 
-				scall(Append, &out, String_Slice(dest->prot, lastPos, cur - lastPos));
+				scall(Append, &out, String_Slice(dest->rd, lastPos, cur - lastPos));
 				scall(Append, &out, replacement);
 
 				lastPos = i + 1;
@@ -784,9 +784,9 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, ProtString needle, P
 		}
 	}
 
-	scall(Append, &out, String_Slice(dest->prot, lastPos));
+	scall(Append, &out, String_Slice(dest->rd, lastPos));
 
-	scall(Copy, dest, out.prot);
+	scall(Copy, dest, out.rd);
 
 	scall(Destroy, &out);
 
@@ -817,7 +817,7 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, ProtString needle, P
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-sdef(short, CompareRight, ProtString a, ProtString b) {
+sdef(short, CompareRight, RdString a, RdString b) {
 	short bias = 0;
 
 	/* The longest run of digits wins.  That aside, the greatest
@@ -851,7 +851,7 @@ sdef(short, CompareRight, ProtString a, ProtString b) {
 	return bias;
 }
 
-sdef(short, CompareLeft, ProtString a, ProtString b) {
+sdef(short, CompareLeft, RdString a, RdString b) {
 	/* Compare two left-aligned numbers: the first to have a
 	 * different value wins.
 	 */
@@ -873,7 +873,7 @@ sdef(short, CompareLeft, ProtString a, ProtString b) {
 	return 0;
 }
 
-overload sdef(short, NaturalCompare, ProtString a, ProtString b, bool foldcase, bool skipSpaces, bool skipZeros) {
+overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros) {
 	size_t ai = 0;
 	size_t bi = 0;
 
@@ -895,8 +895,8 @@ overload sdef(short, NaturalCompare, ProtString a, ProtString b, bool foldcase, 
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
 			short result;
 
-			ProtString __a = scall(Slice, a, ai);
-			ProtString __b = scall(Slice, b, bi);
+			RdString __a = scall(Slice, a, ai);
+			RdString __b = scall(Slice, b, bi);
 
 			if (!skipZeros) {
 				/* Is fractional? */
@@ -945,9 +945,9 @@ overload sdef(short, NaturalCompare, ProtString a, ProtString b, bool foldcase, 
 
 #undef self
 
-#define self ProtStringArray
+#define self RdStringArray
 
-def(ssize_t, Find, ProtString needle) {
+def(ssize_t, Find, RdString needle) {
 	forward (i, this->len) {
 		if (String_Equals(this->buf[i], needle)) {
 			return i;
@@ -957,7 +957,7 @@ def(ssize_t, Find, ProtString needle) {
 	return -1;
 }
 
-def(String, Join, ProtString separator) {
+def(String, Join, RdString separator) {
 	size_t len = 0;
 
 	forward (i, this->len) {
@@ -981,7 +981,7 @@ def(String, Join, ProtString separator) {
 	return res;
 }
 
-def(bool, Contains, ProtString needle) {
+def(bool, Contains, RdString needle) {
 	return call(Find, needle) != -1;
 }
 
@@ -989,9 +989,9 @@ def(bool, Contains, ProtString needle) {
 
 #define self StringArray
 
-def(ssize_t, Find, ProtString needle) {
+def(ssize_t, Find, RdString needle) {
 	forward (i, this->len) {
-		if (String_Equals(this->buf[i].prot, needle)) {
+		if (String_Equals(this->buf[i].rd, needle)) {
 			return i;
 		}
 	}
@@ -999,7 +999,7 @@ def(ssize_t, Find, ProtString needle) {
 	return -1;
 }
 
-def(bool, Contains, ProtString needle) {
+def(bool, Contains, RdString needle) {
 	return call(Find, needle) != -1;
 }
 

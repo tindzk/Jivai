@@ -12,7 +12,7 @@ rsdef(self, New) {
 	};
 }
 
-overload rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Session) *parent) {
+overload rdef(ref(Session) *, CreateSession, __unused RdString name, ref(Session) *parent) {
 	ref(Session) *sess = Memory_Alloc(sizeof(ref(Session)));
 
 	sess->hasParent = false;
@@ -44,7 +44,7 @@ overload rdef(ref(Session) *, CreateSession, __unused ProtString name, ref(Sessi
 	return sess;
 }
 
-overload rdef(ref(Session) *, CreateSession, ProtString name) {
+overload rdef(ref(Session) *, CreateSession, RdString name) {
 	return call(CreateSession, name, this->sess);
 }
 
@@ -285,7 +285,7 @@ __malloc rdef(void *, Clone, void *addr) {
 	return call(Alloc, alloc->size);
 }
 
-def(void, Bundle, __unused ProtString name) {
+def(void, Bundle, __unused RdString name) {
 	if (this->bundling != ref(Bundling_Disabled)) {
 		throw(AlreadyBundling);
 	}

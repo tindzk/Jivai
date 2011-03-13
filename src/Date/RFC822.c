@@ -2,9 +2,9 @@
 
 #define self Date_RFC822
 
-static const ProtString pattern = $("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
+static const RdString pattern = $("^(\\S+), (\\d+) (\\S+) (\\d+) (\\d+):(\\d+):(\\d+)");
 
-static const ProtString weekdays[] = {
+static const RdString weekdays[] = {
 	$("Sun"),
 	$("Mon"),
 	$("Tue"),
@@ -14,7 +14,7 @@ static const ProtString weekdays[] = {
 	$("Sat")
 };
 
-static const ProtString months[] = {
+static const RdString months[] = {
 	$(""),
 	$("Jan"),
 	$("Feb"),
@@ -41,8 +41,8 @@ sdef(self, Empty) {
 	return res;
 }
 
-sdef(self, Parse, ProtString s) {
-	ProtString weekday, day, month, year, hour, minute, second;
+sdef(self, Parse, RdString s) {
+	RdString weekday, day, month, year, hour, minute, second;
 
 	Pattern regex;
 	Pattern_Init(&regex);
@@ -118,9 +118,9 @@ sdef(String, ToString, self $this) {
 	String second = Number_Format($this.time.second, 2);
 
 	String out = String_Format($("%, % % % %:%:% GMT"),
-		weekdays[$this.weekday], day.prot,
-		months[$this.date.month], year.prot, hour.prot,
-		minute.prot, second.prot);
+		weekdays[$this.weekday], day.rd,
+		months[$this.date.month], year.rd, hour.rd,
+		minute.rd, second.rd);
 
 	String_Destroy(&second);
 	String_Destroy(&minute);

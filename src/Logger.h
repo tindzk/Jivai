@@ -19,7 +19,7 @@ set(ref(Level)) {
 	ref(Level_Count) = 7
 };
 
-DefineCallback(ref(Printer), void, FmtString msg, ref(Level) level, ProtString file, int line);
+DefineCallback(ref(Printer), void, FmtString msg, ref(Level) level, RdString file, int line);
 
 class {
 	ref(Printer) printer;
@@ -32,7 +32,7 @@ static inline def(bool, IsEnabled, ref(Level) level) {
 }
 
 def(void, Init, ref(Printer) printer, int levels);
-ProtString ref(ResolveLevel)(ref(Level) level);
+RdString ref(ResolveLevel)(ref(Level) level);
 
 #define Logger_Log(this, level, fmt, ...)       \
 	do {                                        \

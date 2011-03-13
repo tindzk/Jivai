@@ -20,12 +20,12 @@ record(ref(Method)) {
 	ref(MethodType) type;
 	void *addr;
 
-	ProtString name;
+	RdString name;
 	size_t level;
 };
 
 Interface(ITestSuite) {
-	ProtString name;
+	RdString name;
 	size_t size;
 	TestSuite_Method *first;
 	TestSuite_Method *last;
@@ -117,6 +117,6 @@ SingletonPrototype(self);
 rsdef(self, New);
 def(void, Destroy);
 def(void, AddSuite, ITestSuiteInterface *suite);
-def(void, Assert, ProtString descr, bool succeeded);
+def(void, Assert, RdString descr, bool succeeded);
 
 #undef self

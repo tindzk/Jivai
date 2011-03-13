@@ -22,7 +22,7 @@ def(void, SetOutputBuffer, size_t size);
 def(bool, IsEof);
 def(size_t, Read, void *buf, size_t len);
 def(size_t, Write, void *buf, size_t len);
-def(ProtString, Flush);
+def(RdString, Flush);
 def(void, Reset);
 def(void, Close);
 

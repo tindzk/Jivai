@@ -12,7 +12,7 @@
  * this stuff is worth it, you can buy me a beer in return.
  */
 
-static const ProtString metaChars = $("|.^$*+?()[\\");
+static const RdString metaChars = $("|.^$*+?()[\\");
 
 def(void, Init) {
 	this->code = scall(CharArray_New, 256);
@@ -49,7 +49,7 @@ static def(void, StoreCharInData, int ch) {
 	scall(CharArray_Push, &this->data, (unsigned char) ch);
 }
 
-static def(size_t, Exact, size_t offset, ProtString pattern) {
+static def(size_t, Exact, size_t offset, RdString pattern) {
 	size_t oldDataSize = this->data->len;
 
 	while (String_Find(metaChars, pattern.buf[offset]) == String_NotFound) {
@@ -87,7 +87,7 @@ static sdef(int, GetEscapeChar, char c) {
 	return c;
 }
 
-static def(size_t, AnyOf, size_t offset, ProtString pattern) {
+static def(size_t, AnyOf, size_t offset, RdString pattern) {
 	ref(Token) op = ref(Token_AnyOf);
 	size_t oldDataSize = this->data->len;
 
@@ -176,7 +176,7 @@ static def(void, FixUpBranch, ssize_t fixup) {
 	}
 }
 
-static def(size_t, Parse, size_t offset, ProtString pattern) {
+static def(size_t, Parse, size_t offset, RdString pattern) {
 	size_t fixup       = 0;
 	size_t level       = this->numCaps;
 	size_t lastOp      = this->code->len;
@@ -275,7 +275,7 @@ static def(size_t, Parse, size_t offset, ProtString pattern) {
 	}
 }
 
-def(void, Compile, ProtString pattern) {
+def(void, Compile, RdString pattern) {
 	if (pattern.len == 0) {
 		throw(EmptyPattern);
 	}
@@ -303,9 +303,9 @@ def(void, Compile, ProtString pattern) {
 // Matcher
 // -------
 
-static def(bool, _Match, size_t pc, ProtString s, size_t len, ProtString **caps);
+static def(bool, _Match, size_t pc, RdString s, size_t len, RdString **caps);
 
-static def(void, LoopGreedy, size_t pc, ProtString s, size_t len) {
+static def(void, LoopGreedy, size_t pc, RdString s, size_t len) {
 	size_t savedOffset;
 	size_t matchedOffset = this->ofs;
 
@@ -322,7 +322,7 @@ static def(void, LoopGreedy, size_t pc, ProtString s, size_t len) {
 	this->ofs = matchedOffset;
 }
 
-static def(void, LoopNonGreedy, size_t pc, ProtString s, size_t len) {
+static def(void, LoopNonGreedy, size_t pc, RdString s, size_t len) {
 	size_t savedOffset = this->ofs;
 
 	while (call(_Match, pc + 2, s, len, NULL)) {
@@ -336,7 +336,7 @@ static def(void, LoopNonGreedy, size_t pc, ProtString s, size_t len) {
 	this->ofs = savedOffset;
 }
 
-static def(bool, IsAnyOf, const unsigned char *p, ProtString s, size_t len) {
+static def(bool, IsAnyOf, const unsigned char *p, RdString s, size_t len) {
 	int ch = s.buf[this->ofs];
 
 	for (size_t i = 0; i < len; i++) {
@@ -349,7 +349,7 @@ static def(bool, IsAnyOf, const unsigned char *p, ProtString s, size_t len) {
 	return false;
 }
 
-static def(bool, IsAnyBut, const unsigned char *p, ProtString s, size_t len) {
+static def(bool, IsAnyBut, const unsigned char *p, RdString s, size_t len) {
 	int ch = s.buf[this->ofs];
 
 	for (size_t i = 0; i < len; i++) {
@@ -363,7 +363,7 @@ static def(bool, IsAnyBut, const unsigned char *p, ProtString s, size_t len) {
 	return true;
 }
 
-static def(bool, _Match, size_t pc, ProtString s, size_t len, ProtString **caps) {
+static def(bool, _Match, size_t pc, RdString s, size_t len, RdString **caps) {
 	size_t savedOffset;
 
 	bool res = true;
@@ -392,12 +392,12 @@ static def(bool, _Match, size_t pc, ProtString s, size_t len, ProtString **caps)
 			size_t dataOffset = this->code->buf[pc + 1];
 			size_t dataLength = this->code->buf[pc + 2];
 
-			ProtString cmp = (ProtString) {
+			RdString cmp = (RdString) {
 				.buf = (char *) this->data->buf + dataOffset,
 				.len = dataLength
 			};
 
-			ProtString orig = (ProtString) {
+			RdString orig = (RdString) {
 				.buf = s.buf + this->ofs,
 				.len = dataLength
 			};
@@ -578,7 +578,7 @@ static def(bool, _Match, size_t pc, ProtString s, size_t len, ProtString **caps)
 	return res;
 }
 
-def(bool, Match, ProtString s, ProtString **caps) {
+def(bool, Match, RdString s, RdString **caps) {
 	this->ofs = 0;
 
 	if (this->code->buf[2] != ref(Token_BOL)) {

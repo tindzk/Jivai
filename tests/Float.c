@@ -15,35 +15,35 @@ tsRegister("Float") {
 
 tsCase(Acute, "Format") {
 	String s = Float_ToString(0., 0.01, '.');
-	Assert($("No decimal places"), String_Equals(s.prot, $("0.00")));
+	Assert($("No decimal places"), String_Equals(s.rd, $("0.00")));
 	String_Destroy(&s);
 
 	s = Float_ToString(200., 0.01, '.');
-	Assert($("No decimal places (2)"), String_Equals(s.prot, $("200.00")));
+	Assert($("No decimal places (2)"), String_Equals(s.rd, $("200.00")));
 	String_Destroy(&s);
 
 	s = Float_ToString(12., 0.01, '.');
-	Assert($("No decimal places (3)"), String_Equals(s.prot, $("12.00")));
+	Assert($("No decimal places (3)"), String_Equals(s.rd, $("12.00")));
 	String_Destroy(&s);
 
 	s = Float_ToString(1234.98765, 0.001, '.');
-	Assert($("Trim decimal places"), String_Equals(s.prot, $("1234.987")));
+	Assert($("Trim decimal places"), String_Equals(s.rd, $("1234.987")));
 	String_Destroy(&s);
 
 	s = Float_ToString(.98765, 0.001, '.');
-	Assert($("Leading zero (< 1)"), String_Equals(s.prot, $("0.987")));
+	Assert($("Leading zero (< 1)"), String_Equals(s.rd, $("0.987")));
 	String_Destroy(&s);
 }
 
 tsCase(Acute, "Multiplication") {
 	float num = 12.;
 	String s = Float_ToString(num * 1.13, 0.01, '.');
-	Assert($("12.00 * 1.13"), String_Equals(s.prot, $("13.56")));
+	Assert($("12.00 * 1.13"), String_Equals(s.rd, $("13.56")));
 	String_Destroy(&s);
 
 	num = 0.3333;
 	s = Float_ToString(num * 1.13, 0.01, '.');
-	Assert($(".3333 * 1.13"), String_Equals(s.prot, $("0.37")));
+	Assert($(".3333 * 1.13"), String_Equals(s.rd, $("0.37")));
 	String_Destroy(&s);
 }
 

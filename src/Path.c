@@ -2,7 +2,7 @@
 
 #define self Path
 
-overload sdef(bool, Exists, ProtString path, bool follow) {
+overload sdef(bool, Exists, RdString path, bool follow) {
 	Stat attr;
 
 	if (follow) {
@@ -23,7 +23,7 @@ sdef(String, GetCwd) {
 	return s;
 }
 
-sdef(Stat64, GetStat, ProtString path) {
+sdef(Stat64, GetStat, RdString path) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -49,11 +49,11 @@ sdef(Stat64, GetStat, ProtString path) {
 	return attr;
 }
 
-sdef(u64, GetSize, ProtString path) {
+sdef(u64, GetSize, RdString path) {
 	return scall(GetStat, path).size;
 }
 
-overload sdef(bool, IsDirectory, ProtString path) {
+overload sdef(bool, IsDirectory, RdString path) {
 	bool res = false;
 
 	try {
@@ -69,7 +69,7 @@ overload sdef(bool, IsDirectory, ProtString path) {
 	return res;
 }
 
-overload sdef(void, Truncate, ProtString path, u64 length) {
+overload sdef(void, Truncate, RdString path, u64 length) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -91,7 +91,7 @@ overload sdef(void, Truncate, ProtString path, u64 length) {
 	}
 }
 
-sdef(ProtString, GetExtension, ProtString path) {
+sdef(RdString, GetExtension, RdString path) {
 	ssize_t pos = String_ReverseFind(path, '.');
 
 	if (pos != String_NotFound) {
@@ -101,7 +101,7 @@ sdef(ProtString, GetExtension, ProtString path) {
 	return $("");
 }
 
-overload sdef(ProtString, GetFilename, ProtString path, bool verify) {
+overload sdef(RdString, GetFilename, RdString path, bool verify) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -123,7 +123,7 @@ overload sdef(ProtString, GetFilename, ProtString path, bool verify) {
 	return String_Slice(path, pos + 1);
 }
 
-overload sdef(ProtString, GetDirectory, ProtString path, bool verify) {
+overload sdef(RdString, GetDirectory, RdString path, bool verify) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -150,7 +150,7 @@ overload sdef(ProtString, GetDirectory, ProtString path, bool verify) {
 }
 
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
-sdef(String, Resolve, ProtString path) {
+sdef(String, Resolve, RdString path) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -163,7 +163,7 @@ sdef(String, Resolve, ProtString path) {
 
 	bool isDir = scall(IsDirectory, path);
 
-	ProtString dirpath = !isDir
+	RdString dirpath = !isDir
 		? scall(GetDirectory, path, false)
 		: path;
 
@@ -185,7 +185,7 @@ sdef(String, Resolve, ProtString path) {
 	return res;
 }
 
-overload sdef(void, Create, ProtString path, int mode, bool recursive) {
+overload sdef(void, Create, RdString path, int mode, bool recursive) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
@@ -239,7 +239,7 @@ overload sdef(void, Create, ProtString path, int mode, bool recursive) {
 	}
 }
 
-sdef(void, Delete, ProtString path) {
+sdef(void, Delete, RdString path) {
 	errno = 0;
 
 	if (!Kernel_unlink(path)) {
@@ -257,7 +257,7 @@ sdef(void, Delete, ProtString path) {
 	}
 }
 
-sdef(void, DeleteDirectory, ProtString path) {
+sdef(void, DeleteDirectory, RdString path) {
 	errno = 0;
 
 	if (!Kernel_rmdir(path)) {
@@ -277,7 +277,7 @@ sdef(void, DeleteDirectory, ProtString path) {
 	}
 }
 
-sdef(void, ReadLink, ProtString path, String *out) {
+sdef(void, ReadLink, RdString path, String *out) {
 	errno = 0;
 
 	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(*out));
@@ -299,7 +299,7 @@ sdef(void, ReadLink, ProtString path, String *out) {
 	out->len = len;
 }
 
-sdef(void, Symlink, ProtString path1, ProtString path2) {
+sdef(void, Symlink, RdString path1, RdString path2) {
 	errno = 0;
 
 	if (!Kernel_symlink(path1, path2)) {
@@ -311,13 +311,13 @@ sdef(void, Symlink, ProtString path1, ProtString path2) {
 	}
 }
 
-sdef(void, SetXattr, ProtString path, ProtString name, ProtString value) {
+sdef(void, SetXattr, RdString path, RdString name, RdString value) {
 	if (!Kernel_setxattr(path, name, value.buf, value.len, 0)) {
 		throw(SettingAttributeFailed);
 	}
 }
 
-overload sdef(String, GetXattr, ProtString path, ProtString name) {
+overload sdef(String, GetXattr, RdString path, RdString name) {
 	errno = 0;
 
 	ssize_t size = Kernel_getxattr(path, name, NULL, 0);
@@ -341,7 +341,7 @@ overload sdef(String, GetXattr, ProtString path, ProtString name) {
 	return res;
 }
 
-overload sdef(void, GetXattr, ProtString path, ProtString name, String *value) {
+overload sdef(void, GetXattr, RdString path, RdString name, String *value) {
 	errno = 0;
 
 	ssize_t size = Kernel_getxattr(path, name, value->buf, String_GetSize(*value));
@@ -359,7 +359,7 @@ overload sdef(void, GetXattr, ProtString path, ProtString name, String *value) {
 	value->len = size;
 }
 
-overload sdef(void, SetTime, ProtString path, time_t timestamp, long nano, bool followSymlink) {
+overload sdef(void, SetTime, RdString path, time_t timestamp, long nano, bool followSymlink) {
 	Time_UnixEpoch t;
 
 	t.sec  = timestamp;
