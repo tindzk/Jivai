@@ -31,6 +31,9 @@
 #define transparentUnion \
 	__attribute__((transparent_union))
 
+#define override \
+	__attribute__((weak))
+
 #define overload \
 	__attribute__((overloadable))
 
