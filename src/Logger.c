@@ -21,6 +21,7 @@ rsdef(self, New, ref(Printer) printer) {
 			Logger_Level_Error |
 			Logger_Level_Warn  |
 			Logger_Level_Info  |
+			Logger_Level_Debug |
 			Logger_Level_Trace
 	};
 }
