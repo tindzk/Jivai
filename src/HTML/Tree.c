@@ -31,7 +31,7 @@ def(ref(Node) *, GetRoot) {
 	return (ref(Node) *) &this->tree.root;
 }
 
-def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
+def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
 			throw(IllegalNesting);
@@ -69,10 +69,10 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value) {
 	}
 }
 
-sdef(ref(Attr) *, GetAttr, ref(Node) *node, ProtString name) {
+sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name) {
 	if (node->type == ref(NodeType_Tag)) {
 		fwd(i, node->attrs->len) {
-			if (String_Equals(node->attrs->buf[i].name.prot, name)) {
+			if (String_Equals(node->attrs->buf[i].name.rd, name)) {
 				return &node->attrs->buf[i];
 			}
 		}
@@ -83,13 +83,13 @@ sdef(ref(Attr) *, GetAttr, ref(Node) *node, ProtString name) {
 
 sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 	bool found;
-	ProtString *s;
+	RdString *s;
 	VarArg argptr;
 
 	VarArg_Start(argptr, node);
 
 	while (true) {
-		s = VarArg_Get(argptr, ProtString *);
+		s = VarArg_Get(argptr, RdString *);
 
 		if (s == NULL) {
 			break;
@@ -99,7 +99,7 @@ sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...) {
 
 		fwd(i, node->len) {
 			if (node->buf[i]->type == ref(NodeType_Tag)) {
-				if (String_Equals(*s, node->buf[i]->value.prot)) {
+				if (String_Equals(*s, node->buf[i]->value.rd)) {
 					node = node->buf[i];
 					found = true;
 					break;
@@ -144,10 +144,4 @@ sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...) {
 	return found
 		? node
 		: NULL;
-}
-
-sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *)) {
-	fwd(i, node->len) {
-		cb(node->buf[i]);
-	}
 }

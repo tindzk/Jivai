@@ -42,10 +42,9 @@ rsdef(self, New);
 def(void, Destroy);
 sdef(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);
-def(void, ProcessToken, HTML_Tokenizer_TokenType type, ProtString value);
-sdef(ref(Attr) *, GetAttr, ref(Node) *node, ProtString name);
+def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value);
+sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name);
 sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...);
 sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...);
-sdef(void, Foreach, ref(Node) *node, void (^cb)(ref(Node) *));
 
 #undef self

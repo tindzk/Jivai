@@ -8,15 +8,17 @@ void IndentTree(int level) {
 	}
 }
 
-void PrintTree(HTML_Tree_Node *node, int level) {
-	HTML_Tree_Foreach(node, ^(HTML_Tree_Node *node) {
+void PrintTree(HTML_Tree_Node *nodes, int level) {
+	each(_node, nodes) {
+		HTML_Tree_Node *node = *_node;
+
 		String tmp;
 
 		if (node->type == HTML_Tree_NodeType_Tag) {
 			IndentTree(level);
 
-			tmp = String_Format($("tag=%\n"), node->value.prot);
-			String_Print(tmp.prot);
+			tmp = String_Format($("tag=%\n"), node->value.rd);
+			String_Print(tmp.rd);
 			String_Destroy(&tmp);
 
 			for (size_t i = 0; i < node->attrs->len; i++) {
@@ -24,9 +26,9 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 
 				tmp = String_Format(
 					$("name=\"%\" value=\"%\"\n"),
-					node->attrs->buf[i].name.prot,
-					node->attrs->buf[i].value.prot);
-				String_Print(tmp.prot);
+					node->attrs->buf[i].name.rd,
+					node->attrs->buf[i].value.rd);
+				String_Print(tmp.rd);
 				String_Destroy(&tmp);
 			}
 
@@ -38,25 +40,25 @@ void PrintTree(HTML_Tree_Node *node, int level) {
 			 * of whitespaces. In some cases this is useful, but not for
 			 * printing trees.
 			 */
-			ProtString value = String_Trim(node->value.prot);
+			RdString value = String_Trim(node->value.rd);
 
 			if (value.len > 0) {
 				tmp = String_Format($("value=\"%\"\n"), value);
-				String_Print(tmp.prot);
+				String_Print(tmp.rd);
 				String_Destroy(&tmp);
 			} else {
 				String_Print($("value={empty}\n"));
 			}
 		}
-	});
+	}
 }
 
 int main(void) {
 	File file;
 
 	try {
-		FileStream_Open(&file, $("HTMLTree.html"), FileStatus_ReadOnly);
-	} clean catch (File, NotFound) {
+		File_Open(&file, $("HTMLTree.html"), FileStatus_ReadOnly);
+	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
 		return ExitStatus_Failure;
 	} finally {
