@@ -8,18 +8,18 @@ set(ref(Status)) {
 	ref(Status_Open)
 };
 
-record(self) {
+class {
 	SocketClient *client;
 	DoublyLinkedList_DeclareRef(self);
 	char data[];
 };
 
-static inline self* ClientConnection_New(size_t dataSize) {
+static alwaysInline rsdef(self *, Alloc, size_t dataSize) {
 	return Pool_Alloc(Pool_GetInstance(), sizeof(self) + dataSize);
 }
 
-static inline void* ClientConnection_GetData(self *$this) {
-	return (void *) &$this->data;
+static alwaysInline def(void *, GetData) {
+	return (void *) &this->data;
 }
 
 DoublyLinkedList_DeclareList(self, ClientConnections);

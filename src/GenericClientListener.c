@@ -28,7 +28,7 @@ def(bool, OnConnect) {
 }
 
 def(void, OnAccept, SocketClientInstance client) {
-	ClientConnection *conn = ClientConnection_New(this->connection->size);
+	ClientConnection *conn = ClientConnection_Alloc(this->connection->size);
 
 	this->connection->init(
 		ClientConnection_GetData(conn),
