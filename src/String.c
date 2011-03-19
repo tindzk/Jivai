@@ -385,6 +385,62 @@ overload sdef(RdStringArray *, Split, RdString s, char c) {
 	return res;
 }
 
+sdef(bool, Parse, RdString pattern, RdString subject, ...) {
+	size_t subj =  0;
+	ssize_t ofs = -1;
+
+	VarArg argptr;
+	VarArg_Start(argptr, subject);
+
+	fwd(i, pattern.len) {
+		if (pattern.buf[i] == '%') {
+			ofs = subj;
+		} else {
+			if (ofs != -1) {
+				RdString *value = VarArg_Get(argptr, RdString *);
+
+				value->buf = subject.buf + ofs;
+				value->len = subject.len - ofs;
+
+				fwd(j, value->len) {
+					if (value->buf[j] == pattern.buf[i]) {
+						value->len = j;
+						subj = j + ofs;
+						break;
+					}
+				}
+
+				bool found = (value->len != subject.len - ofs);
+
+				if (!found) {
+					VarArg_End(argptr);
+					return false;
+				}
+
+				ofs = -1;
+			}
+
+			if (subject.buf[subj] != pattern.buf[i]) {
+				VarArg_End(argptr);
+				return false;
+			}
+
+			subj++;
+		}
+	}
+
+	if (ofs != -1) {
+		RdString *value = VarArg_Get(argptr, RdString *);
+
+		value->buf = subject.buf + ofs;
+		value->len = subject.len - ofs;
+	}
+
+	VarArg_End(argptr);
+
+	return true;
+}
+
 overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c) {
 	size_t right;
 
