@@ -13,17 +13,17 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 		Typography_Node *child = node->buf[i];
 
 		if (child->type == Typography_NodeType_Text) {
-			RdString value = Typography_Text(child)->value.rd;
+			RdString value = Typography_Text_GetValue(child);
 			Terminal_FmtArgPrint(this->term, value, argptr);
 		} else if (child->type == Typography_NodeType_Item) {
-			RdString name = Typography_Item(child)->name.rd;
+			RdString name = Typography_Item_GetName(child);
 
 			Terminal_Style style = Terminal_GetStyle(this->term);
 
 			if (String_Equals(name, $("fg")) ||
 				String_Equals(name, $("bg")))
 			{
-				RdString strColor = Typography_Item(child)->options.rd;
+				RdString strColor = Typography_Item_GetOptions(child);
 
 				if (String_Equals(strColor, $("%"))) {
 					strColor = VarArg_Get(*argptr, RdString);
