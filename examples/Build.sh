@@ -8,7 +8,7 @@ then
 	exit 1
 fi
 
-../../Jivai-Utils/jutils.bin \
+../../Depend/Depend.bin      \
 	build                    \
 	output=build/$1.bin      \
 	manifest=Manifest.h      \

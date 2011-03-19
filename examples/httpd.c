@@ -299,8 +299,10 @@ bool startServer(Server *server, ClientListener listener) {
 int main(void) {
 	Signal0();
 
+	Logger logger = Logger_New(EmptyCallback());
+
 	GenericClientListener listener;
-	GenericClientListener_Init(&listener, HttpConnection_GetImpl());
+	GenericClientListener_Init(&listener, HttpConnection_GetImpl(), &logger);
 
 	Server server;
 
