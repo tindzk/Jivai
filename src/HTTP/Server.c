@@ -175,12 +175,6 @@ def(ref(Result), ReadHeader) {
 			break;
 		}
 
-		/* This is necessary because the code below uses FastCrop(). Now is a
-		 * good time to move the buffer to its beginning. Otherwise we probably
-		 * couldn't add as much as initially allocated.
-		 */
-		String_Shift(&this->header);
-
 		size_t free = String_GetFree(this->header);
 
 		if (free == 0) {
@@ -216,7 +210,7 @@ def(ref(Result), ReadHeader) {
 	/* Trim the request and update requestOffset accordingly. */
 	RdString cleaned = String_Trim(this->header.rd, String_TrimLeft);
 	size_t ofs = this->header.len - cleaned.len;
-	String_FastCrop(&this->header, ofs);
+	String_Crop(&this->header, ofs);
 	requestOffset -= ofs;
 
 	HTTP_Header_Events events;
@@ -245,7 +239,7 @@ def(ref(Result), ReadHeader) {
 				/* In this->header there is more data which does not belong to the body.
 				 * Probably it's already the next request.
 				 */
-				String_FastCrop(&this->header, requestOffset + this->headers.contentLength);
+				String_Crop(&this->header, requestOffset + this->headers.contentLength);
 			} else {
 				/* The body is only partial. */
 				String_Copy(&this->body,
@@ -277,7 +271,7 @@ def(ref(Result), ReadHeader) {
 		 * this empties it.
 		 */
 
-		String_FastCrop(&this->header, requestOffset);
+		String_Crop(&this->header, requestOffset);
 		this->state = ref(State_Dispatch);
 	}
 

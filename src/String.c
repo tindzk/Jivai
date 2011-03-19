@@ -7,7 +7,7 @@ sdef(size_t, GetSize, String s) {
 		return 0;
 	}
 
-	return Pool_GetSize(Pool_GetInstance(), s.buf - s.ofs);
+	return Pool_GetSize(Pool_GetInstance(), s.buf);
 }
 
 sdef(size_t, GetFree, String s) {
@@ -15,7 +15,7 @@ sdef(size_t, GetFree, String s) {
 		return 0;
 	}
 
-	return Pool_GetSize(Pool_GetInstance(), s.buf - s.ofs) - s.len;
+	return Pool_GetSize(Pool_GetInstance(), s.buf) - s.len;
 }
 
 def(void, Destroy) {
@@ -25,12 +25,11 @@ def(void, Destroy) {
 
 	/* Is the buffer safe to delete? */
 	if (this->buf != NULL) {
-		Pool_Free(Pool_GetInstance(), this->buf - this->ofs);
+		Pool_Free(Pool_GetInstance(), this->buf);
 	}
 
 	this->buf = (void *) 0xdeadbeef;
 	this->len = 0;
-	this->ofs = 0;
 }
 
 /* Resizes the string's buffer to be `length' characters long. */
@@ -40,7 +39,7 @@ def(void, Resize, size_t length) {
 		: this->len;
 
 	if (this->buf != NULL) {
-		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf - this->ofs, length);
+		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf, length);
 	} else {
 		char *buf = Pool_Alloc(Pool_GetInstance(), length);
 
@@ -50,8 +49,6 @@ def(void, Resize, size_t length) {
 
 		this->buf = buf;
 	}
-
-	this->ofs = 0;
 
 	if (this->len > length) {
 		/* The string was shortened. */
@@ -74,7 +71,7 @@ def(void, Align, size_t length) {
 		return;
 	}
 
-	size_t size = Pool_GetSize(Pool_GetInstance(), this->buf - this->ofs);
+	size_t size = Pool_GetSize(Pool_GetInstance(), this->buf);
 
 	if (size == 0) {
 		call(Resize, length);
@@ -139,8 +136,7 @@ overload sdef(RdString, Slice, RdString s, ssize_t offset, ssize_t length) {
 
 	return (RdString) {
 		.len = right - offset,
-		.buf = s.buf + offset,
-		.ofs = offset
+		.buf = s.buf + offset
 	};
 }
 
@@ -185,44 +181,6 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	}
 
 	dest->len = right - offset;
-}
-
-overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length) {
-	size_t right;
-
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
-	if (length < 0) {
-		right = length + dest->len;
-	} else {
-		right = length + offset;
-	}
-
-	if ((size_t) offset > right     ||
-		(size_t) offset > dest->len ||
-		right           > dest->len)
-	{
-		throw(BufferOverflow);
-	}
-
-	dest->buf += offset;
-	dest->ofs  = offset;
-	dest->len  = right - offset;
-}
-
-def(void, Shift) {
-	if (this->ofs == 0) {
-		return;
-	}
-
-	if (this->len > 0) {
-		Memory_Move(this->buf - this->ofs, this->buf, this->len);
-	}
-
-	this->buf -= this->ofs;
-	this->ofs  = 0;
 }
 
 def(void, Delete, ssize_t offset, ssize_t length) {
@@ -400,7 +358,6 @@ overload sdef(bool, Split, RdString s, char c, RdString *res) {
 		if (pos == s.len || s.buf[pos] == c) {
 			res->buf = s.buf + offset;
 			res->len = pos   - offset;
-			res->ofs = offset;
 
 			break;
 		}
@@ -611,7 +568,6 @@ overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdStr
 
 	*out = (RdString) {
 		.buf = s.buf + posLeft,
-		.ofs = posLeft,
 		.len = posRight - posLeft
 	};
 

@@ -545,7 +545,6 @@ static def(bool, _Match, size_t pc, RdString s, size_t len, RdString **caps) {
 
 				if (caps[offset] != NULL) {
 					caps[offset]->buf = s.buf + this->ofs;
-					caps[offset]->ofs = this->ofs;
 					caps[offset]->len = 0;
 				}
 			}

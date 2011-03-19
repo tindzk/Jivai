@@ -26,7 +26,6 @@ enum {
 record(RdString) {
 	char   *buf;
 	size_t len;
-	size_t ofs;
 };
 
 Instance(RdString);
@@ -36,7 +35,6 @@ typedef union OmniString {
 	struct {
 		char   *buf;
 		size_t len;
-		size_t ofs;
 	};
 } OmniString;
 
@@ -47,7 +45,6 @@ typedef union self {
 	struct {
 		char   *buf;
 		size_t len;
-		size_t ofs;
 	};
 } self;
 
@@ -58,7 +55,6 @@ typedef union CarrierString {
 	struct {
 		char   *buf;
 		size_t len;
-		size_t ofs;
 		bool   omni;
 	};
 } CarrierString;
@@ -102,8 +98,6 @@ sdef(self, Clone, RdString s);
 sdef(char, CharAt, RdString s, ssize_t offset);
 overload sdef(RdString, Slice, RdString s, ssize_t offset, ssize_t length);
 overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length);
-overload sdef(void, FastCrop, self *dest, ssize_t offset, ssize_t length);
-def(void, Shift);
 def(void, Delete, ssize_t offset, ssize_t length);
 overload sdef(void, Prepend, self *dest, RdString s);
 overload sdef(void, Prepend, self *dest, char c);
@@ -180,7 +174,6 @@ static alwaysInline overload rsdef(CarrierString, ToCarrier, String s) {
 	return (CarrierString) {
 		.buf = s.buf,
 		.len = s.len,
-		.ofs = s.ofs,
 		.omni = false
 	};
 }
@@ -189,7 +182,6 @@ static alwaysInline overload rsdef(CarrierString, ToCarrier, OmniString s) {
 	return (CarrierString) {
 		.buf = s.buf,
 		.len = s.len,
-		.ofs = s.ofs,
 		.omni = true
 	};
 }
@@ -203,7 +195,7 @@ static alwaysInline CarrierString CarrierString_New(void) {
 static inline void CarrierString_Destroy(CarrierStringInstance $this) {
 	if (!this->omni) {
 		if (this->buf != NULL) {
-			Pool_Free(Pool_GetInstance(), this->buf - this->ofs);
+			Pool_Free(Pool_GetInstance(), this->buf);
 		}
 
 		this->omni = true;
@@ -226,8 +218,7 @@ static inline String CarrierString_Flush(CarrierStringInstance $this) {
 	 } else {
 		res = (String) {
 			.buf = this->buf,
-			.len = this->len,
-			.ofs = this->ofs
+			.len = this->len
 		};
 	 }
 
@@ -285,14 +276,6 @@ static inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 	}
 
 	scall(Crop, dest, offset, dest->len - offset);
-}
-
-static inline overload sdef(void, FastCrop, self *dest, ssize_t offset) {
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
-	scall(FastCrop, dest, offset, dest->len - offset);
 }
 
 static alwaysInline sdef(bool, Equals, RdString s, RdString needle) {
