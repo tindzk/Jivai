@@ -29,7 +29,7 @@ def(void, Destroy) {
 	Terminal_Destroy(&this->term);
 }
 
-override def(void, OnLogMessage, FmtString msg, Logger_Level level, String file, int line) {
+override def(void, OnLogMessage, FmtString msg, Logger_Level level, RdString file, int line) {
 	RdString slevel = Logger_ResolveLevel(level);
 	String sline = Integer_ToString(line);
 
