@@ -31,7 +31,15 @@ def(void, ParseVersion, RdString s) {
 }
 
 def(void, ParseStatus, RdString s) {
-	s32 code = Int32_Parse(s);
+	s32 code = 0;
+
+	try {
+		code = Int32_Parse(s);
+	} catchModule(Integer) {
+
+	} finally {
+
+	} tryEnd;
 
 	if (code == 0) {
 		throw(UnknownStatus);
