@@ -21,16 +21,16 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	if (node->type == Typography_NodeType_Text) {
 		String_Print($("value: "));
 
-		String_Print(Typography_Text(node)->value.rd);
+		String_Print(Typography_Text_GetValue(node));
 	} else if (node->type == Typography_NodeType_Item) {
 		String_Print($("name: "));
 
-		String_Print(Typography_Item(node)->name.rd);
+		String_Print(Typography_Item_GetName(node));
 
 		String_Print($(" options: "));
 
-		if (Typography_Item(node)->options.len > 0) {
-			String_Print(Typography_Item(node)->options.rd);
+		if (Typography_Item_GetOptions(node).len > 0) {
+			String_Print(Typography_Item_GetOptions(node));
 		} else {
 			String_Print($("(empty)"));
 		}

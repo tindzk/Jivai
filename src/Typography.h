@@ -7,13 +7,13 @@
 
 // @exc IllegalNesting
 
-record(ref(Text)) {
-	String value;
-};
-
 record(ref(Item)) {
 	String name;
 	String options;
+};
+
+record(ref(Text)) {
+	String value;
 };
 
 record(ref(Node)) {
@@ -29,11 +29,27 @@ record(ref(Node)) {
 	char data[0];
 };
 
+#define Typography_Item(node) \
+	((Typography_Item *) &(node)->data)
+
+static alwaysInline sdef(RdString, Item_GetName, ref(Node) *node) {
+	return Typography_Item(node)->name.rd;
+}
+
+static alwaysInline sdef(RdString, Item_GetOptions, ref(Node) *node) {
+	return Typography_Item(node)->options.rd;
+}
+
+#undef Typography_Item
+
 #define Typography_Text(node) \
 	((Typography_Text *) &(node)->data)
 
-#define Typography_Item(node) \
-	((Typography_Item *) &(node)->data)
+static alwaysInline sdef(RdString, Text_GetValue, ref(Node) *node) {
+	return Typography_Text(node)->value.rd;
+}
+
+#undef Typography_Text
 
 class {
 	Stream stream;

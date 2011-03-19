@@ -45,7 +45,7 @@ class {
 #define YAML_Section(node) \
 	((YAML_Section *) &(node)->data)
 
-static inline sdef(RdString, Section_GetName, YAML_Node *node) {
+static alwaysInline sdef(RdString, Section_GetName, ref(Node) *node) {
 	return YAML_Section(node)->name.rd;
 }
 
@@ -54,11 +54,11 @@ static inline sdef(RdString, Section_GetName, YAML_Node *node) {
 #define YAML_Item(node) \
 	((YAML_Item *) &(node)->data)
 
-static inline sdef(RdString, Item_GetKey, YAML_Node *node) {
+static alwaysInline sdef(RdString, Item_GetKey, ref(Node) *node) {
 	return YAML_Item(node)->key.rd;
 }
 
-static inline sdef(RdString, Item_GetValue, YAML_Node *node) {
+static alwaysInline sdef(RdString, Item_GetValue, ref(Node) *node) {
 	return YAML_Item(node)->value.rd;
 }
 
