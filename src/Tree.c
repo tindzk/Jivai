@@ -29,7 +29,7 @@ def(void, FreeNodes, ref(Node) *node) {
 	}
 
 	fwd(i, node->len) {
-		this->destroyNode(node->buf[i]);
+		callback(this->destroyNode, node->buf[i]);
 		call(FreeNodes, node->buf[i]);
 		Pool_Free(Pool_GetInstance(), node->buf[i]);
 	}

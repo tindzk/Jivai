@@ -40,7 +40,7 @@ class {
 
 rsdef(self, New);
 def(void, Destroy);
-sdef(void, DestroyNode, ref(Node) *node);
+def(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value);
 sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name);

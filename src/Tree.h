@@ -17,7 +17,7 @@ record(ref(Node)) {
 	Tree_Define(ref(Node));
 };
 
-typedef void (* ref(DestroyNode))(ref(Node) *);
+DefineCallback(ref(DestroyNode), void, ref(Node) *);
 
 class {
 	ref(Node) root;

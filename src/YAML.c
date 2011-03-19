@@ -11,7 +11,7 @@ set(ref(State)) {
 
 rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context) {
 	return (self) {
-		.tree    = Tree_New((void *) ref(DestroyNode)),
+		.tree    = Tree_New(Callback(NULL, ref(DestroyNode))),
 		.stream  = stream,
 		.context = context,
 		.depthWidth = depthWidth
@@ -22,7 +22,7 @@ def(void, Destroy) {
 	Tree_Destroy(&this->tree);
 }
 
-void ref(DestroyNode)(ref(Node) *node) {
+def(void, DestroyNode, ref(Node) *node) {
 	if (node->type == ref(NodeType_Section)) {
 		ref(Section) *section = (ref(Section) *) &node->data;
 

@@ -66,7 +66,7 @@ static inline sdef(RdString, Item_GetValue, YAML_Node *node) {
 
 rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context);
 def(void, Destroy);
-void ref(DestroyNode)(ref(Node) *node);
+def(void, DestroyNode, ref(Node) *node);
 def(ref(Node) *, GetRoot);
 def(size_t, GetLine);
 def(void *, Store, size_t depth, ref(NodeType) type, size_t size);

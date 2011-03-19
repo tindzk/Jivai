@@ -19,7 +19,7 @@ void PrintTree(YAML_Node *node, int depth) {
 	} else if (node->type == YAML_NodeType_Item) {
 		String_Print($("key: "));
 
-		if (YAML_Item(node)->key.len == 0) {
+		if (YAML_Item_GetKey(node).len == 0) {
 			String_Print($("(empty)"));
 		} else {
 			String_Print(YAML_Item_GetKey(node));

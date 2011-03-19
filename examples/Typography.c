@@ -10,7 +10,7 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	String strDepth = Integer_ToString(depth);
 
 	String_Print($("depth="));
-	String_Print(strDepth.prot);
+	String_Print(strDepth.rd);
 
 	String_Destroy(&strDepth);
 
@@ -21,16 +21,16 @@ void PrintTree(Typography_Node *node, size_t depth) {
 	if (node->type == Typography_NodeType_Text) {
 		String_Print($("value: "));
 
-		String_Print(Typography_Text(node)->value.prot);
+		String_Print(Typography_Text(node)->value.rd);
 	} else if (node->type == Typography_NodeType_Item) {
 		String_Print($("name: "));
 
-		String_Print(Typography_Item(node)->name.prot);
+		String_Print(Typography_Item(node)->name.rd);
 
 		String_Print($(" options: "));
 
 		if (Typography_Item(node)->options.len > 0) {
-			String_Print(Typography_Item(node)->options.prot);
+			String_Print(Typography_Item(node)->options.rd);
 		} else {
 			String_Print($("(empty)"));
 		}
@@ -58,7 +58,7 @@ int main(void) {
 		PrintTree(Typography_GetRoot(&tyo), 0);
 
 		Typography_Destroy(&tyo);
-	} clean catchAny {
+	} catchAny {
 		Exception_Print(e);
 		excReturn ExitStatus_Failure;
 	} finally {
