@@ -3,24 +3,24 @@
 #define self Terminal_Prompt
 
 def(void, Init, Terminal *term) {
-	this->term = term;
-	Terminal_Buffer_Init(&this->termbuf, term, 1);
+	this->term    = term;
+	this->termbuf = Terminal_Buffer_New(term, 1);
 }
 
 def(void, Destroy) {
 	Terminal_Buffer_Destroy(&this->termbuf);
 }
 
-def(bool, Ask, String msg) {
+def(bool, Ask, OmniString msg) {
 	Terminal_Buffer_Chunk chunk;
 
 	chunk.color = Terminal_Color_Normal;
 	chunk.font  = Terminal_Font_Normal;
-	chunk.value = String_Clone(msg);
+	chunk.value = String_ToCarrier(msg);
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 
-	chunk.value = String_Clone($("[y/n] "));
+	chunk.value = String_ToCarrier($$("[y/n] "));
 
 	Terminal_Buffer_AddChunk(&this->termbuf, chunk);
 

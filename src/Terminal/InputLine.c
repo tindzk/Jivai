@@ -25,7 +25,7 @@ def(void, Destroy) {
 
 overload def(void, ClearLine, bool update) {
 	if (update) {
-		size_t n = Unicode_Count(this->line, 0, this->pos);
+		size_t n = Unicode_Count(this->line.rd, 0, this->pos);
 
 		call(MoveLeft, n);
 		Terminal_DeleteUntilEol(this->term);
@@ -39,15 +39,15 @@ overload def(void, ClearLine) {
 	call(ClearLine, true);
 }
 
-def(void, Print, ProtString s) {
+def(void, Print, RdString s) {
 	Terminal_Print(this->term, s);
 
 	String_Append(&this->line, s);
 	this->pos += s.len;
 }
 
-def(void, SetValue, ProtString s) {
-	if (!String_Equals(this->line.prot, s)) {
+def(void, SetValue, RdString s) {
+	if (!String_Equals(this->line.rd, s)) {
 		call(ClearLine);
 		call(Print, s);
 	}
@@ -59,7 +59,7 @@ def(void, DeletePreceding) {
 		Terminal_DeleteUntilEol(this->term);
 
 		if (this->line.len == this->pos) {
-			size_t width = Unicode_Prev(this->line, this->pos);
+			size_t width = Unicode_Prev(this->line.rd, this->pos);
 
 			if (width == 0) {
 				return;
@@ -68,13 +68,13 @@ def(void, DeletePreceding) {
 			this->line.len = this->pos - width;
 			this->pos -= width;
 		} else {
-			size_t width = Unicode_Prev(this->line, this->pos);
+			size_t width = Unicode_Prev(this->line.rd, this->pos);
 
 			if (width == 0) {
 				return;
 			}
 
-			ProtString rest = String_Slice(this->line.prot, this->pos);
+			RdString rest = String_Slice(this->line.rd, this->pos);
 			this->line.len = this->pos - width;
 
 			call(Print, rest);
@@ -89,7 +89,7 @@ def(void, DeleteSucceeding) {
 	if (this->pos < this->line.len) {
 		Terminal_DeleteUntilEol(this->term);
 
-		ProtString rest = String_Slice(this->line.prot, this->pos + 1);
+		RdString rest = String_Slice(this->line.rd, this->pos + 1);
 		this->line.len = this->pos;
 
 		call(Print, rest);
@@ -102,7 +102,7 @@ def(void, MoveRight, size_t n) {
 		size_t bytes = 0;
 
 		for (size_t i = 0; i < n; i++) {
-			size_t width = Unicode_Next(this->line, this->pos + bytes);
+			size_t width = Unicode_Next(this->line.rd, this->pos + bytes);
 
 			if (width == 0) {
 				n = i;
@@ -127,7 +127,7 @@ def(void, MoveLeft, size_t n) {
 		size_t bytes = 0;
 
 		for (size_t i = 0; i < n; i++) {
-			size_t width = Unicode_Prev(this->line, this->pos - bytes);
+			size_t width = Unicode_Prev(this->line.rd, this->pos - bytes);
 
 			if (width == 0) {
 				n = i;
@@ -173,7 +173,7 @@ def(void, Process) {
 		Terminal_Print(this->term, $("\n"));
 
 		if (hasCallback(this->onKeyEnter)) {
-			ProtString line = this->line.prot;
+			RdString line = this->line.rd;
 
 			this->pos      = 0;
 			this->line.len = 0;
@@ -196,23 +196,23 @@ def(void, Process) {
 			}
 		}
 
-		bool handled = callbackRet(this->onKeyPress, false, ch.prot);
+		bool handled = callbackRet(this->onKeyPress, false, ch.rd);
 
 		if (!handled) {
 			if (this->pos == this->line.len) { /* EOL */
-				call(Print, ch.prot);
+				call(Print, ch.rd);
 			} else {
 				String rest =
 					String_Clone(
 						String_Slice(
-							this->line.prot, this->pos));
+							this->line.rd, this->pos));
 
 				String_Crop(&this->line, 0, this->pos);
 
-				call(Print, ch.prot);
-				call(Print, rest.prot);
+				call(Print, ch.rd);
+				call(Print, rest.rd);
 
-				size_t n = Unicode_Count(this->line,
+				size_t n = Unicode_Count(this->line.rd,
 					this->line.len - rest.len,
 					rest.len);
 

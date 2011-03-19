@@ -12,7 +12,7 @@ def(void, Init, int argc, char *argv[], char *envp[]) {
 	this->env    = RdStringArray_New(envItems);
 	this->args   = RdStringArray_New(argc - 1);
 	this->logger = Logger_New(Callback(this, ref(OnLogMessage)));
-	this->term   = Terminal_New(File_StdIn, File_StdOut, false);
+	this->term   = Terminal_New(false);
 
 	for (int i = 1; i < argc; i++) {
 		RdStringArray_Push(&this->args, String_FromNul(argv[i]));

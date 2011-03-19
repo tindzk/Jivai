@@ -27,7 +27,7 @@ static def(size_t, GetCurrentLineLength) {
 
 	each(chunk, this->chunks) {
 		if (chunk->line == this->lines) {
-			len += Unicode_Count(chunk->value.prot);
+			len += Unicode_Count(chunk->value.rd);
 
 			if (!isLast(chunk, this->chunks)) {
 				len += this->spacing;
@@ -57,7 +57,7 @@ def(size_t, Count) {
 def(size_t, AddChunk, ref(Chunk) chunk) {
 	size_t len = call(GetCurrentLineLength);
 
-	size_t width = Unicode_Count(chunk.value.prot);
+	size_t width = Unicode_Count(chunk.value.rd);
 
 	if (len + width > this->max) {
 		this->lines++;
@@ -86,7 +86,7 @@ def(size_t, AddChunk, ref(Chunk) chunk) {
 	Terminal_Print(this->term,
 		chunk.color,
 		chunk.font,
-		chunk.value.prot);
+		chunk.value.rd);
 
 	scall(Chunks_Push, &this->chunks, chunk);
 
@@ -121,7 +121,7 @@ def(void, Redraw) {
 	bool first = true;
 
 	each(chunk, this->chunks) {
-		size_t width = Unicode_Count(chunk->value.prot);
+		size_t width = Unicode_Count(chunk->value.rd);
 
 		/* Item width including spacing. */
 		size_t fullItemWidth = width;
@@ -152,7 +152,7 @@ def(void, Redraw) {
 		Terminal_Print(this->term,
 			chunk->color,
 			chunk->font,
-			chunk->value.prot);
+			chunk->value.rd);
 	}
 }
 
@@ -167,7 +167,7 @@ def(void, Clear) {
 
 	this->lines = 0;
 
-	reverse (i, this->chunks->len) {
+	bwd(i, this->chunks->len) {
 		CarrierString_Destroy(&this->chunks->buf[i].value);
 	}
 

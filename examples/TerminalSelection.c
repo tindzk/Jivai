@@ -1,12 +1,12 @@
 #import <Terminal/Selection.h>
 
 int main(void) {
-	Terminal term = Terminal_New(File_StdIn, File_StdOut, true);
+	Terminal term = Terminal_New(true);
 	Terminal_Configure(&term, false, false);
 
 	Terminal_Selection termsel = Terminal_Selection_New(&term);
 
-	ProtString arr[5];
+	RdString arr[5];
 
 	Terminal_Selection_Add(&termsel, arr[0] = $("First"),  true);
 	Terminal_Selection_Add(&termsel, arr[1] = $("Second"), false);

@@ -33,7 +33,7 @@ def(void, OnSelect, size_t id) {
 	this->cur = id;
 }
 
-def(void, Add, ProtString caption, bool selected) {
+def(void, Add, RdString caption, bool selected) {
 	Terminal_Buffer_Chunk chunk;
 
 	String strCount =
@@ -47,7 +47,7 @@ def(void, Add, ProtString caption, bool selected) {
 	chunk.value =
 		String_ToCarrier(
 			String_Format($("(%) %"),
-				strCount.prot, caption));
+				strCount.rd, caption));
 
 	String_Destroy(&strCount);
 

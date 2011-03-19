@@ -9,13 +9,13 @@ sdef(bool, IsTTY, File *file) {
 	return ioctl(file->fd, TCGETS, &term) == 0;
 }
 
-rsdef(self, New, File *in, File *out, bool assumeVT100) {
+rsdef(self, New, bool assumeVT100) {
 	self res;
 
-	res.in  = in;
-	res.out = out;
+	res.in  = File_StdIn;
+	res.out = File_StdOut;
 
-	res.isVT100 = assumeVT100 && scall(IsTTY, out);
+	res.isVT100 = assumeVT100 && scall(IsTTY, res.out);
 
 	tcgetattr(FileNo_StdIn, &res.oldTermios);
 
@@ -24,6 +24,14 @@ rsdef(self, New, File *in, File *out, bool assumeVT100) {
 	res.style = (ref(Style)) {0, 0};
 
 	return res;
+}
+
+def(void, SetInput, File *file) {
+	this->in = file;
+}
+
+def(void, SetOutput, File *file) {
+	this->out = file;
 }
 
 def(void, Configure, bool echo, bool signal) {

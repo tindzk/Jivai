@@ -9,6 +9,6 @@ class {
 
 def(void, Init, Terminal *term);
 def(void, Destroy);
-def(bool, Ask, String msg);
+def(bool, Ask, OmniString msg);
 
 #undef self

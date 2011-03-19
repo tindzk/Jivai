@@ -13,8 +13,8 @@ DefineCallback(ref(OnKeyDown),  void);
 DefineCallback(ref(OnKeyLeft),  void);
 DefineCallback(ref(OnKeyRight), void);
 DefineCallback(ref(OnKeyBack),  void);
-DefineCallback(ref(OnKeyEnter), void, ProtString);
-DefineCallback(ref(OnKeyPress), bool, ProtString);
+DefineCallback(ref(OnKeyEnter), void, RdString);
+DefineCallback(ref(OnKeyPress), bool, RdString);
 
 class {
 	size_t pos;
@@ -35,8 +35,8 @@ rsdef(self, New, Terminal *term);
 def(void, Destroy);
 overload def(void, ClearLine, bool update);
 overload def(void, ClearLine);
-def(void, Print, ProtString s);
-def(void, SetValue, ProtString s);
+def(void, Print, RdString s);
+def(void, SetValue, RdString s);
 def(void, DeletePreceding);
 def(void, DeleteSucceeding);
 def(void, MoveRight, size_t n);
