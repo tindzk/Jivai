@@ -1,3 +1,4 @@
+#import <Main.h>
 #import <HTML/Tree.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
@@ -53,14 +54,21 @@ void PrintTree(HTML_Tree_Node *nodes, int level) {
 	}
 }
 
-int main(void) {
+#define self Application
+
+def(bool, Run) {
+	RdString name =
+		(this->args->len == 0)
+			? $("HTMLTree.html")
+			: this->args->buf[0];
+
 	File file;
 
 	try {
-		File_Open(&file, $("HTMLTree.html"), FileStatus_ReadOnly);
+		File_Open(&file, name, FileStatus_ReadOnly);
 	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
-		return ExitStatus_Failure;
+		return false;
 	} finally {
 
 	} tryEnd;
@@ -86,5 +94,5 @@ int main(void) {
 
 	String_Print($("\n"));
 
-	return ExitStatus_Success;
+	return true;
 }
