@@ -2,7 +2,7 @@
 
 mkdir -p build/Jivai
 
-../../Jivai-Utils/jutils.bin \
+../../Depend/Depend.bin      \
 	build                    \
 	main=TestSuite.c         \
 	output=TestSuite.bin     \
