@@ -47,12 +47,12 @@ static def(void, Flush, String *value) {
 	}
 }
 
-static def(void, Read, size_t st) {
-	char cur  = '\0';
-	char prev = '\0';
-	char next = '\0';
+static def(char, Read, size_t st, char next) {
+	char cur    = '\0';
+	char prev   = '\0';
+	char inject = '\0';
 
-	enum state_t { NONE = 0, POINT, OPTIONS, BLOCK };
+	enum state_t { NONE, POINT, OPTIONS, BLOCK, LITERAL };
 	enum state_t state = st;
 
 	bool prevstate = NONE;
@@ -61,16 +61,20 @@ static def(void, Read, size_t st) {
 	String value   = String_New(0);
 	String options = String_New(0);
 
-	while (!delegate(this->stream, isEof)) {
-		if (next == '\0') {
-			delegate(this->stream, read, &cur, 1);
+	while (next != '\0') {
+		if (inject != '\0') {
+			cur    = inject;
+			inject = '\0';
+		} else if (next != '\0') {
+			cur = next;
+
+			if (delegate(this->stream, read, &next, 1) == 0) {
+				next = '\0';
+			}
 
 			if (cur == '\n') {
 				this->line++;
 			}
-		} else {
-			cur  = next;
-			next = '\0';
 		}
 
 		switch (state) {
@@ -119,7 +123,15 @@ static def(void, Read, size_t st) {
 					options.len = 0;
 					name.len    = 0;
 
-					call(Read, BLOCK);
+					if (next == '{') {
+						if (delegate(this->stream, read, &next, 1) == 0) {
+							next = '\0';
+						}
+
+						next = call(Read, LITERAL, next);
+					} else {
+						next = call(Read, BLOCK, next);
+					}
 
 					state = prevstate;
 				} else if (cur != '\\') {
@@ -128,8 +140,8 @@ static def(void, Read, size_t st) {
 
 					name.len = 0;
 
-					next  = cur;
-					state = prevstate;
+					inject = cur;
+					state  = prevstate;
 				}
 
 				break;
@@ -163,14 +175,33 @@ static def(void, Read, size_t st) {
 			case OPTIONS:
 				if (prev == '\\') {
 					String_Append(&options, cur);
-
-					if (cur == '\\') {
-						cur = '\0';
-					}
 				} else if (cur == ']') {
 					state = POINT;
 				} else if (cur != '\\') {
 					String_Append(&options, cur);
+				}
+
+				break;
+
+			case LITERAL:
+				if (prev == '\\') {
+					String_Append(&value, cur);
+				} else if (cur == '}' && next == '}') {
+					call(Flush, &value);
+
+					if (this->node->parent == NULL) {
+						throw(IllegalNesting);
+					}
+
+					this->node = this->node->parent;
+
+					if (delegate(this->stream, read, &next, 1) == 0) {
+						next = '\0';
+					}
+
+					goto out;
+				} else if (cur != '\\') {
+					String_Append(&value, cur);
 				}
 
 				break;
@@ -185,6 +216,8 @@ out:
 	String_Destroy(&options);
 	String_Destroy(&value);
 	String_Destroy(&name);
+
+	return next;
 }
 
 def(void, Parse, Stream stream) {
@@ -194,5 +227,8 @@ def(void, Parse, Stream stream) {
 
 	Tree_Reset(&this->tree);
 
-	call(Read, 0);
+	char c = '\0';
+	delegate(this->stream, read, &c, 1);
+
+	call(Read, 0, c);
 }
