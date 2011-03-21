@@ -221,7 +221,7 @@ out:
 }
 
 def(void, Parse, Stream stream) {
-	this->line   = 0;
+	this->line   = 1;
 	this->node   = NULL;
 	this->stream = stream;
 
