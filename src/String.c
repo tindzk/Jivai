@@ -392,11 +392,9 @@ overload sdef(bool, Split, RdString s, RdString needle, RdString *res) {
 
 				break;
 			}
-		} else {
-			if (cnt > 0) {
-				cnt = 0;
-				pos--;
-			}
+		} else if (cnt > 0) {
+			cnt = 0;
+			pos--;
 		}
 	}
 
@@ -544,11 +542,9 @@ overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, RdString needle)
 			if (cnt == needle.len) {
 				return i;
 			}
-		} else {
-			if (cnt > 0) {
-				cnt = 0;
-				i++;
-			}
+		} else if (cnt > 0) {
+			cnt = 0;
+			i++;
 		}
 	}
 
@@ -583,11 +579,9 @@ overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdStrin
 			if (cnt == needle.len) {
 				return i - needle.len + 1;
 			}
-		} else {
-			if (cnt > 0) {
-				cnt = 0;
-				i--;
-			}
+		} else if (cnt > 0) {
+			cnt = 0;
+			i--;
 		}
 	}
 
@@ -825,11 +819,9 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdS
 				lastPos = i + 1;
 				cnt = 0;
 			}
-		} else {
-			if (cnt > 0) {
-				cnt = 0;
-				i--;
-			}
+		} else if (cnt > 0) {
+			cnt = 0;
+			i--;
 		}
 	}
 
