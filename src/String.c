@@ -366,6 +366,43 @@ overload sdef(bool, Split, RdString s, char c, RdString *res) {
 	return true;
 }
 
+overload sdef(bool, Split, RdString s, RdString needle, RdString *res) {
+	size_t offset = (res->buf != NULL)
+		? res->buf - s.buf + res->len + needle.len
+		: 0;
+
+	if (s.len == 0 || offset > s.len) {
+		return false;
+	}
+
+	size_t cnt = 0;
+
+	for (size_t pos = offset; pos <= s.len; pos++) {
+		if (pos == s.len) {
+			res->buf = s.buf + offset;
+			res->len = pos   - offset;
+
+			break;
+		} else if (s.buf[pos] == needle.buf[cnt]) {
+			cnt++;
+
+			if (cnt == needle.len) {
+				res->buf = s.buf + offset;
+				res->len = pos   - offset - 1;
+
+				break;
+			}
+		} else {
+			if (cnt > 0) {
+				cnt = 0;
+				pos--;
+			}
+		}
+	}
+
+	return true;
+}
+
 overload sdef(RdStringArray *, Split, RdString s, char c) {
 	size_t chunks = 1;
 	fwd(i, s.len) {

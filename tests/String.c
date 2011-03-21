@@ -337,6 +337,26 @@ tsCase(Acute, "Split with empty string") {
 	Assert($("Return value"), String_Split($(""), ' ', &part) == false);
 }
 
+tsCase(Acute, "Split with empty string") {
+	RdString part = $("");
+	Assert($("Return value"), String_Split($(""), $(" "), &part) == false);
+}
+
+tsCase(Acute, "Split") {
+	RdString part    = $("");
+	RdString subject = $("This  is  a  sentence.");
+
+	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Equals"),       String_Equals(part, $("This")));
+	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Equals"),       String_Equals(part, $("is")));
+	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Equals"),       String_Equals(part, $("a")));
+	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Equals"),       String_Equals(part, $("sentence.")));
+	Assert($("Return value"), String_Split(subject, $("  "), &part) == false);
+}
+
 tsCase(Acute, "Joining") {
 	RdString orig  = $("");
 	RdString orig2 = $(" ");

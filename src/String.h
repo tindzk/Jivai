@@ -110,6 +110,7 @@ sdef(bool, RangeEquals, RdString s, ssize_t offset, RdString needle, ssize_t nee
 def(void, ToLower);
 def(void, ToUpper);
 overload sdef(bool, Split, RdString s, char c, RdString *res);
+overload sdef(bool, Split, RdString s, RdString needle, RdString *res);
 overload sdef(RdStringArray *, Split, RdString s, char c);
 sdef(bool, Parse, RdString pattern, RdString subject, ...);
 overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c);
