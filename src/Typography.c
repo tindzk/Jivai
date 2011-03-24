@@ -53,9 +53,9 @@ static def(char, Read, size_t st, char next) {
 	char inject = '\0';
 
 	enum state_t { NONE, POINT, OPTIONS, BLOCK, LITERAL };
-	enum state_t state = st;
 
-	bool prevstate = NONE;
+	enum state_t state     = st;
+	enum state_t prevstate = NONE;
 
 	String name    = String_New(0);
 	String value   = String_New(0);
