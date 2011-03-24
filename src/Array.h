@@ -30,7 +30,7 @@
 		$this.object->len--;                                                                   \
 	}                                                                                          \
 	static inline void tripleConcat(name, _, Resize)                                           \
-		(union { name **object } transparentUnion $this, size_t items)                         \
+		(union { name **object; } transparentUnion $this, size_t items)                         \
 	{                                                                                          \
 		*$this.object = Pool_Realloc(Pool_GetInstance(), *$this.object,                        \
 			sizeof(name) + items * sizeof(type));                                              \
@@ -39,14 +39,14 @@
 		}                                                                                      \
 	}                                                                                          \
 	static inline void tripleConcat(name, _, Align)                                            \
-		(union { name **object } transparentUnion $this, size_t items)                         \
+		(union { name **object; } transparentUnion $this, size_t items)                         \
 	{                                                                                          \
 		if (items > 0 && items > tripleConcat(name, _, GetSize)(*$this.object)) {              \
 			tripleConcat(name, _, Resize)($this.object, items);                                \
 		}                                                                                      \
 	}                                                                                          \
 	static inline void tripleConcat(name, _, Push)                                             \
-		(union { name **object } transparentUnion $this, type data)                            \
+		(union { name **object; } transparentUnion $this, type data)                            \
 	{                                                                                          \
 		tripleConcat(name, _, Align)($this.object, (*$this.object)->len + 1);                  \
 		(*$this.object)->buf[(*$this.object)->len] = data;                                     \
