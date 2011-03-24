@@ -8,13 +8,13 @@
 
 // @exc CommandExceedsAllowedLength
 
-DefineCallback(ref(OnKeyUp),    void);
-DefineCallback(ref(OnKeyDown),  void);
-DefineCallback(ref(OnKeyLeft),  void);
-DefineCallback(ref(OnKeyRight), void);
-DefineCallback(ref(OnKeyBack),  void);
-DefineCallback(ref(OnKeyEnter), void, RdString);
-DefineCallback(ref(OnKeyPress), bool, RdString);
+Callback(ref(OnKeyUp),    void);
+Callback(ref(OnKeyDown),  void);
+Callback(ref(OnKeyLeft),  void);
+Callback(ref(OnKeyRight), void);
+Callback(ref(OnKeyBack),  void);
+Callback(ref(OnKeyEnter), void, RdString);
+Callback(ref(OnKeyPress), bool, RdString);
 
 class {
 	size_t pos;

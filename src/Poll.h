@@ -28,7 +28,7 @@ set(ref(Events)) {
     ref(Events_EdgeTriggered)  = (1 << 31)
 };
 
-DefineCallback(ref(OnEvent), void, int events, GenericInstance inst);
+Callback(ref(OnEvent), void, int events, GenericInstance inst);
 
 class {
 	ssize_t fd;

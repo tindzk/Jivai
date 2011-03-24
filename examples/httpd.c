@@ -174,12 +174,23 @@ def(void, Init, SocketConnection *conn) {
 
 	this->server = HTTP_Server_New(conn, 2048, 4096);
 
-	HTTP_Server_BindVersion(&this->server, Callback(this, Request_OnHttpVersion));
-	HTTP_Server_BindMethod(&this->server, Callback(this, Request_OnMethod));
-	HTTP_Server_BindPath(&this->server, Callback(this, Request_OnPath));
-	HTTP_Server_BindQueryParameter(&this->server, Callback(this, Request_OnQueryParameter));
-	HTTP_Server_BindBodyParameter(&this->server, Callback(this, Request_OnBodyParameter));
-	HTTP_Server_BindRespond(&this->server, Callback(this, Request_OnRespond));
+	HTTP_Server_BindVersion(&this->server,
+		HTTP_OnVersion_For(this, Request_OnHttpVersion));
+
+	HTTP_Server_BindMethod(&this->server,
+		HTTP_OnMethod_For(this, Request_OnMethod));
+
+	HTTP_Server_BindPath(&this->server,
+		HTTP_OnPath_For(this, Request_OnPath));
+
+	HTTP_Server_BindQueryParameter(&this->server,
+		HTTP_OnParameter_For(this, Request_OnQueryParameter));
+
+	HTTP_Server_BindBodyParameter(&this->server,
+		HTTP_OnParameter_For(this, Request_OnBodyParameter));
+
+	HTTP_Server_BindRespond(&this->server,
+		HTTP_Server_OnRespond_For(this, Request_OnRespond));
 }
 
 def(void, Destroy) {
@@ -299,7 +310,7 @@ bool startServer(Server *server, ClientListener listener) {
 int main(void) {
 	Signal0();
 
-	Logger logger = Logger_New(EmptyCallback());
+	Logger logger = Logger_New(Logger_Printer_Empty());
 
 	GenericClientListener listener;
 	GenericClientListener_Init(&listener, HttpConnection_GetImpl(), &logger);

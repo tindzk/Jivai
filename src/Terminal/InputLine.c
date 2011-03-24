@@ -4,18 +4,10 @@
 
 rsdef(self, New, Terminal *term) {
 	return (self) {
-		.term = term,
-
-		.onKeyUp    = (ref(OnKeyUp))    EmptyCallback(),
-		.onKeyDown  = (ref(OnKeyDown))  EmptyCallback(),
-		.onKeyLeft  = (ref(OnKeyLeft))  EmptyCallback(),
-		.onKeyRight = (ref(OnKeyRight)) EmptyCallback(),
-		.onKeyBack  = (ref(OnKeyBack))  EmptyCallback(),
-		.onKeyPress = (ref(OnKeyPress)) EmptyCallback(),
-		.onKeyEnter = (ref(OnKeyEnter)) EmptyCallback(),
-
-		.pos  = 0,
-		.line = String_New(150),
+		.term    = term,
+		.onKeyUp = { .cb = NULL },
+		.pos     = 0,
+		.line    = String_New(150),
 	};
 }
 

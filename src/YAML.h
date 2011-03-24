@@ -66,7 +66,7 @@ static alwaysInline sdef(RdString, Item_GetValue, ref(Node) *node) {
 
 rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context);
 def(void, Destroy);
-def(void, DestroyNode, ref(Node) *node);
+def(void, DestroyNode, Tree_Node *ptr);
 def(ref(Node) *, GetRoot);
 def(size_t, GetLine);
 def(void *, Store, size_t depth, ref(NodeType) type, size_t size);

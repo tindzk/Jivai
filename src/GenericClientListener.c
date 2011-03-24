@@ -27,7 +27,7 @@ def(bool, OnConnect) {
 	return true;
 }
 
-def(void, OnAccept, SocketClientInstance client) {
+def(void, OnAccept, SocketClient *client) {
 	ClientConnection *conn = ClientConnection_Alloc(this->connection->size);
 
 	this->connection->init(
@@ -48,7 +48,7 @@ def(void, OnAccept, SocketClientInstance client) {
 	DoublyLinkedList_InsertEnd(&this->connections, conn);
 }
 
-def(void, OnDisconnect, SocketClientInstance client) {
+def(void, OnDisconnect, SocketClient *client) {
 	ClientConnection *conn = SocketClient_GetData(client);
 
 	if (conn != NULL) {
@@ -61,7 +61,7 @@ def(void, OnDisconnect, SocketClientInstance client) {
 	}
 }
 
-static def(ClientConnection_Status, OnData, SocketClientInstance client, bool pull) {
+static def(ClientConnection_Status, OnData, SocketClient *client, bool pull) {
 	ClientConnection_Status status = ClientConnection_Status_Open;
 
 	ClientConnection *conn = SocketClient_GetData(client);
@@ -91,11 +91,11 @@ static def(ClientConnection_Status, OnData, SocketClientInstance client, bool pu
 	return status;
 }
 
-def(ClientConnection_Status, OnPull, SocketClientInstance client) {
+def(ClientConnection_Status, OnPull, SocketClient *client) {
 	return call(OnData, client, true);
 }
 
-def(ClientConnection_Status, OnPush, SocketClientInstance client) {
+def(ClientConnection_Status, OnPush, SocketClient *client) {
 	return call(OnData, client, false);
 }
 

@@ -6,7 +6,7 @@ def(void, Init, unsigned short port, ClientListener listener) {
 	this->listener = listener;
 	this->edgeTriggered = true;
 
-	Poll_Init(&this->poll, Callback(this, ref(OnEvent)));
+	Poll_Init(&this->poll, Poll_OnEvent_For(this, ref(OnEvent)));
 
 	Socket_Init(&this->socket, Socket_Protocol_TCP);
 
@@ -40,7 +40,7 @@ def(void, Process) {
 	Poll_Process(&this->poll, -1);
 }
 
-def(void, DestroyClient, SocketClientInstance client) {
+def(void, DestroyClient, SocketClient *client) {
 	delegate(this->listener, onClientDisconnect, client);
 
 	SocketClient_Destroy(client);
@@ -76,10 +76,10 @@ def(void, AcceptClient) {
 		flags);
 }
 
-def(void, OnEvent, int events, SocketClientInstance client) {
-	if (SocketClient_IsNull(client) &&
-		BitMask_Has(events, Poll_Events_Input))
-	{
+def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
+	SocketClient *client = instClient.object;
+
+	if (client == NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Incoming connection. */
 
 		if (delegate(this->listener, onClientConnect)) {
@@ -94,23 +94,21 @@ def(void, OnEvent, int events, SocketClientInstance client) {
 		}
 	}
 
-	if (!SocketClient_IsNull(client) && BitMask_Has(events, Poll_Events_Input)) {
+	if (client != NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
 		if (!delegate(this->listener, onPush, client)) {
-			client = SocketClient_Null();
+			client = NULL;
 		}
 	}
 
-	if (!SocketClient_IsNull(client) &&
-		BitMask_Has(events, Poll_Events_Output))
-	{
+	if (client != NULL && BitMask_Has(events, Poll_Events_Output)) {
 		/* Client requests data. */
 		if (!delegate(this->listener, onPull, client)) {
-			client = SocketClient_Null();
+			client = NULL;
 		}
 	}
 
-	if (!SocketClient_IsNull(client) &&
+	if (client != NULL &&
 		BitMask_Has(events,
 			Poll_Events_Error  |
 			Poll_Events_HangUp |

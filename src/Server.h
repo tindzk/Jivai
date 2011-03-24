@@ -24,8 +24,8 @@ def(void, Init, unsigned short port, ClientListener listener);
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);
 def(void, Process);
-def(void, DestroyClient, SocketClientInstance client);
+def(void, DestroyClient, SocketClient *client);
 def(void, AcceptClient);
-def(void, OnEvent, int events, SocketClientInstance client);
+def(void, OnEvent, int events, SocketClientExtendedInstance instClient);
 
 #undef self

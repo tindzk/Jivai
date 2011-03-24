@@ -17,10 +17,10 @@ def(void, Init, ConnectionInterface *conn, Logger *logger);
 def(void, OnInit);
 def(void, OnDestroy);
 def(bool, OnConnect);
-def(void, OnAccept, SocketClientInstance client);
-def(void, OnDisconnect, SocketClientInstance client);
-def(ClientConnection_Status, OnPull, SocketClientInstance client);
-def(ClientConnection_Status, OnPush, SocketClientInstance client);
+def(void, OnAccept, SocketClient *client);
+def(void, OnDisconnect, SocketClient *client);
+def(ClientConnection_Status, OnPull, SocketClient *client);
+def(ClientConnection_Status, OnPush, SocketClient *client);
 
 ExportImpl(ClientListener);
 

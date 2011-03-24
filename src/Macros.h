@@ -222,19 +222,25 @@
 
 #define SingletonDestructor(name)                 \
 	Destructor {                                  \
-		InstName(self) instance =                 \
+		self *instance =                          \
 			tripleConcat(name, _, GetInstance)(); \
 		tripleConcat(name, _, Destroy)(instance); \
 	}
 
-#define DefineCallback(name, ret, ...)                          \
-	typedef union name {                                        \
-		GenericCallback generic;                                \
-		struct {                                                \
-			GenericInstance context;                            \
-			ret (*cb)(GenericInstance context, ## __VA_ARGS__); \
-		};                                                      \
-	} name transparentUnion;
+#define Callback(name, ret, ...)                               \
+	typedef ret simpleConcat(cb,name)                          \
+		(GenericInstance context, ## __VA_ARGS__);             \
+	typedef struct name {                                      \
+		GenericInstance context;                               \
+		simpleConcat(cb,name) *cb;                             \
+	} name;                                                    \
+	static alwaysInline name simpleConcat(name,_For)           \
+		(GenericInstance context, simpleConcat(cb,name) *cb) { \
+		return (name) { .context = context, .cb = cb };        \
+	}                                                          \
+	static alwaysInline name simpleConcat(name,_Empty)(void) { \
+		return (name) { .cb = NULL };                          \
+	}
 
 #define hasCallback(var) \
 	((var).cb != NULL)

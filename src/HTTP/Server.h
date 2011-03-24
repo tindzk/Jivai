@@ -17,7 +17,7 @@
 // @exc HeaderTooLarge
 // @exc UnknownContentType
 
-DefineCallback(ref(OnRespond), void, bool);
+Callback(ref(OnRespond), void, bool);
 
 set(ref(State)) {
 	ref(State_Header),

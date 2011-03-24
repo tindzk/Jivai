@@ -12,7 +12,7 @@ set(ref(OperationType)) {
 	ref(OperationType_File)
 };
 
-DefineCallback(ref(OnDone), void, void *);
+Callback(ref(OnDone), void, void *);
 
 class {
 	SocketConnection *conn;

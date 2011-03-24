@@ -36,8 +36,8 @@ int main(void) {
 	App app;
 	app.interrupt = false;
 
-	line.onKeyPress = (Terminal_InputLine_OnKeyPress) Callback(&app, App_OnKeyPress);
-	line.onKeyEnter = (Terminal_InputLine_OnKeyEnter) Callback(&app, App_OnKeyEnter);
+	line.onKeyPress = Terminal_InputLine_OnKeyPress_For(&app, App_OnKeyPress);
+	line.onKeyEnter = Terminal_InputLine_OnKeyEnter_For(&app, App_OnKeyEnter);
 
 	int res = ExitStatus_Success;
 

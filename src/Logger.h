@@ -19,7 +19,7 @@ set(ref(Level)) {
 	ref(Level_Count) = 7
 };
 
-DefineCallback(ref(Printer), void, FmtString msg, ref(Level) level, RdString file, int line);
+Callback(ref(Printer), void, FmtString msg, ref(Level) level, RdString file, int line);
 
 class {
 	ref(Printer) printer;

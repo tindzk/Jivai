@@ -22,7 +22,7 @@ rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLeng
 		.headers.persistentConnection = false,
 
 		.events = {
-			.onMethod = { EmptyCallback() }
+			.onMethod = { .cb = NULL }
 		}
 	};
 }
@@ -214,11 +214,11 @@ def(ref(Result), ReadHeader) {
 	requestOffset -= ofs;
 
 	HTTP_Header_Events events;
-	events.onMethod    = (HTTP_OnMethod) Callback(this, ref(OnMethod));
-	events.onVersion   = (HTTP_OnVersion) Callback(this, ref(OnVersion));
+	events.onMethod    = HTTP_OnMethod_For(this, ref(OnMethod));
+	events.onVersion   = HTTP_OnVersion_For(this, ref(OnVersion));
 	events.onPath      = this->events.onPath;
 	events.onParameter = this->events.onQueryParameter;
-	events.onHeader    = (HTTP_OnHeader) Callback(this, ref(OnHeader));
+	events.onHeader    = HTTP_OnHeader_For(this, ref(OnHeader));
 
 	HTTP_Header header;
 	HTTP_Header_Init(&header, events);

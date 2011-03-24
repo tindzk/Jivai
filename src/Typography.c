@@ -4,7 +4,7 @@
 
 rsdef(self, New) {
 	return (self) {
-		.tree = Tree_New(Callback(NULL, ref(DestroyNode)))
+		.tree = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode)))
 	};
 }
 
@@ -12,7 +12,9 @@ def(void, Destroy) {
 	Tree_Destroy(&this->tree);
 }
 
-def(void, DestroyNode, ref(Node) *node) {
+def(void, DestroyNode, Tree_Node *ptr) {
+	ref(Node) *node = (ref(Node) *) ptr;
+
 	if (node->type == ref(NodeType_Item)) {
 		ref(Item) *item = (ref(Item) *) &node->data;
 
