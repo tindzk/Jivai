@@ -6,6 +6,6 @@ Interface(Connection) {
 
 	Method(void, init, SocketConnection *, Logger *);
 	Method(void, destroy);
-	Method(bool, pull);
-	Method(bool, push);
+	Method(ClientConnection_Status, pull);
+	Method(ClientConnection_Status, push);
 };
