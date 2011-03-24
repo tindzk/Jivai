@@ -3,7 +3,8 @@
 
 #define self FileStream
 
-#define FileStreamInstance FileInstance
+#define FileStreamInstance         FileInstance
+#define FileStreamExtendedInstance FileExtendedInstance
 
 def(void, Open, RdString path, int mode);
 def(void, Close);

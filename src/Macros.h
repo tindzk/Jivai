@@ -50,14 +50,20 @@
 #define InstName(name) \
 	simpleConcat(name, Instance)
 
+#define ExtendedInstName(name) \
+	simpleConcat(name, ExtendedInstance)
+
 #define ImplName(name) \
 	simpleConcat(name, Impl)
 
-#define Instance(name) \
-	typedef union {                    \
-		name *object;                  \
-		GenericInstance generic;       \
-	} InstName(name) transparentUnion; \
+#define Instance(name)                        \
+	typedef union {                           \
+		name *object;                         \
+	} InstName(name) transparentUnion;        \
+	typedef union {                           \
+		name *object;                         \
+		GenericInstance generic;              \
+	} ExtendedInstName(name) transparentUnion; \
 
 #define Interface(name)               \
 	struct name##Interface;           \
@@ -113,10 +119,13 @@
 	DefineAs(name, ImplExName(name));
 
 #define def(ret, method, ...) \
-	ret ref(method)(__unused InstName(self) $this, ## __VA_ARGS__)
+	ret ref(method)(__unused ExtendedInstName(self) $this, ## __VA_ARGS__)
+
+#define odef(ret, method, ...) \
+	overload ret method(__unused InstName(self) $this, ## __VA_ARGS__)
 
 #define rdef(ret, method, ...) \
-	mustUseResult ret ref(method)(__unused InstName(self) $this, ## __VA_ARGS__)
+	mustUseResult ret ref(method)(__unused ExtendedInstName(self) $this, ## __VA_ARGS__)
 
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
@@ -198,7 +207,7 @@
 	}
 
 #define SingletonPrototype(name) \
-	InstName(name) tripleConcat(name, _, GetInstance)(void)
+	name* tripleConcat(name, _, GetInstance)(void)
 
 #define Singleton(name, ...)                                       \
 	SingletonPrototype(name) {                                     \
@@ -208,7 +217,7 @@
 			object   = tripleConcat(name, _, New)(__VA_ARGS__);    \
 			instance = tripleConcat(name, _, FromObject)(&object); \
 		}                                                          \
-		return instance;                                           \
+		return instance.object;                                    \
 	}
 
 #define SingletonDestructor(name)                 \
