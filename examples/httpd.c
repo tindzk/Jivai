@@ -249,7 +249,7 @@ class {
 	Request request;
 };
 
-def(void, Init, SocketConnection *conn) {
+def(void, Init, SocketConnection *conn, __unused Logger *logger) {
 	Request_Init(&this->request, conn);
 }
 
@@ -267,10 +267,10 @@ def(ClientConnection_Status, Pull) {
 
 Impl(Connection) = {
 	.size    = sizeof(self),
-	.init    = (void *) ref(Init),
-	.destroy = (void *) ref(Destroy),
-	.push    = (void *) ref(Push),
-	.pull    = (void *) ref(Pull)
+	.init    = ref(Init),
+	.destroy = ref(Destroy),
+	.push    = ref(Push),
+	.pull    = ref(Pull)
 };
 
 ExportImpl(Connection);

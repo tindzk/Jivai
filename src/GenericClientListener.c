@@ -100,11 +100,11 @@ def(ClientConnection_Status, OnPush, SocketClientInstance client) {
 }
 
 Impl(ClientListener) = {
-	.onInit             = (void *) ref(OnInit),
-	.onDestroy          = (void *) ref(OnDestroy),
-	.onClientConnect    = (void *) ref(OnConnect),
-	.onClientAccept     = (void *) ref(OnAccept),
-	.onPull             = (void *) ref(OnPull),
-	.onPush             = (void *) ref(OnPush),
-	.onClientDisconnect = (void *) ref(OnDisconnect)
+	.onInit             = ref(OnInit),
+	.onDestroy          = ref(OnDestroy),
+	.onClientConnect    = ref(OnConnect),
+	.onClientAccept     = ref(OnAccept),
+	.onPull             = ref(OnPull),
+	.onPush             = ref(OnPush),
+	.onClientDisconnect = ref(OnDisconnect)
 };

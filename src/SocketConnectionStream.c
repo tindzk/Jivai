@@ -7,8 +7,8 @@ def(bool, IsEof) {
 }
 
 Impl(Stream) = {
-	.read  = (void *) ref(Read),
-	.write = (void *) ref(Write),
-	.close = (void *) ref(Close),
-	.isEof = (void *) ref(IsEof)
+	.read  = ref(Read),
+	.write = ref(Write),
+	.close = ref(Close),
+	.isEof = ref(IsEof)
 };
