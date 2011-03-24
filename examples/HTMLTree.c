@@ -80,8 +80,7 @@ def(bool, Run) {
 
 	HTML_Tokenizer html;
 	HTML_Tokenizer_Init(&html, Callback(&tree, &HTML_Tree_ProcessToken));
-	HTML_Tokenizer_Process(HTML_Tokenizer_FromObject(&html),
-		&BufferedStreamImpl, &stream);
+	HTML_Tokenizer_Process(&html, &BufferedStreamImpl, &stream);
 	HTML_Tokenizer_Destroy(&html);
 
 	HTML_Tree_Node *node = HTML_Tree_GetRoot(&tree);

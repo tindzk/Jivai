@@ -119,16 +119,4 @@ def(HTTP_Status, FetchResponse);
 overload def(bool, Read, String *res);
 overload def(String, Read, size_t max);
 
-#define HTTP_Client_Init(obj, ...) \
-	HTTP_Client_Init(HTTP_Client_FromObject(obj), ## __VA_ARGS__)
-
-#define HTTP_Client_Open(obj, ...) \
-	HTTP_Client_Open(HTTP_Client_FromObject(obj), ## __VA_ARGS__)
-
-#define HTTP_Client_Request(obj, ...) \
-	HTTP_Client_Request(HTTP_Client_FromObject(obj), ## __VA_ARGS__)
-
-#define HTTP_Client_Read(obj, ...) \
-	HTTP_Client_Read(HTTP_Client_FromObject(obj), ## __VA_ARGS__)
-
 #undef self

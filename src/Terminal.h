@@ -163,7 +163,4 @@ def(void, RestoreCursor);
 def(char, ReadChar);
 def(ref(Key), ReadKey);
 
-#define Terminal_Print(obj, ...) \
-	Terminal_Print(Terminal_FromObject(obj), ## __VA_ARGS__)
-
 #undef self

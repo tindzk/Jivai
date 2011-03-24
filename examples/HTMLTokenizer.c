@@ -59,8 +59,7 @@ int main(void) {
 
 	HTML_Tokenizer html;
 	HTML_Tokenizer_Init(&html, Callback(NULL, &OnToken));
-	HTML_Tokenizer_Process(HTML_Tokenizer_FromObject(&html),
-		&BufferedStreamImpl, &stream);
+	HTML_Tokenizer_Process(&html, &BufferedStreamImpl, &stream);
 	HTML_Tokenizer_Destroy(&html);
 
 	BufferedStream_Close(&stream);

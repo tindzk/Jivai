@@ -2,9 +2,6 @@
 
 #define self File
 
-#undef File_Write
-#undef File_Read
-
 static self stdIn = {
 	.fd       = FileNo_StdIn,
 	.readable = true,
@@ -239,8 +236,7 @@ sdef(void, GetContents, RdString path, String *res) {
 	size_t size = String_GetSize(*res);
 
 	do {
-		len = scall(Read,
-			File_FromObject(&file),
+		len = scall(Read, &file,
 			res->buf + res->len,
 			size - res->len);
 

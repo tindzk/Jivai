@@ -67,10 +67,4 @@ static inline overload def(size_t, Write, char c) {
 	return call(Write, &c, 1);
 }
 
-#define File_Read(obj, ...) \
-	File_Read(File_FromObject(obj), ## __VA_ARGS__)
-
-#define File_Write(obj, ...) \
-	File_Write(File_FromObject(obj), ## __VA_ARGS__)
-
 #undef self

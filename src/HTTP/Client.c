@@ -2,11 +2,6 @@
 
 #define self HTTP_Client
 
-#undef HTTP_Client_Init
-#undef HTTP_Client_Open
-#undef HTTP_Client_Request
-#undef HTTP_Client_Read
-
 sdef(ref(RequestItem), CreateRequest, String host, String path) {
 	ref(RequestItem) res;
 

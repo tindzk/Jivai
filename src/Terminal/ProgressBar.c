@@ -2,8 +2,6 @@
 
 #define self Terminal_ProgressBar
 
-#undef Terminal_ProgressBar_Init
-
 /* Based upon
  * http://nadiana.com/animated-terminal-progress-bar-in-python */
 

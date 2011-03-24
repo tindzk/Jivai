@@ -2,8 +2,6 @@
 
 #define self Terminal
 
-#undef Terminal_Print
-
 sdef(bool, IsTTY, File *file) {
 	struct termios term;
 	return ioctl(file->fd, TCGETS, &term) == 0;
