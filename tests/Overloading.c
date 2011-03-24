@@ -69,10 +69,10 @@ tsCase(Acute, "Overload") {
 	Assert($("Select s8 function by casting"),
 		this->type == MethodInt8);
 
-	/* This value can be represented by using either s64 or u64.
-	 * However, Clang chooses s64.
+	/* This value can be represented by using either s64 or u64. Without the
+	 * explicit cast, Clang issues an error on x86_64.
 	 */
-	call(Foo, -12345678987);
+	call(Foo, (s64) -12345678987);
 	Assert($("Select s64 function by using a large value"),
 		this->type == MethodInt64);
 
