@@ -13,7 +13,7 @@ int main(void) {
 
 	do {
 		s.len = BufferedStreamImpl.read(&stream, s.buf, String_GetSize(s));
-		String_Print(s.prot);
+		String_Print(s.rd);
 	} while (s.len > 0);
 
 	String_Destroy(&s);
