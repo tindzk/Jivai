@@ -199,7 +199,7 @@ def(bool, Successful) {
 def(bool, Run) {
 	Terminal_Configure(&this->term, true, true);
 
-	TestSuiteInstance inst = TestSuite_GetInstance();
+	TestSuite *inst = TestSuite_GetInstance();
 
 	TestSuite_SetTerminal(inst, &this->term);
 

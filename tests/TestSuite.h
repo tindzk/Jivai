@@ -85,7 +85,7 @@ class {
 	tripleConcat(self, _MethodCase, __LINE__)
 
 #define tsCaseMethod \
-	void tsCaseName(__unused InstName(self) $this, __unused TestSuite *ts)
+	void tsCaseName(__unused ExtendedInstName(self) $this, __unused TestSuite *ts)
 
 #define tsCase(caseLevel, descr)                \
 	tsCaseMethod;                               \
