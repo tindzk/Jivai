@@ -134,17 +134,19 @@ static inline sdef(void *, GetData) {
 		Exception_Raise(ref(e));   \
 	} while(0)
 
-#define try                                 \
-{                                           \
-	__label__ __exc_finally;                \
-	bool __exc_rethrow = false;             \
-	bool __exc_ignore_finally = false;      \
-	void *__exc_return_ptr = && __exc_done; \
-	                                        \
-	Exception_Frame __exc_frame;            \
-	Exception_Push(&__exc_frame);           \
-	                                        \
-	int e = setjmp(__exc_frame.jmpBuffer);  \
+#define try                                    \
+{                                              \
+	__label__ __exc_finally;                   \
+	/* Silence warnings about unused label. */ \
+	if (0) goto __exc_finally;                 \
+	bool __exc_rethrow = false;                \
+	bool __exc_ignore_finally = false;         \
+	void *__exc_return_ptr = && __exc_done;    \
+	                                           \
+	Exception_Frame __exc_frame;               \
+	Exception_Push(&__exc_frame);              \
+	                                           \
+	int e = setjmp(__exc_frame.jmpBuffer);     \
 	if (e == 0)
 
 #define catch(module, code) \
