@@ -57,7 +57,7 @@ InstanceMethods(Generic);
 
 /* Inline functions cannot be used as Pool's methods are not available yet. */
 #define Generic_New(size) (GenericInstance) { .object = Pool_Alloc(Pool_GetInstance(), size) }
-#define Generic_Free(instance) Pool_Free(Pool_GetInstance(), instance.object)
+#define Generic_Free(instance) Pool_Free(Pool_GetInstance(), (instance).object)
 
 record(GenericCallback) {
 	GenericInstance context;
