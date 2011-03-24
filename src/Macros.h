@@ -1,15 +1,5 @@
 #import "Compiler.h"
 
-/* Currently local labels are not supported by Clang.
- *
- * Therefore there cannot be more than one exception
- * block per function.
- *
- * See also http://llvm.org/bugs/show_bug.cgi?id=3429
- */
-#define __label__ \
-	__unused void *
-
 #define set(name)           \
 	typedef enum name name; \
 	enum name
