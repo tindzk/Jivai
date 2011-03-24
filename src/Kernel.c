@@ -1,4 +1,5 @@
 #import "Kernel.h"
+#import "UniStd.h" /* for syscall() */
 
 #define self Kernel
 

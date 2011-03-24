@@ -3,7 +3,6 @@
 #import <sys/syscall.h>
 
 #import "Types.h"
-#import "UniStd.h" /* for syscall() */
 
 #if defined(__x86_64__)
 #define __NR_stat64      __NR_stat
