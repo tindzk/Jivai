@@ -205,7 +205,7 @@
 		static name object;                                        \
 		static InstName(name) instance;                            \
 		if (tripleConcat(name, _, IsNull)(instance)) {             \
-			object   = tripleConcat(name, _, New)(instance, ## __VA_ARGS__); \
+			object   = tripleConcat(name, _, New)(__VA_ARGS__);    \
 			instance = tripleConcat(name, _, FromObject)(&object); \
 		}                                                          \
 		return instance;                                           \
