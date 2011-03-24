@@ -1,4 +1,5 @@
 #import "Logger.h"
+#import "ClientConnection.h"
 #import "SocketConnection.h"
 
 Interface(Connection) {
