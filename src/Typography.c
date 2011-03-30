@@ -187,6 +187,10 @@ static def(char, Read, size_t st, char next) {
 
 			case LITERAL:
 				if (prev == '\\') {
+					if (cur != '}' && next != '}') {
+						String_Append(&value, '\\');
+					}
+
 					String_Append(&value, cur);
 				} else if (cur == '}' && next == '}') {
 					call(Flush, &value);

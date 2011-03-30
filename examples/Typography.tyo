@@ -3,6 +3,7 @@
 	.b{.i{These}} are nested attributes.
 	.code{{Take this .i{literally}.}}
 	.code{{Take this .i{literally.\}}}
+	.code{{Take this .i{li\terally.\}}}
 }
 
 .chapter[Installation] {
