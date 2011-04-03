@@ -44,6 +44,9 @@
 #define scall(method, ...) \
 	ref(method)(__VA_ARGS__)
 
+#define ItfName(name) \
+	simpleConcat(name, Interface)
+
 #define InstName(name) \
 	simpleConcat(name, Instance)
 
@@ -62,13 +65,13 @@
 		GenericInstance generic;              \
 	} ExtendedInstName(name) transparentUnion; \
 
-#define Interface(name)               \
-	struct name##Interface;           \
-	record(name) {                    \
-		struct name##Interface *impl; \
-		GenericInstance         inst; \
-	};                                \
-	record(name##Interface)
+#define Interface(name)             \
+	struct ItfName(name);           \
+	record(name) {                  \
+		struct ItfName(name) *impl; \
+		GenericInstance      inst;  \
+	};                              \
+	record(ItfName(name))
 
 #define delegate(name, method, ...) \
 	(name).impl->method((name).inst, ## __VA_ARGS__)
@@ -77,7 +80,7 @@
 	(name).impl->method != NULL
 
 #define Impl(name) \
-	name##Interface ImplName(self)
+	ItfName(name) ImplName(self)
 
 #define DefineAs(name, implName)        \
 	static inline def(name, As##name) { \
@@ -89,27 +92,27 @@
 		};                              \
 	}
 
-#define ExportImpl(name)                             \
-	extern Impl(name);                               \
-	static inline sdef(name##Interface *, GetImpl) { \
-		return &ImplName(self);                      \
-	}                                                \
+#define ExportImpl(name)                           \
+	extern Impl(name);                             \
+	static inline sdef(ItfName(name) *, GetImpl) { \
+		return &ImplName(self);                    \
+	}                                              \
 	DefineAs(name, ImplName(self));
 
-#define ExportAnonImpl(module, name)                 \
-	name##Interface simpleConcat(module, Impl);      \
-	static inline sdef(name##Interface *, GetImpl) { \
-		return &simpleConcat(module, Impl);          \
+#define ExportAnonImpl(module, name)               \
+	ItfName(name) simpleConcat(module, Impl);      \
+	static inline sdef(ItfName(name) *, GetImpl) { \
+		return &simpleConcat(module, Impl);        \
 	}
 
 #define ImplExName(name) \
 	simpleConcat(self, _##name##Impl)
 
 #define ImplEx(name) \
-	name##Interface ImplExName(name)
+	ItfName(name) ImplExName(name)
 
 #define ExportAnonImplEx(module, name) \
-	name##Interface simpleConcat(module, _##name##Impl)
+	ItfName(name) simpleConcat(module, _##name##Impl)
 
 #define ExportImplEx(name) \
 	extern ImplEx(name);   \
