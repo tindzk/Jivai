@@ -7,9 +7,17 @@
 
 #define self GenericClientListener
 
+record(ref(Connection)) {
+	DoublyLinkedList_DeclareRef(ref(Connection));
+	SocketClient *client;
+	char object[];
+};
+
+DoublyLinkedList_DeclareList(ref(Connection), ref(Connections));
+
 class {
 	Logger              *logger;
-	ClientConnections   connections;
+	ref(Connections)    connections;
 	ConnectionInterface *connection;
 };
 

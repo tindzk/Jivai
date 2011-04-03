@@ -13,8 +13,8 @@ def(void, OnInit) {
 
 def(void, OnDestroy) {
 	/* Shut down all remaining connections. */
-	void (^destroy)(ClientConnection *) = ^(ClientConnection *conn) {
-		this->connection->destroy(ClientConnection_GetData(conn));
+	void (^destroy)(ref(Connection) *) = ^(ref(Connection) *conn) {
+		this->connection->destroy(&conn->object);
 
 		SocketClient_Destroy(conn->client);
 		Pool_Free(Pool_GetInstance(), conn);
@@ -28,10 +28,11 @@ def(bool, OnConnect) {
 }
 
 def(void, OnAccept, SocketClient *client) {
-	ClientConnection *conn = ClientConnection_Alloc(this->connection->size);
+	ref(Connection) *conn =
+		Pool_Alloc(Pool_GetInstance(),
+			sizeof(ref(Connection)) + this->connection->size);
 
-	this->connection->init(
-		ClientConnection_GetData(conn),
+	this->connection->init(&conn->object,
 		SocketClient_GetConn(client),
 		this->logger);
 
@@ -49,11 +50,10 @@ def(void, OnAccept, SocketClient *client) {
 }
 
 def(void, OnDisconnect, SocketClient *client) {
-	ClientConnection *conn = SocketClient_GetData(client);
+	ref(Connection) *conn = SocketClient_GetData(client);
 
 	if (conn != NULL) {
-		this->connection->destroy(
-			ClientConnection_GetData(conn));
+		this->connection->destroy(&conn->object);
 
 		DoublyLinkedList_Remove(&this->connections, conn);
 
@@ -64,13 +64,13 @@ def(void, OnDisconnect, SocketClient *client) {
 static def(ClientConnection_Status, OnData, SocketClient *client, bool pull) {
 	ClientConnection_Status status = ClientConnection_Status_Open;
 
-	ClientConnection *conn = SocketClient_GetData(client);
+	ref(Connection) *conn = SocketClient_GetData(client);
 
 	if (conn != NULL) {
 		try {
 			status = pull
-				? this->connection->pull(ClientConnection_GetData(conn))
-				: this->connection->push(ClientConnection_GetData(conn));
+				? this->connection->pull(&conn->object)
+				: this->connection->push(&conn->object);
 		} catch(SocketConnection, NotConnected) {
 			status = ClientConnection_Status_Close;
 		} catch(SocketConnection, ConnectionReset) {
