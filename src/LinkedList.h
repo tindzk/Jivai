@@ -1,3 +1,7 @@
+#import "Macros.h"
+
+Callback(LinkedList_OnDestroy, void, GenericInstance);
+
 #define LinkedList_New() \
 	{ NULL, NULL }
 
@@ -34,7 +38,7 @@
 		typeof((this)->first) next;                 \
 		while (node != NULL) {                      \
 			next = node->next;                      \
-			freeNode(node);                         \
+			callback(freeNode, node);               \
 			node = next;                            \
 		}                                           \
 		(this)->first = NULL;                       \

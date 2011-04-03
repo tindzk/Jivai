@@ -2,6 +2,8 @@
 
 #define self Server
 
+static def(void, OnEvent, int events, GenericInstance inst);
+
 def(void, Init, unsigned short port, ConnectionInterface *conn, Logger *logger) {
 	this->conn   = conn;
 	this->logger = logger;
@@ -23,7 +25,20 @@ def(void, Init, unsigned short port, ConnectionInterface *conn, Logger *logger) 
 		Poll_Events_Input |
 		Poll_Events_HangUp);
 
-	DoublyLinkedList_Init(&this->conns);
+	DoublyLinkedList_Init(&this->clients);
+}
+
+static def(void, _DestroyClient, GenericInstance inst) {
+	ref(Client) *client = inst.object;
+
+	/* Destroy all data associated with the client. */
+	this->conn->destroy(&client->object);
+
+	/* Close the connection. */
+	SocketConnection_Close(client->conn);
+
+	Pool_Free(Pool_GetInstance(), client->conn);
+	Pool_Free(Pool_GetInstance(), client);
 }
 
 def(void, Destroy) {
@@ -31,12 +46,8 @@ def(void, Destroy) {
 	Poll_Destroy(&this->poll);
 
 	/* Shut down all remaining connections. */
-	void (^destroy)(SocketClient *) = ^(SocketClient *client) {
-		this->conn->destroy(&client->object);
-		SocketClient_Destroy(client);
-	};
-
-	DoublyLinkedList_Destroy(&this->conns, destroy);
+	DoublyLinkedList_Destroy(&this->clients,
+		LinkedList_OnDestroy_For(this, ref(_DestroyClient)));
 }
 
 def(void, SetEdgeTriggered, bool value) {
@@ -47,17 +58,12 @@ def(void, Process) {
 	Poll_Process(&this->poll, -1);
 }
 
-def(void, DestroyClient, SocketClient *client) {
-	/* Destroy all data associated with the client. */
-	this->conn->destroy(&client->object);
-
-	DoublyLinkedList_Remove(&this->conns, client);
-
-	/* Close the connection. */
-	SocketClient_Destroy(client);
+def(void, DestroyClient, ref(Client) *client) {
+	DoublyLinkedList_Remove(&this->clients, client);
+	call(_DestroyClient, client);
 }
 
-static def(Connection_Status, OnData, SocketClient *client, bool pull) {
+static def(Connection_Status, OnData, ref(Client) *client, bool pull) {
 	Connection_Status status = Connection_Status_Open;
 
 	try {
@@ -79,15 +85,27 @@ static def(Connection_Status, OnData, SocketClient *client, bool pull) {
 	return status;
 }
 
-static def(void, AcceptClient) {
-	SocketClient *client = SocketClient_New(this->conn->size);
+static def(void, SocketAccept, ref(Client) *client) {
+	SocketConnection conn = Socket_Accept(&this->socket);
 
-	SocketClient_Accept(client, &this->socket);
+	client->conn =
+		SocketConnection_GetObject(
+			SocketConnection_Clone(&conn));
+
+	client->conn->corking     = true;
+	client->conn->nonblocking = true;
+}
+
+static def(void, AcceptClient) {
+	ref(Client) *client = Pool_Alloc(Pool_GetInstance(),
+		sizeof(ref(Client)) + this->conn->size);
+
+	call(SocketAccept, client);
 
 	this->conn->init(&client->object, client->conn, this->logger);
 
 	/* Add the client to the list of currently active connections. */
-	DoublyLinkedList_InsertEnd(&this->conns, client);
+	DoublyLinkedList_InsertEnd(&this->clients, client);
 
 	int flags =
 		Poll_Events_Error  |
@@ -106,12 +124,11 @@ static def(void, AcceptClient) {
 		BitMask_Set(flags, Poll_Events_Output);
 	}
 
-	Poll_AddEvent(&this->poll,
-		SocketClient_ToGeneric(client), client->conn->fd, flags);
+	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
 }
 
-def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
-	SocketClient *client = instClient.object;
+static def(void, OnEvent, int events, GenericInstance inst) {
+	ref(Client) *client = inst.object;
 
 	if (client == NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Incoming connection. */
