@@ -1,5 +1,5 @@
 #import "String.h"
-#import "StreamInterface.h"
+#import "Stream.h"
 
 #define self StringStream
 

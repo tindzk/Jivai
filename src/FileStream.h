@@ -1,5 +1,5 @@
 #import "File.h"
-#import "StreamInterface.h"
+#import "Stream.h"
 
 #define self FileStream
 

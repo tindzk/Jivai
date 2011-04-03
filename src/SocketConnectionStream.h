@@ -1,4 +1,4 @@
-#import "StreamInterface.h"
+#import "Stream.h"
 #import "SocketConnection.h"
 
 #define self SocketConnectionStream

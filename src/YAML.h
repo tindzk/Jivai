@@ -1,7 +1,7 @@
 #import "Tree.h"
 #import "String.h"
+#import "Stream.h"
 #import "Exception.h"
-#import "StreamInterface.h"
 
 #define self YAML
 

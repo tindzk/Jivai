@@ -2,7 +2,7 @@
 #import "../BitMask.h"
 #import "../HTML.h"
 #import "../String.h"
-#import "../StreamInterface.h"
+#import "../Stream.h"
 
 #define self HTML_Tokenizer
 

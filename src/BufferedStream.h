@@ -1,6 +1,6 @@
 #import "String.h"
 #import "Memory.h"
-#import "StreamInterface.h"
+#import "Stream.h"
 
 #define self BufferedStream
 
