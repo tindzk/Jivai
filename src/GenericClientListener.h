@@ -3,7 +3,7 @@
 #import "Server.h"
 #import "Connection.h"
 #import "ClientListener.h"
-#import "ClientConnection.h"
+#import "DoublyLinkedList.h"
 
 #define self GenericClientListener
 
@@ -27,8 +27,8 @@ def(void, OnDestroy);
 def(bool, OnConnect);
 def(void, OnAccept, SocketClient *client);
 def(void, OnDisconnect, SocketClient *client);
-def(ClientConnection_Status, OnPull, SocketClient *client);
-def(ClientConnection_Status, OnPush, SocketClient *client);
+def(Connection_Status, OnPull, SocketClient *client);
+def(Connection_Status, OnPush, SocketClient *client);
 
 ExportImpl(ClientListener);
 

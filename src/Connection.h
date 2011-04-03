@@ -1,12 +1,20 @@
 #import "Logger.h"
-#import "ClientConnection.h"
 #import "SocketConnection.h"
 
-Interface(Connection) {
+#define self Connection
+
+set(ref(Status)) {
+	ref(Status_Close),
+	ref(Status_Open)
+};
+
+Interface(self) {
 	size_t size;
 
-	void (*init)   (GenericInstance, SocketConnection *, Logger *);
-	void (*destroy)(GenericInstance);
-	ClientConnection_Status (*pull) (GenericInstance);
-	ClientConnection_Status (*push) (GenericInstance);
+	void        (*init)   (GenericInstance, SocketConnection *, Logger *);
+	void        (*destroy)(GenericInstance);
+	ref(Status) (*pull)   (GenericInstance);
+	ref(Status) (*push)   (GenericInstance);
 };
+
+#undef self

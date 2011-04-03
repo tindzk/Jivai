@@ -61,8 +61,8 @@ def(void, OnDisconnect, SocketClient *client) {
 	}
 }
 
-static def(ClientConnection_Status, OnData, SocketClient *client, bool pull) {
-	ClientConnection_Status status = ClientConnection_Status_Open;
+static def(Connection_Status, OnData, SocketClient *client, bool pull) {
+	Connection_Status status = Connection_Status_Open;
 
 	ref(Connection) *conn = SocketClient_GetData(client);
 
@@ -72,14 +72,14 @@ static def(ClientConnection_Status, OnData, SocketClient *client, bool pull) {
 				? this->connection->pull(&conn->object)
 				: this->connection->push(&conn->object);
 		} catch(SocketConnection, NotConnected) {
-			status = ClientConnection_Status_Close;
+			status = Connection_Status_Close;
 		} catch(SocketConnection, ConnectionReset) {
-			status = ClientConnection_Status_Close;
+			status = Connection_Status_Close;
 		} finally {
 
 		} tryEnd;
 
-		if (status == ClientConnection_Status_Close) {
+		if (status == Connection_Status_Close) {
 			/* Destroy all data associated with the client. */
 			call(OnDisconnect, client);
 
@@ -91,11 +91,11 @@ static def(ClientConnection_Status, OnData, SocketClient *client, bool pull) {
 	return status;
 }
 
-def(ClientConnection_Status, OnPull, SocketClient *client) {
+def(Connection_Status, OnPull, SocketClient *client) {
 	return call(OnData, client, true);
 }
 
-def(ClientConnection_Status, OnPush, SocketClient *client) {
+def(Connection_Status, OnPush, SocketClient *client) {
 	return call(OnData, client, false);
 }
 

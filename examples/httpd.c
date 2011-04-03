@@ -19,7 +19,6 @@
 #import <HTTP/Server.h>
 #import <Connection.h>
 #import <SocketClient.h>
-#import <ClientConnection.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
 #import <GenericClientListener.h>
@@ -202,25 +201,25 @@ def(void, Destroy) {
 	String_Destroy(&this->paramTest2);
 }
 
-def(ClientConnection_Status, Parse) {
+def(Connection_Status, Parse) {
 	this->gotData = true;
 
 	bool incomplete = HTTP_Server_Process(&this->server);
 
 	/* Whilst the request is incomplete, keep the connection alive. */
 	if (incomplete) {
-		return ClientConnection_Status_Open;
+		return Connection_Status_Open;
 	}
 
 	/* There is enough data but does the current request actually
 	 * support persistent connections?
 	 */
 	return this->persistent
-		? ClientConnection_Status_Open
-		: ClientConnection_Status_Close;
+		? Connection_Status_Open
+		: Connection_Status_Close;
 }
 
-def(ClientConnection_Status, Respond) {
+def(Connection_Status, Respond) {
 	/* In edge-triggered mode a new connection may start with a
 	 * `pull' request.
 	 *
@@ -229,7 +228,7 @@ def(ClientConnection_Status, Respond) {
 	 * This is prevented by ignoring the event.
 	 */
 	if (!this->gotData) {
-		return ClientConnection_Status_Open;
+		return Connection_Status_Open;
 	}
 
 	if (this->resp.len > 0) {
@@ -239,13 +238,13 @@ def(ClientConnection_Status, Respond) {
 		bool incomplete = (this->resp.len > 0);
 
 		if (incomplete) {
-			return ClientConnection_Status_Open;
+			return Connection_Status_Open;
 		}
 	}
 
 	return this->persistent
-		? ClientConnection_Status_Open
-		: ClientConnection_Status_Close;
+		? Connection_Status_Open
+		: Connection_Status_Close;
 }
 
 #undef self
@@ -268,11 +267,11 @@ def(void, Destroy) {
 	Request_Destroy(&this->request);
 }
 
-def(ClientConnection_Status, Push) {
+def(Connection_Status, Push) {
 	return Request_Parse(&this->request);
 }
 
-def(ClientConnection_Status, Pull) {
+def(Connection_Status, Pull) {
 	return Request_Respond(&this->request);
 }
 
