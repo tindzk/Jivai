@@ -2,8 +2,8 @@
 #import "Logger.h"
 #import "Server.h"
 #import "Connection.h"
+#import "ClientListener.h"
 #import "ClientConnection.h"
-#import "ClientListenerInterface.h"
 
 #define self GenericClientListener
 

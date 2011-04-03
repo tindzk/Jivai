@@ -2,8 +2,8 @@
 #import "Socket.h"
 #import "BitMask.h"
 #import "SocketClient.h"
+#import "ClientListener.h"
 #import "ClientConnection.h"
-#import "ClientListenerInterface.h"
 
 #ifndef Server_ConnectionLimit
 #define Server_ConnectionLimit 1024
