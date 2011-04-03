@@ -44,9 +44,6 @@
 #define scall(method, ...) \
 	ref(method)(__VA_ARGS__)
 
-#define Method(ret, method, ...) \
-	ret (*method)(GenericInstance $this, ## __VA_ARGS__)
-
 #define InstName(name) \
 	simpleConcat(name, Instance)
 

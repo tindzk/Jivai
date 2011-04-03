@@ -5,8 +5,8 @@
 Interface(Connection) {
 	size_t size;
 
-	Method(void, init, SocketConnection *, Logger *);
-	Method(void, destroy);
-	Method(ClientConnection_Status, pull);
-	Method(ClientConnection_Status, push);
+	void (*init)   (GenericInstance, SocketConnection *, Logger *);
+	void (*destroy)(GenericInstance);
+	ClientConnection_Status (*pull) (GenericInstance);
+	ClientConnection_Status (*push) (GenericInstance);
 };
