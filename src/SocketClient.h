@@ -1,18 +1,18 @@
 #import "Socket.h"
+#import "DoublyLinkedList.h"
 
 #define self SocketClient
 
 class {
+	DoublyLinkedList_DeclareRef(self);
 	SocketConnection *conn;
-	void *data;
+	char object[];
 };
+
+DoublyLinkedList_DeclareList(self, SocketClients);
 
 rsdef(self *, New);
 def(void, Destroy);
-def(void, SetData, void *data);
-def(void *, GetData);
-def(SocketConnection *, GetConn);
-def(ssize_t, GetFd);
 def(void, Accept, Socket *socket);
 
 #undef self

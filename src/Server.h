@@ -1,8 +1,9 @@
 #import "Poll.h"
+#import "Block.h"
 #import "Socket.h"
 #import "BitMask.h"
+#import "Connection.h"
 #import "SocketClient.h"
-#import "ClientListener.h"
 
 #ifndef Server_ConnectionLimit
 #define Server_ConnectionLimit 1024
@@ -15,16 +16,17 @@ class {
 	Poll poll;
 
 	Socket socket;
+	Logger *logger;
 
-	ClientListener listener;
+	SocketClients       conns;
+	ConnectionInterface *conn;
 };
 
-def(void, Init, unsigned short port, ClientListener listener);
+def(void, Init, unsigned short port, ConnectionInterface *conn, Logger *logger);
 def(void, Destroy);
 def(void, SetEdgeTriggered, bool value);
 def(void, Process);
 def(void, DestroyClient, SocketClient *client);
-def(void, AcceptClient);
 def(void, OnEvent, int events, SocketClientExtendedInstance instClient);
 
 #undef self

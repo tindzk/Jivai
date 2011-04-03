@@ -21,7 +21,6 @@
 #import <SocketClient.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
-#import <GenericClientListener.h>
 
 // -------
 // Request
@@ -291,9 +290,9 @@ ExportImpl(Connection);
 // main
 // ----
 
-bool startServer(Server *server, ClientListener listener) {
+bool startServer(Server *server, ConnectionInterface *conn, Logger *logger) {
 	try {
-		Server_Init(server, 8080, listener);
+		Server_Init(server, 8080, conn, logger);
 		String_Print($("Server started.\n"));
 		excReturn true;
 	} catch(Socket, AddressInUse) {
@@ -311,14 +310,9 @@ int main(void) {
 
 	Logger logger = Logger_New(Logger_Printer_Empty());
 
-	GenericClientListener listener;
-	GenericClientListener_Init(&listener, HttpConnection_GetImpl(), &logger);
-
 	Server server;
 
-	if (!startServer(&server,
-		GenericClientListener_AsClientListener(&listener)))
-	{
+	if (!startServer(&server, HttpConnection_GetImpl(), &logger)) {
 		return ExitStatus_Failure;
 	}
 

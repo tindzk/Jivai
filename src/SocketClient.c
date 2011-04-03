@@ -2,12 +2,9 @@
 
 #define self SocketClient
 
-rsdef(self *, New) {
-	self *res = Pool_Alloc(Pool_GetInstance(), sizeof(self));
-
+rsdef(self *, New, size_t size) {
+	self *res = Pool_Alloc(Pool_GetInstance(), sizeof(self) + size);
 	res->conn = NULL;
-	res->data = NULL;
-
 	return res;
 }
 
@@ -18,22 +15,6 @@ def(void, Destroy) {
 	}
 
 	Pool_Free(Pool_GetInstance(), this);
-}
-
-def(void, SetData, void *data) {
-	this->data = data;
-}
-
-def(void *, GetData) {
-	return this->data;
-}
-
-def(SocketConnection *, GetConn) {
-	return this->conn;
-}
-
-def(ssize_t, GetFd) {
-	return this->conn->fd;
 }
 
 def(void, Accept, Socket *socket) {

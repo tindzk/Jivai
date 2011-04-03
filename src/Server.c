@@ -2,8 +2,9 @@
 
 #define self Server
 
-def(void, Init, unsigned short port, ClientListener listener) {
-	this->listener = listener;
+def(void, Init, unsigned short port, ConnectionInterface *conn, Logger *logger) {
+	this->conn   = conn;
+	this->logger = logger;
 	this->edgeTriggered = true;
 
 	Poll_Init(&this->poll, Poll_OnEvent_For(this, ref(OnEvent)));
@@ -22,14 +23,20 @@ def(void, Init, unsigned short port, ClientListener listener) {
 		Poll_Events_Input |
 		Poll_Events_HangUp);
 
-	delegate(this->listener, onInit);
+	DoublyLinkedList_Init(&this->conns);
 }
 
 def(void, Destroy) {
 	Socket_Destroy(&this->socket);
 	Poll_Destroy(&this->poll);
 
-	delegate(this->listener, onDestroy);
+	/* Shut down all remaining connections. */
+	void (^destroy)(SocketClient *) = ^(SocketClient *client) {
+		this->conn->destroy(&client->object);
+		SocketClient_Destroy(client);
+	};
+
+	DoublyLinkedList_Destroy(&this->conns, destroy);
 }
 
 def(void, SetEdgeTriggered, bool value) {
@@ -41,17 +48,46 @@ def(void, Process) {
 }
 
 def(void, DestroyClient, SocketClient *client) {
-	delegate(this->listener, onDisconnect, client);
+	/* Destroy all data associated with the client. */
+	this->conn->destroy(&client->object);
 
+	DoublyLinkedList_Remove(&this->conns, client);
+
+	/* Close the connection. */
 	SocketClient_Destroy(client);
 }
 
-def(void, AcceptClient) {
-	SocketClient *client = SocketClient_New();
+static def(Connection_Status, OnData, SocketClient *client, bool pull) {
+	Connection_Status status = Connection_Status_Open;
+
+	try {
+		status = pull
+			? this->conn->pull(&client->object)
+			: this->conn->push(&client->object);
+	} catch(SocketConnection, NotConnected) {
+		status = Connection_Status_Close;
+	} catch(SocketConnection, ConnectionReset) {
+		status = Connection_Status_Close;
+	} finally {
+
+	} tryEnd;
+
+	if (status == Connection_Status_Close) {
+		call(DestroyClient, client);
+	}
+
+	return status;
+}
+
+static def(void, AcceptClient) {
+	SocketClient *client = SocketClient_New(this->conn->size);
 
 	SocketClient_Accept(client, &this->socket);
 
-	delegate(this->listener, onAccept, client);
+	this->conn->init(&client->object, client->conn, this->logger);
+
+	/* Add the client to the list of currently active connections. */
+	DoublyLinkedList_InsertEnd(&this->conns, client);
 
 	int flags =
 		Poll_Events_Error  |
@@ -62,18 +98,16 @@ def(void, AcceptClient) {
 		BitMask_Set(flags, Poll_Events_EdgeTriggered);
 	}
 
-	if (implements(this->listener, onPush)) {
+	if (this->conn->push != NULL) {
 		BitMask_Set(flags, Poll_Events_Input);
 	}
 
-	if (implements(this->listener, onPull)) {
+	if (this->conn->pull != NULL) {
 		BitMask_Set(flags, Poll_Events_Output);
 	}
 
 	Poll_AddEvent(&this->poll,
-		SocketClient_ToGeneric(client),
-		SocketClient_GetFd(client),
-		flags);
+		SocketClient_ToGeneric(client), client->conn->fd, flags);
 }
 
 def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
@@ -82,7 +116,7 @@ def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
 	if (client == NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Incoming connection. */
 
-		if (delegate(this->listener, onConnect)) {
+		if (true) { /* TODO Make it possible to limit incoming connections. */
 			call(AcceptClient);
 		} else {
 			/* This is necessary, else the same event will occur
@@ -96,14 +130,14 @@ def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
 
 	if (client != NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
-		if (!delegate(this->listener, onPush, client)) {
+		if (!call(OnData, client, false)) {
 			client = NULL;
 		}
 	}
 
 	if (client != NULL && BitMask_Has(events, Poll_Events_Output)) {
 		/* Client requests data. */
-		if (!delegate(this->listener, onPull, client)) {
+		if (!call(OnData, client, true)) {
 			client = NULL;
 		}
 	}
