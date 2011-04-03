@@ -41,7 +41,7 @@ def(void, Process) {
 }
 
 def(void, DestroyClient, SocketClient *client) {
-	delegate(this->listener, onClientDisconnect, client);
+	delegate(this->listener, onDisconnect, client);
 
 	SocketClient_Destroy(client);
 }
@@ -51,7 +51,7 @@ def(void, AcceptClient) {
 
 	SocketClient_Accept(client, &this->socket);
 
-	delegate(this->listener, onClientAccept, client);
+	delegate(this->listener, onAccept, client);
 
 	int flags =
 		Poll_Events_Error  |
@@ -82,7 +82,7 @@ def(void, OnEvent, int events, SocketClientExtendedInstance instClient) {
 	if (client == NULL && BitMask_Has(events, Poll_Events_Input)) {
 		/* Incoming connection. */
 
-		if (delegate(this->listener, onClientConnect)) {
+		if (delegate(this->listener, onConnect)) {
 			call(AcceptClient);
 		} else {
 			/* This is necessary, else the same event will occur
