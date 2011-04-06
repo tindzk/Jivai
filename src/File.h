@@ -59,11 +59,11 @@ def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
 sdef(void, GetContents, RdString path, String *res);
 
-static inline overload def(size_t, Write, RdString s) {
+static alwaysInline overload def(size_t, Write, RdString s) {
 	return call(Write, s.buf, s.len);
 }
 
-static inline overload def(size_t, Write, char c) {
+static alwaysInline overload def(size_t, Write, char c) {
 	return call(Write, &c, 1);
 }
 
