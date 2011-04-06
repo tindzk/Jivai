@@ -170,18 +170,17 @@ def(void, Parse, ref(Type) type, RdString s) {
 		}
 
 		RdString method = String_Slice(s, 0, posMethod);
-		call(ParseMethod, method);
 
 		RdString version = String_Slice(s,
 			pos1stLine - $("HTTP/1.1").len,
 			$("HTTP/1.1").len);
 
-		call(ParseVersion, version);
-
 		RdString path = String_Slice(s,
 			method.len + 1,
 			pos1stLine - version.len - (method.len + 1) - 1);
 
+		call(ParseVersion, version);
+		call(ParseMethod, method);
 		call(ParseUri, path);
 	} else {
 		ssize_t posVersion = String_Find(s, ' ');
@@ -191,7 +190,6 @@ def(void, Parse, ref(Type) type, RdString s) {
 		}
 
 		RdString version = String_Slice(s, 0, posVersion);
-		call(ParseVersion, version);
 
 		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
@@ -200,6 +198,8 @@ def(void, Parse, ref(Type) type, RdString s) {
 		}
 
 		RdString code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
+
+		call(ParseVersion, version);
 		call(ParseStatus, code);
 	}
 
