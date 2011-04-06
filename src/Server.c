@@ -130,42 +130,44 @@ static def(void, AcceptClient) {
 static def(void, OnEvent, int events, GenericInstance inst) {
 	ref(Client) *client = inst.object;
 
-	if (client == NULL && BitMask_Has(events, Poll_Events_Input)) {
-		/* Incoming connection. */
+	if (client == NULL) {
+		if (BitMask_Has(events, Poll_Events_Input)) {
+			/* Incoming connection. */
 
-		if (true) { /* TODO Make it possible to limit incoming connections. */
-			call(AcceptClient);
-		} else {
-			/* This is necessary, else the same event will occur
-			 * again the next time epoll_wait() gets called.
-			 */
+			if (true) { /* TODO Make it possible to limit incoming connections. */
+				call(AcceptClient);
+			} else {
+				/* This is necessary, else the same event will occur
+				 * again the next time epoll_wait() gets called.
+				 */
 
-			SocketConnection conn = Socket_Accept(&this->socket);
-			SocketConnection_Close(&conn);
+				SocketConnection conn = Socket_Accept(&this->socket);
+				SocketConnection_Close(&conn);
+			}
 		}
+
+		return;
 	}
 
-	if (client != NULL && BitMask_Has(events, Poll_Events_Input)) {
-		/* Receiving data from client. */
-		if (!call(OnData, client, false)) {
-			client = NULL;
-		}
-	}
-
-	if (client != NULL && BitMask_Has(events, Poll_Events_Output)) {
-		/* Client requests data. */
-		if (!call(OnData, client, true)) {
-			client = NULL;
-		}
-	}
-
-	if (client != NULL &&
-		BitMask_Has(events,
+	if (BitMask_Has(events,
 			Poll_Events_Error  |
 			Poll_Events_HangUp |
 			Poll_Events_PeerHangUp))
 	{
 		/* Error occured or connection hung up. */
 		call(DestroyClient, client);
+		return;
+	}
+
+	if (BitMask_Has(events, Poll_Events_Input)) {
+		/* Receiving data from client. */
+		if (!call(OnData, client, false)) {
+			return;
+		}
+	}
+
+	if (BitMask_Has(events, Poll_Events_Output)) {
+		/* Client requests data. */
+		call(OnData, client, true);
 	}
 }
