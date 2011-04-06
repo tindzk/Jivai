@@ -136,6 +136,7 @@ static inline sdef(void *, GetData) {
 
 #define try                                    \
 {                                              \
+	__label__ __exc_done;                      \
 	__label__ __exc_finally;                   \
 	/* Silence warnings about unused label. */ \
 	if (0) goto __exc_finally;                 \
