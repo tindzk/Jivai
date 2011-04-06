@@ -15,9 +15,9 @@ rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLeng
 		.body   = String_New(0),
 		.header = String_New(maxHeaderLength),
 
-		.state   = ref(State_Header),
-		.conn    = conn,
-		.cleanup = false,
+		.state      = ref(State_Header),
+		.conn       = conn,
+		.newRequest = true,
 
 		.headers.persistentConnection = false,
 
@@ -31,6 +31,10 @@ def(void, Destroy) {
 	String_Destroy(&this->header);
 	String_Destroy(&this->body);
 	String_Destroy(&this->headers.boundary);
+}
+
+def(void, BindRequest, ref(OnRequest) onRequest) {
+	this->events.onRequest = onRequest;
 }
 
 def(void, BindMethod, HTTP_OnMethod onMethod) {
@@ -141,12 +145,14 @@ static def(void, OnHeader, RdString name, RdString value) {
 }
 
 def(ref(Result), ReadHeader) {
-	if (this->cleanup) {
+	if (this->newRequest) {
+		callback(this->events.onRequest);
+
 		/* Clean up variables from previous requests. */
 		this->headers.contentLength = 0;
 		this->headers.contentType = HTTP_ContentType_Unset;
 
-		this->cleanup = false;
+		this->newRequest = false;
 	}
 
 	if (this->body.buf != NULL) {
@@ -206,6 +212,11 @@ def(ref(Result), ReadHeader) {
 			throw(HeaderTooLarge);
 		}
 	}
+
+	/* The next time ReadHeader() gets called, the `onRequest' event will be
+	 * invoked and headers referring to the current request will be cleared.
+	 */
+	this->newRequest = true;
 
 	/* Trim the request and update requestOffset accordingly. */
 	RdString cleaned = String_Trim(this->header.rd, String_TrimLeft);
@@ -279,11 +290,6 @@ def(ref(Result), ReadHeader) {
 }
 
 def(ref(Result), ReadBody) {
-	/* The next time ReadHeader() gets called, some headers
-	 * referring to the current request will be cleared.
-	 */
-	this->cleanup = true;
-
 	if (this->headers.contentType == HTTP_ContentType_MultiPart) {
 		/* TODO */
 	} else {

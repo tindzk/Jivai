@@ -17,6 +17,7 @@
 // @exc HeaderTooLarge
 // @exc UnknownContentType
 
+Callback(ref(OnRequest), void);
 Callback(ref(OnRespond), void, bool);
 
 set(ref(State)) {
@@ -32,7 +33,7 @@ set(ref(Result)) {
 };
 
 class {
-	bool               cleanup;
+	bool               newRequest;
 	String             body;
 	String             header;
 	size_t             maxHeaderLength;
@@ -42,6 +43,7 @@ class {
 	ref(State)         state;
 
 	struct {
+		ref(OnRequest)   onRequest;
 		HTTP_OnMethod    onMethod;
 		HTTP_OnVersion   onVersion;
 		HTTP_OnPath      onPath;
@@ -61,6 +63,7 @@ class {
 
 rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 def(void, Destroy);
+def(void, BindRequest, ref(OnRequest) onRequest);
 def(void, BindMethod, HTTP_OnMethod onMethod);
 def(void, BindVersion, HTTP_OnVersion onVersion);
 def(void, BindPath, HTTP_OnPath onPath);
