@@ -11,14 +11,13 @@
  * crash on malformed requests.
  */
 
-#import <Signal.h>
+#import <Main.h>
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
 #import <Connection.h>
-#import <SocketClient.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
 
@@ -43,7 +42,15 @@ class {
 
 	String paramTest;
 	String paramTest2;
+
+	Logger *logger;
 };
+
+def(void, OnRequest) {
+	String strFd = Integer_ToString(this->conn->fd);
+	Logger_Info(this->logger, $("Receiving request (via fd=%)."), strFd.rd);
+	String_Destroy(&strFd);
+}
 
 def(void, OnHttpVersion, HTTP_Version version) {
 	this->version = version;
@@ -54,6 +61,7 @@ def(void, OnMethod, HTTP_Method method) {
 }
 
 def(void, OnPath, RdString path) {
+	Logger_Info(this->logger, $("Client requested '%'."), path);
 	String_Copy(&this->path, path);
 }
 
@@ -153,8 +161,9 @@ def(void, OnRespond, bool persistent) {
 	this->persistent = persistent;
 }
 
-def(void, Init, SocketConnection *conn) {
-	this->conn       = conn;
+def(void, Init, Connection_Client *client, Logger *logger) {
+	this->logger     = logger;
+	this->conn       = client->conn;
 	this->resp       = String_New(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
@@ -170,28 +179,39 @@ def(void, Init, SocketConnection *conn) {
 	this->paramTest  = String_New(256);
 	this->paramTest2 = String_New(256);
 
-	this->server = HTTP_Server_New(conn, 2048, 4096);
+	this->server = HTTP_Server_New(client->conn, 2048, 4096);
+
+	HTTP_Server_BindRequest(&this->server,
+		HTTP_Server_OnRequest_For(this, ref(OnRequest)));
 
 	HTTP_Server_BindVersion(&this->server,
-		HTTP_OnVersion_For(this, Request_OnHttpVersion));
+		HTTP_OnVersion_For(this, ref(OnHttpVersion)));
 
 	HTTP_Server_BindMethod(&this->server,
-		HTTP_OnMethod_For(this, Request_OnMethod));
+		HTTP_OnMethod_For(this, ref(OnMethod)));
 
 	HTTP_Server_BindPath(&this->server,
-		HTTP_OnPath_For(this, Request_OnPath));
+		HTTP_OnPath_For(this, ref(OnPath)));
 
 	HTTP_Server_BindQueryParameter(&this->server,
-		HTTP_OnParameter_For(this, Request_OnQueryParameter));
+		HTTP_OnParameter_For(this, ref(OnQueryParameter)));
 
 	HTTP_Server_BindBodyParameter(&this->server,
-		HTTP_OnParameter_For(this, Request_OnBodyParameter));
+		HTTP_OnParameter_For(this, ref(OnBodyParameter)));
 
 	HTTP_Server_BindRespond(&this->server,
-		HTTP_Server_OnRespond_For(this, Request_OnRespond));
+		HTTP_Server_OnRespond_For(this, ref(OnRespond)));
+
+	String strFd = Integer_ToString(this->conn->fd);
+	Logger_Info(this->logger, $("Incoming connection (fd=%)."), strFd.rd);
+	String_Destroy(&strFd);
 }
 
 def(void, Destroy) {
+	String strFd = Integer_ToString(this->conn->fd);
+	Logger_Info(this->logger, $("Closing connection (fd=%)."), strFd.rd);
+	String_Destroy(&strFd);
+
 	HTTP_Server_Destroy(&this->server);
 
 	String_Destroy(&this->resp);
@@ -258,8 +278,8 @@ class {
 	Request request;
 };
 
-def(void, Init, SocketConnection *conn, __unused Logger *logger) {
-	Request_Init(&this->request, conn);
+def(void, Init, Connection_Client *client, Logger *logger) {
+	Request_Init(&this->request, client, logger);
 }
 
 def(void, Destroy) {
@@ -286,42 +306,31 @@ ExportImpl(Connection);
 
 #undef self
 
-// ----
-// main
-// ----
+// -----------
+// Application
+// -----------
 
-bool startServer(Server *server, ConnectionInterface *conn, Logger *logger) {
+#define self Application
+
+def(bool, Run) {
+	Server server;
+
 	try {
-		Server_Init(server, 8080, conn, logger);
-		String_Print($("Server started.\n"));
-		excReturn true;
+		Server_Init(&server, 8080, HttpConnection_GetImpl(), &this->logger);
+		Logger_Info(&this->logger, $("Server started."));
 	} catch(Socket, AddressInUse) {
-		String_Print($("The address is already in use!\n"));
+		Logger_Error(&this->logger, $("The address is already in use!"));
 		excReturn false;
 	} finally {
 
 	} tryEnd;
-
-	return false;
-}
-
-int main(void) {
-	Signal0();
-
-	Logger logger = Logger_New(Logger_Printer_Empty());
-
-	Server server;
-
-	if (!startServer(&server, HttpConnection_GetImpl(), &logger)) {
-		return ExitStatus_Failure;
-	}
 
 	try {
 		while (true) {
 			Server_Process(&server);
 		}
 	} catch(Signal, SigInt) {
-		String_Print($("Server shutdown.\n"));
+		Logger_Info(&this->logger, $("Server shutdown."));
 	} catchAny {
 		Exception_Print(e);
 
@@ -331,10 +340,10 @@ int main(void) {
 			Exception_GetTraceLength());
 #endif
 
-		excReturn ExitStatus_Failure;
+		excReturn false;
 	} finally {
 		Server_Destroy(&server);
 	} tryEnd;
 
-	return ExitStatus_Success;
+	return true;
 }
