@@ -35,9 +35,9 @@ static def(void, _DestroyClient, GenericInstance inst) {
 	this->conn->destroy(&client->object);
 
 	/* Close the connection. */
-	SocketConnection_Close(client->conn);
+	SocketConnection_Close(client->client.conn);
 
-	Pool_Free(Pool_GetInstance(), client->conn);
+	Pool_Free(Pool_GetInstance(), client->client.conn);
 	Pool_Free(Pool_GetInstance(), client);
 }
 
@@ -88,21 +88,23 @@ static def(Connection_Status, OnData, ref(Client) *client, bool pull) {
 static def(void, SocketAccept, ref(Client) *client) {
 	SocketConnection conn = Socket_Accept(&this->socket);
 
-	client->conn =
+	client->client.conn =
 		SocketConnection_GetObject(
 			SocketConnection_Clone(&conn));
 
-	client->conn->corking     = true;
-	client->conn->nonblocking = true;
+	client->client.conn->corking     = true;
+	client->client.conn->nonblocking = true;
 }
 
 static def(void, AcceptClient) {
 	ref(Client) *client = Pool_Alloc(Pool_GetInstance(),
 		sizeof(ref(Client)) + this->conn->size);
 
+	client->client.state = Connection_State_Established;
+
 	call(SocketAccept, client);
 
-	this->conn->init(&client->object, client->conn, this->logger);
+	this->conn->init(&client->object, &client->client, this->logger);
 
 	/* Add the client to the list of currently active connections. */
 	DoublyLinkedList_InsertEnd(&this->clients, client);
@@ -124,7 +126,7 @@ static def(void, AcceptClient) {
 		BitMask_Set(flags, Poll_Events_Output);
 	}
 
-	Poll_AddEvent(&this->poll, client, client->conn->fd, flags);
+	Poll_AddEvent(&this->poll, client, client->client.conn->fd, flags);
 }
 
 static def(void, OnEvent, int events, GenericInstance inst) {

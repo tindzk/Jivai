@@ -8,10 +8,23 @@ set(ref(Status)) {
 	ref(Status_Open)
 };
 
+set(ref(State)) {
+	ref(State_Established), /* Nothing received/sent yet. */
+	ref(State_Receiving),   /* Receiving data.            */
+	ref(State_Sending),     /* Sending data.              */
+	ref(State_Processing),  /* Processing input.          */
+	ref(State_Idle)         /* No activity on both ends.  */
+};
+
+record(ref(Client)) {
+	ref(State)       state;
+	SocketConnection *conn;
+};
+
 Interface(self) {
 	size_t size;
 
-	void        (*init)   (GenericInstance, SocketConnection *, Logger *);
+	void        (*init)   (GenericInstance, ref(Client) *, Logger *);
 	void        (*destroy)(GenericInstance);
 	ref(Status) (*pull)   (GenericInstance);
 	ref(Status) (*push)   (GenericInstance);

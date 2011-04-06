@@ -12,8 +12,8 @@
 
 record(ref(Client)) {
 	DoublyLinkedList_DeclareRef(ref(Client));
-	SocketConnection *conn;
-	char object[];
+	Connection_Client client;
+	char              object[];
 };
 
 DoublyLinkedList_DeclareList(ref(Client), ref(Clients));
