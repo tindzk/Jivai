@@ -6,178 +6,140 @@
  * $ telnet localhost 1337
  *
  * Then type "info", "active" or "exit".
- *
- * This example shows the possibilities of using a custom client
- * listener like reacting on incoming connections just as they
- * arrive. However, this low-level approach is hardly ever needed
- * and it's generally advisable to use the default client
- * listener which also has the advantage of keeping track of all
- * active connections and closing them automatically on shutdown.
- * See also the httpd.c which makes use of it.
  */
 
-#import <Signal.h>
+#import <Main.h>
 #import <Server.h>
 #import <Socket.h>
+#import <Logger.h>
 #import <Integer.h>
-#import <SocketClient.h>
-#import <SocketConnection.h>
 
-// ----------
-// ClientData
-// ----------
+size_t activeConn = 0;
 
-record(ClientData) {
-	int id;
-};
+// ----------------
+// CustomConnection
+// ----------------
 
-// --------------------
-// CustomClientListener
-// --------------------
-
-#define self CustomClientListener
+#define self CustomConnection
 
 class {
-	ssize_t activeConn;
+	size_t            id;
+	Logger            *logger;
+	Connection_Client *client;
 };
 
-def(void, OnInit) {
-	this->activeConn = 0;
+def(void, Init, Connection_Client *client, Logger *logger) {
+	this->id = activeConn;
+	activeConn++;
+
+	this->client = client;
+	this->logger = logger;
+
+	String strAddr = NetworkAddress_ToString(client->conn->addr);
+	String strPort = Integer_ToString(client->conn->addr.port);
+	String strFd   = Integer_ToString(client->conn->fd);
+
+	Logger_Info(this->logger,
+		$("Incoming TCP connection from %:%, fd=%"),
+		strAddr.rd, strPort.rd, strFd.rd);
+
+	String_Destroy(&strAddr);
+	String_Destroy(&strPort);
+	String_Destroy(&strFd);
+
+	SocketConnection_Write(client->conn, $("Hi.\n"));
 }
 
-def(void, OnDestroy) {
-	/* ... */
+def(void, Destroy) {
+	String strAddr = NetworkAddress_ToString(this->client->conn->addr);
+	String strPort = Integer_ToString(this->client->conn->addr.port);
+	String strFd   = Integer_ToString(this->client->conn->fd);
+
+	Logger_Info(this->logger,
+		$("Client %:%, fd=% disconnected"),
+		strAddr.rd, strPort.rd, strFd.rd);
+
+	String_Destroy(&strAddr);
+	String_Destroy(&strPort);
+	String_Destroy(&strFd);
+
+	activeConn--;
 }
 
-def(bool, OnConnect) {
-	/* Don't allow more than five parallel connections. */
-	return this->activeConn < 5;
-}
+def(Connection_Status, OnData) {
+	String s = String_New(1024);
+	s.len = SocketConnection_Read(this->client->conn, s.buf, String_GetSize(s));
 
-def(void, OnAccept, SocketClient *client) {
-	ClientData *data = New(ClientData);
-	data->id = this->activeConn;
+	RdString input = String_Trim(s.rd);
 
-	client->data = data;
+	String strFd = Integer_ToString(this->client->conn->fd);
+	Logger_Info(this->logger,
+		$("Received data from fd=%: '%'"), strFd.rd, input);
+	String_Destroy(&strFd);
 
-	String tmp;
+	if (String_Equals(input, $("info"))) {
+		String strId = Integer_ToString(this->id);
 
-	String_FmtPrint(
-		$("Got TCP connection from %:%, fd=%\n"),
-		tmp = NetworkAddress_ToString(client->conn->addr),
-		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd));
-
-	String_Destroy(&tmp);
-
-	String resp = $("Hi.\n");
-	SocketConnection_Write(client->conn, resp.buf, resp.len);
-
-	this->activeConn++;
-}
-
-def(void, OnDisconnect, SocketClient *client) {
-	String tmp;
-
-	String_FmtPrint(
-		$("Client %:%, fd=% disconnected\n"),
-		tmp = NetworkAddress_ToString(client->conn->addr),
-		Integer_ToString(client->conn->addr.port),
-		Integer_ToString(client->conn->fd));
-
-	String_Destroy(&tmp);
-
-	Memory_Free(client->data);
-
-	this->activeConn--;
-}
-
-def(ClientConnection_Status, OnData, SocketClient *client) {
-	String s = StackString(1024);
-	s.len = SocketConnection_Read(client->conn, s.buf, s.size);
-
-	String input = String_Trim(s);
-
-	String_FmtPrint(
-		$("Received data from fd=%: '%'\n"),
-		Int16_ToString(client->conn->fd), input);
-
-	if (String_BeginsWith(input, $("info"))) {
-		ClientData *data = client->data;
-
-		String resp = String_Format(
-			$("You have the ID %.\n"),
-			Int32_ToString(data->id));
-
-		SocketConnection_Write(client->conn, resp.buf, resp.len);
+		String resp = String_Format($("You have the ID %.\n"), strId.rd);
+		SocketConnection_Write(this->client->conn, resp.rd);
 
 		String_Destroy(&resp);
-	} else if (String_BeginsWith(input, $("active"))) {
-		String tmp = String_Format(
-			$("% active connection(s).\n"),
-			Int32_ToString(this->activeConn - 1));
+		String_Destroy(&strId);
+	} else if (String_Equals(input, $("active"))) {
+		String strActive = Integer_ToString(activeConn);
 
-		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
-		String_Destroy(&tmp);
-	} else if (String_BeginsWith(input, $("exit"))) {
-		String tmp = $("Bye.\n");
-		SocketConnection_Write(client->conn, tmp.buf, tmp.len);
+		String resp = String_Format( $("% active connection(s).\n"),
+			strActive.rd);
 
-		/* Do not use SocketConnection_Close(client->conn); because
-		 * it would not free all resources related to the client. It
-		 * does not emit an "OnDisconnect" event either.
-		 */
+		SocketConnection_Write(this->client->conn, resp.rd);
 
-		call(OnDisconnect, client);
+		String_Destroy(&resp);
+		String_Destroy(&strActive);
+	} else if (String_Equals(input, $("exit"))) {
+		SocketConnection_Write(this->client->conn, $("Bye.\n"));
 
-		SocketClient_Destroy(client);
-		SocketClient_Free(client);
-
-		return ClientConnection_Status_Close;
+		String_Destroy(&s);
+		return Connection_Status_Close;
 	}
 
-	return ClientConnection_Status_Open;
+	String_Destroy(&s);
+
+	return Connection_Status_Open;
 }
 
-Impl(ClientListener) = {
-	.onInit             = (void *) ref(OnInit),
-	.onDestroy          = (void *) ref(OnDestroy),
-	.onClientConnect    = (void *) ref(OnConnect),
-	.onClientAccept     = (void *) ref(OnAccept),
-	.onClientDisconnect = (void *) ref(OnDisconnect),
-	.onPush             = (void *) ref(OnData)
+Impl(Connection) = {
+	.size    = sizeof(self),
+	.init    = ref(Init),
+	.destroy = ref(Destroy),
+	.push    = ref(OnData)
 };
 
-ExportImpl(ClientListener);
+ExportImpl(Connection);
 
 #undef self
 
-// ----
-// main
-// ----
+// -----------
+// Application
+// -----------
 
-int main(void) {
-	Signal0();
+#define self Application
 
+def(bool, Run) {
 	Server server;
-	CustomClientListener listener;
+	Server_Init(&server, 1337, CustomConnection_GetImpl(), &this->logger);
+	Server_SetEdgeTriggered(&server, false);
 
 	try {
-		Server_Init(&server, 1337,
-			CustomClientListener_AsClientListener(&listener));
-
-		Server_SetEdgeTriggered(&server, false);
-
-		String_Print($("Server started.\n"));
+		Logger_Info(&this->logger, $("Server started."));
 
 		while (true) {
 			Server_Process(&server);
 		}
-	} clean catch (Signal, SigInt) {
-		String_Print($("Server shutdown.\n"));
+	} catch (Signal, SigInt) {
+		Logger_Info(&this->logger, $("Server shutdown."));
 	} finally {
 		Server_Destroy(&server);
 	} tryEnd;
 
-	return ExitStatus_Success;
+	return true;
 }
