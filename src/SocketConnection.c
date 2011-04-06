@@ -82,7 +82,7 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 	return true;
 }
 
-def(ssize_t, Write, void *buf, size_t len) {
+overload def(ssize_t, Write, void *buf, size_t len) {
 	int flags = MSG_NOSIGNAL;
 
 	if (this->corking) {

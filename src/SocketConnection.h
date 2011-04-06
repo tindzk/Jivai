@@ -37,7 +37,11 @@ MemoryHelpers(self);
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);
-def(ssize_t, Write, void *buf, size_t len);
+overload def(ssize_t, Write, void *buf, size_t len);
 def(void, Close);
+
+static alwaysInline overload def(size_t, Write, RdString s) {
+	return call(Write, s.buf, s.len);
+}
 
 #undef self

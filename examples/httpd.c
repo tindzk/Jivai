@@ -141,9 +141,9 @@ def(void, OnRespond, bool persistent) {
 
 	String_Destroy(&strLength);
 
-	SocketConnection_Write(this->conn, envelope.buf, envelope.len);
+	SocketConnection_Write(this->conn, envelope.rd);
 
-	size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
+	size_t written = SocketConnection_Write(this->conn, this->resp.rd);
 	String_Crop(&this->resp, written);
 
 	SocketConnection_Flush(this->conn);
@@ -251,7 +251,7 @@ def(Connection_Status, Respond) {
 	}
 
 	if (this->resp.len > 0) {
-		size_t written = SocketConnection_Write(this->conn, this->resp.buf, this->resp.len);
+		size_t written = SocketConnection_Write(this->conn, this->resp.rd);
 		String_Crop(&this->resp, written);
 
 		bool incomplete = (this->resp.len > 0);
