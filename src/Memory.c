@@ -58,12 +58,7 @@ __malloc rsdef(void *, Alloc, size_t size) {
 }
 
 sdef(void, Free, void *pMem) {
-#if Memory_PointerChecks
-	if (pMem == NULL) {
-		throw(NullPointer);
-	}
-#endif
-
+	assert(pMem != NULL);
 	free(pMem);
 }
 
@@ -74,11 +69,7 @@ __malloc rsdef(void *, Realloc, void *pMem, size_t size) {
 	}
 #endif
 
-#if Memory_PointerChecks
-	if (pMem == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
+	assert(pMem != NULL);
 
 	void *res = realloc(pMem, size);
 
@@ -102,11 +93,7 @@ sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len)
 		throw(Overlapping);
 	}
 
-#if Memory_PointerChecks
-	if (pDest == NULL || pSource == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
+	assert(pDest != NULL && pSource != NULL);
 
 	memcpy(pDest, pSource, len);
 }
@@ -118,11 +105,7 @@ __malloc rsdef(void *, Clone, void *pSource, size_t size) {
 	}
 #endif
 
-#if Memory_PointerChecks
-	if (pSource == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
+	assert(pSource != NULL);
 
 	void *pDest = malloc(size);
 
@@ -142,11 +125,7 @@ rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len) {
 		return true;
 	}
 
-#if Memory_PointerChecks
-	if (ptr1 == NULL || ptr2 == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
+	assert(ptr1 != NULL && ptr2 != NULL);
 
 	return memcmp(ptr1, ptr2, len) == 0;
 }
@@ -158,11 +137,7 @@ sdef(void, Move, void *pDest, void *pSource, size_t len) {
 	}
 #endif
 
-#if Memory_PointerChecks
-	if (pDest == NULL || pSource == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
+	assert(pDest != NULL && pSource != NULL);
 
 	memmove(pDest, pSource, len);
 }

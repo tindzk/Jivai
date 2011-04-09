@@ -8,6 +8,8 @@
 
 #define self Exception
 
+// @exc AssertFailed
+
 #ifndef Exception_SaveOrigin
 #define Exception_SaveOrigin 1
 #endif
@@ -18,6 +20,10 @@
 
 #ifndef Exception_TraceSize
 #define Exception_TraceSize 15
+#endif
+
+#ifndef Exception_Assert
+#define Exception_Assert 1
 #endif
 
 /* Stack frame. */
@@ -211,5 +217,16 @@ static inline sdef(void *, GetData) {
 	Exception_SetException();        \
 	__exc_rethrow = true;            \
 	goto __exc_finally
+
+#if Exception_Assert
+	#define assert(expr)                             \
+		if (!(expr)) {                               \
+			Exception_SetMessage($$(#expr));         \
+			Exception_SetException();                \
+			Exception_Raise(Exception_AssertFailed); \
+		}
+#else
+	#define assert(...)
+#endif
 
 #undef self

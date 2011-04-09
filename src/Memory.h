@@ -10,10 +10,6 @@
 #define Memory_BoundaryChecks 1
 #endif
 
-#ifndef Memory_PointerChecks
-#define Memory_PointerChecks 0
-#endif
-
 #ifndef Memory_OutOfMemoryChecks
 #define Memory_OutOfMemoryChecks 0
 #endif

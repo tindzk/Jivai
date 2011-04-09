@@ -2,13 +2,15 @@
  * make sense.
  */
 #define Memory_BoundaryChecks    1
-#define Memory_PointerChecks     1
 #define Memory_OutOfMemoryChecks 0
 
 /* Save the file name and line number from which an exception was
  * raised.
  */
 #define Exception_SaveOrigin 1
+
+/* Enable assertions. */
+#define Exception_Assert 1
 
 /* Include a trace with 20 elements at most. */
 #define Exception_SaveTrace  1

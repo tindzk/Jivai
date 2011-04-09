@@ -6,7 +6,24 @@ ExceptionManager __exc_mgr = {
 	.cur = NULL
 };
 
+sdef(String, FormatAssert) {
+#if Exception_SaveOrigin
+	return String_Format(
+		$("Assertion '%' failed (in %)."),
+		Exception_GetMessage().rd,
+		Exception_GetOrigin());
+#else
+	return String_Format(
+		$("Assertion '%' failed."),
+		Exception_GetMessage());
+#endif
+}
+
 sdef(String, Format, int code) {
+	if (code == ref(AssertFailed)) {
+		return scall(FormatAssert);
+	}
+
 #if Exception_SaveOrigin
 	return String_Format(
 		$("Uncaught exception %.% (in %)"),
