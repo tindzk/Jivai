@@ -124,14 +124,14 @@ static inline sdef(void *, GetData) {
 	#define Exception_SetTrace(e)
 #endif
 
-#define Exception_SetException(c)     \
+#define Exception_SetException()      \
 	Exception_SetTrace();             \
 	Exception_SetOrigin($$(__func__)) \
 
-#define throw(e)                   \
-	do {                           \
-		Exception_SetException(e); \
-		Exception_Raise(ref(e));   \
+#define throw(e)                  \
+	do {                          \
+		Exception_SetException(); \
+		Exception_Raise(ref(e));  \
 	} while(0)
 
 #define try                                    \
@@ -208,7 +208,7 @@ static inline sdef(void *, GetData) {
 
 #define excThrow(code)               \
 	e = tripleConcat(self, _, code); \
-	Exception_SetException(code);    \
+	Exception_SetException();        \
 	__exc_rethrow = true;            \
 	goto __exc_finally
 
