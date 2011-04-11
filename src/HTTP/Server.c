@@ -326,6 +326,30 @@ def(ref(Result), ReadBody) {
 	return ref(Result_Complete);
 }
 
+def(bool, Dispatch) {
+	callback(this->events.onRespond, this->headers.persistentConnection);
+	this->state = ref(State_Header);
+
+	if (this->header.len == 0) {
+		/* We're not aware of any upcoming requests. Thus, Process() must be
+		 * called manually as soon as epoll notifies about new data on the
+		 * socket.
+		 */
+		return false;
+	}
+
+	/* We already have the next request in our header buffer. Process it right
+	 * now.
+	 */
+	return call(Process);
+}
+
+/* Call this method when you're sure that there is some data available on the
+ * socket. Otherwise an `OnRequest' event will be triggered in ReadHeader() even
+ * though recv() might have returned with EAGAIN.
+ *
+ * Returns true when more data is required.
+ */
 def(bool, Process) {
 	ref(Result) res = ref(Result_Error);
 
@@ -334,9 +358,7 @@ def(bool, Process) {
 	} else if (this->state == ref(State_Body)) {
 		res = call(ReadBody);
 	} else if (this->state == ref(State_Dispatch)) {
-		callback(this->events.onRespond, this->headers.persistentConnection);
-		this->state = ref(State_Header);
-		return false;
+		return call(Dispatch);
 	}
 
 	if (res == ref(Result_Complete)) {
