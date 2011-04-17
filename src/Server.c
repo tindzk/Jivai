@@ -2,74 +2,42 @@
 
 #define self Server
 
-static def(void, OnEvent, int events, GenericInstance inst);
+rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
+	self res = (self) {
+		.conn          = conn,
+		.logger        = logger,
+		.edgeTriggered = true
+	};
 
-def(void, Init, unsigned short port, ConnectionInterface *conn, Logger *logger) {
-	this->conn   = conn;
-	this->logger = logger;
-	this->edgeTriggered = true;
+	Socket_Init(&res.socket, Socket_Protocol_TCP);
 
-	Poll_Init(&this->poll, Poll_OnEvent_For(this, ref(OnEvent)));
+	Socket_SetCloexecFlag    (&res.socket, true);
+	Socket_SetReusableFlag   (&res.socket, true);
+	Socket_SetNonBlockingFlag(&res.socket, true);
 
-	Socket_Init(&this->socket, Socket_Protocol_TCP);
-
-	Socket_SetCloexecFlag    (&this->socket, true);
-	Socket_SetReusableFlag   (&this->socket, true);
-	Socket_SetNonBlockingFlag(&this->socket, true);
-
-	Socket_Listen(&this->socket, port, ref(ConnectionLimit));
-
-	/* Add the server socket to epoll. */
-	Poll_AddEvent(&this->poll, Generic_Null(), this->socket.fd,
-		Poll_Events_Error |
-		Poll_Events_Input |
-		Poll_Events_HangUp);
-
-	DoublyLinkedList_Init(&this->clients);
-}
-
-static def(void, _DestroyClient, GenericInstance inst) {
-	ref(Client) *client = inst.object;
-
-	/* Destroy all data associated with the client. */
-	this->conn->destroy(&client->object);
-
-	/* Close the connection. */
-	SocketConnection_Close(client->client.conn);
-
-	Pool_Free(Pool_GetInstance(), client->client.conn);
-	Pool_Free(Pool_GetInstance(), client);
+	return res;
 }
 
 def(void, Destroy) {
 	Socket_Destroy(&this->socket);
-	Poll_Destroy(&this->poll);
 
-	/* Shut down all remaining connections. */
-	DoublyLinkedList_Destroy(&this->clients,
-		LinkedList_OnDestroy_For(this, ref(_DestroyClient)));
+	/* The EventLoop may still have pointers to this instance. Therefore, we
+	 * need to destroy it now before the object gets ivnalidated.
+	 */
+	EventLoop_Destroy(EventLoop_GetInstance());
 }
 
 def(void, SetEdgeTriggered, bool value) {
 	this->edgeTriggered = value;
 }
 
-def(void, Process) {
-	Poll_Process(&this->poll, -1);
-}
-
-def(void, DestroyClient, ref(Client) *client) {
-	DoublyLinkedList_Remove(&this->clients, client);
-	call(_DestroyClient, client);
-}
-
-static def(Connection_Status, OnData, ref(Client) *client, bool pull) {
+static def(void, OnData, ref(Client) *client, bool pull) {
 	Connection_Status status = Connection_Status_Open;
 
 	try {
 		status = pull
-			? this->conn->pull(&client->object)
-			: this->conn->push(&client->object);
+			? this->conn->pull(client->object)
+			: this->conn->push(client->object);
 	} catch(SocketConnection, NotConnected) {
 		status = Connection_Status_Close;
 	} catch(SocketConnection, ConnectionReset) {
@@ -79,97 +47,52 @@ static def(Connection_Status, OnData, ref(Client) *client, bool pull) {
 	} tryEnd;
 
 	if (status == Connection_Status_Close) {
-		call(DestroyClient, client);
+		EventLoop_DetachClient(EventLoop_GetInstance(), client);
 	}
-
-	return status;
 }
 
-static def(void, SocketAccept, ref(Client) *client) {
-	SocketConnection conn = Socket_Accept(&this->socket);
-
-	client->client.conn =
-		SocketConnection_GetObject(
-			SocketConnection_Clone(&conn));
-
-	client->client.conn->corking     = true;
-	client->client.conn->nonblocking = true;
+static def(void, OnDestroy, GenericInstance inst) {
+	ref(Client) *client = inst.object;
+	this->conn->destroy(client->object);
 }
 
-static def(void, AcceptClient) {
-	ref(Client) *client = Pool_Alloc(Pool_GetInstance(),
-		sizeof(ref(Client)) + this->conn->size);
+static def(void, OnPull, GenericInstance inst) {
+	assert(this->conn->pull != NULL);
+	call(OnData, inst.object, true);
+}
 
+static def(void, OnPush, GenericInstance inst) {
+	assert(this->conn->push != NULL);
+	call(OnData, inst.object, false);
+}
+
+static def(size_t, GetSize) {
+	return sizeof(ref(Client)) + this->conn->size;
+}
+
+static def(void, OnConnection, Socket *socket) {
+	EventLoop_ClientEntry *entry =
+		EventLoop_AcceptClient(EventLoop_GetInstance(),
+			socket, this->edgeTriggered, call(AsEventLoop_Client));
+
+	ref(Client) *client = (void *) entry->data;
+
+	client->client.conn  = &entry->conn;
 	client->client.state = Connection_State_Established;
 
-	call(SocketAccept, client);
-
-	this->conn->init(&client->object, &client->client, this->logger);
-
-	/* Add the client to the list of currently active connections. */
-	DoublyLinkedList_InsertEnd(&this->clients, client);
-
-	int flags =
-		Poll_Events_Error  |
-		Poll_Events_HangUp |
-		Poll_Events_PeerHangUp;
-
-	if (this->edgeTriggered) {
-		BitMask_Set(flags, Poll_Events_EdgeTriggered);
-	}
-
-	if (this->conn->push != NULL) {
-		BitMask_Set(flags, Poll_Events_Input);
-	}
-
-	if (this->conn->pull != NULL) {
-		BitMask_Set(flags, Poll_Events_Output);
-	}
-
-	Poll_AddEvent(&this->poll, client, client->client.conn->fd, flags);
+	this->conn->init(client->object, &client->client, this->logger);
 }
 
-static def(void, OnEvent, int events, GenericInstance inst) {
-	ref(Client) *client = inst.object;
+def(void, Listen, unsigned short port) {
+	Socket_Listen(&this->socket, port, ref(ConnectionLimit));
 
-	if (client == NULL) {
-		if (BitMask_Has(events, Poll_Events_Input)) {
-			/* Incoming connection. */
-
-			if (true) { /* TODO Make it possible to limit incoming connections. */
-				call(AcceptClient);
-			} else {
-				/* This is necessary, else the same event will occur
-				 * again the next time epoll_wait() gets called.
-				 */
-
-				SocketConnection conn = Socket_Accept(&this->socket);
-				SocketConnection_Close(&conn);
-			}
-		}
-
-		return;
-	}
-
-	if (BitMask_Has(events,
-			Poll_Events_Error  |
-			Poll_Events_HangUp |
-			Poll_Events_PeerHangUp))
-	{
-		/* Error occured or connection hung up. */
-		call(DestroyClient, client);
-		return;
-	}
-
-	if (BitMask_Has(events, Poll_Events_Input)) {
-		/* Receiving data from client. */
-		if (!call(OnData, client, false)) {
-			return;
-		}
-	}
-
-	if (BitMask_Has(events, Poll_Events_Output)) {
-		/* Client requests data. */
-		call(OnData, client, true);
-	}
+	EventLoop_AttachSocket(EventLoop_GetInstance(), &this->socket,
+		EventLoop_OnConnection_For(this, ref(OnConnection)));
 }
+
+Impl(EventLoop_Client) = {
+	.getSize   = ref(GetSize),
+	.onInput   = ref(OnPull),
+	.onOutput  = ref(OnPush),
+	.onDestroy = ref(OnDestroy)
+};

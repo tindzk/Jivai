@@ -15,20 +15,19 @@
 #import <Server.h>
 #import <Socket.h>
 #import <Integer.h>
+#import <EventLoop.h>
 #import <HTTP/Method.h>
 #import <HTTP/Server.h>
-#import <Connection.h>
 #import <SocketConnection.h>
 #import <DoublyLinkedList.h>
 
-// -------
-// Request
-// -------
+// --------------
+// HttpConnection
+// --------------
 
-#define self Request
+#define self HttpConnection
 
 class {
-	bool gotData;
 	bool persistent;
 
 	HTTP_Server  server;
@@ -167,7 +166,6 @@ def(void, Init, Connection_Client *client, Logger *logger) {
 	this->resp       = String_New(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
-	this->gotData    = false;
 	this->persistent = false;
 	this->path       = String_New(0);
 
@@ -221,8 +219,6 @@ def(void, Destroy) {
 }
 
 def(Connection_Status, Parse) {
-	this->gotData = true;
-
 	bool incomplete = HTTP_Server_Process(&this->server);
 
 	/* Whilst the request is incomplete, keep the connection alive. */
@@ -239,17 +235,6 @@ def(Connection_Status, Parse) {
 }
 
 def(Connection_Status, Respond) {
-	/* In edge-triggered mode a new connection may start with a
-	 * `pull' request.
-	 *
-	 * However, as this->persistent is false, the connection would
-	 * be closed right away without even receiving any data.
-	 * This is prevented by ignoring the event.
-	 */
-	if (!this->gotData) {
-		return Connection_Status_Open;
-	}
-
 	if (this->resp.len > 0) {
 		size_t written = SocketConnection_Write(this->conn, this->resp.rd);
 		String_Crop(&this->resp, written);
@@ -266,40 +251,12 @@ def(Connection_Status, Respond) {
 		: Connection_Status_Close;
 }
 
-#undef self
-
-// --------------
-// HttpConnection
-// --------------
-
-#define self HttpConnection
-
-class {
-	Request request;
-};
-
-def(void, Init, Connection_Client *client, Logger *logger) {
-	Request_Init(&this->request, client, logger);
-}
-
-def(void, Destroy) {
-	Request_Destroy(&this->request);
-}
-
-def(Connection_Status, Push) {
-	return Request_Parse(&this->request);
-}
-
-def(Connection_Status, Pull) {
-	return Request_Respond(&this->request);
-}
-
 Impl(Connection) = {
 	.size    = sizeof(self),
 	.init    = ref(Init),
 	.destroy = ref(Destroy),
-	.push    = ref(Push),
-	.pull    = ref(Pull)
+	.pull    = ref(Parse),
+	.push    = ref(Respond)
 };
 
 ExportImpl(Connection);
@@ -313,10 +270,10 @@ ExportImpl(Connection);
 #define self Application
 
 def(bool, Run) {
-	Server server;
+	Server server = Server_New(HttpConnection_GetImpl(), &this->logger);
 
 	try {
-		Server_Init(&server, 8080, HttpConnection_GetImpl(), &this->logger);
+		Server_Listen(&server, 8080);
 		Logger_Info(&this->logger, $("Server started."));
 	} catch(Socket, AddressInUse) {
 		Logger_Error(&this->logger, $("The address is already in use!"));
@@ -326,9 +283,7 @@ def(bool, Run) {
 	} tryEnd;
 
 	try {
-		while (true) {
-			Server_Process(&server);
-		}
+		EventLoop_Run(EventLoop_GetInstance());
 	} catch(Signal, SigInt) {
 		Logger_Info(&this->logger, $("Server shutdown."));
 	} catchAny {

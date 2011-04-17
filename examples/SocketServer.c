@@ -107,11 +107,16 @@ def(Connection_Status, OnData) {
 	return Connection_Status_Open;
 }
 
+def(Connection_Status, OnPush) {
+	return Connection_Status_Open;
+}
+
 Impl(Connection) = {
 	.size    = sizeof(self),
 	.init    = ref(Init),
 	.destroy = ref(Destroy),
-	.push    = ref(OnData)
+	.pull    = ref(OnData),
+	.push    = ref(OnPush)
 };
 
 ExportImpl(Connection);
@@ -125,16 +130,13 @@ ExportImpl(Connection);
 #define self Application
 
 def(bool, Run) {
-	Server server;
-	Server_Init(&server, 1337, CustomConnection_GetImpl(), &this->logger);
+	Server server = Server_New(CustomConnection_GetImpl(), &this->logger);;
 	Server_SetEdgeTriggered(&server, false);
+	Server_Listen(&server, 1337);
 
 	try {
 		Logger_Info(&this->logger, $("Server started."));
-
-		while (true) {
-			Server_Process(&server);
-		}
+		EventLoop_Run(EventLoop_GetInstance());
 	} catch (Signal, SigInt) {
 		Logger_Info(&this->logger, $("Server shutdown."));
 	} finally {
