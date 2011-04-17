@@ -21,6 +21,10 @@ record(ref(Client)) {
 	SocketConnection *conn;
 };
 
+/* pull = receive data and begin sending the response
+ * push = send the rest of the response
+ */
+
 Interface(self) {
 	size_t size;
 
