@@ -220,6 +220,17 @@
 		return instance.object;                                    \
 	}
 
+#define SingletonEx(name, ...)                                     \
+	SingletonPrototype(name) {                                     \
+		static name object;                                        \
+		static InstName(name) instance;                            \
+		if (tripleConcat(name, _, IsNull)(instance)) {             \
+			tripleConcat(name, _, Init)(&object);                  \
+			instance = tripleConcat(name, _, FromObject)(&object); \
+		}                                                          \
+		return instance.object;                                    \
+	}
+
 #define SingletonDestructor(name)                 \
 	Destructor {                                  \
 		self *instance =                          \
