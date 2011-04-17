@@ -330,7 +330,7 @@ def(bool, Dispatch) {
 	callback(this->events.onRespond, this->headers.persistentConnection);
 	this->state = ref(State_Header);
 
-	if (this->header.len == 0) {
+	if (String_Trim(this->header.rd).len == 0) {
 		/* We're not aware of any upcoming requests. Thus, Process() must be
 		 * called manually as soon as epoll notifies about new data on the
 		 * socket.
