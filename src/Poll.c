@@ -21,7 +21,7 @@ def(void, Destroy) {
 	Kernel_close(this->fd);
 }
 
-def(void, AddEvent, GenericInstance inst, ssize_t fd, int events) {
+def(void, AddEvent, GenericInstance inst, int fd, int events) {
 	EpollEvent ev = { 0, {0} };
 
 	ev.ptr    = Generic_GetObject(inst);
@@ -42,7 +42,7 @@ def(void, AddEvent, GenericInstance inst, ssize_t fd, int events) {
 	}
 }
 
-def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
+def(void, ModifyEvent, GenericInstance inst, int fd, int events) {
 	EpollEvent ev = { 0, {0} };
 
 	ev.ptr    = Generic_GetObject(inst);
@@ -63,7 +63,7 @@ def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events) {
 	}
 }
 
-def(void, DeleteEvent, ssize_t fd) {
+def(void, DeleteEvent, int fd) {
 	errno = 0;
 
 	if (Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {

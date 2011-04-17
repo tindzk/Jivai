@@ -31,7 +31,7 @@ set(ref(Events)) {
 Callback(ref(OnEvent), void, int events, GenericInstance inst);
 
 class {
-	ssize_t fd;
+	int fd;
 	EpollEvent events[ref(NumEvents)];
 	ref(OnEvent) onEvent;
 };
@@ -45,9 +45,9 @@ class {
 
 def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
-def(void, AddEvent, GenericInstance inst, ssize_t fd, int events);
-def(void, ModifyEvent, GenericInstance inst, ssize_t fd, int events);
-def(void, DeleteEvent, ssize_t fd);
+def(void, AddEvent, GenericInstance inst, int fd, int events);
+def(void, ModifyEvent, GenericInstance inst, int fd, int events);
+def(void, DeleteEvent, int fd);
 def(size_t, Process, int timeout);
 
 #undef self
