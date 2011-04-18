@@ -12,6 +12,7 @@
 
 // @exc EmptyRequestUri
 // @exc RequestMalformed
+// @exc ResponseMalformed
 // @exc UnknownMethod
 // @exc UnknownStatus
 // @exc UnknownVersion

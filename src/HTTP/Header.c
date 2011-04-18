@@ -221,21 +221,11 @@ def(void, ParseRequest, RdString s) {
 def(void, ParseResponse, RdString s) {
 	call(PreParse, s);
 
-	ssize_t posVersion = String_Find(s, ' ');
+	RdString version, code;
 
-	if (posVersion == String_NotFound) {
-		throw(RequestMalformed);
+	if (!String_Parse($("% % "), s, &version, &code)) {
+		throw(ResponseMalformed);
 	}
-
-	RdString version = String_Slice(s, 0, posVersion);
-
-	ssize_t posCode = String_Find(s, posVersion + 1, ' ');
-
-	if (posCode == String_NotFound) {
-		throw(RequestMalformed);
-	}
-
-	RdString code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
 
 	callback(this->events.onResponseInfo, (HTTP_ResponseInfo) {
 		.version = call(ParseVersion, version),
