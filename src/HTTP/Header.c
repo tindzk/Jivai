@@ -4,15 +4,13 @@
 
 rsdef(self, New, ref(Events) events) {
 	return (self) {
-		.events = events,
-		.pos1stLine = -1,
-		.pos2ndLine = -1
+		.events     = events,
+		.pos1stLine = -1
 	};
 }
 
 static def(void, PreParse, RdString s) {
 	this->pos1stLine = String_Find(s, '\n');
-	this->pos2ndLine = this->pos1stLine;
 
 	if (this->pos1stLine == String_NotFound) {
 		throw(RequestMalformed);
@@ -112,34 +110,24 @@ def(void, ParseUriParameters, RdString s) {
 	}
 }
 
-def(void, ParseHeaderLine, RdString s) {
-	if (hasCallback(this->events.onHeader)) {
+static def(void, ParseHeaders, RdString s) {
+	if (!hasCallback(this->events.onHeader)) {
+		return;
+	}
+
+	RdString line    = $("");
+	RdString subject = String_Slice(s, this->pos1stLine);
+
+	while (String_Split(subject, '\n', &line)) {
+		if (String_Trim(line).len == 0) {
+			continue;
+		}
+
 		RdString name, value;
-		if (String_Parse($("%: %"), s, &name, &value)) {
+		if (String_Parse($("%: %"), line, &name, &value)) {
 			callback(this->events.onHeader,
 				String_Trim(name),
 				String_Trim(value));
-		}
-	}
-}
-
-static def(void, ParseHeaders, RdString s) {
-	size_t len;
-	size_t last = this->pos2ndLine;
-
-	for (size_t i = this->pos2ndLine + 1; i < s.len; i++) {
-		if (s.buf[i] == '\n') {
-			if (s.buf[i - 1] == '\r') {
-				len = i - last - 2;
-			} else {
-				len = i - last - 1;
-			}
-
-			if (len > 0) {
-				call(ParseHeaderLine, String_Slice(s, last + 1, len));
-			}
-
-			last = i;
 		}
 	}
 }

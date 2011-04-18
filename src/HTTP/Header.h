@@ -27,7 +27,6 @@ record(ref(Events)) {
 class {
 	ref(Events) events;
 	ssize_t pos1stLine;
-	ssize_t pos2ndLine;
 };
 
 rsdef(self, New, ref(Events) events);
@@ -36,7 +35,6 @@ def(HTTP_Version, ParseVersion, RdString s);
 def(HTTP_Status, ParseStatus, RdString s);
 def(CarrierString, ParseUri, RdString s);
 def(void, ParseUriParameters, RdString s);
-def(void, ParseHeaderLine, RdString s);
 sdef(ssize_t, GetLength, RdString str);
 def(void, ParseRequest, RdString s);
 def(void, ParseResponse, RdString s);
