@@ -3,8 +3,7 @@
 #import <SocketConnection.h>
 
 int main(void) {
-	Socket socket;
-	Socket_Init(&socket, Socket_Protocol_TCP);
+	Socket socket = Socket_New(Socket_Protocol_TCP);
 
 	SocketConnection conn =
 		Socket_Connect(&socket, $("www.kernel.org"), 80);

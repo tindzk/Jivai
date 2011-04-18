@@ -28,7 +28,7 @@ class {
 	Socket_Protocol protocol;
 };
 
-def(void, Init, ref(Protocol) protocol);
+rsdef(self, New, ref(Protocol) protocol);
 def(void, SetNonBlockingFlag, bool enable);
 def(void, SetCloexecFlag, bool enable);
 def(void, SetReusableFlag, bool enable);

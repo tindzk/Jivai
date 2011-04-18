@@ -23,8 +23,7 @@ bool HTTP_Client_Receive(SocketConnection *conn, String *resp) {
 }
 
 void HTTP_Client_GetResponse(String hostname, String path, unsigned short port, String *resp) {
-	Socket socket;
-	Socket_Init(&socket, Socket_Protocol_TCP);
+	Socket socket = Socket_New(Socket_Protocol_TCP);
 
 	SocketConnection conn = Socket_Connect(&socket, hostname, port);
 

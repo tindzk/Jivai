@@ -6,10 +6,9 @@ rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
 	self res = (self) {
 		.conn          = conn,
 		.logger        = logger,
-		.edgeTriggered = true
+		.edgeTriggered = true,
+		.socket        = Socket_New(Socket_Protocol_TCP)
 	};
-
-	Socket_Init(&res.socket, Socket_Protocol_TCP);
 
 	Socket_SetCloexecFlag    (&res.socket, true);
 	Socket_SetReusableFlag   (&res.socket, true);

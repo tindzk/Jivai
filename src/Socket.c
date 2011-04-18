@@ -2,10 +2,12 @@
 
 #define self Socket
 
-def(void, Init, ref(Protocol) protocol) {
-	this->fd       = -1;
-	this->unused   = true;
-	this->protocol = protocol;
+rsdef(self, New, ref(Protocol) protocol) {
+	self res = {
+		.fd       = -1,
+		.unused   = true,
+		.protocol = protocol
+	};
 
 	int style = (protocol == ref(Protocol_TCP))
 		? SOCK_STREAM
@@ -15,9 +17,11 @@ def(void, Init, ref(Protocol) protocol) {
 		? IPPROTO_TCP
 		: IPPROTO_UDP;
 
-	if ((this->fd = Kernel_socket(PF_INET, style, proto)) == -1) {
+	if ((res.fd = Kernel_socket(PF_INET, style, proto)) == -1) {
 		throw(SocketFailed);
 	}
+
+	return res;
 }
 
 def(void, SetNonBlockingFlag, bool enable) {
@@ -106,7 +110,7 @@ def(SocketConnection, Connect, RdString hostname, unsigned short port) {
 
 	if (!this->unused) {
 		call(Destroy);
-		call(Init, this->protocol);
+		*this = scall(New, this->protocol);
 	}
 
 	if (!Kernel_connect(this->fd, &addr, sizeof(addr))) {
