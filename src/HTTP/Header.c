@@ -184,21 +184,12 @@ sdef(ssize_t, GetLength, RdString str) {
 def(void, ParseRequest, RdString s) {
 	call(PreParse, s);
 
-	ssize_t posMethod = String_Find(s, ' ');
+	RdString line = String_Slice(s, 0, this->pos1stLine);
 
-	if (posMethod == String_NotFound) {
+	RdString method, uri, version;
+	if (!String_Parse($("% % %"), line, &method, &uri, &version)) {
 		throw(RequestMalformed);
 	}
-
-	RdString method = String_Slice(s, 0, posMethod);
-
-	RdString version = String_Slice(s,
-		this->pos1stLine - $("HTTP/1.1").len,
-		$("HTTP/1.1").len);
-
-	RdString uri = String_Slice(s,
-		method.len + 1,
-		this->pos1stLine - version.len - (method.len + 1) - 1);
 
 	CarrierString path = call(ParseUri, uri);
 
