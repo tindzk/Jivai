@@ -212,24 +212,25 @@ def(Connection_Status, Parse) {
 		return Connection_Status_Open;
 	}
 
-	/* There is enough data but does the current request actually
-	 * support persistent connections?
-	 */
+	/* Does the client support persistent connections? */
 	return this->persistent
 		? Connection_Status_Open
 		: Connection_Status_Close;
 }
 
 def(Connection_Status, Respond) {
+	if (this->resp.len == 0) {
+		return call(Parse);
+	}
+
+	size_t written = SocketConnection_Write(this->conn, this->resp.rd);
+	String_Crop(&this->resp, written);
+
 	if (this->resp.len > 0) {
-		size_t written = SocketConnection_Write(this->conn, this->resp.rd);
-		String_Crop(&this->resp, written);
-
-		bool incomplete = (this->resp.len > 0);
-
-		if (incomplete) {
-			return Connection_Status_Open;
-		}
+		/* Some parts are still unsent. Therefore, the connection must stay
+		 * open.
+		 */
+		return Connection_Status_Open;
 	}
 
 	return this->persistent
