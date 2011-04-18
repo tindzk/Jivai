@@ -51,17 +51,12 @@ def(void, OnRequest) {
 	String_Destroy(&strFd);
 }
 
-def(void, OnHttpVersion, HTTP_Version version) {
-	this->version = version;
-}
+def(void, OnRequestInfo, HTTP_RequestInfo info) {
+	Logger_Info(this->logger, $("Client requested '%'."), info.path);
 
-def(void, OnMethod, HTTP_Method method) {
-	this->method = method;
-}
-
-def(void, OnPath, RdString path) {
-	Logger_Info(this->logger, $("Client requested '%'."), path);
-	String_Copy(&this->path, path);
+	String_Copy(&this->path, info.path);
+	this->method  = info.method;
+	this->version = info.version;
 }
 
 /*
@@ -81,10 +76,7 @@ def(String *, OnQueryParameter, RdString name) {
 	return NULL;
 }
 
-/*
- * Treat body-submitted parameters equally like URL-supplied ones.
- */
-
+/* Treat body-submitted parameters equal to URL-supplied ones. */
 def(String *, OnBodyParameter, RdString name) {
 	return call(OnQueryParameter, name);
 }
@@ -182,14 +174,8 @@ def(void, Init, Connection_Client *client, Logger *logger) {
 	HTTP_Server_BindRequest(&this->server,
 		HTTP_Server_OnRequest_For(this, ref(OnRequest)));
 
-	HTTP_Server_BindVersion(&this->server,
-		HTTP_OnVersion_For(this, ref(OnHttpVersion)));
-
-	HTTP_Server_BindMethod(&this->server,
-		HTTP_OnMethod_For(this, ref(OnMethod)));
-
-	HTTP_Server_BindPath(&this->server,
-		HTTP_OnPath_For(this, ref(OnPath)));
+	HTTP_Server_BindRequestInfo(&this->server,
+		HTTP_OnRequestInfo_For(this, ref(OnRequestInfo)));
 
 	HTTP_Server_BindQueryParameter(&this->server,
 		HTTP_OnParameter_For(this, ref(OnQueryParameter)));

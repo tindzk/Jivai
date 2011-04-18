@@ -22,7 +22,7 @@ rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLeng
 		.headers.persistentConnection = false,
 
 		.events = {
-			.onMethod = { .cb = NULL }
+			.onRequestInfo = { .cb = NULL }
 		}
 	};
 }
@@ -37,16 +37,8 @@ def(void, BindRequest, ref(OnRequest) onRequest) {
 	this->events.onRequest = onRequest;
 }
 
-def(void, BindMethod, HTTP_OnMethod onMethod) {
-	this->events.onMethod = onMethod;
-}
-
-def(void, BindVersion, HTTP_OnVersion onVersion) {
-	this->events.onVersion = onVersion;
-}
-
-def(void, BindPath, HTTP_OnPath onPath) {
-	this->events.onPath = onPath;
+def(void, BindRequestInfo, HTTP_OnRequestInfo onRequestInfo) {
+	this->events.onRequestInfo = onRequestInfo;
 }
 
 def(void, BindHeader, HTTP_OnHeader onHeader) {
@@ -65,21 +57,18 @@ def(void, BindRespond, ref(OnRespond) onRespond) {
 	this->events.onRespond = onRespond;
 }
 
-static def(void, OnMethod, HTTP_Method method) {
-	this->method = method;
-	callback(this->events.onMethod, method);
-}
+static def(void, OnRequestInfo, HTTP_RequestInfo info) {
+	this->method = info.method;
 
-static def(void, OnVersion, HTTP_Version version) {
-	if (version == HTTP_Version_1_1) {
+	if (info.version == HTTP_Version_1_1) {
 		/* By default all connections in HTTP/1.1 are persistent. */
 		this->headers.persistentConnection = true;
-	} else if (version == HTTP_Version_1_0) {
+	} else if (info.version == HTTP_Version_1_0) {
 		/* Persistent connections are not supported. */
 		this->headers.persistentConnection = false;
 	}
 
-	callback(this->events.onVersion, version);
+	callback(this->events.onRequestInfo, info);
 }
 
 static def(void, OnHeader, RdString name, RdString value) {
@@ -224,16 +213,14 @@ def(ref(Result), ReadHeader) {
 	String_Crop(&this->header, ofs);
 	requestOffset -= ofs;
 
-	HTTP_Header_Events events;
-	events.onMethod    = HTTP_OnMethod_For(this, ref(OnMethod));
-	events.onVersion   = HTTP_OnVersion_For(this, ref(OnVersion));
-	events.onPath      = this->events.onPath;
-	events.onParameter = this->events.onQueryParameter;
-	events.onHeader    = HTTP_OnHeader_For(this, ref(OnHeader));
+	HTTP_Header_Events events = {
+		.onRequestInfo = HTTP_OnRequestInfo_For(this, ref(OnRequestInfo)),
+		.onParameter   = this->events.onQueryParameter,
+		.onHeader      = HTTP_OnHeader_For(this, ref(OnHeader))
+	};
 
-	HTTP_Header header;
-	HTTP_Header_Init(&header, events);
-	HTTP_Header_Parse(&header, HTTP_Header_Type_Request,
+	HTTP_Header header = HTTP_Header_New(events);
+	HTTP_Header_ParseRequest(&header,
 		String_Slice(this->header.rd, 0, requestOffset));
 
 	if (this->headers.contentLength > 0) {

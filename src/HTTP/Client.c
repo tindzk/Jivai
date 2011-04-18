@@ -2,47 +2,46 @@
 
 #define self HTTP_Client
 
-sdef(ref(RequestItem), CreateRequest, String host, String path) {
-	ref(RequestItem) res;
-
-	res.method  = HTTP_Method_Get;
-	res.version = HTTP_Version_1_1;
-	res.host    = host;
-	res.path    = path;
-	res.data    = NULL;
-
-	return res;
+sdef(ref(RequestItem), CreateRequest, CarrierString host, CarrierString path) {
+	return (ref(RequestItem)) {
+		.method  = HTTP_Method_Get,
+		.version = HTTP_Version_1_1,
+		.host    = host,
+		.path    = path,
+		.data    = NULL
+	};
 }
 
 overload def(void, Init) {
+	this->status = HTTP_Status_Unset;
 	this->closed = true;
 
 	this->resp = String_New(ref(BufferSize));
 
-	this->host = $("");
+	this->host = CarrierString_New();
 	this->port = 80;
 
-	this->events.onVersion = (HTTP_OnVersion) EmptyCallback();
-	this->events.onHeader  = (HTTP_OnHeader)  EmptyCallback();
+	this->onResponseInfo = HTTP_OnResponseInfo_Empty();
+	this->onHeader       = HTTP_OnHeader_Empty();
 
-	Socket_Init(&this->socket, Socket_Protocol_TCP);
+	this->socket = Socket_New(Socket_Protocol_TCP);
 }
 
-overload def(void, Init, String host) {
+overload def(void, Init, CarrierString host) {
 	call(Init);
 
-	this->host = String_Clone(host);
+	this->host = host;
 }
 
-overload def(void, Init, String host, short port) {
+overload def(void, Init, CarrierString host, short port) {
 	call(Init);
 
-	this->host = String_Clone(host);
+	this->host = host;
 	this->port = port;
 }
 
 def(void, Destroy) {
-	String_Destroy(&this->host);
+	CarrierString_Destroy(&this->host);
 	String_Destroy(&this->resp);
 
 	if (!this->closed) {
@@ -56,8 +55,12 @@ overload def(void, SetBufferSize, size_t size) {
 	String_Align(&this->resp, size);
 }
 
-def(void, SetEvents, ref(Events) events) {
-	this->events = events;
+def(void, BindResponseInfo, HTTP_OnResponseInfo onResponseInfo) {
+	this->onResponseInfo = onResponseInfo;
+}
+
+def(void, BindHeader, HTTP_OnHeader onHeader) {
+	this->onHeader = onHeader;
 }
 
 overload def(void, Open) {
@@ -65,17 +68,17 @@ overload def(void, Open) {
 		call(Close);
 	}
 
-	this->conn = Socket_Connect(&this->socket, this->host, this->port);
+	this->conn = Socket_Connect(&this->socket, this->host.rd, this->port);
 	this->closed = false;
 }
 
-overload def(void, Open, String host) {
-	String_Copy(&this->host, host);
+overload def(void, Open, CarrierString host) {
+	CarrierString_Assign(&this->host, host);
 	call(Open);
 }
 
-overload def(void, Open, String host, short port) {
-	String_Copy(&this->host, host);
+overload def(void, Open, CarrierString host, short port) {
+	CarrierString_Assign(&this->host, host);
 	this->port = port;
 
 	call(Open);
@@ -90,27 +93,25 @@ def(HTTP_Status_Item, GetStatus) {
 	return HTTP_Status_GetItem(this->status);
 }
 
-def(void, OnStatus, HTTP_Status status) {
-	this->status = status;
-}
+static def(void, OnResponseInfo, HTTP_ResponseInfo info) {
+	this->status = info.status;
 
-def(void, OnVersion, HTTP_Version version) {
-	callback(this->events.onVersion, version);
-
-	if (version == HTTP_Version_1_1) {
+	if (info.version == HTTP_Version_1_1) {
 		this->keepAlive = true;
-	} else if (version == HTTP_Version_1_0) {
+	} else if (info.version == HTTP_Version_1_0) {
 		this->keepAlive = false;
 	}
+
+	callback(this->onResponseInfo, info);
 }
 
-def(void, OnHeader, String name, String value) {
-	callback(this->events.onHeader, name, value);
+static def(void, OnHeader, RdString name, RdString value) {
+	callback(this->onHeader, name, value);
 
-	String_ToLower(&name);
+	String_ToLower((String *) &name);
 
 	if (String_Equals(name, $("connection"))) {
-		String_ToLower(&value);
+		String_ToLower((String *) &value);
 
 		if (String_Equals(value, $("close"))) {
 			this->keepAlive = false;
@@ -147,11 +148,11 @@ static def(void, _CreateRequest, ref(RequestItem) request, String *res) {
 		"Connection: Keep-Alive\r\n"),
 
 		HTTP_Method_ToString(request.method),
-		request.path,
+		request.path.rd,
 		HTTP_Version_ToString(request.version),
-		request.host);
+		request.host.rd);
 
-	String_Append(res, fmt);
+	String_Append(res, fmt.rd);
 
 	String_Destroy(&fmt);
 
@@ -165,9 +166,9 @@ static def(void, _CreateRequest, ref(RequestItem) request, String *res) {
 			String strLength = Integer_ToString(request.data->len);
 
 			String_Append(res, $("Content-Length: "));
-			String_Append(res, strLength);
+			String_Append(res, strLength.rd);
 			String_Append(res, $("\r\n"));
-			String_Append(res, *request.data);
+			String_Append(res, request.data->rd);
 
 			String_Destroy(&strLength);
 		}
@@ -187,7 +188,7 @@ overload def(void, Request, ref(Requests) *items) {
 
 	try {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
-	} clean finally {
+	} finally {
 		String_Destroy(&s);
 	} tryEnd;
 }
@@ -201,21 +202,21 @@ overload def(void, Request, ref(RequestItem) request) {
 
 	try {
 		SocketConnection_Write(&this->conn, s.buf, s.len);
-	} clean finally {
+	} finally {
 		String_Destroy(&s);
 	} tryEnd;
 }
 
 sdef(s64, ParseChunk, String *s) {
-	ssize_t pos = String_Find(*s, $("\r\n"));
+	ssize_t pos = String_Find(s->rd, $("\r\n"));
 
 	if (pos == String_NotFound) {
 		throw(MalformedChunk);
 	}
 
-	String hex =
+	RdString hex =
 		String_Trim(
-			String_Slice(*s, 0, pos));
+			String_Slice(s->rd, 0, pos));
 
 	s64 len = Hex_ToInteger(hex);
 
@@ -251,7 +252,7 @@ def(HTTP_Status, FetchResponse) {
 	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf + this->resp.len,
-			String_GetFree(&this->resp));
+			String_GetFree(this->resp));
 
 		/* SocketConnection_Read() only returns -1 for non-blocking
 		 * connections.
@@ -264,7 +265,7 @@ def(HTTP_Status, FetchResponse) {
 		this->resp.len += len;
 
 		/* See HTTP/Server.c for a complete explanation how all this works. */
-		ssize_t requestOffset = HTTP_Header_GetLength(this->resp);
+		ssize_t requestOffset = HTTP_Header_GetLength(this->resp.rd);
 
 		if (requestOffset == -1) { /* The response is malformed. */
 			this->resp.len = 0;
@@ -272,16 +273,15 @@ def(HTTP_Status, FetchResponse) {
 
 			throw(ResponseMalformed);
 		} else if (requestOffset > 0) { /* The response is complete. */
-			HTTP_Header_Events events;
-			events.onVersion = (HTTP_OnVersion) Callback(this, ref(OnVersion));
-			events.onStatus  = (HTTP_OnStatus)  Callback(this, ref(OnStatus));
-			events.onHeader  = (HTTP_OnHeader)  Callback(this, ref(OnHeader));
+			HTTP_Header_Events events = {
+				.onResponseInfo = HTTP_OnResponseInfo_For(this, ref(OnResponseInfo)),
+				.onHeader       = HTTP_OnHeader_For(this, ref(OnHeader))
+			};
 
-			String s = String_Slice(this->resp, 0, requestOffset);
+			RdString s = String_Slice(this->resp.rd, 0, requestOffset);
 
-			HTTP_Header header;
-			HTTP_Header_Init(&header, events);
-			HTTP_Header_Parse(&header, HTTP_Header_Type_Response, s);
+			HTTP_Header header = HTTP_Header_New(events);
+			HTTP_Header_ParseResponse(&header, s);
 
 			String_Crop(&this->resp, requestOffset);
 
@@ -292,7 +292,7 @@ def(HTTP_Status, FetchResponse) {
 			if (this->resp.len == 0 && this->total != 0) {
 				len = SocketConnection_Read(&this->conn,
 					this->resp.buf,
-					String_GetFree(&this->resp));
+					String_GetFree(this->resp));
 
 				if (len == -1) {
 					throw(ConnectionError);
@@ -301,7 +301,7 @@ def(HTTP_Status, FetchResponse) {
 				this->resp.len = len;
 			}
 		} else { /* Response is incomplete. */
-			if (String_GetFree(&this->resp) == 0) {
+			if (String_GetFree(this->resp) == 0) {
 				/* But buffer is already full, i.e. we cannot store
 				 * more in it. Increasing the buffer size might
 				 * help. If not, the HTTP server sends corrupt
@@ -311,7 +311,7 @@ def(HTTP_Status, FetchResponse) {
 				throw(BufferTooSmall);
 			}
 		}
-	} clean catch(SocketConnection, ConnectionReset) {
+	} catch(SocketConnection, ConnectionReset) {
 		this->closed = true;
 		excThrow(ConnectionReset);
 	} finally {
@@ -335,14 +335,14 @@ static inline def(void, InternalRead) {
 	try {
 		ssize_t len = SocketConnection_Read(&this->conn,
 			this->resp.buf + this->resp.len,
-			String_GetFree(&this->resp));
+			String_GetFree(this->resp));
 
 		if (len == -1) {
 			throw(ConnectionError);
 		}
 
 		this->resp.len += len;
-	} clean catch(SocketConnection, ConnectionReset) {
+	} catch(SocketConnection, ConnectionReset) {
 		this->closed = true;
 		excThrow(ConnectionReset);
 	} finally {
@@ -375,11 +375,11 @@ overload def(bool, Read, String *res) {
 	 * `canRead' bytes.
 	 */
 	if (this->canRead > 0) {
-		if (this->canRead > String_GetSize(res)) {
+		if (this->canRead > String_GetSize(*res)) {
 			String_Copy(res,
-				String_Slice(this->resp, 0, String_GetSize(res)));
+				String_Slice(this->resp.rd, 0, String_GetSize(*res)));
 
-			String_Crop(&this->resp, String_GetSize(res));
+			String_Crop(&this->resp, String_GetSize(*res));
 
 			this->read    += res->len;
 			this->canRead -= res->len;
@@ -387,7 +387,7 @@ overload def(bool, Read, String *res) {
 			return true;
 		} else {
 			String_Copy(res,
-				String_Slice(this->resp, 0, this->canRead));
+				String_Slice(this->resp.rd, 0, this->canRead));
 
 			/* Do not clear this->resp completely as it might
 			 * already contain the next chunk or even more.
@@ -424,7 +424,7 @@ overload def(bool, Read, String *res) {
 
 					call(InternalRead);
 					goto retry;
-				} else if (!String_BeginsWith(this->resp, $("\r\n"))) {
+				} else if (!String_BeginsWith(this->resp.rd, $("\r\n"))) {
 					/* Chunk does not end on CRLF. */
 					throw(MalformedChunk);
 				} else {
@@ -466,7 +466,7 @@ overload def(bool, Read, String *res) {
 					 * at once.
 					 */
 
-					if (String_Find(this->resp, 2, $("\r\n")) != String_NotFound) {
+					if (String_Find(this->resp.rd, 2, $("\r\n")) != String_NotFound) {
 						/* We have enough data to deal with it.
 						 * Fall through.
 						 */
@@ -491,7 +491,7 @@ overload def(bool, Read, String *res) {
 			break;
 		}
 
-		if (String_GetFree(res) == 0) {
+		if (String_GetFree(*res) == 0) {
 			/* Buffer is full. */
 			break;
 		}
@@ -501,7 +501,7 @@ overload def(bool, Read, String *res) {
 		try {
 			if (this->chunked) {
 				/* Use the full available space. */
-				size_t length = String_GetFree(res);
+				size_t length = String_GetFree(*res);
 
 				/* But it mustn't exceed the number of remaining bytes
 				 * in the current chunk. */
@@ -513,7 +513,7 @@ overload def(bool, Read, String *res) {
 			} else {
 				read = SocketConnection_Read(&this->conn,
 					res->buf + res->len,
-					String_GetFree(res));
+					String_GetFree(*res));
 			}
 
 			if (read == -1) {
@@ -522,7 +522,7 @@ overload def(bool, Read, String *res) {
 
 			res->len   += read;
 			this->read += read;
-		} clean catch(SocketConnection, ConnectionReset) {
+		} catch(SocketConnection, ConnectionReset) {
 			this->closed = true;
 
 			if (this->total == -1) {
@@ -564,7 +564,7 @@ overload def(String, Read, size_t max) {
 			continue;
 		}
 
-		String_Append(&res, buf);
+		String_Append(&res, buf.rd);
 	}
 
 	String_Destroy(&buf);

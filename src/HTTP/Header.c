@@ -2,11 +2,28 @@
 
 #define self HTTP_Header
 
-def(void, Init, ref(Events) events) {
-	this->events = events;
+rsdef(self, New, ref(Events) events) {
+	return (self) {
+		.events = events,
+		.pos1stLine = -1,
+		.pos2ndLine = -1
+	};
 }
 
-def(void, ParseMethod, RdString s) {
+static def(void, PreParse, RdString s) {
+	this->pos1stLine = String_Find(s, '\n');
+	this->pos2ndLine = this->pos1stLine;
+
+	if (this->pos1stLine == String_NotFound) {
+		throw(RequestMalformed);
+	}
+
+	if (s.buf[this->pos1stLine - 1] == '\r') {
+		this->pos1stLine--;
+	}
+}
+
+def(HTTP_Method, ParseMethod, RdString s) {
 	if (s.len == 0) {
 		throw(RequestMalformed);
 	}
@@ -17,20 +34,20 @@ def(void, ParseMethod, RdString s) {
 		throw(UnknownMethod);
 	}
 
-	callback(this->events.onMethod, method);
+	return method;
 }
 
-def(void, ParseVersion, RdString s) {
+def(HTTP_Version, ParseVersion, RdString s) {
 	HTTP_Version version = HTTP_Version_FromString(s);
 
 	if (version == HTTP_Version_Unset) {
 		throw(UnknownVersion);
 	}
 
-	callback(this->events.onVersion, version);
+	return version;
 }
 
-def(void, ParseStatus, RdString s) {
+def(HTTP_Status, ParseStatus, RdString s) {
 	s32 code = 0;
 
 	try {
@@ -51,45 +68,39 @@ def(void, ParseStatus, RdString s) {
 		throw(UnknownStatus);
 	}
 
-	callback(this->events.onStatus, status);
+	return status;
 }
 
-def(void, ParseUri, RdString s) {
+def(CarrierString, ParseUri, RdString s) {
 	if (s.len == 0) {
 		throw(EmptyRequestUri);
 	}
 
 	ssize_t pos = String_Find(s, '?');
 
-	if (hasCallback(this->events.onPath)) {
-		RdString path =
-			(pos != String_NotFound)
-				? String_Slice(s, 0, pos)
-				: s;
+	RdString path =
+		(pos != String_NotFound)
+			? String_Slice(s, 0, pos)
+			: s;
 
-		bool free = false;
-		size_t len = HTTP_Query_GetAbsoluteLength(path);
+	size_t len = HTTP_Query_GetAbsoluteLength(path);
 
-		if (len <= path.len) {
-			HTTP_Query_Unescape(path, path.buf, true);
-			path.len = len;
-		} else {
-			String decoded = String_New(len);
-			HTTP_Query_Unescape(path, decoded.buf, true);
-			decoded.len = len;
+	if (len <= path.len) {
+		HTTP_Query_Unescape(path, path.buf, true);
+		path.len = len;
 
-			path = decoded.rd;
-			free = true;
-		}
+		return String_ToCarrier(RdString_Exalt(path));
+	} else {
+		String decoded = String_New(len);
+		HTTP_Query_Unescape(path, decoded.buf, true);
+		decoded.len = len;
 
-		try {
-			callback(this->events.onPath, path);
-		} finally {
-			if (free) {
-				String_Destroy((String *) &path);
-			}
-		} tryEnd;
+		return String_ToCarrier(decoded);
 	}
+}
+
+def(void, ParseUriParameters, RdString s) {
+	ssize_t pos = String_Find(s, '?');
 
 	if (hasCallback(this->events.onParameter)) {
 		if (pos != String_NotFound) {
@@ -108,6 +119,27 @@ def(void, ParseHeaderLine, RdString s) {
 			callback(this->events.onHeader,
 				String_Trim(name),
 				String_Trim(value));
+		}
+	}
+}
+
+static def(void, ParseHeaders, RdString s) {
+	size_t len;
+	size_t last = this->pos2ndLine;
+
+	for (size_t i = this->pos2ndLine + 1; i < s.len; i++) {
+		if (s.buf[i] == '\n') {
+			if (s.buf[i - 1] == '\r') {
+				len = i - last - 2;
+			} else {
+				len = i - last - 1;
+			}
+
+			if (len > 0) {
+				call(ParseHeaderLine, String_Slice(s, last + 1, len));
+			}
+
+			last = i;
 		}
 	}
 }
@@ -149,76 +181,66 @@ sdef(ssize_t, GetLength, RdString str) {
 	return len;
 }
 
-def(void, Parse, ref(Type) type, RdString s) {
-	ssize_t pos1stLine = String_Find(s, '\n');
+def(void, ParseRequest, RdString s) {
+	call(PreParse, s);
 
-	if (pos1stLine == String_NotFound) {
+	ssize_t posMethod = String_Find(s, ' ');
+
+	if (posMethod == String_NotFound) {
 		throw(RequestMalformed);
 	}
 
-	ssize_t pos2ndLine = pos1stLine;
+	RdString method = String_Slice(s, 0, posMethod);
 
-	if (s.buf[pos1stLine - 1] == '\r') {
-		pos1stLine--;
+	RdString version = String_Slice(s,
+		this->pos1stLine - $("HTTP/1.1").len,
+		$("HTTP/1.1").len);
+
+	RdString uri = String_Slice(s,
+		method.len + 1,
+		this->pos1stLine - version.len - (method.len + 1) - 1);
+
+	CarrierString path = call(ParseUri, uri);
+
+	try {
+		HTTP_RequestInfo info = {
+			.version = call(ParseVersion, version),
+			.method  = call(ParseMethod, method),
+			.path    = path.rd
+		};
+
+		callback(this->events.onRequestInfo, info);
+	} finally {
+		CarrierString_Destroy(&path);
+	} tryEnd;
+
+	call(ParseUriParameters, uri);
+	call(ParseHeaders, s);
+}
+
+def(void, ParseResponse, RdString s) {
+	call(PreParse, s);
+
+	ssize_t posVersion = String_Find(s, ' ');
+
+	if (posVersion == String_NotFound) {
+		throw(RequestMalformed);
 	}
 
-	if (type == ref(Type_Request)) {
-		ssize_t posMethod = String_Find(s, ' ');
+	RdString version = String_Slice(s, 0, posVersion);
 
-		if (posMethod == String_NotFound) {
-			throw(RequestMalformed);
-		}
+	ssize_t posCode = String_Find(s, posVersion + 1, ' ');
 
-		RdString method = String_Slice(s, 0, posMethod);
-
-		RdString version = String_Slice(s,
-			pos1stLine - $("HTTP/1.1").len,
-			$("HTTP/1.1").len);
-
-		RdString path = String_Slice(s,
-			method.len + 1,
-			pos1stLine - version.len - (method.len + 1) - 1);
-
-		call(ParseVersion, version);
-		call(ParseMethod, method);
-		call(ParseUri, path);
-	} else {
-		ssize_t posVersion = String_Find(s, ' ');
-
-		if (posVersion == String_NotFound) {
-			throw(RequestMalformed);
-		}
-
-		RdString version = String_Slice(s, 0, posVersion);
-
-		ssize_t posCode = String_Find(s, posVersion + 1, ' ');
-
-		if (posCode == String_NotFound) {
-			throw(RequestMalformed);
-		}
-
-		RdString code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
-
-		call(ParseVersion, version);
-		call(ParseStatus, code);
+	if (posCode == String_NotFound) {
+		throw(RequestMalformed);
 	}
 
-	size_t len;
-	size_t last = pos2ndLine;
+	RdString code = String_Slice(s, posVersion + 1, posCode - posVersion - 1);
 
-	for (size_t i = pos2ndLine + 1; i < s.len; i++) {
-		if (s.buf[i] == '\n') {
-			if (s.buf[i - 1] == '\r') {
-				len = i - last - 2;
-			} else {
-				len = i - last - 1;
-			}
+	callback(this->events.onResponseInfo, (HTTP_ResponseInfo) {
+		.version = call(ParseVersion, version),
+		.status  = call(ParseStatus,  code)
+	});
 
-			if (len > 0) {
-				call(ParseHeaderLine, String_Slice(s, last + 1, len));
-			}
-
-			last = i;
-		}
-	}
+	call(ParseHeaders, s);
 }

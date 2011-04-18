@@ -43,14 +43,12 @@ class {
 	ref(State)         state;
 
 	struct {
-		ref(OnRequest)   onRequest;
-		HTTP_OnMethod    onMethod;
-		HTTP_OnVersion   onVersion;
-		HTTP_OnPath      onPath;
-		HTTP_OnHeader    onHeader;
-		HTTP_OnParameter onBodyParameter;
-		HTTP_OnParameter onQueryParameter;
-		ref(OnRespond)   onRespond;
+		ref(OnRequest)     onRequest;
+		HTTP_OnRequestInfo onRequestInfo;
+		HTTP_OnHeader      onHeader;
+		HTTP_OnParameter   onBodyParameter;
+		HTTP_OnParameter   onQueryParameter;
+		ref(OnRespond)     onRespond;
 	} events;
 
 	struct {
@@ -64,9 +62,7 @@ class {
 rsdef(self, New, SocketConnection *conn, size_t maxHeaderLength, u64 maxBodyLength);
 def(void, Destroy);
 def(void, BindRequest, ref(OnRequest) onRequest);
-def(void, BindMethod, HTTP_OnMethod onMethod);
-def(void, BindVersion, HTTP_OnVersion onVersion);
-def(void, BindPath, HTTP_OnPath onPath);
+def(void, BindRequestInfo, HTTP_OnRequestInfo onRequestInfo);
 def(void, BindHeader, HTTP_OnHeader onHeader);
 def(void, BindBodyParameter, HTTP_OnParameter onBodyParameter);
 def(void, BindQueryParameter, HTTP_OnParameter onQueryParameter);

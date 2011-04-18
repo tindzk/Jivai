@@ -29,17 +29,12 @@
 // @exc MalformedChunk
 // @exc ResponseMalformed
 
-record(ref(Events)) {
-	HTTP_OnVersion onVersion;
-	HTTP_OnHeader  onHeader;
-};
-
 record(ref(RequestItem)) {
-	HTTP_Method method;
-	HTTP_Version version;
-	String host;
-	String path;
-	String *data;
+	HTTP_Method   method;
+	HTTP_Version  version;
+	CarrierString host;
+	CarrierString path;
+	String        *data;
 };
 
 Array(ref(RequestItem), ref(Requests));
@@ -47,10 +42,13 @@ Array(ref(RequestItem), ref(Requests));
 class {
 	Socket           socket;
 	SocketConnection conn;
-	String           host;
+	CarrierString    host;
 	short            port;
 	bool             closed;
-	ref(Events)      events;
+
+	/* Events. */
+	HTTP_OnResponseInfo onResponseInfo;
+	HTTP_OnHeader       onHeader;
 
 	/* The resolved response code. */
 	HTTP_Status status;
@@ -93,21 +91,19 @@ class {
 	bool inChunk;
 };
 
-sdef(ref(RequestItem), CreateRequest, String host, String path);
+sdef(ref(RequestItem), CreateRequest, CarrierString host, CarrierString path);
 overload def(void, Init);
-overload def(void, Init, String host);
-overload def(void, Init, String host, short port);
+overload def(void, Init, CarrierString host);
+overload def(void, Init, CarrierString host, short port);
 def(void, Destroy);
 overload def(void, SetBufferSize, size_t size);
-def(void, SetEvents, ref(Events) events);
+def(void, BindResponseInfo, HTTP_OnResponseInfo onResponseInfo);
+def(void, BindHeader, HTTP_OnHeader onHeader);
 overload def(void, Open);
-overload def(void, Open, String host);
-overload def(void, Open, String host, short port);
+overload def(void, Open, CarrierString host);
+overload def(void, Open, CarrierString host, short port);
 def(void, Close);
 def(HTTP_Status_Item, GetStatus);
-def(void, OnStatus, HTTP_Status status);
-def(void, OnVersion, HTTP_Version version);
-def(void, OnHeader, String name, String value);
 def(s64, GetLength);
 def(bool, IsConnected);
 def(void, Reopen);

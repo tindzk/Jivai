@@ -5,11 +5,21 @@
 
 #define self HTTP
 
-Callback(ref(OnPath), void, RdString);
-Callback(ref(OnStatus), void, ref(Status));
-Callback(ref(OnMethod), void, ref(Method));
-Callback(ref(OnVersion), void, ref(Version));
-Callback(ref(OnHeader), void, RdString, RdString);
-Callback(ref(OnParameter), String *, RdString);
+record(ref(RequestInfo)) {
+	ref(Version) version;
+	ref(Method)  method;
+	RdString     path;
+};
+
+record(ref(ResponseInfo)) {
+	ref(Version) version;
+	ref(Status)  status;
+};
+
+Callback(ref(OnStatus), void, ref(Status) status);
+Callback(ref(OnRequestInfo), void, ref(RequestInfo) info);
+Callback(ref(OnResponseInfo), void, ref(ResponseInfo) info);
+Callback(ref(OnHeader), void, RdString name, RdString value);
+Callback(ref(OnParameter), String *, RdString name);
 
 #undef self
