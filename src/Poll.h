@@ -45,9 +45,9 @@ class {
 
 def(void, Init, ref(OnEvent) onEvent);
 def(void, Destroy);
-def(void, AddEvent, GenericInstance inst, int fd, int events);
-def(void, ModifyEvent, GenericInstance inst, int fd, int events);
-def(void, DeleteEvent, int fd);
+def(void, AddFd, GenericInstance inst, int fd, int events);
+def(void, ModifyFd, GenericInstance inst, int fd, int events);
+def(void, DeleteFd, int fd);
 def(size_t, Process, int timeout);
 
 #undef self

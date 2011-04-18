@@ -46,7 +46,7 @@ def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 	data->cb     = onConnection;
 	data->socket = socket;
 
-	Poll_AddEvent(&this->poll, entry, socket->fd,
+	Poll_AddFd(&this->poll, entry, socket->fd,
 		Poll_Events_Error |
 		Poll_Events_Input |
 		Poll_Events_HangUp);
@@ -92,7 +92,7 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 	data->conn.corking     = true;
 	data->conn.nonblocking = true;
 
-	Poll_AddEvent(&this->poll, entry, data->conn.fd, flags);
+	Poll_AddFd(&this->poll, entry, data->conn.fd, flags);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 
