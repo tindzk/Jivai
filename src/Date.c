@@ -128,19 +128,19 @@ rsdef(short, GetRealWeekNumber, self date) {
 }
 
 rsdef(short, Compare, self a, self b) {
-	short year = Int16_Compare(a.year, b.year);
+	short year = Integer_Compare(a.year, b.year);
 
 	if (year != 0) {
 		return year;
 	}
 
-	short month = Int16_Compare(a.month, b.month);
+	short month = Integer_Compare(a.month, b.month);
 
 	if (month != 0) {
 		return month;
 	}
 
-	return Int16_Compare(a.day, b.day);
+	return Integer_Compare(a.day, b.day);
 }
 
 rsdef(size_t, GetDayOfYear, self date) {
