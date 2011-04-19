@@ -2,7 +2,6 @@
 #import "../Time.h"
 #import "../Number.h"
 #import "../String.h"
-#import "../Pattern.h"
 #import "../DateTime.h"
 
 #define self Date_RFC822
