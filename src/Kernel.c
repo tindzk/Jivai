@@ -15,11 +15,11 @@ sdef(void, exit, int status) {
 	syscall(__NR_exit, status);
 }
 
-sdef(ssize_t, read, ssize_t fd, char *buf, size_t len) {
+sdef(ssize_t, read, ssize_t fd, void *buf, size_t len) {
 	return syscall(__NR_read, fd, buf, len);
 }
 
-sdef(ssize_t, write, ssize_t fd, char *buf, size_t len) {
+sdef(ssize_t, write, ssize_t fd, void *buf, size_t len) {
 	return syscall(__NR_write, fd, buf, len);
 }
 

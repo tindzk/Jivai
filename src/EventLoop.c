@@ -34,6 +34,42 @@ def(void, Destroy) {
 	Poll_Destroy(&this->poll);
 }
 
+def(void, AddTimer, int sec, ref(OnTimer) onTimer) {
+	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
+		sizeof(ref(Entry)) + sizeof(ref(TimerEntry)));
+
+	entry->type = ref(EntryType_Timer);
+
+	ref(TimerEntry) *data = (void *) entry->data;
+
+	data->timer = Timer_New(ClockType_Monotonic);
+	data->cb    = onTimer;
+
+	Timer_SetTimer(&data->timer, sec);
+
+	Poll_AddFd(&this->poll, entry, data->timer.fd, Poll_Events_Input);
+
+	DoublyLinkedList_InsertEnd(&this->entries, entry);
+}
+
+def(void, AddIntervalTimer, int sec, ref(OnTimer) onTimer) {
+	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
+		sizeof(ref(Entry)) + sizeof(ref(TimerEntry)));
+
+	entry->type = ref(EntryType_Timer);
+
+	ref(TimerEntry) *data = (void *) entry->data;
+
+	data->timer = Timer_New(ClockType_Monotonic);
+	data->cb    = onTimer;
+
+	Timer_SetInterval(&data->timer, sec);
+
+	Poll_AddFd(&this->poll, entry, data->timer.fd, Poll_Events_Input);
+
+	DoublyLinkedList_InsertEnd(&this->entries, entry);
+}
+
 /* Listens for incoming connections. */
 def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
@@ -123,6 +159,29 @@ def(void, DetachClient, GenericInstance inst) {
 	call(_DetachClient, entry);
 }
 
+static def(void, _DetachTimer, ref(Entry) *entry) {
+	ref(TimerEntry) *data = (void *) entry->data;
+
+	Timer_Destroy(&data->timer);
+
+	DoublyLinkedList_Remove(&this->entries, entry);
+
+	call(_DestroyEntry, entry);
+}
+
+/* Users can only detach interval timers as normal timers are detached
+ * automatically.
+ */
+def(void, DetachTimer, Timer *timer) {
+	/* This assumes that `timer' resides in the first element of TimerEntry. */
+	ref(Entry) *entry = (void *) timer - sizeof(ref(Entry));
+
+	assert(entry->type == ref(EntryType_Timer));
+	assert(Timer_IsInterval(timer));
+
+	call(_DetachTimer, entry);
+}
+
 def(bool, IsRunning) {
 	return this->running;
 }
@@ -141,6 +200,24 @@ overload def(void, Run, int timeout) {
 
 def(void, Quit) {
 	this->running = false;
+}
+
+static def(void, OnTimerEvent, int events, ref(Entry) *entry) {
+	ref(TimerEntry) *data = (void *) entry->data;
+
+	if (BitMask_Has(events, Poll_Events_Input)) {
+		/* Store value locally because the callback could have detached the
+		 * timer in the meantime.
+		 */
+		bool interval = Timer_IsInterval(&data->timer);
+
+		callback(data->cb, Timer_Read(&data->timer), &data->timer);
+
+		if (!interval) {
+			/* The timer is not recurring. Thus, we have to detach it. */
+			call(_DetachTimer, entry);
+		}
+	}
 }
 
 static def(void, OnSocketEvent, int events, ref(SocketEntry) *entry) {
@@ -182,7 +259,9 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 static def(void, OnEvent, int events, GenericInstance inst) {
 	ref(Entry) *entry = inst.object;
 
-	if (entry->type == ref(EntryType_Client)) {
+	if (entry->type == ref(EntryType_Timer)) {
+		call(OnTimerEvent, events, entry);
+	} else if (entry->type == ref(EntryType_Client)) {
 		call(OnClientEvent, events, entry);
 	} else if (entry->type == ref(EntryType_Socket)) {
 		call(OnSocketEvent, events, (void *) entry->data);

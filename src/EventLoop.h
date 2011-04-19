@@ -1,4 +1,5 @@
 #import "Poll.h"
+#import "Timer.h"
 #import "Socket.h"
 #import "DoublyLinkedList.h"
 
@@ -11,8 +12,14 @@ Interface(ref(Client)) {
 	void   (*onDestroy)(GenericInstance, GenericInstance inst);
 };
 
+Callback(ref(OnTimer),      void, u64 dropped, Timer *timer);
 Callback(ref(OnTimeout),    void, int timeout);
 Callback(ref(OnConnection), void, Socket *socket);
+
+record(ref(TimerEntry)) {
+	Timer timer;
+	ref(OnTimer) cb;
+};
 
 record(ref(SocketEntry)) {
 	Socket *socket;
@@ -26,6 +33,7 @@ record(ref(ClientEntry)) {
 };
 
 set(ref(EntryType)) {
+	ref(EntryType_Timer),
 	ref(EntryType_Socket),
 	ref(EntryType_Client)
 };
@@ -47,9 +55,12 @@ class {
 
 def(void, Init);
 def(void, Destroy);
+def(void, AddTimer, int sec, ref(OnTimer) onTimer);
+def(void, AddIntervalTimer, int sec, ref(OnTimer) onTimer);
 def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, GenericInstance inst);
+def(void, DetachTimer, Timer *timer);
 def(bool, IsRunning);
 def(void, Iteration, int timeout);
 overload def(void, Run, int timeout);
