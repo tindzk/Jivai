@@ -20,22 +20,6 @@ sdef(self, FromDate, Date date) {
 	return res;
 }
 
-inline sdef(self, GetUnixEpoch) {
-	return (DateTime) {
-		.date = {
-			.year  = 1970,
-			.month = 1,
-			.day   = 1
-		},
-
-		.time = {
-			.hour   = 0,
-			.minute = 0,
-			.second = 0
-		}
-	};
-}
-
 sdef(short, Compare, self a, self b) {
 	short date = Date_Compare(a.date, b.date);
 
@@ -53,11 +37,6 @@ sdef(self, Drift, self dateTime, s8 hrs, s8 mins) {
 	secs += mins * Date_SecondsMinute;
 
 	return scall(FromUnixEpoch, secs);
-}
-
-inline sdef(bool, Equals, self a, self b) {
-	return Date_Equals(a.date, b.date)
-		&& Time_Equals(a.time, b.time);
 }
 
 sdef(self, FromUnixEpoch, u64 time) {

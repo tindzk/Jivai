@@ -145,10 +145,6 @@ sdef(short, Compare, self a, self b) {
 	return Int16_Compare(a.day, b.day);
 }
 
-inline sdef(bool, Equals, self a, self b) {
-	return scall(Compare, a, b) == 0;
-}
-
 sdef(size_t, GetDayOfYear, self date) {
 	int days = date.day;
 

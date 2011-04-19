@@ -28,10 +28,6 @@ sdef(short, Compare, self a, self b) {
 	return Integer_Compare(a.second, b.second);
 }
 
-inline sdef(bool, Equals, self a, self b) {
-	return scall(Compare, a, b) == 0;
-}
-
 sdef(ref(UnixEpoch), GetCurrent) {
 	ref(UnixEpoch) time;
 
