@@ -12,36 +12,40 @@ tsRegister("Memory") {
 	return true;
 }
 
-char test = 'a';
-char *abc = "hello world";
+char data1   = 'a';
+char data2[] = "hello world";
+char *rodata = "hello world";
 
 tsCase(Acute, "Detect read-only data") {
-	void *a = alloca(1);
-	char b;
-	void *ptr = Memory_Alloc(32);
+	char c;
+	void *stack = alloca(1);
+	void *heap = Memory_Alloc(32);
 
 	Assert($("Global constant data"),
-		Memory_IsRoData(&test) == false);
+		Memory_IsRoData(&data1) == false);
 
-	Assert($("Global char pointer"),
-		Memory_IsRoData(abc) == true);
+	Assert($("Global constant data"),
+		Memory_IsRoData(data2) == false);
+
+	Assert($("Global rodata char pointer"),
+		Memory_IsRoData(rodata) == true);
 
 	Assert($("Local uninitialised variable"),
-		Memory_IsRoData(&b) == false);
+		Memory_IsRoData(&c) == false);
 
 	Assert($("Local char pointer"),
 		Memory_IsRoData("abc") == true);
 
 	Assert($("Stack memory"),
-		Memory_IsRoData(a) == false);
+		Memory_IsRoData(stack) == false);
 
 	Assert($("Stack memory"),
 		Memory_IsRoData(alloca(1)) == false);
 
 	Assert($("Heap memory"),
-		Memory_IsRoData(ptr) == false);
+		Memory_IsRoData(heap) == false);
 
-	Memory_Free(ptr);
+	Memory_Free(heap);
 }
 
 tsFinalize;
