@@ -35,7 +35,7 @@ inline sdef(bool, Equals, self a, self b) {
 sdef(ref(UnixEpoch), GetCurrent) {
 	ref(UnixEpoch) time;
 
-	if (!Kernel_clock_gettime(CLOCK_REALTIME, &time)) {
+	if (!Kernel_clock_gettime(ClockType_Realtime, &time)) {
 		throw(GetTimeOfDayFailed);
 	}
 

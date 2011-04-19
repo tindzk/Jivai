@@ -5,10 +5,6 @@
 
 #define self Time
 
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-
 // @exc GetTimeOfDayFailed
 
 record(self) {

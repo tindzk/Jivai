@@ -123,8 +123,8 @@ sdef(bool, ftruncate64, ssize_t fd, u64 len) {
 	return syscall(__NR_ftruncate64, fd, len) == 0;
 }
 
-sdef(bool, clock_gettime, int id, Time_UnixEpoch *res) {
-	return syscall(__NR_clock_gettime, id, res) == 0;
+sdef(bool, clock_gettime, ClockType type, Time_UnixEpoch *res) {
+	return syscall(__NR_clock_gettime, type, res) == 0;
 }
 
 sdef(ssize_t, epoll_create, size_t n) {

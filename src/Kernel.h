@@ -13,6 +13,26 @@
 #define __NR__llseek     __NR_lseek
 #endif
 
+set(ClockType) {
+	/* System clock which measures the real time. May move forwards and
+	 * backwards.
+	 */
+	ClockType_Realtime = 0,
+
+	/* System clock which increases monotonically. Not affected by changes in
+	 * the current system time.
+	 */
+	ClockType_Monotonic = 1,
+
+	/* Per-process clock which measures the processor time spent by the process.
+	 */
+	ClockType_Process_CpuTimeId = 2,
+
+	/* Per-thread clock which measures the processor time spent by the thread.
+	 */
+	ClockType_Thread_CpuTimeId = 3
+};
+
 set(FcntlMode) {
 	FcntlMode_GetDescriptorFlags = 1,
 	FcntlMode_SetDescriptorFlags = 2,
@@ -196,7 +216,7 @@ sdef(bool, stat64, RdString path, Stat64 *attr);
 sdef(bool, fstat64, ssize_t fd, Stat64 *attr);
 sdef(bool, truncate64, RdString path, u64 len);
 sdef(bool, ftruncate64, ssize_t fd, u64 len);
-sdef(bool, clock_gettime, int id, Time_UnixEpoch *res);
+sdef(bool, clock_gettime, ClockType type, Time_UnixEpoch *res);
 sdef(ssize_t, epoll_create, size_t n);
 sdef(bool, epoll_ctl, ssize_t epfd, EpollCtl op, ssize_t fd, EpollEvent *event);
 sdef(ssize_t, epoll_wait, ssize_t epfd, EpollEvent *events, int maxevents, int timeout);
