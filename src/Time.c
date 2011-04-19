@@ -2,14 +2,12 @@
 
 #define self Time
 
-sdef(self, Empty) {
-	self res;
-
-	res.hour   = 0;
-	res.minute = 0;
-	res.second = 0;
-
-	return res;
+rsdef(self, New) {
+	return (self) {
+		.hour   = 0,
+		.minute = 0,
+		.second = 0
+	};
 }
 
 sdef(short, Compare, self a, self b) {

@@ -12,7 +12,7 @@ rsdef(self, New) {
 		.version       = HTTP_Version_1_1,
 		.status        = HTTP_Status_Success_Ok,
 		.persistent    = false,
-		.lastModified  = Date_RFC822_Empty()
+		.lastModified  = Date_RFC822_New()
 	};
 }
 

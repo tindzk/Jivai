@@ -2,7 +2,7 @@
 
 #define self Date
 
-record(self) {
+class {
 	u16 year;
 	u8  month;
 	u8  day;
@@ -48,16 +48,16 @@ const short ref(AddedDaysPerMonth)[13];
 const RdString ref(MonthNames)[13];
 const RdString ref(WeekDays)[8];
 
-sdef(self, Empty);
-sdef(bool, IsLeapYear, int year);
-sdef(size_t, GetWeekNumber, self date);
-sdef(short, GetRealWeekNumber, self date);
-sdef(short, Compare, self a, self b);
-sdef(size_t, GetDayOfYear, self date);
-sdef(short, GetWeekDay, self date);
-sdef(String, Format, self date, bool wday);
+rsdef(self, New);
+rsdef(bool, IsLeapYear, int year);
+rsdef(size_t, GetWeekNumber, self date);
+rsdef(short, GetRealWeekNumber, self date);
+rsdef(short, Compare, self a, self b);
+rsdef(size_t, GetDayOfYear, self date);
+rsdef(short, GetWeekDay, self date);
+rsdef(String, Format, self date, bool wday);
 
-static alwaysInline sdef(bool, Equals, self a, self b) {
+static alwaysInline rsdef(bool, Equals, self a, self b) {
 	return scall(Compare, a, b) == 0;
 }
 

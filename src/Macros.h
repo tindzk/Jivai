@@ -180,7 +180,7 @@
 	static inline GenericInstance tripleConcat(name, _, ToGeneric)(InstName(name) instance) { \
 		return (GenericInstance) { .object = instance.object };                               \
 	}                                                                                         \
-	static inline bool tripleConcat(name, _, Equals)(InstName(name) a, InstName(name) b) {    \
+	static inline bool tripleConcat(name, _, Is)(InstName(name) a, InstName(name) b) {        \
 		return a.object == b.object;                                                          \
 	}                                                                                         \
 

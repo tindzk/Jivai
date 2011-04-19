@@ -2,22 +2,18 @@
 
 #define self DateTime
 
-sdef(self, Empty) {
-	self res;
-
-	res.date = Date_Empty();
-	res.time = Time_Empty();
-
-	return res;
+rsdef(self, New) {
+	return (self) {
+		.date = Date_New(),
+		.time = Time_New()
+	};
 }
 
-sdef(self, FromDate, Date date) {
-	self res;
-
-	res.date = date;
-	res.time = Time_Empty();
-
-	return res;
+rsdef(self, FromDate, Date date) {
+	return (self) {
+		.date = date,
+		.time = Time_New()
+	};
 }
 
 sdef(short, Compare, self a, self b) {
@@ -120,7 +116,7 @@ sdef(self, GetCurrent) {
 	return scall(FromUnixEpoch, time.sec);
 }
 
-sdef(String, Format, self dt) {
+rsdef(String, Format, self dt) {
 	String date = Date_Format(dt.date, true);
 	String time = Time_Format(dt.time);
 

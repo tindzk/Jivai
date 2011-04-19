@@ -52,18 +52,16 @@ const RdString ref(WeekDays)[] = {
 	$("")
 };
 
-sdef(self, Empty) {
-	self res;
-
-	res.year  = 0;
-	res.month = 0;
-	res.day   = 0;
-
-	return res;
+rsdef(self, New) {
+	return (self) {
+		.year  = 0,
+		.month = 0,
+		.day   = 0
+	};
 }
 
 /* Taken from diet libc (dietlibc-0.32/libugly/isleap.c) */
-sdef(bool, IsLeapYear, int year) {
+rsdef(bool, IsLeapYear, int year) {
 	/* Every fourth year is a leap year except for century years that are
 	 * not divisible by 400.
 	 */
@@ -77,7 +75,7 @@ sdef(bool, IsLeapYear, int year) {
  * http://personal.ecu.edu/mccartyr/ISOwdALG.txt
  */
 
-sdef(size_t, GetWeekNumber, self date) {
+rsdef(size_t, GetWeekNumber, self date) {
 	size_t dayOfYear   = scall(GetDayOfYear, date);
 	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
 	size_t weekDay     = scall(GetWeekDay, date);
@@ -122,14 +120,14 @@ sdef(size_t, GetWeekNumber, self date) {
 	return weekNumber;
 }
 
-sdef(short, GetRealWeekNumber, self date) {
+rsdef(short, GetRealWeekNumber, self date) {
 	size_t dayOfYear   = scall(GetDayOfYear, date);
 	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
 
 	return (7 + (dayOfYear - 1) + (jan1WeekDay - 1)) / 7;
 }
 
-sdef(short, Compare, self a, self b) {
+rsdef(short, Compare, self a, self b) {
 	short year = Int16_Compare(a.year, b.year);
 
 	if (year != 0) {
@@ -145,7 +143,7 @@ sdef(short, Compare, self a, self b) {
 	return Int16_Compare(a.day, b.day);
 }
 
-sdef(size_t, GetDayOfYear, self date) {
+rsdef(size_t, GetDayOfYear, self date) {
 	int days = date.day;
 
 	/* Add number of days up until last month. */
@@ -164,7 +162,7 @@ sdef(size_t, GetDayOfYear, self date) {
 }
 
 /* See also DateTime_ToUnixEpoch(). */
-sdef(short, GetWeekDay, self date) {
+rsdef(short, GetWeekDay, self date) {
 	short year = date.year - 1900;
 
 	int day = (year * 365) + (year / 4);
@@ -180,7 +178,7 @@ sdef(short, GetWeekDay, self date) {
 	return (short) (day % 7);
 }
 
-sdef(String, Format, self date, bool wday) {
+rsdef(String, Format, self date, bool wday) {
 	RdString month = ref(MonthNames)[date.month];
 
 	String day  = Integer_ToString(date.day);

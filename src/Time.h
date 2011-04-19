@@ -7,18 +7,18 @@
 
 // @exc GetTimeOfDayFailed
 
-record(self) {
+class {
 	u8 hour;
 	u8 minute;
 	u8 second;
 };
 
-sdef(self, Empty);
+rsdef(self, New);
 sdef(short, Compare, self a, self b);
 sdef(ref(UnixEpoch), GetCurrent);
 sdef(String, Format, self time);
 
-static alwaysInline sdef(bool, Equals, self a, self b) {
+static alwaysInline rsdef(bool, Equals, self a, self b) {
 	return scall(Compare, a, b) == 0;
 }
 

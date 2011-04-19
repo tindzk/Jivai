@@ -30,18 +30,15 @@ static const RdString months[] = {
 	$("Dec")
 };
 
-sdef(self, Empty) {
-	self res;
-
-	res.date = Date_Empty();
-	res.time = Time_Empty();
-
-	res.weekday = Date_WeekDay_Unset;
-
-	return res;
+rsdef(self, New) {
+	return (self) {
+		.date    = Date_New(),
+		.time    = Time_New(),
+		.weekday = Date_WeekDay_Unset
+	};
 }
 
-sdef(self, Parse, RdString s) {
+rsdef(self, Parse, RdString s) {
 	RdString weekday, day, month, year, hour, minute, second;
 
 	Pattern regex;
@@ -86,27 +83,23 @@ out:
 	return res;
 }
 
-sdef(self, FromDate, Date $this) {
-	self res;
-
-	res.date    = $this;
-	res.time    = Time_Empty();
-	res.weekday = Date_GetWeekDay($this);
-
-	return res;
+rsdef(self, FromDate, Date date) {
+	return (self) {
+		.date    = date,
+		.time    = Time_New(),
+		.weekday = Date_GetWeekDay(date)
+	};
 }
 
-sdef(self, FromDateTime, DateTime $this) {
-	self res;
-
-	res.date    = $this.date;
-	res.time    = $this.time;
-	res.weekday = Date_GetWeekDay($this.date);
-
-	return res;
+rsdef(self, FromDateTime, DateTime dt) {
+	return (self) {
+		.date    = dt.date,
+		.time    = dt.time,
+		.weekday = Date_GetWeekDay(dt.date)
+	};
 }
 
-sdef(String, ToString, self $this) {
+rsdef(String, ToString, self $this) {
 	if ($this.date.month > 12) {
 		$this.date.month = 0;
 	}
