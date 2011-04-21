@@ -302,6 +302,16 @@ tsCase(Acute, "Slicing") {
 	String_Destroy(&sliced);
 }
 
+tsCase(Acute, "Trim") {
+	RdString subject  = $("  Hello World  \n");
+	RdString expected = $("Hello World");
+
+	Assert($("Return value"),
+		String_Equals(
+			String_Trim(subject),
+			expected));
+}
+
 tsCase(Acute, "Split") {
 	String s = String_New(0);
 	String_Append(&s, $("Hello World."));

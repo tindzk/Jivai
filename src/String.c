@@ -589,35 +589,20 @@ overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdStrin
 }
 
 overload sdef(RdString, Trim, RdString s, short type) {
-	size_t i, lpos = 0;
-
 	if (BitMask_Has(type, ref(TrimLeft))) {
-		for (i = 0; i < s.len; i++) {
-			if (Char_IsSpace(s.buf[i])) {
-				lpos = i + 1;
-			} else {
-				break;
-			}
+		while (s.len > 0 && Char_IsSpace(*s.buf)) {
+			s.buf++;
+			s.len--;
 		}
 	}
-
-	if (lpos == s.len) {
-		return (RdString) { .buf = s.buf };
-	}
-
-	size_t rpos = s.len;
 
 	if (BitMask_Has(type, ref(TrimRight))) {
-		for (i = rpos; i > 0; i--) {
-			if (Char_IsSpace(s.buf[i - 1])) {
-				rpos = i - 1;
-			} else {
-				break;
-			}
+		while (s.len > 0 && Char_IsSpace(s.buf[s.len - 1])) {
+			s.len--;
 		}
 	}
 
-	return scall(Slice, s, lpos, rpos - lpos);
+	return s;
 }
 
 overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdString right, bool leftAligned, RdString *out) {
