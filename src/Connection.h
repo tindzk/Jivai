@@ -3,11 +3,6 @@
 
 #define self Connection
 
-set(ref(Status)) {
-	ref(Status_Close),
-	ref(Status_Open)
-};
-
 set(ref(State)) {
 	ref(State_Established), /* Nothing received/sent yet. */
 	ref(State_Receiving),   /* Receiving data.            */
@@ -25,13 +20,15 @@ record(ref(Client)) {
  * push = send the rest of the response
  */
 
+struct Server_Client;
+
 Interface(self) {
 	size_t size;
 
-	void        (*init)   (GenericInstance, ref(Client) *, Logger *);
-	void        (*destroy)(GenericInstance);
-	ref(Status) (*pull)   (GenericInstance);
-	ref(Status) (*push)   (GenericInstance);
+	void (*init)   (GenericInstance, struct Server_Client *, Logger *);
+	void (*destroy)(GenericInstance);
+	void (*pull)   (GenericInstance);
+	void (*push)   (GenericInstance);
 };
 
 #undef self

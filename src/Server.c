@@ -30,26 +30,6 @@ def(void, SetEdgeTriggered, bool value) {
 	this->edgeTriggered = value;
 }
 
-static def(void, OnData, ref(Client) *client, bool pull) {
-	Connection_Status status = Connection_Status_Open;
-
-	try {
-		status = pull
-			? this->conn->pull(client->object)
-			: this->conn->push(client->object);
-	} catch(SocketConnection, NotConnected) {
-		status = Connection_Status_Close;
-	} catch(SocketConnection, ConnectionReset) {
-		status = Connection_Status_Close;
-	} finally {
-
-	} tryEnd;
-
-	if (status == Connection_Status_Close) {
-		EventLoop_DetachClient(EventLoop_GetInstance(), client);
-	}
-}
-
 static def(void, OnDestroy, GenericInstance inst) {
 	ref(Client) *client = inst.object;
 	this->conn->destroy(client->object);
@@ -57,12 +37,16 @@ static def(void, OnDestroy, GenericInstance inst) {
 
 static def(void, OnPull, GenericInstance inst) {
 	assert(this->conn->pull != NULL);
-	call(OnData, inst.object, true);
+
+	ref(Client) *client = inst.object;
+	this->conn->pull(client->object);
 }
 
 static def(void, OnPush, GenericInstance inst) {
 	assert(this->conn->push != NULL);
-	call(OnData, inst.object, false);
+
+	ref(Client) *client = inst.object;
+	this->conn->push(client->object);
 }
 
 static def(size_t, GetSize) {
@@ -76,10 +60,10 @@ static def(void, OnConnection, Socket *socket) {
 
 	ref(Client) *client = (void *) entry->data;
 
-	client->client.conn  = &entry->conn;
-	client->client.state = Connection_State_Established;
+	client->socket.conn  = &entry->conn;
+	client->socket.state = Connection_State_Established;
 
-	this->conn->init(client->object, &client->client, this->logger);
+	this->conn->init(client->object, client, this->logger);
 }
 
 def(void, Listen, unsigned short port) {

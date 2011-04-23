@@ -11,9 +11,13 @@
 #define self Server
 
 record(ref(Client)) {
-	Connection_Client client;
+	Connection_Client socket;
 	char              object[];
 };
+
+static inline void ref(Client_Close)(ref(Client) *client) {
+	EventLoop_DetachClient(EventLoop_GetInstance(), client);
+}
 
 class {
 	bool edgeTriggered;
