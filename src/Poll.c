@@ -66,7 +66,7 @@ def(void, ModifyFd, GenericInstance inst, int fd, int events) {
 def(void, DeleteFd, int fd) {
 	errno = 0;
 
-	if (Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {
+	if (!Kernel_epoll_ctl(this->fd, EpollCtl_Delete, fd, NULL)) {
 		if (errno == ENOENT) {
 			throw(UnknownFileDescriptor);
 		} else if (errno == EPERM) {
