@@ -28,13 +28,13 @@ class {
 
 	bool corking;
 	bool closable;
-	bool nonblocking;
+	bool blocking;
 };
 
 rsdef(self, New, Channel ch, NetworkAddress addr, bool closable);
 def(void, Destroy);
 def(void, SetCorking, bool value);
-def(void, SetNonBlocking, bool value);
+def(void, SetBlocking, bool value);
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);

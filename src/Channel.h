@@ -23,7 +23,8 @@ extern self* ref(StdErr);
 
 rsdef(self, New, int id, int flags);
 def(void, Destroy);
-def(void, SetNonBlocking, bool enable);
+def(bool, IsBlocking);
+def(void, SetBlocking, bool enable);
 def(void, SetCloseOnExec, bool enable);
 def(bool, IsReadable);
 def(bool, IsWritable);

@@ -125,8 +125,8 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 
 	data->conn = Socket_Accept(socket);
 
-	SocketConnection_SetCorking    (&data->conn, true);
-	SocketConnection_SetNonBlocking(&data->conn, true);
+	SocketConnection_SetCorking (&data->conn, true);
+	SocketConnection_SetBlocking(&data->conn, false);
 
 	Poll_AddFd(&this->poll, entry, Channel_GetId(&data->conn.ch), flags);
 

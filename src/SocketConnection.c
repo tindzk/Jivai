@@ -4,9 +4,10 @@
 
 rsdef(self, New, Channel ch, NetworkAddress addr, bool closable) {
 	return (self) {
-		.ch = ch,
-		.addr = addr,
-		.closable = closable
+		.ch       = ch,
+		.addr     = addr,
+		.closable = closable,
+		.blocking = true
 	};
 }
 
@@ -21,8 +22,8 @@ def(void, SetCorking, bool value) {
 	this->corking = value;
 }
 
-def(void, SetNonBlocking, bool value) {
-	this->nonblocking = value;
+def(void, SetBlocking, bool value) {
+	this->blocking = value;
 }
 
 def(void, Flush) {
@@ -33,7 +34,7 @@ def(void, Flush) {
 }
 
 def(ssize_t, Read, void *buf, size_t len) {
-	int flags = this->nonblocking ? MSG_DONTWAIT : 0;
+	int flags = !this->blocking ? MSG_DONTWAIT : 0;
 
 	errno = 0;
 
@@ -59,8 +60,14 @@ def(ssize_t, Read, void *buf, size_t len) {
 }
 
 def(bool, SendFile, File *file, u64 *offset, size_t len) {
-	if (this->nonblocking) {
-		Channel_SetNonBlocking(&this->ch, true);
+	bool isBlocking = Channel_IsBlocking(&this->ch);
+
+	if (!this->blocking) {
+		/* sendfile64() does not have an additional flags parameter like send()
+		 * which could take MSG_DONTWAIT when blocking is disabled. Therefore
+		 * we need to set the blocking mode on the channel persistently.
+		 */
+		Channel_SetBlocking(&this->ch, this->blocking);
 	}
 
 	while (len > 0) {
@@ -95,9 +102,8 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 		len -= res;
 	}
 
-	if (this->nonblocking) {
-		Channel_SetNonBlocking(&this->ch, false);
-	}
+	/* Restore previous blocking status. */
+	Channel_SetBlocking(&this->ch, isBlocking);
 
 	return true;
 }
@@ -109,7 +115,7 @@ overload def(ssize_t, Write, void *buf, size_t len) {
 		flags |= MSG_MORE;
 	}
 
-	if (this->nonblocking) {
+	if (!this->blocking) {
 		flags |= MSG_DONTWAIT;
 	}
 

@@ -34,13 +34,17 @@ def(void, Destroy) {
 	}
 }
 
-def(void, SetNonBlocking, bool enable) {
+def(bool, IsBlocking) {
+	return !BitMask_Has(this->flags, FileStatus_NonBlock);
+}
+
+def(void, SetBlocking, bool enable) {
 	int old = this->flags;
 
 	if (enable) {
-		BitMask_Set(this->flags, FileStatus_NonBlock);
-	} else {
 		BitMask_Clear(this->flags, FileStatus_NonBlock);
+	} else {
+		BitMask_Set(this->flags, FileStatus_NonBlock);
 	}
 
 	if (old == this->flags) {
