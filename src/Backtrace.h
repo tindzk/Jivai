@@ -1,7 +1,7 @@
 #import "Hex.h"
-#import "File.h"
 #import "String.h"
 #import "Memory.h"
+#import "Channel.h"
 #import "Integer.h"
 #import "Compiler.h"
 

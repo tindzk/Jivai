@@ -1,4 +1,3 @@
-#import <errno.h>
 #import <netdb.h>
 
 #import "String.h"

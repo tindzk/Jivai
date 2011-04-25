@@ -3,12 +3,6 @@
 #define self Socket
 
 rsdef(self, New, ref(Protocol) protocol) {
-	self res = {
-		.fd       = -1,
-		.unused   = true,
-		.protocol = protocol
-	};
-
 	int style = (protocol == ref(Protocol_TCP))
 		? SOCK_STREAM
 		: SOCK_DGRAM;
@@ -17,67 +11,53 @@ rsdef(self, New, ref(Protocol) protocol) {
 		? IPPROTO_TCP
 		: IPPROTO_UDP;
 
-	if ((res.fd = Kernel_socket(PF_INET, style, proto)) == -1) {
+	int id = Kernel_socket(PF_INET, style, proto);
+
+	if (id == -1) {
 		throw(SocketFailed);
 	}
 
-	return res;
+	return (self) {
+		.ch       = Channel_New(id, 0),
+		.unused   = true,
+		.protocol = protocol
+	};
 }
 
-def(void, SetNonBlockingFlag, bool enable) {
-	int flags = Kernel_fcntl(this->fd, FcntlMode_GetStatus, 0);
-
-	if (flags == -1) {
-		throw(FcntlFailed);
-	}
-
-	if (enable) {
-		flags |= FileStatus_NonBlock;
-	} else {
-		flags &= ~FileStatus_NonBlock;
-	}
-
-	if (Kernel_fcntl(this->fd, FcntlMode_SetStatus, flags) == -1) {
-		throw(FcntlFailed);
-	}
+def(void, Destroy) {
+	Kernel_shutdown(Channel_GetId(&this->ch), SHUT_RDWR);
+	Channel_Destroy(&this->ch);
 }
 
-def(void, SetCloexecFlag, bool enable) {
-	int flags = Kernel_fcntl(this->fd, FcntlMode_GetDescriptorFlags, 0);
+def(void, SetReusable, bool enable) {
+	int value = enable;
 
-	if (flags == -1) {
-		throw(FcntlFailed);
-	}
-
-	if (enable) {
-		flags |= FileDescriptorFlags_CloseOnExec;
-	} else {
-		flags &= ~FileDescriptorFlags_CloseOnExec;
-	}
-
-	if (Kernel_fcntl(this->fd, FcntlMode_SetDescriptorFlags, flags) == -1) {
-		throw(FcntlFailed);
+	if (!Kernel_setsockopt(Channel_GetId(&this->ch), SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value))) {
+		throw(SetSocketOption);
 	}
 }
 
-def(void, SetReusableFlag, bool enable) {
-	int val = enable;
+def(void, SetLinger) {
+	struct linger ling = {
+		.l_onoff  = 1,
+		.l_linger = 30
+	};
 
-	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val))) {
+	if (!Kernel_setsockopt(Channel_GetId(&this->ch), SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))) {
 		throw(SetSocketOption);
 	}
 }
 
 def(void, Listen, unsigned short port, int maxconns) {
-	struct sockaddr_in addr;
-
-	addr.sin_family = PF_INET;
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr.sin_port = htons(port);
+	struct sockaddr_in addr = {
+		.sin_family = PF_INET,
+		.sin_addr.s_addr = htonl(INADDR_ANY),
+		.sin_port = htons(port)
+	};
 
 	errno = 0;
 
-	if (!Kernel_bind(this->fd, addr)) {
+	if (!Kernel_bind(Channel_GetId(&this->ch), addr)) {
 		if (errno == EADDRINUSE) {
 			throw(AddressInUse);
 		} else {
@@ -85,75 +65,53 @@ def(void, Listen, unsigned short port, int maxconns) {
 		}
 	}
 
-	if (!Kernel_listen(this->fd, maxconns)) {
+	if (!Kernel_listen(Channel_GetId(&this->ch), maxconns)) {
 		throw(ListenFailed);
 	}
 }
 
-def(void, SetLinger) {
-	struct linger ling;
-
-	ling.l_onoff  = 1;
-	ling.l_linger = 30;
-
-	if (!Kernel_setsockopt(this->fd, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))) {
-		throw(SetSocketOption);
-	}
-}
-
 def(SocketConnection, Connect, RdString hostname, unsigned short port) {
-	struct sockaddr_in addr;
-
-	addr.sin_family = PF_INET;
-	addr.sin_addr   = NetworkAddress_ResolveHost(hostname);
-	addr.sin_port   = htons(port);
+	struct sockaddr_in addr = {
+		.sin_family = PF_INET,
+		.sin_addr   = NetworkAddress_ResolveHost(hostname),
+		.sin_port   = htons(port)
+	};
 
 	if (!this->unused) {
 		call(Destroy);
 		*this = scall(New, this->protocol);
 	}
 
-	if (!Kernel_connect(this->fd, &addr, sizeof(addr))) {
+	if (!Kernel_connect(Channel_GetId(&this->ch), &addr, sizeof(addr))) {
 		throw(ConnectFailed);
 	}
 
 	this->unused = false;
 
-	SocketConnection conn;
+	NetworkAddress naddr = {
+		.ip   = addr.sin_addr.s_addr,
+		.port = port
+	};
 
-	conn.fd = this->fd;
-
-	conn.addr.ip   = addr.sin_addr.s_addr;
-	conn.addr.port = port;
-
-	conn.corking     = false;
-	conn.closable    = false;
-	conn.nonblocking = false;
-
-	return conn;
+	return SocketConnection_New(this->ch, naddr, false);
 }
 
 def(SocketConnection, Accept) {
 	struct sockaddr_in remote;
 	int socklen = sizeof(remote);
 
-	SocketConnection conn;
+	int id = Kernel_accept(Channel_GetId(&this->ch), &remote, &socklen);
 
-	if ((conn.fd = Kernel_accept(this->fd, &remote, &socklen)) == -1) {
+	if (id == -1) {
 		throw(AcceptFailed);
 	}
 
-	conn.addr.ip   = remote.sin_addr.s_addr;
-	conn.addr.port = ntohs(remote.sin_port);
+	Channel ch = Channel_New(id, FileStatus_ReadWrite);
 
-	conn.corking     = false;
-	conn.closable    = true;
-	conn.nonblocking = false;
+	NetworkAddress addr = {
+		.ip   = remote.sin_addr.s_addr,
+		.port = ntohs(remote.sin_port)
+	};
 
-	return conn;
-}
-
-def(void, Destroy) {
-	Kernel_shutdown(this->fd, SHUT_RDWR);
-	Kernel_close(this->fd);
+	return SocketConnection_New(ch, addr, true);
 }

@@ -1,10 +1,10 @@
-#import <errno.h>
 #import <linux/net.h>
 #import <netinet/tcp.h>
 
 #import "File.h"
 #import "Kernel.h"
 #import "String.h"
+#import "Channel.h"
 #import "Exception.h"
 #import "NetworkAddress.h"
 
@@ -16,31 +16,31 @@
 
 // @exc ConnectionRefused
 // @exc ConnectionReset
-// @exc FcntlFailed
 // @exc FileDescriptorUnusable
 // @exc InvalidFileDescriptor
 // @exc NotConnected
 // @exc UnknownError
 
 class {
-	NetworkAddress addr;
+	Channel ch;
 
-	ssize_t fd;
+	NetworkAddress addr;
 
 	bool corking;
 	bool closable;
 	bool nonblocking;
 };
 
-MemoryHelpers(self);
-
+rsdef(self, New, Channel ch, NetworkAddress addr, bool closable);
+def(void, Destroy);
+def(void, SetCorking, bool value);
+def(void, SetNonBlocking, bool value);
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);
 overload def(ssize_t, Write, void *buf, size_t len);
-def(void, Close);
 
-static alwaysInline overload def(size_t, Write, RdString s) {
+static alwaysInline overload def(ssize_t, Write, RdString s) {
 	return call(Write, s.buf, s.len);
 }
 

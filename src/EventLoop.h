@@ -1,6 +1,6 @@
 #import "Poll.h"
-#import "Timer.h"
 #import "Socket.h"
+#import "SocketConnection.h"
 #import "DoublyLinkedList.h"
 
 #define self EventLoop
@@ -12,13 +12,13 @@ Interface(ref(Client)) {
 	void   (*onDestroy)(GenericInstance, GenericInstance inst);
 };
 
-Callback(ref(OnTimer),      void, u64 dropped, Timer *timer);
+Callback(ref(OnInput),      void);
 Callback(ref(OnTimeout),    void, int timeout);
 Callback(ref(OnConnection), void, Socket *socket);
 
-record(ref(TimerEntry)) {
-	Timer timer;
-	ref(OnTimer) cb;
+record(ref(ChannelEntry)) {
+	Channel ch;
+	ref(OnInput) cb;
 };
 
 record(ref(SocketEntry)) {
@@ -33,7 +33,7 @@ record(ref(ClientEntry)) {
 };
 
 set(ref(EntryType)) {
-	ref(EntryType_Timer),
+	ref(EntryType_Channel),
 	ref(EntryType_Socket),
 	ref(EntryType_Client)
 };
@@ -55,12 +55,11 @@ class {
 
 def(void, Init);
 def(void, Destroy);
-def(void, AddTimer, int sec, ref(OnTimer) onTimer);
-def(void, AddIntervalTimer, int sec, ref(OnTimer) onTimer);
+def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput);
+def(void, DetachChannel, ref(Entry) *entry, bool poll);
 def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, GenericInstance inst);
-def(void, DetachTimer, Timer *timer);
 def(bool, IsRunning);
 def(void, Iteration, int timeout);
 overload def(void, Run, int timeout);

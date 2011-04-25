@@ -131,7 +131,7 @@ sdef(short, CompareLeft, RdString a, RdString b);
 overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros);
 
 #define String_Print(s) \
-	File_Write(File_StdOut, s)
+	Channel_Write(Channel_StdOut, s)
 
 #if String_FmtChecks
 #define FmtString(_fmt, ...)  \

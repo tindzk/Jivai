@@ -1,5 +1,3 @@
-#import <errno.h>
-
 #import "String.h"
 #import "Kernel.h"
 #import "Exception.h"
@@ -20,22 +18,19 @@ set(ref(Protocol)) {
 // @exc ListenFailed
 // @exc SetSocketOption
 // @exc SocketFailed
-// @exc FcntlFailed
 
 class {
-	ssize_t fd;
+	Channel ch;
 	bool unused;
 	Socket_Protocol protocol;
 };
 
 rsdef(self, New, ref(Protocol) protocol);
-def(void, SetNonBlockingFlag, bool enable);
-def(void, SetCloexecFlag, bool enable);
-def(void, SetReusableFlag, bool enable);
-def(void, Listen, unsigned short port, int maxconns);
+def(void, Destroy);
+def(void, SetReusable, bool enable);
 def(void, SetLinger);
+def(void, Listen, unsigned short port, int maxconns);
 def(SocketConnection, Connect, RdString hostname, unsigned short port);
 def(SocketConnection, Accept);
-def(void, Destroy);
 
 #undef self

@@ -10,9 +10,7 @@ rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
 		.socket        = Socket_New(Socket_Protocol_TCP)
 	};
 
-	Socket_SetCloexecFlag    (&res.socket, true);
-	Socket_SetReusableFlag   (&res.socket, true);
-	Socket_SetNonBlockingFlag(&res.socket, true);
+	Socket_SetReusable(&res.socket, true);
 
 	return res;
 }

@@ -1,5 +1,3 @@
-#import <errno.h>
-
 #import "Time.h"
 #import "Kernel.h"
 #import "String.h"

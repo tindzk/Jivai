@@ -34,40 +34,39 @@ def(void, Destroy) {
 	Poll_Destroy(&this->poll);
 }
 
-def(void, AddTimer, int sec, ref(OnTimer) onTimer) {
+def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput) {
 	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
-		sizeof(ref(Entry)) + sizeof(ref(TimerEntry)));
+		sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
 
-	entry->type = ref(EntryType_Timer);
+	entry->type = ref(EntryType_Channel);
 
-	ref(TimerEntry) *data = (void *) entry->data;
+	ref(ChannelEntry) *data = (void *) entry->data;
 
-	data->timer = Timer_New(ClockType_Monotonic);
-	data->cb    = onTimer;
+	data->ch = ch;
+	data->cb = onInput;
 
-	Timer_SetTimer(&data->timer, sec);
-
-	Poll_AddFd(&this->poll, entry, data->timer.fd, Poll_Events_Input);
+	Poll_AddFd(&this->poll, entry, Channel_GetId(&data->ch), Poll_Events_Input);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
+
+	return entry;
 }
 
-def(void, AddIntervalTimer, int sec, ref(OnTimer) onTimer) {
-	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
-		sizeof(ref(Entry)) + sizeof(ref(TimerEntry)));
+/* Set `poll' to true if the fd continues to be valid. Otherwise the kernel
+ * removes the watcher automatically upon closure.
+ */
+def(void, DetachChannel, ref(Entry) *entry, bool poll) {
+	ref(ChannelEntry) *data = (void *) entry->data;
 
-	entry->type = ref(EntryType_Timer);
+	assert(entry->type == ref(EntryType_Channel));
 
-	ref(TimerEntry) *data = (void *) entry->data;
+	if (poll) {
+		Poll_DeleteFd(&this->poll, Channel_GetId(&data->ch));
+	}
 
-	data->timer = Timer_New(ClockType_Monotonic);
-	data->cb    = onTimer;
+	DoublyLinkedList_Remove(&this->entries, entry);
 
-	Timer_SetInterval(&data->timer, sec);
-
-	Poll_AddFd(&this->poll, entry, data->timer.fd, Poll_Events_Input);
-
-	DoublyLinkedList_InsertEnd(&this->entries, entry);
+	call(_DestroyEntry, entry);
 }
 
 /* Listens for incoming connections. */
@@ -82,7 +81,7 @@ def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 	data->cb     = onConnection;
 	data->socket = socket;
 
-	Poll_AddFd(&this->poll, entry, socket->fd,
+	Poll_AddFd(&this->poll, entry, Channel_GetId(&socket->ch),
 		Poll_Events_Error |
 		Poll_Events_Input |
 		Poll_Events_HangUp);
@@ -125,10 +124,11 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 	data->client = client;
 
 	data->conn = Socket_Accept(socket);
-	data->conn.corking     = true;
-	data->conn.nonblocking = true;
 
-	Poll_AddFd(&this->poll, entry, data->conn.fd, flags);
+	SocketConnection_SetCorking    (&data->conn, true);
+	SocketConnection_SetNonBlocking(&data->conn, true);
+
+	Poll_AddFd(&this->poll, entry, Channel_GetId(&data->conn.ch), flags);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 
@@ -143,7 +143,7 @@ def(void, _DetachClient, ref(Entry) *entry) {
 	DoublyLinkedList_Remove(&this->entries, entry);
 
 	/* Closing the socket fd automatically unsubscribes from epoll. */
-	SocketConnection_Close(&data->conn);
+	SocketConnection_Destroy(&data->conn);
 
 	call(_DestroyEntry, entry);
 }
@@ -159,28 +159,6 @@ def(void, DetachClient, GenericInstance inst) {
 	call(_DetachClient, entry);
 }
 
-static def(void, _DetachTimer, ref(Entry) *entry) {
-	ref(TimerEntry) *data = (void *) entry->data;
-
-	Timer_Destroy(&data->timer);
-
-	DoublyLinkedList_Remove(&this->entries, entry);
-
-	call(_DestroyEntry, entry);
-}
-
-/* Users can only detach interval timers as normal timers are detached
- * automatically.
- */
-def(void, DetachTimer, Timer *timer) {
-	/* This assumes that `timer' resides in the first element of TimerEntry. */
-	ref(Entry) *entry = (void *) timer - sizeof(ref(Entry));
-
-	assert(entry->type == ref(EntryType_Timer));
-	assert(Timer_IsInterval(timer));
-
-	call(_DetachTimer, entry);
-}
 
 def(bool, IsRunning) {
 	return this->running;
@@ -202,21 +180,11 @@ def(void, Quit) {
 	this->running = false;
 }
 
-static def(void, OnTimerEvent, int events, ref(Entry) *entry) {
-	ref(TimerEntry) *data = (void *) entry->data;
+static def(void, OnChannelEvent, int events, ref(Entry) *entry) {
+	ref(ChannelEntry) *data = (void *) entry->data;
 
 	if (BitMask_Has(events, Poll_Events_Input)) {
-		/* Store value locally because the callback could have detached the
-		 * timer in the meantime.
-		 */
-		bool interval = Timer_IsInterval(&data->timer);
-
-		callback(data->cb, Timer_Read(&data->timer), &data->timer);
-
-		if (!interval) {
-			/* The timer is not recurring. Thus, we have to detach it. */
-			call(_DetachTimer, entry);
-		}
+		callback(data->cb);
 	}
 }
 
@@ -242,12 +210,6 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 	if (BitMask_Has(events, Poll_Events_Input)) {
 		/* Receiving data from client. */
 		delegate(data->client, onInput, data->data);
-
-		/* The connection could have been closed at this point (and thus entry's
-		 * memory has become inaccessible). Therefore, we never emit `onInput'
-		 * in conjunction with `onOutput'.
-		 */
-		return;
 	}
 
 	if (BitMask_Has(events, Poll_Events_Output)) {
@@ -259,11 +221,13 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 static def(void, OnEvent, int events, GenericInstance inst) {
 	ref(Entry) *entry = inst.object;
 
-	if (entry->type == ref(EntryType_Timer)) {
-		call(OnTimerEvent, events, entry);
+	if (entry->type == ref(EntryType_Channel)) {
+		call(OnChannelEvent, events, entry);
 	} else if (entry->type == ref(EntryType_Client)) {
 		call(OnClientEvent, events, entry);
 	} else if (entry->type == ref(EntryType_Socket)) {
 		call(OnSocketEvent, events, (void *) entry->data);
+	} else {
+		assert(false);
 	}
 }

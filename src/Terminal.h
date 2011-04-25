@@ -1,9 +1,9 @@
 #import <pty.h>
 
 #import "Bit.h"
-#import "File.h"
 #import "Macros.h"
 #import "BitMask.h"
+#import "Channel.h"
 #import "Integer.h"
 #import "Exception.h"
 
@@ -117,8 +117,8 @@ record(ref(Style)) {
 };
 
 class {
-	File *in;
-	File *out;
+	Channel *in;
+	Channel *out;
 
 	bool isVT100;
 
@@ -132,8 +132,8 @@ class {
 	((x) - 96)
 
 rsdef(self, New, bool assumeVT100);
-def(void, SetInput, File *file);
-def(void, SetOutput, File *file);
+def(void, SetInput, Channel *ch);
+def(void, SetOutput, Channel *ch);
 def(void, Configure, bool echo, bool signal);
 def(void, Destroy);
 def(void, ResetVT100);

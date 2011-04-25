@@ -5,7 +5,7 @@ int main(void) {
 	File file;
 
 	try {
-		File_Open(&file, $("File.txt"), FileStatus_ReadOnly);
+		file = File_New($("File.txt"), FileStatus_ReadOnly);
 	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
 		excReturn ExitStatus_Failure;
@@ -30,7 +30,7 @@ int main(void) {
 
 	String_Destroy(&strSize);
 
-	File_Close(&file);
+	File_Destroy(&file);
 
 	return ExitStatus_Success;
 }

@@ -5,19 +5,19 @@
 rsdef(self, New, ClockType type) {
 	assert(type == ClockType_Monotonic || type == ClockType_Realtime);
 
-	self res = {
-		.fd = timerfd_create(type, TFD_NONBLOCK)
-	};
+	int id = timerfd_create(type, TFD_NONBLOCK);
 
-	if (res.fd == -1) {
+	if (id == -1) {
 		throw(UnknownError);
 	}
 
-	return res;
+	return (self) {
+		.ch = Channel_New(id, FileStatus_NonBlock)
+	};
 }
 
 def(void, Destroy) {
-	Kernel_close(this->fd);
+	Channel_Destroy(&this->ch);
 }
 
 def(void, SetTimer, int sec) {
@@ -28,7 +28,7 @@ def(void, SetTimer, int sec) {
 		.it_value.tv_sec    = sec
 	};
 
-	int ret = timerfd_settime(this->fd, 0, &value, NULL);
+	int ret = timerfd_settime(Channel_GetId(&this->ch), 0, &value, NULL);
 
 	if (ret < 0) {
 		throw(UnknownError);
@@ -45,7 +45,7 @@ def(void, SetInterval, int sec) {
 		.it_value.tv_sec    = sec
 	};
 
-	int ret = timerfd_settime(this->fd, 0, &value, NULL);
+	int ret = timerfd_settime(Channel_GetId(&this->ch), 0, &value, NULL);
 
 	if (ret < 0) {
 		throw(UnknownError);
@@ -59,12 +59,51 @@ def(void, SetInterval, int sec) {
  */
 rdef(u64, Read) {
 	u64 dropped;
+	Channel_Read(&this->ch, &dropped, sizeof(dropped));
+	return dropped;
+}
 
-	int ret = Kernel_read(this->fd, &dropped, sizeof(dropped));
+static sdef(void, OnInvoke, GenericInstance inst) {
+	ref(Task) *task = inst.object;
 
-	if (ret < 0) {
-		throw(UnknownError);
+	/* If false, the timer is not recurring. Thus, we have to detach it even
+	 * though the callback might return true.
+	 */
+	bool interval = Timer_IsInterval(&task->timer);
+
+	/* Don't merge this with callbackRet() because this won't be executed when
+	 * no callback is set.
+	 */
+	u64 dropped = Timer_Read(&task->timer);
+
+	bool keep = callbackRet(task->cb, false, dropped);
+
+	if (!interval || !keep) {
+		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, true);
+		task->entry = NULL;
+	}
+}
+
+static sdef(void, DestroyTask, GenericInstance inst) {
+	ref(Task) *task = inst.object;
+
+	if (task->entry != NULL) {
+		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, false);
+		task->entry = NULL;
 	}
 
-	return dropped;
+	Timer_Destroy(&task->timer);
+}
+
+def(Task *, AsTask, ref(OnTimer) onTimer) {
+	Task *task = Task_New(sizeof(ref(Task)), ref(DestroyTask));
+
+	ref(Task) *data = (void *) task->data;
+
+	data->cb    = onTimer;
+	data->timer = *this;
+	data->entry = EventLoop_AddChannel(EventLoop_GetInstance(), this->ch,
+		EventLoop_OnInput_For(data, ref(OnInvoke)));
+
+	return task;
 }
