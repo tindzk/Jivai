@@ -23,7 +23,7 @@ static def(void, OnEvent, int events, GenericInstance inst);
 
 def(void, Init) {
 	this->onTimeout = scall(OnTimeout_Empty);
-	Poll_Init(&this->poll, Poll_OnEvent_For(this, ref(OnEvent)));
+	this->watcher   = ChannelWatcher_New(ChannelWatcher_OnEvent_For(this, ref(OnEvent)));
 	DoublyLinkedList_Init(&this->entries);
 }
 
@@ -31,7 +31,7 @@ def(void, Destroy) {
 	DoublyLinkedList_Destroy(&this->entries,
 		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
 
-	Poll_Destroy(&this->poll);
+	ChannelWatcher_Destroy(&this->watcher);
 }
 
 def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput) {
@@ -45,23 +45,23 @@ def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput) {
 	data->ch = ch;
 	data->cb = onInput;
 
-	Poll_AddFd(&this->poll, entry, Channel_GetId(&data->ch), Poll_Events_Input);
+	ChannelWatcher_Subscribe(&this->watcher, data->ch, ChannelWatcher_Events_Input, entry);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 
 	return entry;
 }
 
-/* Set `poll' to true if the fd continues to be valid. Otherwise the kernel
+/* Set `watcher' to true if the fd continues to be valid. Otherwise the kernel
  * removes the watcher automatically upon closure.
  */
-def(void, DetachChannel, ref(Entry) *entry, bool poll) {
+def(void, DetachChannel, ref(Entry) *entry, bool watcher) {
 	ref(ChannelEntry) *data = (void *) entry->data;
 
 	assert(entry->type == ref(EntryType_Channel));
 
-	if (poll) {
-		Poll_DeleteFd(&this->poll, Channel_GetId(&data->ch));
+	if (watcher) {
+		ChannelWatcher_Unsubscribe(&this->watcher, data->ch);
 	}
 
 	DoublyLinkedList_Remove(&this->entries, entry);
@@ -81,10 +81,11 @@ def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 	data->cb     = onConnection;
 	data->socket = socket;
 
-	Poll_AddFd(&this->poll, entry, Channel_GetId(&socket->ch),
-		Poll_Events_Error |
-		Poll_Events_Input |
-		Poll_Events_HangUp);
+	ChannelWatcher_Subscribe(&this->watcher, socket->ch,
+		ChannelWatcher_Events_Error |
+		ChannelWatcher_Events_Input |
+		ChannelWatcher_Events_HangUp,
+		entry);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 }
@@ -94,21 +95,21 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 	int flags = 0;
 
 	if (edgeTriggered) {
-		BitMask_Set(flags, Poll_Events_EdgeTriggered);
+		BitMask_Set(flags, ChannelWatcher_Events_EdgeTriggered);
 	}
 
 	if (implements(client, onDestroy)) {
-		BitMask_Set(flags, Poll_Events_Error);
-		BitMask_Set(flags, Poll_Events_HangUp);
-		BitMask_Set(flags, Poll_Events_PeerHangUp);
+		BitMask_Set(flags, ChannelWatcher_Events_Error);
+		BitMask_Set(flags, ChannelWatcher_Events_HangUp);
+		BitMask_Set(flags, ChannelWatcher_Events_PeerHangUp);
 	}
 
 	if (implements(client, onInput)) {
-		BitMask_Set(flags, Poll_Events_Input);
+		BitMask_Set(flags, ChannelWatcher_Events_Input);
 	}
 
 	if (implements(client, onOutput)) {
-		BitMask_Set(flags, Poll_Events_Output);
+		BitMask_Set(flags, ChannelWatcher_Events_Output);
 	}
 
 	assert(implements(client, getSize));
@@ -128,7 +129,7 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 	SocketConnection_SetCorking (&data->conn, true);
 	SocketConnection_SetBlocking(&data->conn, false);
 
-	Poll_AddFd(&this->poll, entry, Channel_GetId(&data->conn.ch), flags);
+	ChannelWatcher_Subscribe(&this->watcher, data->conn.ch, flags, entry);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 
@@ -142,7 +143,7 @@ def(void, _DetachClient, ref(Entry) *entry) {
 
 	DoublyLinkedList_Remove(&this->entries, entry);
 
-	/* Closing the socket fd automatically unsubscribes from epoll. */
+	/* Closing the socket fd automatically unsubscribes from ewatcher. */
 	SocketConnection_Destroy(&data->conn);
 
 	call(_DestroyEntry, entry);
@@ -165,7 +166,7 @@ def(bool, IsRunning) {
 }
 
 def(void, Iteration, int timeout) {
-	Poll_Process(&this->poll, timeout);
+	ChannelWatcher_Poll(&this->watcher, timeout);
 	callback(this->onTimeout, timeout);
 }
 
@@ -183,13 +184,13 @@ def(void, Quit) {
 static def(void, OnChannelEvent, int events, ref(Entry) *entry) {
 	ref(ChannelEntry) *data = (void *) entry->data;
 
-	if (BitMask_Has(events, Poll_Events_Input)) {
+	if (BitMask_Has(events, ChannelWatcher_Events_Input)) {
 		callback(data->cb);
 	}
 }
 
 static def(void, OnSocketEvent, int events, ref(SocketEntry) *entry) {
-	if (BitMask_Has(events, Poll_Events_Input)) {
+	if (BitMask_Has(events, ChannelWatcher_Events_Input)) {
 		callback(entry->cb, entry->socket);
 	}
 }
@@ -198,21 +199,21 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 	ref(ClientEntry) *data = (void *) entry->data;
 
 	if (BitMask_Has(events,
-			Poll_Events_Error  |
-			Poll_Events_HangUp |
-			Poll_Events_PeerHangUp))
+			ChannelWatcher_Events_Error  |
+			ChannelWatcher_Events_HangUp |
+			ChannelWatcher_Events_PeerHangUp))
 	{
 		/* Error occurred or connection hung up. */
 		call(_DetachClient, entry);
 		return;
 	}
 
-	if (BitMask_Has(events, Poll_Events_Input)) {
+	if (BitMask_Has(events, ChannelWatcher_Events_Input)) {
 		/* Receiving data from client. */
 		delegate(data->client, onInput, data->data);
 	}
 
-	if (BitMask_Has(events, Poll_Events_Output)) {
+	if (BitMask_Has(events, ChannelWatcher_Events_Output)) {
 		/* Client requests data. */
 		delegate(data->client, onOutput, data->data);
 	}

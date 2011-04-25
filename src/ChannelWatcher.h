@@ -1,13 +1,13 @@
 #import "Types.h"
 #import "Kernel.h"
-#import "String.h"
 #import "Memory.h"
+#import "Channel.h"
 #import "Exception.h"
 
-#define self Poll
+#define self ChannelWatcher
 
-#ifndef Poll_NumEvents
-#define Poll_NumEvents 4096
+#ifndef ChannelWatcher_NumEvents
+#define ChannelWatcher_NumEvents 4096
 #endif
 
 set(ref(Events)) {
@@ -29,23 +29,23 @@ set(ref(Events)) {
 Callback(ref(OnEvent), void, int events, GenericInstance inst);
 
 class {
-	int fd;
-	EpollEvent events[ref(NumEvents)];
+	Channel ch;
 	ref(OnEvent) onEvent;
+	EpollEvent events[ref(NumEvents)];
 };
 
-// @exc FileDescriptorAlreadyAdded
-// @exc FileDescriptorNotSupported
+// @exc ChannelAlreadyAdded
+// @exc ChannelNotSupported
+// @exc InvalidChannel
 // @exc SettingCloexecFailed
-// @exc UnknownFileDescriptor
+// @exc UnknownChannel
 // @exc UnknownError
-// @exc InvalidFileDescriptor
 
-def(void, Init, ref(OnEvent) onEvent);
+rsdef(self, New, ref(OnEvent) onEvent);
 def(void, Destroy);
-def(void, AddFd, GenericInstance inst, int fd, int events);
-def(void, ModifyFd, GenericInstance inst, int fd, int events);
-def(void, DeleteFd, int fd);
-def(size_t, Process, int timeout);
+def(void, Subscribe, Channel ch, int events, GenericInstance inst);
+def(void, Modify, Channel ch, int events, GenericInstance inst);
+def(void, Unsubscribe, Channel ch);
+def(size_t, Poll, int timeout);
 
 #undef self

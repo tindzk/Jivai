@@ -1,5 +1,6 @@
-#import "Poll.h"
 #import "Socket.h"
+#import "Channel.h"
+#import "ChannelWatcher.h"
 #import "SocketConnection.h"
 #import "DoublyLinkedList.h"
 
@@ -47,7 +48,7 @@ record(ref(Entry)) {
 DoublyLinkedList_DeclareList(ref(Entry), ref(Entries));
 
 class {
-	Poll poll;
+	ChannelWatcher watcher;
 	bool running;
 	ref(Entries) entries;
 	ref(OnTimeout) onTimeout;
@@ -56,7 +57,7 @@ class {
 def(void, Init);
 def(void, Destroy);
 def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput);
-def(void, DetachChannel, ref(Entry) *entry, bool poll);
+def(void, DetachChannel, ref(Entry) *entry, bool watcher);
 def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, GenericInstance inst);
