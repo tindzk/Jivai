@@ -19,17 +19,18 @@ static def(void, _DestroyEntry, GenericInstance inst) {
 	Pool_Free(Pool_GetInstance(), entry);
 }
 
-static def(void, OnEvent, int events, GenericInstance inst);
-
 def(void, Init) {
 	this->onTimeout = scall(OnTimeout_Empty);
-	this->watcher   = ChannelWatcher_New(ChannelWatcher_OnEvent_For(this, ref(OnEvent)));
+	this->watcher   = ChannelWatcher_New();
+	this->queue     = EventQueue_New();
 	DoublyLinkedList_Init(&this->entries);
 }
 
 def(void, Destroy) {
 	DoublyLinkedList_Destroy(&this->entries,
 		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
+
+	EventQueue_Destroy(&this->queue);
 
 	ChannelWatcher_Destroy(&this->watcher);
 }
@@ -160,27 +161,6 @@ def(void, DetachClient, GenericInstance inst) {
 	call(_DetachClient, entry);
 }
 
-
-def(bool, IsRunning) {
-	return this->running;
-}
-
-def(void, Iteration, int timeout) {
-	ChannelWatcher_Poll(&this->watcher, timeout);
-	callback(this->onTimeout, timeout);
-}
-
-overload def(void, Run, int timeout) {
-	this->running = true;
-	while (this->running) {
-		call(Iteration, timeout);
-	}
-}
-
-def(void, Quit) {
-	this->running = false;
-}
-
 static def(void, OnChannelEvent, int events, ref(Entry) *entry) {
 	ref(ChannelEntry) *data = (void *) entry->data;
 
@@ -220,15 +200,50 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 }
 
 static def(void, OnEvent, int events, GenericInstance inst) {
-	ref(Entry) *entry = inst.object;
+	EventQueue_Enqueue(&this->queue, inst.object, events);
+}
 
-	if (entry->type == ref(EntryType_Channel)) {
-		call(OnChannelEvent, events, entry);
-	} else if (entry->type == ref(EntryType_Client)) {
-		call(OnClientEvent, events, entry);
-	} else if (entry->type == ref(EntryType_Socket)) {
-		call(OnSocketEvent, events, (void *) entry->data);
-	} else {
-		assert(false);
+def(void, Iteration, int timeout) {
+	/* Poll for new events and insert into event queue. */
+	ChannelWatcher_Poll(&this->watcher,
+		ChannelWatcher_OnEvent_For(this, ref(OnEvent)), timeout);
+
+	while (EventQueue_HasEvents(&this->queue)) {
+		/* Pop an event and process it. Note that each event can enqueue further
+		 * events. This was also the reason for using a queue in the first
+		 * place.
+		 * To prevent that complex code paths emerge, a queue enables us to
+		 * maintain a central point from which all events emanate from.
+		 */
+		EventQueue_Event event = EventQueue_Pop(&this->queue);
+
+		ref(Entry) *entry = event.ptr;
+
+		if (entry->type == ref(EntryType_Channel)) {
+			call(OnChannelEvent, event.flags, entry);
+		} else if (entry->type == ref(EntryType_Client)) {
+			call(OnClientEvent, event.flags, entry);
+		} else if (entry->type == ref(EntryType_Socket)) {
+			call(OnSocketEvent, event.flags, (void *) entry->data);
+		} else {
+			assert(false);
+		}
 	}
+
+	callback(this->onTimeout, timeout);
+}
+
+overload def(void, Run, int timeout) {
+	this->running = true;
+	while (this->running) {
+		call(Iteration, timeout);
+	}
+}
+
+def(void, Quit) {
+	this->running = false;
+}
+
+def(bool, IsRunning) {
+	return this->running;
 }

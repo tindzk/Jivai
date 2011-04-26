@@ -30,7 +30,6 @@ Callback(ref(OnEvent), void, int events, GenericInstance inst);
 
 class {
 	Channel ch;
-	ref(OnEvent) onEvent;
 	EpollEvent events[ref(NumEvents)];
 };
 
@@ -41,11 +40,11 @@ class {
 // @exc UnknownChannel
 // @exc UnknownError
 
-rsdef(self, New, ref(OnEvent) onEvent);
+rsdef(self, New);
 def(void, Destroy);
 def(void, Subscribe, Channel *ch, int events, GenericInstance inst);
 def(void, Modify, Channel *ch, int events, GenericInstance inst);
 def(void, Unsubscribe, Channel *ch);
-def(size_t, Poll, int timeout);
+def(size_t, Poll, ref(OnEvent) onEvent, int timeout);
 
 #undef self

@@ -1,4 +1,5 @@
 #import "Channel.h"
+#import "EventQueue.h"
 #import "SocketServer.h"
 #import "ChannelWatcher.h"
 #import "DoublyLinkedList.h"
@@ -48,6 +49,7 @@ record(ref(Entry)) {
 DoublyLinkedList_DeclareList(ref(Entry), ref(Entries));
 
 class {
+	EventQueue queue;
 	ChannelWatcher watcher;
 	bool running;
 	ref(Entries) entries;

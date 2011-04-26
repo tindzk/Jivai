@@ -2,7 +2,7 @@
 
 #define self ChannelWatcher
 
-rsdef(self, New, ref(OnEvent) onEvent) {
+rsdef(self, New) {
 	int id = Kernel_epoll_create(ref(NumEvents));
 
 	if (id == -1) {
@@ -13,8 +13,7 @@ rsdef(self, New, ref(OnEvent) onEvent) {
 	Channel_SetCloseOnExec(&ch, true);
 
 	return (self) {
-		.ch = ch,
-		.onEvent = onEvent
+		.ch = ch
 	};
 }
 
@@ -80,7 +79,7 @@ def(void, Unsubscribe, Channel *ch) {
 	}
 }
 
-def(size_t, Poll, int timeout) {
+def(size_t, Poll, ref(OnEvent) onEvent, int timeout) {
 	errno = 0;
 
 	ssize_t nfds;
@@ -94,7 +93,7 @@ def(size_t, Poll, int timeout) {
 	}
 
 	for (size_t i = 0; i < (size_t) nfds; i++) {
-		callback(this->onEvent,
+		callback(onEvent,
 			this->events[i].events,
 			this->events[i].ptr);
 	}

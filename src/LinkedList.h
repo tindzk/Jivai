@@ -5,12 +5,6 @@ Callback(LinkedList_OnDestroy, void, GenericInstance);
 #define LinkedList_New() \
 	{ NULL, NULL }
 
-#define LinkedList_Init(this) \
-	do {                      \
-		(this)->first = NULL; \
-		(this)->last  = NULL; \
-	} while (0)
-
 #define LinkedList_DeclareRef(type) \
 	struct type *next;
 
@@ -20,7 +14,7 @@ Callback(LinkedList_OnDestroy, void, GenericInstance);
 		node *last;                        \
 	}
 
-#define LinkedList_InsertEnd(this, node) \
+#define LinkedList_Push(this, node) \
 	do {                                 \
 		(node)->next = NULL;             \
 		if ((this)->first == NULL) {     \
@@ -30,6 +24,11 @@ Callback(LinkedList_OnDestroy, void, GenericInstance);
 			(this)->last->next = node;   \
 			(this)->last = node;         \
 		}                                \
+	} while (0)
+
+#define LinkedList_Pop(this)                 \
+	do {                                     \
+		(this)->first = (this)->first->next; \
 	} while (0)
 
 #define LinkedList_Destroy(this, freeNode)          \
