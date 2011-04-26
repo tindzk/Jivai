@@ -78,8 +78,8 @@
 #define DoublyLinkedList_Destroy(...) \
 	LinkedList_Destroy(__VA_ARGS__)
 
-#define DoublyLinkedList_Foreach(...) \
-	LinkedList_Foreach(__VA_ARGS__)
+#define DoublyLinkedList_Each(...) \
+	LinkedList_Each(__VA_ARGS__)
 
-#define DoublyLinkedList_ReverseForeach(this, node) \
+#define DoublyLinkedList_ReverseEach(this, node) \
 	for (typeof((this)->last) node = (this)->last; node != NULL; node = node->prev)

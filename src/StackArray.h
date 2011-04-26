@@ -49,7 +49,7 @@ typedef struct {
 #define StackArray_At(this, i, item) \
 	StackArray_GetBuffer(this, item)[i]
 
-#define StackArray_Foreach(this, cb, item)         \
+#define StackArray_Each(this, cb, item)            \
 	do {                                           \
 		for (size_t i = 0; i < (this)->len; i++) { \
 			cb(&StackArray_At(this, i, item));     \

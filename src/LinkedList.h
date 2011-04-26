@@ -44,5 +44,5 @@ Callback(LinkedList_OnDestroy, void, GenericInstance);
 		(this)->last  = NULL;                       \
 	} while (0)
 
-#define LinkedList_Foreach(this, node) \
+#define LinkedList_Each(this, node) \
 	for (typeof((this)->first) node = (this)->first; node != NULL; node = node->next)
