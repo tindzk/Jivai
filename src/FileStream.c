@@ -2,12 +2,8 @@
 
 #define self FileStream
 
-def(void, Open, RdString path, int mode) {
-	File_Open(this, path, mode);
-}
-
 def(void, Close) {
-	File_Close(this);
+	File_Destroy(this);
 }
 
 /* Clang does not support pointers to overloaded C functions. */

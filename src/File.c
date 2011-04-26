@@ -152,7 +152,7 @@ overload def(void, Read, String *res) {
 	return Channel_Read(&this->ch, res);
 }
 
-overload def(size_t, Write, char *buf, size_t len) {
+overload def(size_t, Write, void *buf, size_t len) {
 	return Channel_Write(&this->ch, buf, len);
 }
 

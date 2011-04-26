@@ -15,8 +15,7 @@ tsRegister("YAML") {
 }
 
 tsCase(Acute, "Memory") {
-	File file;
-	FileStream_Open(&file, $("../examples/YAML.yml"), FileStatus_ReadOnly);
+	File file = File_New($("../examples/YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);

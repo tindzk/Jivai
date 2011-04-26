@@ -6,7 +6,6 @@
 #define FileStreamInstance         FileInstance
 #define FileStreamExtendedInstance FileExtendedInstance
 
-def(void, Open, RdString path, int mode);
 def(void, Close);
 def(size_t, Read, void *buf, size_t len);
 def(size_t, Write, void *buf, size_t len);

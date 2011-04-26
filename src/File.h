@@ -44,7 +44,7 @@ def(u64, Seek, u64 offset, ref(SeekType) whence);
 def(u64, Tell);
 overload def(size_t, Read, void *buf, size_t len);
 overload def(void, Read, String *res);
-overload def(size_t, Write, char *buf, size_t len);
+overload def(size_t, Write, void *buf, size_t len);
 overload def(size_t, Write, RdString s);
 overload def(size_t, Write, char c);
 sdef(void, GetContents, RdString path, String *res);
