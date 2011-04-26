@@ -56,7 +56,7 @@ class {
 	ref(OnTimeout) onTimeout;
 };
 
-def(void, Init);
+rsdef(self, New);
 def(void, Destroy);
 def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput);
 def(void, DetachChannel, ref(Entry) *entry, bool watcher);

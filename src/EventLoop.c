@@ -2,7 +2,7 @@
 
 #define self EventLoop
 
-SingletonEx(self);
+Singleton(self);
 SingletonDestructor(self);
 
 /* Note that this method does not close any file descriptors. Its only purpose
@@ -19,11 +19,13 @@ static def(void, _DestroyEntry, GenericInstance inst) {
 	Pool_Free(Pool_GetInstance(), entry);
 }
 
-def(void, Init) {
-	this->onTimeout = scall(OnTimeout_Empty);
-	this->watcher   = ChannelWatcher_New();
-	this->queue     = EventQueue_New();
-	DoublyLinkedList_Init(&this->entries);
+rsdef(self, New) {
+	return (self) {
+		.onTimeout = scall(OnTimeout_Empty),
+		.watcher   = ChannelWatcher_New(),
+		.queue     = EventQueue_New(),
+		.entries   = DoublyLinkedList_New()
+	};
 }
 
 def(void, Destroy) {

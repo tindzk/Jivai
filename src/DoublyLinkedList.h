@@ -3,12 +3,6 @@
 #define DoublyLinkedList_New() \
 	{ NULL, NULL }
 
-#define DoublyLinkedList_Init(this) \
-	do {                            \
-		(this)->first = NULL;       \
-		(this)->last  = NULL;       \
-	} while (0)
-
 #define DoublyLinkedList_DeclareRef(type) \
 	struct type *prev;                    \
 	struct type *next
