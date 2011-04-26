@@ -26,7 +26,7 @@ set(ref(Events)) {
     ref(Events_EdgeTriggered)  = (1 << 31)
 };
 
-Callback(ref(OnEvent), void, int events, GenericInstance inst);
+Callback(ref(OnEvent), void, GenericInstance inst, int events);
 
 class {
 	Channel ch;

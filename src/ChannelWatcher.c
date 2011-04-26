@@ -94,8 +94,8 @@ def(size_t, Poll, ref(OnEvent) onEvent, int timeout) {
 
 	for (size_t i = 0; i < (size_t) nfds; i++) {
 		callback(onEvent,
-			this->events[i].events,
-			this->events[i].ptr);
+			this->events[i].ptr,
+			this->events[i].events);
 	}
 
 	return nfds;

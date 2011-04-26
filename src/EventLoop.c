@@ -201,14 +201,24 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 	}
 }
 
-static def(void, OnEvent, int events, GenericInstance inst) {
+def(void, Enqueue, GenericInstance inst, int events) {
 	EventQueue_Enqueue(&this->queue, inst.object, events);
+}
+
+def(void, ClientEnqueue, GenericInstance inst, int events) {
+	ref(Entry) *entry = inst.object
+		- sizeof(ref(ClientEntry))
+		- sizeof(ref(Entry));
+
+	assert(entry->type == ref(EntryType_Client));
+
+	call(Enqueue, entry, events);
 }
 
 def(void, Iteration, int timeout) {
 	/* Poll for new events and insert into event queue. */
 	ChannelWatcher_Poll(&this->watcher,
-		ChannelWatcher_OnEvent_For(this, ref(OnEvent)), timeout);
+		ChannelWatcher_OnEvent_For(this, ref(Enqueue)), timeout);
 
 	while (EventQueue_HasEvents(&this->queue)) {
 		/* Pop an event and process it. Note that each event can enqueue further

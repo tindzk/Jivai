@@ -63,10 +63,12 @@ def(void, DetachChannel, ref(Entry) *entry, bool watcher);
 def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, GenericInstance inst);
-def(bool, IsRunning);
+def(void, Enqueue, GenericInstance inst, int events);
+def(void, ClientEnqueue, GenericInstance inst, int events);
 def(void, Iteration, int timeout);
 overload def(void, Run, int timeout);
 def(void, Quit);
+def(bool, IsRunning);
 
 static alwaysInline overload def(void, Run) {
 	call(Run, -1);
