@@ -33,7 +33,7 @@ def(ssize_t, Read, void *buf, size_t len) {
 	ssize_t res = Kernel_recv(Channel_GetId(&this->ch), buf, len, 0);
 
 	if (res == -1) {
-		if (errno == EWOULDBLOCK || errno == EAGAIN) {
+		if (errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
 			throw(ConnectionReset);
@@ -99,7 +99,7 @@ overload def(ssize_t, Write, void *buf, size_t len) {
 	ssize_t res = Kernel_send(Channel_GetId(&this->ch), buf, len, flags);
 
 	if (res == -1) {
-		if (errno == EWOULDBLOCK || errno == EAGAIN) {
+		if (errno == EAGAIN) {
 			return -1;
 		} else if (errno == ECONNRESET) {
 			throw(ConnectionReset);
