@@ -14,13 +14,14 @@ record(ref(Client)) {
 	char              object[];
 };
 
-static inline void ref(Client_InjectPush)(ref(Client) *client) {
+static inline void ref(Client_Push)(ref(Client) *client) {
 	EventLoop_ClientEnqueue(EventLoop_GetInstance(), client,
 		ChannelWatcher_Events_Output);
 }
 
 static inline void ref(Client_Close)(ref(Client) *client) {
-	EventLoop_DetachClient(EventLoop_GetInstance(), client);
+	EventLoop_ClientEnqueue(EventLoop_GetInstance(), client,
+		ChannelWatcher_Events_HangUp);
 }
 
 class {
