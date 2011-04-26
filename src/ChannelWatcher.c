@@ -22,10 +22,10 @@ def(void, Destroy) {
 }
 
 def(void, Subscribe, Channel *ch, int events, GenericInstance inst) {
-	EpollEvent ev = {
-		.ptr    = Generic_GetObject(inst),
-		.events = events
-	};
+	EpollEvent ev = { 0, {0} };
+
+	ev.ptr    = Generic_GetObject(inst);
+	ev.events = events;
 
 	errno = 0;
 
@@ -43,10 +43,10 @@ def(void, Subscribe, Channel *ch, int events, GenericInstance inst) {
 }
 
 def(void, Modify, Channel *ch, int events, GenericInstance inst) {
-	EpollEvent ev = {
-		.ptr    = Generic_GetObject(inst),
-		.events = events
-	};
+	EpollEvent ev = { 0, {0} };
+
+	ev.ptr    = Generic_GetObject(inst);
+	ev.events = events;
 
 	errno = 0;
 
