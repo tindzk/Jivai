@@ -1,8 +1,7 @@
-#import "Poll.h"
-#import "Socket.h"
 #import "BitMask.h"
 #import "EventLoop.h"
 #import "Connection.h"
+#import "SocketServer.h"
 
 #ifndef Server_ConnectionLimit
 #define Server_ConnectionLimit 1024
@@ -22,7 +21,7 @@ static inline void ref(Client_Close)(ref(Client) *client) {
 class {
 	bool edgeTriggered;
 
-	Socket socket;
+	SocketServer socket;
 	Logger *logger;
 
 	ConnectionInterface *conn;

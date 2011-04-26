@@ -4,6 +4,7 @@
 #import "../String.h"
 #import "../Socket.h"
 #import "../Exception.h"
+#import "../SocketClient.h"
 #import "../SocketConnection.h"
 
 #define self HTTP_Client
@@ -40,7 +41,7 @@ record(ref(RequestItem)) {
 Array(ref(RequestItem), ref(Requests));
 
 class {
-	Socket           socket;
+	SocketClient     socket;
 	SocketConnection conn;
 	CarrierString    host;
 	short            port;

@@ -43,9 +43,9 @@ class {
 
 rsdef(self, New, ref(OnEvent) onEvent);
 def(void, Destroy);
-def(void, Subscribe, Channel ch, int events, GenericInstance inst);
-def(void, Modify, Channel ch, int events, GenericInstance inst);
-def(void, Unsubscribe, Channel ch);
+def(void, Subscribe, Channel *ch, int events, GenericInstance inst);
+def(void, Modify, Channel *ch, int events, GenericInstance inst);
+def(void, Unsubscribe, Channel *ch);
 def(size_t, Poll, int timeout);
 
 #undef self

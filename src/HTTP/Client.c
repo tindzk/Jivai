@@ -24,7 +24,9 @@ overload def(void, Init) {
 	this->onResponseInfo = HTTP_OnResponseInfo_Empty();
 	this->onHeader       = HTTP_OnHeader_Empty();
 
-	this->socket = Socket_New(Socket_Protocol_TCP);
+	this->socket = SocketClient_New(Socket_Protocol_TCP,
+		Socket_Option_Blocking |
+		Socket_Option_CloseOnExec);
 }
 
 overload def(void, Init, CarrierString host) {
@@ -48,7 +50,7 @@ def(void, Destroy) {
 		call(Close);
 	}
 
-	Socket_Destroy(&this->socket);
+	SocketClient_Destroy(&this->socket);
 }
 
 overload def(void, SetBufferSize, size_t size) {
@@ -68,7 +70,7 @@ overload def(void, Open) {
 		call(Close);
 	}
 
-	this->conn = Socket_Connect(&this->socket, this->host.rd, this->port);
+	this->conn = SocketClient_Connect(&this->socket, this->host.rd, this->port);
 	this->closed = false;
 }
 
@@ -86,7 +88,7 @@ overload def(void, Open, CarrierString host, short port) {
 
 def(void, Close) {
 	this->closed = true;
-	SocketConnection_Close(&this->conn);
+	SocketConnection_Destroy(&this->conn);
 }
 
 def(HTTP_Status_Item, GetStatus) {

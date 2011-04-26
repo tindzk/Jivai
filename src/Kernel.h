@@ -226,7 +226,7 @@ sdef(bool, bind, ssize_t fd, struct sockaddr_in addr);
 sdef(bool, listen, ssize_t fd, int backlog);
 sdef(bool, shutdown, ssize_t fd, int how);
 sdef(bool, connect, ssize_t fd, void *addr, size_t size);
-sdef(ssize_t, accept, ssize_t fd, void *addr, int *len);
+sdef(ssize_t, accept4, ssize_t fd, void *addr, int *len, int flags);
 sdef(ssize_t, recv, ssize_t fd, void *buf, size_t len, int flags);
 sdef(ssize_t, send, ssize_t fd, void *buf, size_t len, int flags);
 sdef(ssize_t, sendfile64, ssize_t out, ssize_t in, u64 *offset, size_t len);

@@ -1,8 +1,8 @@
-#import "Socket.h"
 #import "Channel.h"
+#import "SocketServer.h"
 #import "ChannelWatcher.h"
-#import "SocketConnection.h"
 #import "DoublyLinkedList.h"
+#import "SocketConnection.h"
 
 #define self EventLoop
 
@@ -15,15 +15,15 @@ Interface(ref(Client)) {
 
 Callback(ref(OnInput),      void);
 Callback(ref(OnTimeout),    void, int timeout);
-Callback(ref(OnConnection), void, Socket *socket);
+Callback(ref(OnConnection), void, SocketServer *socket);
 
 record(ref(ChannelEntry)) {
-	Channel ch;
+	Channel *ch;
 	ref(OnInput) cb;
 };
 
 record(ref(SocketEntry)) {
-	Socket *socket;
+	SocketServer *socket;
 	ref(OnConnection) cb;
 };
 
@@ -56,10 +56,10 @@ class {
 
 def(void, Init);
 def(void, Destroy);
-def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput);
+def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput);
 def(void, DetachChannel, ref(Entry) *entry, bool watcher);
-def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection);
-def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Client) client);
+def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection);
+def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, GenericInstance inst);
 def(bool, IsRunning);
 def(void, Iteration, int timeout);

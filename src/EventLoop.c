@@ -34,7 +34,7 @@ def(void, Destroy) {
 	ChannelWatcher_Destroy(&this->watcher);
 }
 
-def(ref(Entry) *, AddChannel, Channel ch, ref(OnInput) onInput) {
+def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput) {
 	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
 		sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
 
@@ -70,7 +70,7 @@ def(void, DetachChannel, ref(Entry) *entry, bool watcher) {
 }
 
 /* Listens for incoming connections. */
-def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
+def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection) {
 	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
 		sizeof(ref(Entry)) + sizeof(ref(SocketEntry)));
 
@@ -81,7 +81,7 @@ def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 	data->cb     = onConnection;
 	data->socket = socket;
 
-	ChannelWatcher_Subscribe(&this->watcher, socket->ch,
+	ChannelWatcher_Subscribe(&this->watcher, SocketServer_GetChannel(socket),
 		ChannelWatcher_Events_Error |
 		ChannelWatcher_Events_Input |
 		ChannelWatcher_Events_HangUp,
@@ -91,7 +91,7 @@ def(void, AttachSocket, Socket *socket, ref(OnConnection) onConnection) {
 }
 
 /* Accepts incoming connection and listens for data. */
-def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Client) client) {
+def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client) {
 	int flags = 0;
 
 	if (edgeTriggered) {
@@ -124,12 +124,12 @@ def(ref(ClientEntry) *, AcceptClient, Socket *socket, bool edgeTriggered, ref(Cl
 	ref(ClientEntry) *data = (void *) entry->data;
 	data->client = client;
 
-	data->conn = Socket_Accept(socket);
+	data->conn = SocketServer_Accept(socket, Socket_Option_CloseOnExec);
 
-	SocketConnection_SetCorking (&data->conn, true);
-	SocketConnection_SetBlocking(&data->conn, false);
+	SocketConnection_SetCorking(&data->conn, true);
 
-	ChannelWatcher_Subscribe(&this->watcher, data->conn.ch, flags, entry);
+	ChannelWatcher_Subscribe(&this->watcher,
+		SocketConnection_GetChannel(&data->conn), flags, entry);
 
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 

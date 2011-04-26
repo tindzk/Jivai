@@ -22,7 +22,7 @@ def(void, Destroy) {
 	Channel_Destroy(&this->ch);
 }
 
-def(void, Subscribe, Channel ch, int events, GenericInstance inst) {
+def(void, Subscribe, Channel *ch, int events, GenericInstance inst) {
 	EpollEvent ev = {
 		.ptr    = Generic_GetObject(inst),
 		.events = events
@@ -30,7 +30,7 @@ def(void, Subscribe, Channel ch, int events, GenericInstance inst) {
 
 	errno = 0;
 
-	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Add, Channel_GetId(&ch), &ev)) {
+	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Add, Channel_GetId(ch), &ev)) {
 		if (errno == EPERM) {
 			throw(ChannelNotSupported);
 		} else if (errno == EEXIST) {
@@ -43,7 +43,7 @@ def(void, Subscribe, Channel ch, int events, GenericInstance inst) {
 	}
 }
 
-def(void, Modify, Channel ch, int events, GenericInstance inst) {
+def(void, Modify, Channel *ch, int events, GenericInstance inst) {
 	EpollEvent ev = {
 		.ptr    = Generic_GetObject(inst),
 		.events = events
@@ -51,7 +51,7 @@ def(void, Modify, Channel ch, int events, GenericInstance inst) {
 
 	errno = 0;
 
-	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Modify, Channel_GetId(&ch), &ev)) {
+	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Modify, Channel_GetId(ch), &ev)) {
 		if (errno == ENOENT) {
 			throw(UnknownChannel);
 		} else if (errno == EPERM) {
@@ -64,10 +64,10 @@ def(void, Modify, Channel ch, int events, GenericInstance inst) {
 	}
 }
 
-def(void, Unsubscribe, Channel ch) {
+def(void, Unsubscribe, Channel *ch) {
 	errno = 0;
 
-	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Delete, Channel_GetId(&ch), NULL)) {
+	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Delete, Channel_GetId(ch), NULL)) {
 		if (errno == ENOENT) {
 			throw(UnknownChannel);
 		} else if (errno == EPERM) {

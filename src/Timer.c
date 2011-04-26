@@ -102,7 +102,7 @@ def(Task *, AsTask, ref(OnTimer) onTimer) {
 
 	data->cb    = onTimer;
 	data->timer = *this;
-	data->entry = EventLoop_AddChannel(EventLoop_GetInstance(), this->ch,
+	data->entry = EventLoop_AddChannel(EventLoop_GetInstance(), &this->ch,
 		EventLoop_OnInput_For(data, ref(OnInvoke)));
 
 	return task;

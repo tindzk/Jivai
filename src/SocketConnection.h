@@ -23,22 +23,25 @@
 
 class {
 	Channel ch;
-
 	NetworkAddress addr;
-
 	bool corking;
-	bool closable;
-	bool blocking;
 };
 
-rsdef(self, New, Channel ch, NetworkAddress addr, bool closable);
+rsdef(self, New, Channel *ch, NetworkAddress addr);
 def(void, Destroy);
 def(void, SetCorking, bool value);
-def(void, SetBlocking, bool value);
 def(void, Flush);
 def(ssize_t, Read, void *buf, size_t len);
 def(bool, SendFile, File *file, u64 *offset, size_t len);
 overload def(ssize_t, Write, void *buf, size_t len);
+
+static alwaysInline def(Channel *, GetChannel) {
+	return &this->ch;
+}
+
+static alwaysInline def(NetworkAddress, GetAddress) {
+	return this->addr;
+}
 
 static alwaysInline overload def(ssize_t, Write, RdString s) {
 	return call(Write, s.buf, s.len);

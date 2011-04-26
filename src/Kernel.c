@@ -205,12 +205,12 @@ sdef(bool, connect, ssize_t fd, void *addr, size_t size) {
 #endif
 }
 
-sdef(ssize_t, accept, ssize_t fd, void *addr, int *len) {
-#if defined(__NR_accept)
-	return syscall(__NR_accept, fd, addr, len);
+sdef(ssize_t, accept4, ssize_t fd, void *addr, int *len, int flags) {
+#if defined(__NR_accept4)
+	return syscall(__NR_accept4, fd, addr, len, flags);
 #else
-	long args[] = { fd, (long) addr, (long) len };
-	return syscall(__NR_socketcall, SYS_ACCEPT, args);
+	long args[] = { fd, (long) addr, (long) len, (long) flags };
+	return syscall(__NR_socketcall, SYS_ACCEPT4, args);
 #endif
 }
 

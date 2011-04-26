@@ -7,16 +7,16 @@ rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
 		.conn          = conn,
 		.logger        = logger,
 		.edgeTriggered = true,
-		.socket        = Socket_New(Socket_Protocol_TCP)
+		.socket        = SocketServer_New(Socket_Protocol_TCP, Socket_Option_CloseOnExec)
 	};
 
-	Socket_SetReusable(&res.socket, true);
+	SocketServer_SetReusable(&res.socket, true);
 
 	return res;
 }
 
 def(void, Destroy) {
-	Socket_Destroy(&this->socket);
+	SocketServer_Destroy(&this->socket);
 
 	/* The EventLoop may still have pointers to this instance. Therefore, we
 	 * need to destroy it now before the object gets ivnalidated.
@@ -51,7 +51,7 @@ static def(size_t, GetSize) {
 	return sizeof(ref(Client)) + this->conn->size;
 }
 
-static def(void, OnConnection, Socket *socket) {
+static def(void, OnConnection, SocketServer *socket) {
 	EventLoop_ClientEntry *entry =
 		EventLoop_AcceptClient(EventLoop_GetInstance(),
 			socket, this->edgeTriggered, call(AsEventLoop_Client));
@@ -65,7 +65,8 @@ static def(void, OnConnection, Socket *socket) {
 }
 
 def(void, Listen, unsigned short port) {
-	Socket_Listen(&this->socket, port, ref(ConnectionLimit));
+	SocketServer_Bind(&this->socket, port);
+	SocketServer_Listen(&this->socket, ref(ConnectionLimit));
 
 	EventLoop_AttachSocket(EventLoop_GetInstance(), &this->socket,
 		EventLoop_OnConnection_For(this, ref(OnConnection)));

@@ -1,7 +1,6 @@
 #import "String.h"
 #import "Kernel.h"
 #import "Exception.h"
-#import "NetworkAddress.h"
 #import "SocketConnection.h"
 
 #define self Socket
@@ -11,26 +10,30 @@ set(ref(Protocol)) {
 	ref(Protocol_UDP)
 };
 
-// @exc AcceptFailed
-// @exc AddressInUse
-// @exc BindFailed
-// @exc ConnectFailed
-// @exc ListenFailed
+set(ref(Option)) {
+	ref(Option_Blocking)    = Bit(0),
+	ref(Option_CloseOnExec) = Bit(1)
+};
+
 // @exc SetSocketOption
 // @exc SocketFailed
 
 class {
 	Channel ch;
-	bool unused;
 	Socket_Protocol protocol;
 };
 
-rsdef(self, New, ref(Protocol) protocol);
+rsdef(self, New, ref(Protocol) protocol, int options);
 def(void, Destroy);
 def(void, SetReusable, bool enable);
 def(void, SetLinger);
-def(void, Listen, unsigned short port, int maxconns);
-def(SocketConnection, Connect, RdString hostname, unsigned short port);
-def(SocketConnection, Accept);
+
+static alwaysInline def(Channel *, GetChannel) {
+	return &this->ch;
+}
+
+static alwaysInline def(ref(Protocol), GetProtocol) {
+	return this->protocol;
+}
 
 #undef self
