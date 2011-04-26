@@ -47,3 +47,27 @@ def(ref(Event), Pop) {
 
 	return stackEvent;
 }
+
+def(void, Prune, void *ptr) {
+	ref(Event) *node = this->events.first;
+	ref(Event) *prev = NULL;
+	ref(Event) *next;
+
+	while (node != NULL) {
+		next = node->next;
+
+		if (node->ptr == ptr) {
+			if (prev != NULL) {
+				prev->next = next;
+			} else {
+				this->events.first = next;
+			}
+
+			call(DestroyEvent, node);
+		} else {
+			prev = node;
+		}
+
+		node = next;
+	}
+}

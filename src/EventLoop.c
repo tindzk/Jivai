@@ -59,6 +59,8 @@ def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput) {
  * removes the watcher automatically upon closure.
  */
 def(void, DetachChannel, ref(Entry) *entry, bool watcher) {
+	EventQueue_Prune(&this->queue, entry);
+
 	ref(ChannelEntry) *data = (void *) entry->data;
 
 	assert(entry->type == ref(EntryType_Channel));
@@ -140,6 +142,8 @@ def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, 
 }
 
 def(void, _DetachClient, ref(Entry) *entry) {
+	EventQueue_Prune(&this->queue, entry);
+
 	ref(ClientEntry) *data = (void *) entry->data;
 
 	assert(entry->type == ref(EntryType_Client));

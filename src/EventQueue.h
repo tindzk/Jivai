@@ -20,5 +20,6 @@ def(void, Destroy);
 def(void, Enqueue, void *ptr, int flags);
 def(bool, HasEvents);
 def(ref(Event), Pop);
+def(void, Prune, void *ptr);
 
 #undef self
