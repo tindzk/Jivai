@@ -47,9 +47,7 @@ def(void, SetBlocking, bool enable) {
 		BitMask_Set(this->flags, FileStatus_NonBlock);
 	}
 
-	if (old == this->flags) {
-		return;
-	}
+	assert(old != this->flags);
 
 	if (Kernel_fcntl(this->id, FcntlMode_SetStatus, this->flags) == -1) {
 		throw(UnknownError);
