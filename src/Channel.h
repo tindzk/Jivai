@@ -42,6 +42,10 @@ static alwaysInline def(int, GetId) {
 	return this->id;
 }
 
+static alwaysInline def(int, GetFlags) {
+	return this->flags;
+}
+
 static alwaysInline overload def(size_t, Write, RdString s) {
 	return call(Write, s.buf, s.len);
 }
