@@ -87,7 +87,7 @@ overload def(int, Spawn, float *time) {
 
 	if ((pid = fork()) == 0) { /* child */
 		if (this->stdOut != -1) {
-			dup2(this->stdOut, FileNo_StdOut);
+			dup2(this->stdOut, ChannelId_StdOut);
 		}
 
 		if (execve(argv[0], argv, environ) < 0) {

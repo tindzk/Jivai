@@ -15,7 +15,7 @@ rsdef(self, New, bool assumeVT100) {
 
 	res.isVT100 = assumeVT100 && scall(IsTTY, res.out);
 
-	tcgetattr(FileNo_StdIn, &res.oldTermios);
+	tcgetattr(ChannelId_StdIn, &res.oldTermios);
 
 	res.curTermios = res.oldTermios;
 
@@ -48,11 +48,11 @@ def(void, Configure, bool echo, bool signal) {
 	this->curTermios.c_iflag &= ~IXON;
 	this->curTermios.c_lflag &= ~ICANON;
 
-	tcsetattr(FileNo_StdIn, TCSAFLUSH, &this->curTermios);
+	tcsetattr(ChannelId_StdIn, TCSAFLUSH, &this->curTermios);
 }
 
 def(void, Destroy) {
-	tcsetattr(FileNo_StdIn, 0, &this->oldTermios);
+	tcsetattr(ChannelId_StdIn, 0, &this->oldTermios);
 }
 
 def(void, ResetVT100) {
@@ -201,7 +201,7 @@ sdef(ref(Size), GetSize) {
 
 	ref(Size) res;
 
-	if (ioctl(FileNo_StdIn, TIOCGWINSZ, &size) == 0) {
+	if (ioctl(ChannelId_StdIn, TIOCGWINSZ, &size) == 0) {
 		res.cols = size.ws_col;
 		res.rows = size.ws_row;
 	} else {

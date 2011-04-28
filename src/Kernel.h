@@ -153,12 +153,6 @@ record(Stat64) {
 };
 #endif
 
-set(FileNo) {
-	FileNo_StdIn  = 0,
-	FileNo_StdOut = 1,
-	FileNo_StdErr = 2
-};
-
 set(ExitStatus) {
 	ExitStatus_Success = 0,
 	ExitStatus_Failure = 1

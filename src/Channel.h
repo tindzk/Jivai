@@ -9,6 +9,12 @@
 // @exc WritingFailed
 // @exc WritingInterrupted
 
+set(ChannelId) {
+	ChannelId_StdIn  = 0,
+	ChannelId_StdOut = 1,
+	ChannelId_StdErr = 2
+};
+
 class {
 	/* File descriptor. */
 	int id;

@@ -3,17 +3,17 @@
 #define self Channel
 
 static self stdIn = {
-	.id    = FileNo_StdIn,
+	.id    = ChannelId_StdIn,
 	.flags = FileStatus_ReadOnly
 };
 
 static self stdOut = {
-	.id    = FileNo_StdOut,
+	.id    = ChannelId_StdOut,
 	.flags = FileStatus_WriteOnly
 };
 
 static self stdErr = {
-	.id    = FileNo_StdErr,
+	.id    = ChannelId_StdErr,
 	.flags = FileStatus_WriteOnly
 };
 
