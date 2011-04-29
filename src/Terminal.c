@@ -159,8 +159,9 @@ def(ref(Style), GetStyle) {
 }
 
 def(void, Restore, ref(Style) style) {
-	if (this->style.color != style.color
-	 || this->style.font  != style.font) {
+	if (this->style.color != style.color ||
+		this->style.font  != style.font)
+	{
 		call(ResetVT100);
 
 		call(SetVT100Font,  style.font);
@@ -240,8 +241,15 @@ def(void, PrintFmt, FmtString s) {
 	s.val++;
 #endif
 
+	RdString part = { .buf = NULL, .len = 0 };
+
 	fwd(i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
+			if (part.buf != NULL) {
+				Channel_Write(this->out, part);
+				part = (RdString) { .buf = NULL, .len = 0 };
+			}
+
 			Channel_Write(this->out, '%');
 			i++;
 		} else if (s.fmt.buf[i] == '%') {
@@ -251,28 +259,66 @@ def(void, PrintFmt, FmtString s) {
 			}
 #endif
 
+			if (part.buf != NULL) {
+				Channel_Write(this->out, part);
+				part = (RdString) { .buf = NULL, .len = 0 };
+			}
+
 			Channel_Write(this->out, *s.val);
 			s.val++;
 		} else {
-			Channel_Write(this->out, s.fmt.buf[i]);
+			if (part.buf == NULL) {
+				part.buf = s.fmt.buf + i;
+			}
+
+			part.len++;
 		}
+	}
+
+	if (part.buf != NULL) {
+		Channel_Write(this->out, part);
 	}
 }
 
 def(void, FmtArgPrint, RdString fmt, VarArg *argptr) {
+	RdString part = { .buf = NULL, .len = 0 };
+
 	fwd(i, fmt.len) {
 		if (i + 1 < fmt.len && fmt.buf[i] == '!' &&
 			(fmt.buf[i + 1] == '$' || fmt.buf[i + 1] == '%'))
 		{
+			if (part.buf != NULL) {
+				Channel_Write(this->out, part);
+				part = (RdString) { .buf = NULL, .len = 0 };
+			}
+
 			Channel_Write(this->out, fmt.buf[i + 1]);
 			i++;
 		} else if (fmt.buf[i] == '$') {
+			if (part.buf != NULL) {
+				Channel_Write(this->out, part);
+				part = (RdString) { .buf = NULL, .len = 0 };
+			}
+
 			call(PrintFmt, VarArg_Get(*argptr, FmtString));
 		} else if (fmt.buf[i] == '%') {
+			if (part.buf != NULL) {
+				Channel_Write(this->out, part);
+				part = (RdString) { .buf = NULL, .len = 0 };
+			}
+
 			Channel_Write(this->out, VarArg_Get(*argptr, RdString));
 		} else {
-			Channel_Write(this->out, fmt.buf[i]);
+			if (part.buf == NULL) {
+				part.buf = fmt.buf + i;
+			}
+
+			part.len++;
 		}
+	}
+
+	if (part.buf != NULL) {
+		Channel_Write(this->out, part);
 	}
 }
 
