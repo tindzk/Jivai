@@ -226,11 +226,9 @@ def(void, Iteration, int timeout) {
 
 	while (EventQueue_HasEvents(&this->queue)) {
 		/* Pop an event and process it. Note that each event can enqueue further
-		 * events. This was also the reason for using a queue in the first
-		 * place.
-		 * To prevent that complex code paths emerge, a queue enables us to
-		 * maintain a central point from which all events emanate from.
+		 * events.
 		 */
+
 		EventQueue_Event event = EventQueue_Pop(&this->queue);
 
 		ref(Entry) *entry = event.ptr;
