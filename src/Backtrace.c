@@ -4,20 +4,20 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
 
-	Channel_Write(Channel_StdErr, $("Traceback (most recent call first):\n"));
+	System_Err($("Traceback (most recent call first):\n"));
 
 	bwd(i, size) {
-		Channel_Write(Channel_StdErr, $("\tat "));
+		System_Err($("\tat "));
 
 		if (items[i].function.len == 0) {
-			Channel_Write(Channel_StdErr, $("0x"));
+			System_Err($("0x"));
 
 			String hex = Hex_ToString(items[i].addr);
-			Channel_Write(Channel_StdErr, true);
+			System_Err(hex.rd);
 			String_Destroy(&hex);
 		} else {
-			Channel_Write(Channel_StdErr, items[i].function.rd);
-			Channel_Write(Channel_StdErr, $("("));
+			System_Err(items[i].function.rd);
+			System_Err($("("));
 
 			if (items[i].filename.len > 0) {
 				ssize_t pos = String_ReverseFind(items[i].filename.rd, '/');
@@ -28,20 +28,20 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 
 				String line = Integer_ToString(items[i].line);
 
-				Channel_Write(Channel_StdErr, items[i].filename.rd);
-				Channel_Write(Channel_StdErr, $(":"));
-				Channel_Write(Channel_StdErr, line.rd);
+				System_Err(items[i].filename.rd);
+				System_Err($(":"));
+				System_Err(line.rd);
 
 				String_Destroy(&line);
 			}
 
-			Channel_Write(Channel_StdErr, $(")"));
+			System_Err($(")"));
 		}
 
 		String_Destroy(&items[i].filename);
 		String_Destroy(&items[i].function);
 
-		Channel_Write(Channel_StdErr, $("\n"));
+		System_Err($("\n"));
 	}
 
 	Memory_Free(items);

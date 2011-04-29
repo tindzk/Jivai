@@ -40,10 +40,10 @@ sdef(String, Format, int code) {
 
 sdef(void, Print, int code) {
 	String msg = scall(Format, code);
-	Channel_Write(Channel_StdErr, msg.rd);
+	System_Err(msg.rd);
 	String_Destroy(&msg);
 
-	Channel_Write(Channel_StdErr, $("\n"));
+	System_Err($("\n"));
 }
 
 sdef(void, Shutdown, int code) {
