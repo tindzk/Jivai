@@ -10,9 +10,7 @@ rsdef(self, New, SocketConnection *conn) {
 }
 
 def(void, Write, RdString s, ref(OnDone) onDone) {
-	if (!call(IsIdle)) {
-		throw(NotIdle);
-	}
+	assert(this->op.type == ref(OperationType_Idle));
 
 	if (s.len == 0) {
 		callback(onDone, &s);
@@ -29,9 +27,7 @@ def(void, Write, RdString s, ref(OnDone) onDone) {
 }
 
 def(void, SendFile, File file, u64 length, ref(OnDone) onDone) {
-	if (!call(IsIdle)) {
-		throw(NotIdle);
-	}
+	assert(this->op.type == ref(OperationType_Idle));
 
 	this->op.type = ref(OperationType_File);
 
@@ -44,6 +40,8 @@ def(void, SendFile, File file, u64 length, ref(OnDone) onDone) {
 }
 
 def(void, Continue) {
+	assert(this->op.type != ref(OperationType_Idle));
+
 	switch (this->op.type) {
 		case ref(OperationType_File):
 			if (!SocketConnection_SendFile(this->conn,
@@ -91,12 +89,4 @@ def(void, Continue) {
 		case ref(OperationType_Idle):
 			break;
 	}
-}
-
-inline def(void, Flush) {
-	SocketConnection_Flush(this->conn);
-}
-
-inline def(bool, IsIdle) {
-	return this->op.type == ref(OperationType_Idle);
 }

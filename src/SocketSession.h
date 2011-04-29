@@ -4,8 +4,6 @@
 
 #define self SocketSession
 
-// @exc NotIdle
-
 set(ref(OperationType)) {
 	ref(OperationType_Idle),
 	ref(OperationType_Buffer),
@@ -41,7 +39,13 @@ rsdef(self, New, SocketConnection *conn);
 def(void, Write, RdString s, ref(OnDone) onDone);
 def(void, SendFile, File file, u64 length, ref(OnDone) onDone);
 def(void, Continue);
-def(void, Flush);
-def(bool, IsIdle);
+
+static inline def(bool, IsIdle) {
+	return this->op.type == ref(OperationType_Idle);
+}
+
+static inline def(void, Flush) {
+	SocketConnection_Flush(this->conn);
+}
 
 #undef self
