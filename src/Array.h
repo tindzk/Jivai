@@ -6,7 +6,7 @@
 #define Array(type, name)                                                                      \
 	record(name) {                                                                             \
 		size_t len;                                                                            \
-		type buf[0];                                                                           \
+		type buf[];                                                                            \
 	};                                                                                         \
 	Instance(name);                                                                            \
 	static inline name* tripleConcat(name, _, New)(size_t items) {                             \
