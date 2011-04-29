@@ -12,6 +12,8 @@ record(ref(Item)) {
 	{ code, $(msg), $(descr) }
 
 set(self) {
+	ref(Unset),
+
 	ref(Info_Continue),
 	ref(Info_SwitchingProtocol),
 	ref(Info_Processing),
@@ -63,11 +65,23 @@ set(self) {
 	ref(ServerError_VersionNotSupported),
 	ref(ServerError_InsufficientStorage),
 
-	ref(Length),
-	ref(Unset)
+	ref(Length)
 };
 
 sdef(ref(Item), GetItem, self status);
 sdef(self, GetStatusByCode, u16 code);
+
+static inline sdef(bool, IsSuccess, ref(Item) status) {
+	return status.code / 100 == 2;
+}
+
+static inline sdef(bool, IsRedirection, ref(Item) status) {
+	return status.code / 100 == 3;
+}
+
+static inline sdef(bool, IsError, ref(Item) status) {
+	return status.code / 100 == 4
+		|| status.code / 100 == 5;
+}
 
 #undef self

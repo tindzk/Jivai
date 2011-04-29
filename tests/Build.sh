@@ -15,4 +15,5 @@ mkdir -p build/Jivai
 	add=*.c                  \
 	inclhdr=../config.h      \
 	link=@bfd                \
+	link=@dl                 \
 	link=@m
