@@ -20,4 +20,5 @@ fi
 	dbgsym=yes               \
 	debug=yes                \
 	inclhdr=../config.h      \
-	link=@bfd
+	link=@bfd                \
+	link=@dl
