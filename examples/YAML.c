@@ -35,8 +35,7 @@ void PrintTree(YAML_Node *node, int depth) {
 }
 
 int main(void) {
-	File file;
-	FileStream_Open(&file, $("YAML.yml"), FileStatus_ReadOnly);
+	File file = File_New($("YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
