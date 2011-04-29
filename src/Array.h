@@ -1,5 +1,3 @@
-#import "Memory.h"
-
 #define Array_Sort(this, cmp) \
 	qsort((this)->buf, (this)->len, sizeof((this)->buf[0]), (void *) cmp)
 

@@ -1,4 +1,5 @@
 #import "String.h"
+#import "Exception.h"
 
 #define self String
 

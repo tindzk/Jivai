@@ -11,7 +11,7 @@ sdef(bool, close, ssize_t fd) {
 	return syscall(__NR_close, fd) == 0;
 }
 
-sdef(void, exit, int status) {
+sdef(void, exit, ExitStatus status) {
 	syscall(__NR_exit, status);
 }
 

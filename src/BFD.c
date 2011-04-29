@@ -70,7 +70,7 @@ static void BFD_ReadSymtab(bfd *abfd) {
 	if (symcount < 0) {
 		const char *errmsg = bfd_errmsg(bfd_get_error());
 		fprintf(stderr, "%s: %s\n", bfd_get_filename(abfd), errmsg);
-		Runtime_Exit(ExitStatus_Failure);
+		System_Exit(ExitStatus_Failure);
 	}
 }
 
@@ -125,12 +125,12 @@ void BFD_ProcessFile(const char *filename, bfd_vma addr, BFD_Item *cur) {
 
 	if (abfd == NULL) {
 		fprintf(stderr, "%s: bfd_openr() returned NULL", filename);
-		Runtime_Exit(ExitStatus_Failure);
+		System_Exit(ExitStatus_Failure);
 	}
 
 	if (bfd_check_format(abfd, bfd_archive)) {
 		fprintf(stderr, "%s: can not get addresses from archive", filename);
-		Runtime_Exit(ExitStatus_Failure);
+		System_Exit(ExitStatus_Failure);
 	}
 
 	if (!bfd_check_format_matches(abfd, bfd_object, &matching)) {
@@ -154,7 +154,7 @@ void BFD_ProcessFile(const char *filename, bfd_vma addr, BFD_Item *cur) {
 			Memory_Free(matching);
 		}
 
-		Runtime_Exit(ExitStatus_Failure);
+		System_Exit(ExitStatus_Failure);
 	}
 
 	BFD_ReadSymtab(abfd);

@@ -4,6 +4,7 @@
 #import <sys/syscall.h>
 
 #import "Types.h"
+#import "String.h"
 
 #if defined(__x86_64__)
 #define __NR_stat64      __NR_stat
@@ -179,13 +180,11 @@ record(EpollEvent) {
 	};
 } __epollPacked;
 
-#import "String.h"
-
 #define self Kernel
 
 sdef(ssize_t, open, RdString path, int flags, int mode);
 sdef(bool, close, ssize_t fd);
-sdef(void, exit, int status);
+sdef(void, exit, ExitStatus status);
 sdef(ssize_t, read, ssize_t fd, void *buf, size_t len);
 sdef(ssize_t, write, ssize_t fd, void *buf, size_t len);
 sdef(ssize_t, getdents, ssize_t fd, char *buf, size_t len);

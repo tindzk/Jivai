@@ -1,4 +1,5 @@
 #import "Channel.h"
+#import "Exception.h"
 
 #define self Channel
 

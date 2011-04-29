@@ -48,5 +48,5 @@ sdef(void, Print, int code) {
 
 sdef(void, Shutdown, int code) {
 	scall(Print, code);
-	Runtime_Exit(ExitStatus_Failure);
+	System_Exit(ExitStatus_Failure);
 }

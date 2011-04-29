@@ -7,8 +7,9 @@
 #import <link.h>
 
 #import "Memory.h"
+#import "String.h"
+#import "System.h"
 #import "BitMask.h"
-#import "Runtime.h"
 #import "Compiler.h"
 
 #define self BFD

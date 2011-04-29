@@ -1,4 +1,5 @@
 #import "Bit.h"
+#import "Char.h"
 #import "Types.h"
 #import "BitMask.h"
 #import "Compiler.h"
@@ -76,11 +77,9 @@ record(FmtString) {
 
 #undef self
 
-#import "Char.h"
 #import "Pool.h"
 #import "Array.h"
 #import "Memory.h"
-#import "Exception.h"
 
 #define self String
 
@@ -129,9 +128,6 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdS
 sdef(short, CompareRight, RdString a, RdString b);
 sdef(short, CompareLeft, RdString a, RdString b);
 overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros);
-
-#define String_Print(s) \
-	Channel_Write(Channel_StdOut, s)
 
 #if String_FmtChecks
 #define FmtString(_fmt, ...)  \

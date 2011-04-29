@@ -3,7 +3,7 @@
 #import "Types.h"
 #import "Macros.h"
 #import "String.h"
-#import "Runtime.h"
+#import "System.h"
 #import "Backtrace.h"
 
 #define self Exception
