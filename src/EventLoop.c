@@ -29,12 +29,12 @@ rsdef(self, New) {
 }
 
 def(void, Destroy) {
-	DoublyLinkedList_Destroy(&this->entries,
-		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
+	ChannelWatcher_Destroy(&this->watcher);
 
 	EventQueue_Destroy(&this->queue);
 
-	ChannelWatcher_Destroy(&this->watcher);
+	DoublyLinkedList_Destroy(&this->entries,
+		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
 }
 
 def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput) {
