@@ -89,7 +89,6 @@ static sdef(void, DestroyTask, GenericInstance inst) {
 
 	if (task->entry != NULL) {
 		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, false);
-		task->entry = NULL;
 	}
 
 	Timer_Destroy(&task->timer);
