@@ -283,7 +283,9 @@ rdef(size_t, GetSize, void *addr) {
 
 __malloc rdef(void *, Clone, void *addr) {
 	ref(Allocation) *alloc = addr - sizeof(ref(Allocation));
-	return call(Alloc, alloc->size);
+	void *result = call(Alloc, alloc->size);
+	Memory_Copy(result, addr, alloc->size);
+	return result;
 }
 
 def(void, Bundle, __unused RdString name) {

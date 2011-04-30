@@ -146,4 +146,15 @@ tsCase(Acute, "Nested Sessions") {
 	Assert($("Free"), size == 2 + 4 + 6 + 8);
 }
 
+tsCase(Acute, "Cloning") {
+	char *orig = Pool_Alloc(Pool_GetInstance(), 10);
+	Memory_Copy(orig, "Hello", 5);
+
+	char *copy = Pool_Clone(Pool_GetInstance(), orig);
+	Assert($("Equals"), Memory_Equals(orig, copy, 5));
+
+	Pool_Free(Pool_GetInstance(), copy);
+	Pool_Free(Pool_GetInstance(), orig);
+}
+
 tsFinalize;
