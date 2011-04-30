@@ -63,8 +63,8 @@ rdef(u64, Read) {
 	return dropped;
 }
 
-static sdef(void, OnInvoke, GenericInstance inst) {
-	ref(Task) *task = inst.object;
+static sdef(void, OnInvoke, Instance inst) {
+	ref(Task) *task = inst.addr;
 
 	/* If false, the timer is not recurring. Thus, we have to detach it even
 	 * though the callback might return true.
@@ -84,8 +84,8 @@ static sdef(void, OnInvoke, GenericInstance inst) {
 	}
 }
 
-static sdef(void, DestroyTask, GenericInstance inst) {
-	ref(Task) *task = inst.object;
+static sdef(void, DestroyTask, Instance inst) {
+	ref(Task) *task = inst.addr;
 
 	if (task->entry != NULL) {
 		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, false);

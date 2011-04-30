@@ -1,8 +1,7 @@
 #import <stdlib.h>
 #import <string.h>
 
-#import "Types.h"
-#import "Compiler.h"
+#import "Object.h"
 
 #define self Memory
 

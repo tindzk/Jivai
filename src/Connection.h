@@ -25,10 +25,10 @@ struct Server_Client;
 Interface(self) {
 	size_t size;
 
-	void (*init)   (GenericInstance, struct Server_Client *, Logger *);
-	void (*destroy)(GenericInstance);
-	void (*pull)   (GenericInstance);
-	void (*push)   (GenericInstance);
+	void (*init)   (Instance $this, struct Server_Client *client, Logger *logger);
+	void (*destroy)(Instance $this);
+	void (*pull)   (Instance $this);
+	void (*push)   (Instance $this);
 };
 
 #undef self

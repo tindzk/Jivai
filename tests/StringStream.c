@@ -17,8 +17,7 @@ tsCase(Acute, "Empty string") {
 	String out = String_New(16);
 	RdString s = $("");
 
-	StringStream stream;
-	StringStream_Init(&stream, &s);
+	StringStream stream = StringStream_New(&s);
 
 	Assert($("read()"),
 		StringStream_Read(&stream, out.buf, String_GetSize(out)) == 0);
@@ -33,8 +32,7 @@ tsCase(Acute, "Non-empty string") {
 	RdString s = $("Hello World.");
 	String out   = String_New(128);
 
-	StringStream stream;
-	StringStream_Init(&stream, &s);
+	StringStream stream = StringStream_New(&s);
 
 	Assert($("read() return value"),
 		(out.len = StringStream_Read(&stream, out.buf, 2)) == 2);

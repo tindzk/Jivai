@@ -1,6 +1,8 @@
 #import "Bit.h"
 #import "Char.h"
 #import "Types.h"
+#import "Object.h"
+#import "Macros.h"
 #import "BitMask.h"
 #import "Compiler.h"
 
@@ -190,7 +192,7 @@ static alwaysInline CarrierString CarrierString_New(void) {
 	};
 }
 
-static inline void CarrierString_Destroy(CarrierStringInstance $this) {
+static inline void CarrierString_Destroy(CarrierStringInst $this) {
 	if (!this->omni) {
 		if (this->buf != NULL) {
 			Pool_Free(Pool_GetInstance(), this->buf);
@@ -203,12 +205,12 @@ static inline void CarrierString_Destroy(CarrierStringInstance $this) {
 	this->len = 0;
 }
 
-static alwaysInline void CarrierString_Assign(CarrierStringInstance $this, CarrierString src) {
+static alwaysInline void CarrierString_Assign(CarrierStringInst $this, CarrierString src) {
 	CarrierString_Destroy(this);
 	*this = src;
 }
 
-static inline String CarrierString_Flush(CarrierStringInstance $this) {
+static inline String CarrierString_Flush(CarrierStringInst $this) {
 	String res;
 
 	 if (this->omni) {

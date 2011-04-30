@@ -1,6 +1,6 @@
 #import "Macros.h"
 
-Callback(LinkedList_OnDestroy, void, GenericInstance);
+Callback(LinkedList_OnDestroy, void, void *item);
 
 #define LinkedList_New() \
 	{ NULL, NULL }

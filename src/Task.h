@@ -4,11 +4,11 @@
 
 class {
 	self *next;
-	void (*destroy)(GenericInstance $this);
+	void (*destroy)(Instance $this);
 	char data[];
 };
 
-rsdef(self *, New, size_t size, void (*destroy)(GenericInstance $this));
+rsdef(self *, New, size_t size, void (*destroy)(Instance $this));
 def(void, Destroy);
 
 #undef self

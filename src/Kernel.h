@@ -175,7 +175,7 @@ record(EpollEvent) {
 	u32 events;
 
 	union {
-		void *ptr;
+		void *addr;
 		u64 u64;
 	};
 } __epollPacked;

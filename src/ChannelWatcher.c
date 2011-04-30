@@ -21,10 +21,10 @@ def(void, Destroy) {
 	Channel_Destroy(&this->ch);
 }
 
-def(void, Subscribe, Channel *ch, int events, GenericInstance inst) {
+def(void, Subscribe, Channel *ch, int events, void *addr) {
 	EpollEvent ev = { 0, {0} };
 
-	ev.ptr    = Generic_GetObject(inst);
+	ev.addr   = addr;
 	ev.events = events;
 
 	errno = 0;
@@ -42,10 +42,10 @@ def(void, Subscribe, Channel *ch, int events, GenericInstance inst) {
 	}
 }
 
-def(void, Modify, Channel *ch, int events, GenericInstance inst) {
+def(void, Modify, Channel *ch, int events, void *addr) {
 	EpollEvent ev = { 0, {0} };
 
-	ev.ptr    = Generic_GetObject(inst);
+	ev.addr   = addr;
 	ev.events = events;
 
 	errno = 0;
@@ -94,7 +94,7 @@ def(size_t, Poll, ref(OnEvent) onEvent, int timeout) {
 
 	for (size_t i = 0; i < (size_t) nfds; i++) {
 		callback(onEvent,
-			this->events[i].ptr,
+			this->events[i].addr,
 			this->events[i].events);
 	}
 

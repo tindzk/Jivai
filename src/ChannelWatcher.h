@@ -26,7 +26,7 @@ set(ref(Events)) {
     ref(Events_EdgeTriggered)  = (1 << 31)
 };
 
-Callback(ref(OnEvent), void, GenericInstance inst, int events);
+Callback(ref(OnEvent), void, void *addr, int events);
 
 class {
 	Channel ch;
@@ -42,8 +42,8 @@ class {
 
 rsdef(self, New);
 def(void, Destroy);
-def(void, Subscribe, Channel *ch, int events, GenericInstance inst);
-def(void, Modify, Channel *ch, int events, GenericInstance inst);
+def(void, Subscribe, Channel *ch, int events, void *addr);
+def(void, Modify, Channel *ch, int events, void *addr);
 def(void, Unsubscribe, Channel *ch);
 def(size_t, Poll, ref(OnEvent) onEvent, int timeout);
 

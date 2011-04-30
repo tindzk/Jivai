@@ -67,23 +67,23 @@ static def(bool, RunSuite, ITestSuiteInterface *suite) {
 		: false;
 }
 
-static def(void, InitSuite, ITestSuiteInterface *suite, GenericInstance inst) {
+static def(void, InitSuite, ITestSuiteInterface *suite, DynObject inst) {
 	ref(MethodInit) *method = call(Resolve, suite, ref(MethodType_Init));
 
 	if (method != NULL) {
-		method(inst);
+		method(inst.addr);
 	}
 }
 
-static def(void, DestroySuite, ITestSuiteInterface *suite, GenericInstance inst) {
+static def(void, DestroySuite, ITestSuiteInterface *suite, DynObject inst) {
 	ref(MethodDestroy) *method = call(Resolve, suite, ref(MethodType_Destroy));
 
 	if (method != NULL) {
-		method(inst);
+		method(inst.addr);
 	}
 }
 
-static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst) {
+static def(void, RunTestSuite, ITestSuiteInterface *suite, DynObject inst) {
 	fwd(i, suite->last - suite->first) {
 		ref(Method) *method = &suite->first[i];
 
@@ -97,7 +97,7 @@ static def(void, RunTestSuite, ITestSuiteInterface *suite, GenericInstance inst)
 
 				method->name);
 
-			((TestSuite_MethodTestCase *) method->addr)(inst, this);
+			((TestSuite_MethodTestCase *) method->addr)(inst.addr, this);
 
 			if (method->level == ref(Level_Acute)) {
 				if (this->failure > 0) {
@@ -138,17 +138,14 @@ def(void, _Run, ITestSuiteInterface *suite) {
 		suite->name);
 
 	if (run) {
-		GenericInstance inst =
-			(suite->size > 0)
-				? Generic_New(suite->size)
-				: Generic_Null();
-
 		this->failure = 0;
 		this->success = 0;
 
-		call(InitSuite,    suite, inst);
-		call(RunTestSuite, suite, inst);
-		call(DestroySuite, suite, inst);
+		DynObject object = DynObject_New(suite->size);
+
+		call(InitSuite,    suite, object);
+		call(RunTestSuite, suite, object);
+		call(DestroySuite, suite, object);
 
 		String strSuccess = Integer_ToString(this->success);
 		String strFailure = Integer_ToString(this->failure);
@@ -160,9 +157,7 @@ def(void, _Run, ITestSuiteInterface *suite) {
 		String_Destroy(&strFailure);
 		String_Destroy(&strSuccess);
 
-		if (!Generic_IsNull(inst)) {
-			Generic_Free(inst);
-		}
+		DynObject_Destroy(object);
 	}
 
 	Terminal_Print(this->term, '\n');

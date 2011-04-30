@@ -2,7 +2,7 @@
 
 #define self Task
 
-rsdef(self *, New, size_t size, void (*destroy)(GenericInstance $this)) {
+rsdef(self *, New, size_t size, void (*destroy)(Instance $this)) {
 	self *res = Pool_Alloc(Pool_GetInstance(), sizeof(self) + size);
 
 	res->next    = NULL;

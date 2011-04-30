@@ -1,8 +1,8 @@
 #import "Types.h"
 
 Interface(Stream) {
-	size_t (*read) (GenericInstance, void *, size_t);
-	size_t (*write)(GenericInstance, void *, size_t);
-	void   (*close)(GenericInstance);
-	bool   (*isEof)(GenericInstance);
+	size_t (*read) (Instance $this, void *buf, size_t len);
+	size_t (*write)(Instance $this, void *buf, size_t len);
+	void   (*close)(Instance $this);
+	bool   (*isEof)(Instance $this);
 };

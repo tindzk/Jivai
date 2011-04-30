@@ -3,8 +3,8 @@
 
 #define self FileStream
 
-#define FileStreamInstance         FileInstance
-#define FileStreamExtendedInstance FileExtendedInstance
+#define FileStreamInst    FileInst
+#define FileStreamDynInst FileDynInst
 
 def(void, Close);
 def(size_t, Read, void *buf, size_t len);

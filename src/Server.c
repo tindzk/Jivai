@@ -28,23 +28,19 @@ def(void, SetEdgeTriggered, bool value) {
 	this->edgeTriggered = value;
 }
 
-static def(void, OnDestroy, GenericInstance inst) {
-	ref(Client) *client = inst.object;
-	this->conn->destroy(client->object);
+static def(void, OnDestroy, ref(ClientDynInst) inst) {
+	assert(this->conn->destroy != NULL);
+	this->conn->destroy(inst.addr->object);
 }
 
-static def(void, OnPull, GenericInstance inst) {
+static def(void, OnPull, ref(ClientDynInst) inst) {
 	assert(this->conn->pull != NULL);
-
-	ref(Client) *client = inst.object;
-	this->conn->pull(client->object);
+	this->conn->pull(inst.addr->object);
 }
 
-static def(void, OnPush, GenericInstance inst) {
+static def(void, OnPush, ref(ClientDynInst) inst) {
 	assert(this->conn->push != NULL);
-
-	ref(Client) *client = inst.object;
-	this->conn->push(client->object);
+	this->conn->push(inst.addr->object);
 }
 
 static def(size_t, GetSize) {

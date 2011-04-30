@@ -2,9 +2,11 @@
 
 #define self StringStream
 
-def(void, Init, RdStringInstance s) {
-	this->str    = s.object;
-	this->offset = 0;
+rsdef(self, New, RdStringInst s) {
+	return (self) {
+		.str    = s.addr,
+		.offset = 0
+	};
 }
 
 def(size_t, Read, void *buf, size_t len) {
@@ -23,12 +25,11 @@ def(size_t, Read, void *buf, size_t len) {
 }
 
 def(size_t, Write, __unused void *buf, __unused size_t len) {
+	assert(false);
 	return 0;
 }
 
-def(void, Close) {
-
-}
+def(void, Close) { }
 
 def(bool, IsEof) {
 	return this->offset >= this->str->len;

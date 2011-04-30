@@ -8,8 +8,8 @@ SingletonDestructor(self);
 /* Note that this method does not close any file descriptors. Its only purpose
  * is to free the associated memory.
  */
-static def(void, _DestroyEntry, GenericInstance inst) {
-	ref(Entry) *entry = inst.object;
+static def(void, _DestroyEntry, void *addr) {
+	ref(Entry) *entry = addr;
 
 	if (entry->type == ref(EntryType_Client)) {
 		ref(ClientEntry) *data = (void *) entry->data;
@@ -159,8 +159,8 @@ def(void, _DetachClient, ref(Entry) *entry) {
 /* This also calls the set destruction methods. After calling this method,
  * associated memory will not be accessible any longer.
  */
-def(void, DetachClient, GenericInstance inst) {
-	ref(Entry) *entry = inst.object
+def(void, DetachClient, void *addr) {
+	ref(Entry) *entry = addr
 		- sizeof(ref(ClientEntry))
 		- sizeof(ref(Entry));
 
@@ -205,12 +205,12 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 	}
 }
 
-def(void, Enqueue, GenericInstance inst, int events) {
-	EventQueue_Enqueue(&this->queue, inst.object, events);
+def(void, Enqueue, void *addr, int events) {
+	EventQueue_Enqueue(&this->queue, addr, events);
 }
 
-def(void, ClientEnqueue, GenericInstance inst, int events) {
-	ref(Entry) *entry = inst.object
+def(void, ClientEnqueue, void *addr, int events) {
+	ref(Entry) *entry = addr
 		- sizeof(ref(ClientEntry))
 		- sizeof(ref(Entry));
 

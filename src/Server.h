@@ -14,6 +14,8 @@ record(ref(Client)) {
 	char              object[];
 };
 
+Instance(ref(Client));
+
 static inline void ref(Client_Push)(ref(Client) *client) {
 	EventLoop_ClientEnqueue(EventLoop_GetInstance(), client,
 		ChannelWatcher_Events_Output);

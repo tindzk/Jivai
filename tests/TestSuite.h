@@ -85,7 +85,7 @@ class {
 	tripleConcat(self, _MethodCase, __LINE__)
 
 #define tsCaseMethod \
-	void tsCaseName(__unused ExtendedInstName(self) $this, __unused TestSuite *ts)
+	void tsCaseName(__unused DynInstName(self) $this, __unused TestSuite *ts)
 
 #define tsCase(caseLevel, descr)                \
 	tsCaseMethod;                               \
@@ -108,9 +108,9 @@ class {
 	TestSuite_Assert(ts, descr, expr)
 
 typedef bool (ref(MethodRun))     ();
-typedef void (ref(MethodInit))    (GenericInstance);
-typedef void (ref(MethodDestroy)) (GenericInstance);
-typedef void (ref(MethodTestCase))(GenericInstance, TestSuiteInstance);
+typedef void (ref(MethodInit))    (Instance $this);
+typedef void (ref(MethodDestroy)) (Instance $this);
+typedef void (ref(MethodTestCase))(Instance $this, TestSuiteInst ts);
 
 SingletonPrototype(self);
 

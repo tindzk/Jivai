@@ -10,8 +10,8 @@ rsdef(self, New) {
 	};
 }
 
-static def(void, DestroyEvent, GenericInstance inst) {
-	Pool_Free(Pool_GetInstance(), inst.object);
+static def(void, DestroyEvent, void *item) {
+	Pool_Free(Pool_GetInstance(), item);
 }
 
 def(void, Destroy) {

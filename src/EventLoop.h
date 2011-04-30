@@ -8,10 +8,10 @@
 #define self EventLoop
 
 Interface(ref(Client)) {
-	size_t (*getSize)  (GenericInstance);
-	void   (*onInput)  (GenericInstance, GenericInstance inst);
-	void   (*onOutput) (GenericInstance, GenericInstance inst);
-	void   (*onDestroy)(GenericInstance, GenericInstance inst);
+	size_t (*getSize)  (Instance $this);
+	void   (*onInput)  (Instance $this, Instance inst);
+	void   (*onOutput) (Instance $this, Instance inst);
+	void   (*onDestroy)(Instance $this, Instance inst);
 };
 
 Callback(ref(OnInput),      void);
@@ -62,9 +62,9 @@ def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput);
 def(void, DetachChannel, ref(Entry) *entry, bool watcher);
 def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client);
-def(void, DetachClient, GenericInstance inst);
-def(void, Enqueue, GenericInstance inst, int events);
-def(void, ClientEnqueue, GenericInstance inst, int events);
+def(void, DetachClient, void *addr);
+def(void, Enqueue, void *addr, int events);
+def(void, ClientEnqueue, void *addr, int events);
 def(void, Iteration, int timeout);
 overload def(void, Run, int timeout);
 def(void, Quit);

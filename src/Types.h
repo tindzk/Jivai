@@ -1,18 +1,4 @@
-#import "Macros.h"
-
-/* Clang's stdbool.h is not used because it defines `true' and `false'
- * as plain integers, making it impossible to differentiate between
- * `int' and `bool' in function declarations, which can be necessary
- * when overloading functions.
- */
-
-set(bool) {
-	false = 0,
-	true  = 1
-};
-
-#define false (bool) false
-#define true  (bool) true
+#import "Boolean.h"
 
 #ifndef NULL
 #define NULL \
@@ -46,15 +32,3 @@ typedef u64 be64;
 typedef u16 le16;
 typedef u32 le32;
 typedef u64 le64;
-
-typedef void Generic;
-
-typedef union {
-	Generic *object;
-} GenericInstance transparentUnion;
-
-InstanceMethods(Generic);
-
-/* Inline functions cannot be used as Pool's methods are not available yet. */
-#define Generic_New(size) (GenericInstance) { .object = Pool_Alloc(Pool_GetInstance(), size) }
-#define Generic_Free(instance) Pool_Free(Pool_GetInstance(), (instance).object)
