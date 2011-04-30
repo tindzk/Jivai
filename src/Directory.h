@@ -1,5 +1,5 @@
 #import "String.h"
-#import "Kernel.h"
+#import "Channel.h"
 #import "Exception.h"
 
 #define self Directory
@@ -19,7 +19,7 @@ record(ref(LinuxEntry)) {
 };
 
 class {
-	ssize_t fd;
+	Channel ch;
 	ref(LinuxEntry) *d;
 	ssize_t nread;
 	char buf[Directory_BufSize];
@@ -44,7 +44,7 @@ record(ref(Entry)) {
 	RdString name;
 };
 
-def(void, Init, RdString path);
+rsdef(self, New, RdString path);
 def(void, Destroy);
 def(bool, Read, ref(Entry) *res);
 

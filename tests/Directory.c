@@ -13,8 +13,7 @@ tsRegister("Directory") {
 }
 
 tsCase(Acute, "Listing") {
-	Directory dir;
-	Directory_Init(&dir, $("../tests"));
+	Directory dir = Directory_New($("../tests"));
 
 	size_t iter = 0;
 

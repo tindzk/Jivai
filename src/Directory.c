@@ -2,25 +2,30 @@
 
 #define self Directory
 
-def(void, Init, RdString path) {
-	this->fd = Kernel_open(path,
+rsdef(self, New, RdString path) {
+	int id = Kernel_open(path,
 		FileStatus_Directory |
 		FileStatus_ReadOnly, 0);
 
-	if (this->fd == -1) {
+	if (id == -1) {
 		throw(CannotOpenDirectory);
 	}
 
-	this->bpos = 0;
+	return (self) {
+		.ch   = Channel_New(id, 0),
+		.bpos = 0
+	};
 }
 
 def(void, Destroy) {
-	Kernel_close(this->fd);
+	Channel_Destroy(&this->ch);
 }
 
 def(bool, Read, ref(Entry) *res) {
 	if (this->bpos == 0 || this->bpos >= this->nread) {
-		this->nread = Kernel_getdents(this->fd, this->buf, ref(BufSize));
+		int id = Channel_GetId(&this->ch);
+
+		this->nread = Kernel_getdents(id, this->buf, ref(BufSize));
 		this->bpos  = 0;
 
 		if (this->nread == -1) {
