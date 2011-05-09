@@ -37,8 +37,15 @@
 #define overload \
 	__attribute__((overloadable))
 
+/* TODO This doesn't work yet in Clang,
+ * see http://llvm.org/bugs/show_bug.cgi?id=5329 and
+ *     http://llvm.org/bugs/show_bug.cgi?id=9878
+ */
+#define earlyConstructor \
+	__attribute__((constructor(100)))
+
 #define __constructor \
-	__attribute__((constructor))
+	__attribute__((constructor(101)))
 
 #define __destructor \
 	__attribute__((destructor))
