@@ -6,43 +6,76 @@ ExceptionManager __exc_mgr = {
 	.cur = NULL
 };
 
-sdef(String, FormatAssert) {
+sdef(OmniString, InternalFormat, RdString fmt, ...) {
+	VarArg argptr;
+	VarArg_Start(argptr, fmt);
+
+	OmniString str = {
+		.buf = __exc_mgr.buf
+	};
+
+	fwd(i, fmt.len) {
+		if (fmt.buf[i] == '%') {
+			RdString value = VarArg_Get(argptr, RdString);
+
+			if (str.len + value.len > nElems(__exc_mgr.buf)) {
+				goto error;
+			}
+
+			Memory_Copy(str.buf + str.len, value.buf, value.len);
+			str.len += value.len;
+		} else {
+			if (str.len + 1 > nElems(__exc_mgr.buf)) {
+				goto error;
+			}
+
+			str.buf[str.len] = fmt.buf[i];
+			str.len++;
+		}
+	}
+
+	VarArg_End(argptr);
+
+	return str;
+
+error:
+	return $$("Error: Internal buffer too small!");
+}
+
+sdef(OmniString, FormatAssert) {
 #if Exception_SaveOrigin
-	return String_Format(
+	return scall(InternalFormat,
 		$("Assertion '%' failed (in %)."),
-		Exception_GetMessage().rd,
-		Exception_GetOrigin());
+			Exception_GetMessage().rd,
+			Exception_GetOrigin());
 #else
 	return String_Format(
 		$("Assertion '%' failed."),
-		Exception_GetMessage());
+			Exception_GetMessage());
 #endif
 }
 
-sdef(String, Format, int code) {
+sdef(OmniString, Format, int code) {
 	if (code == ref(AssertFailed)) {
 		return scall(FormatAssert);
 	}
 
 #if Exception_SaveOrigin
-	return String_Format(
+	return scall(InternalFormat,
 		$("Uncaught exception %.% (in %)"),
-		String_FromNul(Manifest_ResolveName(code)),
-		String_FromNul(Manifest_ResolveCode(code)),
-		Exception_GetOrigin());
+			String_FromNul(Manifest_ResolveName(code)),
+			String_FromNul(Manifest_ResolveCode(code)),
+			Exception_GetOrigin());
 #else
-	return String_Format(
+	return scall(InternalFormat,
 		$("Uncaught exception %.%"),
-		String_FromNul(Manifest_ResolveName(code)),
-		String_FromNul(Manifest_ResolveCode(code)));
+			String_FromNul(Manifest_ResolveName(code)),
+			String_FromNul(Manifest_ResolveCode(code)));
 #endif
 }
 
 sdef(void, Print, int code) {
-	String msg = scall(Format, code);
-	System_Err(msg.rd);
-	String_Destroy(&msg);
-
+	System_Err(scall(Format, code).rd);
 	System_Err($("\n"));
 }
 

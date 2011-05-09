@@ -35,6 +35,9 @@ record(ref(Frame)) {
 record(ExceptionManager) {
 	ref(Frame) *cur;
 
+	/* As dynamic memory may fail, we maintain an internal buffer. */
+	char buf[128];
+
 	/* This structure contains more detailed information about the most
 	 * recently thrown exception. The exception itself is only supplied
 	 * in a numerical code via longjmp(). See Exception_Raise().
@@ -58,7 +61,7 @@ record(ExceptionManager) {
 
 extern ExceptionManager __exc_mgr;
 
-sdef(String, Format, int code);
+sdef(OmniString, Format, int code);
 sdef(void, Print, int code);
 sdef(void, Shutdown, int code);
 
