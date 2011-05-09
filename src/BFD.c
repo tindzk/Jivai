@@ -57,7 +57,7 @@ static void BFD_ReadSymtab(bfd *abfd) {
 	symcount = bfd_read_minisymbols(abfd, false, (void *) &syms, &size);
 
 	if (symcount == 0) {
-		Memory_Free(syms);
+		free(syms);
 
 		symcount = bfd_read_minisymbols(
 			abfd,
@@ -151,7 +151,7 @@ void BFD_ProcessFile(const char *filename, bfd_vma addr, BFD_Item *cur) {
 
 			fputc('\n', stderr);
 
-			Memory_Free(matching);
+			free(matching);
 		}
 
 		System_Exit(ExitStatus_Failure);
@@ -162,7 +162,7 @@ void BFD_ProcessFile(const char *filename, bfd_vma addr, BFD_Item *cur) {
 	BFD_TranslateAddress(abfd, addr, cur);
 
 	if (syms != NULL) {
-		Memory_Free(syms);
+		free(syms);
 		syms = NULL;
 	}
 
@@ -197,7 +197,7 @@ BFD_Item* BFD_ResolveSymbols(void *const *buffer, int size) {
 	int stack_depth = size - 1;
 	int x, y;
 
-	BFD_Item *res = Memory_Alloc(100 * sizeof(BFD_Item));
+	BFD_Item *res = malloc(100 * sizeof(BFD_Item));
 	int cnt = 0;
 
 	bfd_init();
@@ -215,7 +215,7 @@ BFD_Item* BFD_ResolveSymbols(void *const *buffer, int size) {
 			BFD_ProcessFile("/proc/self/exe", addr, &res[cnt]);
 		}
 
-		res = Memory_Realloc(res, (cnt + 100) * sizeof(BFD_Item));
+		res = realloc(res, (cnt + 100) * sizeof(BFD_Item));
 		cnt++;
 	}
 

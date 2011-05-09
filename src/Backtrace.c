@@ -49,7 +49,7 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 		System_Err($("\n"));
 	}
 
-	Memory_Free(items);
+	free(items);
 #endif
 }
 
