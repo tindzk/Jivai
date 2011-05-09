@@ -7,9 +7,8 @@ typedef union {
 	Instance inst;
 	struct {
 		void *addr;
-		size_t size;
 	};
-} self;
+} self transparentUnion;
 
 rsdef(self, New, size_t size);
 overload sdef(void, Destroy, self $this);

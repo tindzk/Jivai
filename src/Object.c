@@ -9,8 +9,7 @@ rsdef(DynObject, New, size_t size) {
 	}
 
 	return (DynObject) {
-		.addr = Pool_Alloc(Pool_GetInstance(), size),
-		.size = size
+		.addr = Pool_Alloc(Pool_GetInstance(), size)
 	};
 }
 
@@ -28,7 +27,7 @@ overload sdef(void, Destroy, void *addr) {
 
 rsdef(void *, GetMember, DynObject $this, size_t ofs) {
 	assert($this.addr != NULL);
-	assert(ofs <= $this.size);
+	assert(ofs <= Pool_GetSize(Pool_GetInstance(), $this.addr));
 
 	return $this.addr + ofs;
 }
