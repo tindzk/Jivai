@@ -1,6 +1,11 @@
 #import "Backtrace.h"
 
 void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
+	if (System_IsRunningOnValgrind()) {
+		System_Err($("Error: Traceback cannot printed when running on Valgrind.\n"));
+		return;
+	}
+
 #ifdef Backtrace_HasBFD
 	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
 
