@@ -1,6 +1,8 @@
+#import "UniStd.h" /* __environ */
 #import "String.h"
 #import "Kernel.h"
 #import "Channel.h"
+#import "Exception.h"
 
 #define self System
 
@@ -17,5 +19,7 @@ static inline sdef(void, Err, RdString s) {
 }
 
 #define String_Print(s) System_Out(s)
+
+sdef(bool, IsRunningOnValgrind);
 
 #undef self
