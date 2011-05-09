@@ -1,6 +1,7 @@
 #import <bfd.h>
 
 #define _GNU_SOURCE
+#import <stdlib.h> /* malloc() */
 #include <libiberty.h>
 #undef _GNU_SOURCE
 
