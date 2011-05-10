@@ -26,7 +26,7 @@ tsCase(Acute, "Allocation: String_New(16)") {
 		this->s.buf != NULL);
 
 	Assert($("Size is 16"),
-		String_GetSize(this->s) == 16);
+		String_GetSize(this->s) >= 16);
 
 	Assert($("Length = 0"),
 		this->s.len == 0);
@@ -134,7 +134,7 @@ tsCase(Acute, "Copying") {
 	Assert($("Has correct length"),
 		s.len == copy.len);
 	Assert($("Has correct size"),
-		String_GetSize(s) == copy.len);
+		String_GetSize(s) >= copy.len);
 
 	String_Destroy(&s);
 }
@@ -248,7 +248,7 @@ tsCase(Acute, "Format") {
 	RdString expected = $("Hel%lo World.");
 
 	/* Make sure String_Format() doesn't allocate too much. */
-	Assert($("Size"),   String_GetSize(s) == expected.len);
+	Assert($("Size"),   String_GetSize(s) >= expected.len);
 	Assert($("Equals"), String_Equals(s.rd, expected));
 
 	String_Destroy(&s);
