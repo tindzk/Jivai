@@ -15,7 +15,6 @@ record(ref(Allocation)) {
 	ref(Allocation)     *next;  /* Next allocation.          */
 	ref(Allocation)     *child; /* Child allocation.         */
 	struct ref(Session) *sess;  /* Session points here.      */
-	size_t              size;   /* Size of allocated buffer. */
 	char                buf[];  /* Buffer.                   */
 };
 

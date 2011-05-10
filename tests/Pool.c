@@ -26,9 +26,9 @@ tsCase(Acute, "Linking") {
 	void *slave3 = Pool_Alloc(Pool_GetInstance(), 8);
 
 	Assert($("Size"),
-		Pool_GetSize(Pool_GetInstance(), slave)  == 8 &&
-		Pool_GetSize(Pool_GetInstance(), slave2) == 8 &&
-		Pool_GetSize(Pool_GetInstance(), slave3) == 8);
+		Pool_GetSize(Pool_GetInstance(), slave)  >= 8 &&
+		Pool_GetSize(Pool_GetInstance(), slave2) >= 8 &&
+		Pool_GetSize(Pool_GetInstance(), slave3) >= 8);
 
 	Pool_Link(Pool_GetInstance(), slave,  master);
 	Pool_Link(Pool_GetInstance(), slave2, master);
@@ -43,7 +43,7 @@ tsCase(Acute, "Linking") {
 
 	size_t size = Pool_Free(Pool_GetInstance(), master);
 
-	Assert($("Free"), size == 32);
+	Assert($("Free"), size >= 32);
 }
 
 tsCase(Acute, "Linking") {
@@ -59,7 +59,7 @@ tsCase(Acute, "Linking") {
 
 	size_t size = Pool_Free(Pool_GetInstance(), master);
 
-	Assert($("Free"), size == 32 + 3 * 8);
+	Assert($("Free"), size >= 32 + 3 * 8);
 }
 
 tsCase(Acute, "Linking") {
@@ -81,7 +81,7 @@ tsCase(Acute, "Linking") {
 
 	size_t size = Pool_Free(Pool_GetInstance(), master);
 
-	Assert($("Free"), size == 32 + 16 + 2 * 8);
+	Assert($("Free"), size >= 32 + 16 + 2 * 8);
 }
 
 tsCase(Acute, "Bundling") {
@@ -106,7 +106,7 @@ tsCase(Acute, "Bundling") {
 
 	size_t size = Pool_Free(Pool_GetInstance(), master);
 
-	Assert($("Free"), size == 32 + 3 * 8);
+	Assert($("Free"), size >= 32 + 3 * 8);
 }
 
 tsCase(Acute, "Sessions") {
@@ -123,7 +123,7 @@ tsCase(Acute, "Sessions") {
 
 	size_t size = Pool_Dispose(Pool_GetInstance(), sess);
 
-	Assert($("Free"), size == 3 * 8);
+	Assert($("Free"), size >= 3 * 8);
 }
 
 tsCase(Acute, "Nested Sessions") {
@@ -143,7 +143,7 @@ tsCase(Acute, "Nested Sessions") {
 
 	size_t size = Pool_Dispose(Pool_GetInstance(), root);
 
-	Assert($("Free"), size == 2 + 4 + 6 + 8);
+	Assert($("Free"), size >= 2 + 4 + 6 + 8);
 }
 
 tsCase(Acute, "Cloning") {

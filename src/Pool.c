@@ -153,7 +153,6 @@ def(void, Link, void *alloc, void *parent) {
 __malloc rdef(void *, Alloc, size_t size) {
 	ref(Allocation) *alloc = Memory_New(sizeof(ref(Allocation)) + size);
 
-	alloc->size  = size;
 	alloc->sess  = this->sess;
 	alloc->prev  = NULL;
 	alloc->next  = NULL;
@@ -195,8 +194,6 @@ __malloc rdef(void *, Realloc, void *addr, size_t size) {
 
 	ref(Allocation) *alloc =
 		Memory_Resize(old, sizeof(ref(Allocation)) + size);
-
-	alloc->size = size;
 
 	if (parent != NULL) {
 		parent->child = alloc;
@@ -258,7 +255,7 @@ static def(size_t, _Free, ref(Allocation) *alloc) {
 
 	call(Unlink, alloc);
 
-	size_t size = alloc->size;
+	size_t size = Memory_GetSize(alloc) - sizeof(ref(Allocation));
 
 	while (alloc->child != NULL) {
 		ref(Allocation) *next = alloc->child->next;
@@ -278,13 +275,18 @@ def(size_t, Free, void *addr) {
 
 rdef(size_t, GetSize, void *addr) {
 	ref(Allocation) *alloc = addr - sizeof(ref(Allocation));
-	return alloc->size;
+
+	return Memory_GetSize(alloc) - sizeof(ref(Allocation));
 }
 
 __malloc rdef(void *, Clone, void *addr) {
 	ref(Allocation) *alloc = addr - sizeof(ref(Allocation));
-	void *result = call(Alloc, alloc->size);
-	Memory_Copy(result, addr, alloc->size);
+
+	size_t size = Memory_GetSize(alloc) - sizeof(ref(Allocation));
+
+	void *result = call(Alloc, size);
+	Memory_Copy(result, addr, size);
+
 	return result;
 }
 
