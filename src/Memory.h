@@ -6,11 +6,6 @@
 #define Memory_PageSize 4096
 #endif
 
-#ifndef Memory_BoundaryChecks
-#define Memory_BoundaryChecks 1
-#endif
-
-// @exc OutOfBounds
 // @exc OutOfMemory
 // @exc Overlapping
 

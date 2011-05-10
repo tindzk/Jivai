@@ -88,18 +88,15 @@ rsdef(size_t, GetSize, void *data) {
 }
 
 sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len) {
-#if Memory_BoundaryChecks
 	if (len == 0) {
-		throw(OutOfBounds);
+		return;
 	}
-#endif
 
 	if (Memory_Overlaps(pDest, pSource, len, len)) {
 		throw(Overlapping);
 	}
 
 	assert(pDest != NULL && pSource != NULL);
-
 	memcpy(pDest, pSource, len);
 }
 
@@ -114,13 +111,10 @@ rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len) {
 }
 
 sdef(void, Move, void *pDest, void *pSource, size_t len) {
-#if Memory_BoundaryChecks
 	if (len == 0) {
-		throw(OutOfBounds);
+		return;
 	}
-#endif
 
 	assert(pDest != NULL && pSource != NULL);
-
 	memmove(pDest, pSource, len);
 }

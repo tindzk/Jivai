@@ -43,11 +43,7 @@ def(void, Resize, size_t length) {
 		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf, length);
 	} else {
 		char *buf = Pool_Alloc(Pool_GetInstance(), length);
-
-		if (realLength > 0) {
-			Memory_Copy(buf, this->buf, realLength);
-		}
-
+		Memory_Copy(buf, this->buf, realLength);
 		this->buf = buf;
 	}
 
@@ -290,11 +286,8 @@ overload sdef(void, Append, self *dest, FmtString s) {
 			dest->buf[dest->len] = '%';
 			dest->len++, i++;
 		} else if (s.fmt.buf[i] == '%') {
-			if (val->len > 0) {
-				Memory_Copy(dest->buf + dest->len, val->buf, val->len);
-				dest->len += val->len;
-			}
-
+			Memory_Copy(dest->buf + dest->len, val->buf, val->len);
+			dest->len += val->len;
 			val++;
 		} else {
 			dest->buf[dest->len] = s.fmt.buf[i];
@@ -718,15 +711,11 @@ def(bool, Outside, RdString left, RdString right) {
 overload sdef(self, Concat, RdString a, RdString b) {
 	self res = String_New(a.len + b.len);
 
-	if (a.len > 0) {
-		Memory_Copy(res.buf, a.buf, a.len);
-		res.len = a.len;
-	}
+	Memory_Copy(res.buf, a.buf, a.len);
+	res.len = a.len;
 
-	if (b.len > 0) {
-		Memory_Copy(res.buf + res.len, b.buf, b.len);
-		res.len += b.len;
-	}
+	Memory_Copy(res.buf + res.len, b.buf, b.len);
+	res.len += b.len;
 
 	return res;
 }
@@ -734,9 +723,7 @@ overload sdef(self, Concat, RdString a, RdString b) {
 overload sdef(self, Concat, RdString s, char c) {
 	self res = String_New(s.len + 1);
 
-	if (s.len > 0) {
-		Memory_Copy(res.buf, s.buf, s.len);
-	}
+	Memory_Copy(res.buf, s.buf, s.len);
 
 	res.buf[s.len] = c;
 
