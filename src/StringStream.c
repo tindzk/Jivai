@@ -9,22 +9,25 @@ rsdef(self, New, RdStringInst s) {
 	};
 }
 
-def(size_t, Read, void *buf, size_t len) {
-	size_t bytes = len;
-
-	if (bytes > this->str->len - this->offset) {
-		bytes = this->str->len - this->offset;
+def(size_t, Read, WrBuffer buf) {
+	if (buf.size > this->str->len - this->offset) {
+		buf.size = this->str->len - this->offset;
 	}
 
-	if (bytes > 0) {
-		Memory_Copy(buf, this->str->buf + this->offset, bytes);
-		this->offset += bytes;
+	if (buf.size > 0) {
+		RdBuffer src = {
+			.ptr = this->str->buf + this->offset,
+			.len = buf.size
+		};
+
+		Buffer_Copy(buf, src);
+		this->offset += buf.size;
 	}
 
-	return bytes;
+	return buf.size;
 }
 
-def(size_t, Write, __unused void *buf, __unused size_t len) {
+def(size_t, Write, __unused RdBuffer buf) {
 	assert(false);
 	return 0;
 }

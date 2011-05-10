@@ -7,8 +7,8 @@
 #define FileStreamDynInst FileDynInst
 
 def(void, Close);
-def(size_t, Read, void *buf, size_t len);
-def(size_t, Write, void *buf, size_t len);
+def(size_t, Read, WrBuffer buf);
+def(size_t, Write, RdBuffer buf);
 def(bool, IsEof);
 
 ExportImpl(Stream);

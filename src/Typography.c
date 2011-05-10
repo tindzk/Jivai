@@ -70,7 +70,7 @@ static def(char, Read, size_t st, char next) {
 		} else if (next != '\0') {
 			cur = next;
 
-			if (delegate(this->stream, read, &next, 1) == 0) {
+			if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
 				next = '\0';
 			}
 
@@ -126,7 +126,7 @@ static def(char, Read, size_t st, char next) {
 					name.len    = 0;
 
 					if (next == '{') {
-						if (delegate(this->stream, read, &next, 1) == 0) {
+						if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
 							next = '\0';
 						}
 
@@ -201,7 +201,7 @@ static def(char, Read, size_t st, char next) {
 
 					this->node = this->node->parent;
 
-					if (delegate(this->stream, read, &next, 1) == 0) {
+					if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
 						next = '\0';
 					}
 
@@ -234,7 +234,7 @@ def(void, Parse, Stream stream) {
 	Tree_Reset(&this->tree);
 
 	char c = '\0';
-	delegate(this->stream, read, &c, 1);
+	delegate(this->stream, read, Buffer_ForChar(&c));
 
 	call(Read, 0, c);
 }

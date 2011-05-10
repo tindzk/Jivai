@@ -235,7 +235,7 @@ def(void, Parse) {
 		}
 
 	next:
-		this->stream->read(this->context, &c, 1);
+		this->stream->read(this->context, Buffer_ForChar(&c));
 
 		if (c == '\n') {
 			this->line++;

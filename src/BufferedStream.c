@@ -4,131 +4,164 @@
 
 rsdef(self, New, Stream stream) {
 	return (self) {
-		.stream = stream,
-		.eof    = false,
-		.inbuf  = String_New(0),
-		.outbuf = String_New(0),
-		.inbufThreshold = 0
+		.stream = stream
 	};
 }
 
 def(void, Destroy) {
-	String_Destroy(&this->inbuf);
-	String_Destroy(&this->outbuf);
+	if (Buffer_IsValid(this->in.rd)) {
+		Buffer_Destroy(&this->in);
+	}
+
+	if (Buffer_IsValid(this->out.rd)) {
+		Buffer_Destroy(&this->out);
+	}
 }
 
 def(void, SetInputBuffer, size_t size, size_t threshold) {
-	String_Align(&this->inbuf, size);
-	this->inbufThreshold = threshold;
+	if (this->in.ptr == NULL) {
+		this->in = Buffer_New(size);
+	} else {
+		Buffer_Align(&this->in, size);
+	}
+
+	this->inThreshold = threshold;
 }
 
 def(void, SetOutputBuffer, size_t size) {
-	String_Align(&this->outbuf, size);
+	if (this->out.ptr == NULL) {
+		this->out = Buffer_New(size);
+	} else {
+		Buffer_Align(&this->out, size);
+	}
 }
 
 def(bool, IsEof) {
-	return this->inbuf.len == 0
+	return this->in.len == 0
 		&& this->eof;
 }
 
-def(size_t, Read, void *buf, size_t len) {
-	if (len == 0) {
-		return 0;
-	}
+def(size_t, Read, WrBuffer buf) {
+	assert(buf.size > 0);
 
-	size_t size = String_GetSize(this->inbuf);
+	if (this->in.len == 0) {
+		if (!this->eof) {
+			this->in.len = delegate(this->stream, read,
+				Buffer_AsWrBuffer(&this->in));
+		}
 
-	if (this->inbuf.len == 0 && !this->eof) {
-		this->inbuf.len = delegate(this->stream, read,
-			this->inbuf.buf, size);
-
-		if (this->inbuf.len == 0) {
+		if (this->in.len == 0) {
 			this->eof = true;
+			return 0;
 		}
 	}
 
-	size_t copied = 0;
+	size_t res = 0;
 
-	if (this->inbuf.len >= len) {
-		Memory_Copy(buf, this->inbuf.buf, len);
-		String_Crop(&this->inbuf, len);
-		copied = len;
-	} else if (this->inbuf.len > 0) {
-		Memory_Copy(buf, this->inbuf.buf, this->inbuf.len);
-		copied = this->inbuf.len;
-		this->inbuf.len = 0;
+	if (buf.size >= this->in.len) {
+		Buffer_Copy(buf, this->in.rd);
+		this->in.len = 0;
+
+		res = this->in.len;
+	} else {
+		/* We have more data than `buf' can take. */
+		Buffer_Copy(buf, (RdBuffer) {
+			.ptr = this->in.ptr,
+			.len = buf.size
+		});
+
+		Buffer_Move(Buffer_AsWrBuffer(&this->in), (RdBuffer) {
+			.ptr = this->in.ptr + buf.size,
+			.len = this->in.len - buf.size
+		});
+
+		this->in.len -= buf.size;
+
+		res = buf.size;
 	}
 
 	if (!this->eof) {
-		if (size - this->inbuf.len > this->inbufThreshold) {
-			size_t read = delegate(this->stream, read,
-				this->inbuf.buf + this->inbuf.len,
-				size - this->inbuf.len);
+		size_t size = Buffer_GetSize(&this->in);
+		size_t nonOccupied = size - this->in.len;
+
+		if (nonOccupied >= this->inThreshold) {
+			size_t read = delegate(this->stream, read, (WrBuffer) {
+				.ptr  = this->in.ptr + this->in.len,
+				.size = nonOccupied
+			});
 
 			if (read == 0) {
 				this->eof = true;
 			}
 
-			this->inbuf.len += read;
+			this->in.len += read;
 		}
 	}
 
-	return copied;
+	return res;
 }
 
-def(size_t, Write, void *buf, size_t len) {
-	if (len == 0) {
+def(size_t, Write, RdBuffer buf) {
+	if (buf.len == 0) {
 		return 0;
 	}
 
-	size_t size = String_GetSize(this->outbuf);
+	size_t size = Buffer_GetSize(&this->out);
 
-	if (this->outbuf.len + len > size) {
-		size_t bufLength = size - this->outbuf.len;
+	if (size >= this->out.len + buf.len) {
+		/* this->out is large enough for the whole buffer. */
+		Buffer_Copy((WrBuffer) {
+			.ptr  = this->out.ptr + this->out.len,
+			.size = size          - this->out.len
+		}, buf);
+
+		this->out.len += buf.len;
+	} else {
+		size_t bufLength = size - this->out.len;
 
 		/* Jam-pack the buffer first. */
-		String_Append(&this->outbuf, (RdString) {
-			.buf = buf,
-			.len = bufLength
-		});
+		Buffer_Copy(
+			(WrBuffer) {
+				.ptr  = this->out.ptr + this->out.len,
+				.size = size          - this->out.len
+			},
+
+			(RdBuffer) {
+				.ptr = buf.ptr,
+				.len = bufLength
+			}
+		);
+
+		this->out.len += buf.len;
 
 		/* Flush the buffer. */
-		delegate(this->stream, write,
-			this->outbuf.buf,
-			this->outbuf.len);
+		size_t written = delegate(this->stream, write, this->out.rd);
+		assert(written == this->out.len);
+		this->out.len = 0;
 
-		this->outbuf.len = 0;
-
-		/* Handle the remaining chunk. */
-		if (len - bufLength > 0) {
-			BufferedStream_Write(this,
-				buf + bufLength,
-				len - bufLength);
-		}
-	} else {
-		String_Append(&this->outbuf, (RdString) {
-			.buf = buf,
-			.len = len
+		/* Handle the remaining chunk(s). */
+		assert(buf.len - bufLength != 0);
+		call(Write, (RdBuffer) {
+			.ptr = buf.ptr + bufLength,
+			.len = buf.len - bufLength
 		});
 	}
 
-	return len;
+	return buf.len;
 }
 
-def(RdString, Flush) {
-	RdString res = $("");
+def(RdBuffer, Flush) {
+	RdBuffer res = { .ptr = NULL, .len = 0 };
 
-	if (this->inbuf.len > 0) {
-		res = this->inbuf.rd;
-		this->inbuf.len = 0;
+	if (this->in.len > 0) {
+		res = this->in.rd;
+		this->in.len = 0;
 	}
 
-	if (this->outbuf.len > 0) {
-		delegate(this->stream, write,
-			this->outbuf.buf,
-			this->outbuf.len);
-
-		this->outbuf.len = 0;
+	if (this->out.len > 0) {
+		size_t written = delegate(this->stream, write, this->out.rd);
+		assert(written == this->out.len);
+		this->out.len = 0;
 	}
 
 	return res;
@@ -137,8 +170,8 @@ def(RdString, Flush) {
 def(void, Reset) {
 	this->eof = false;
 
-	this->inbuf.len  = 0;
-	this->outbuf.len = 0;
+	this->in.len  = 0;
+	this->out.len = 0;
 }
 
 def(void, Close) {

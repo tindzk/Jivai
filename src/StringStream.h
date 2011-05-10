@@ -1,5 +1,6 @@
 #import "String.h"
 #import "Stream.h"
+#import "Buffer.h"
 #import "Exception.h"
 
 #define self StringStream
@@ -10,8 +11,8 @@ class {
 };
 
 rsdef(self, New, RdStringInst s);
-def(size_t, Read, void *buf, size_t len);
-def(size_t, Write, __unused void *buf, __unused size_t len);
+def(size_t, Read, WrBuffer buf);
+def(size_t, Write, RdBuffer buf);
 def(void, Close);
 def(bool, IsEof);
 
