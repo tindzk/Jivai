@@ -82,7 +82,6 @@ record(FmtString) {
 
 #undef self
 
-#import "Pool.h"
 #import "Array.h"
 #import "Memory.h"
 
@@ -169,7 +168,7 @@ static inline sdef(self, New, size_t size) {
 	}
 
 	return (self) {
-		.buf = Pool_Alloc(Pool_GetInstance(), size)
+		.buf = Memory_New(size)
 	};
 }
 
@@ -198,7 +197,7 @@ static alwaysInline CarrierString CarrierString_New(void) {
 static inline void CarrierString_Destroy(CarrierStringInst $this) {
 	if (!this->omni) {
 		if (this->buf != NULL) {
-			Pool_Free(Pool_GetInstance(), this->buf);
+			Memory_Destroy(this->buf);
 		}
 
 		this->omni = true;
@@ -261,8 +260,7 @@ static inline sdef(char *, ToNulBuf, RdString s, char *buf) {
 }
 
 static alwaysInline sdef(char *, ToNulHeap, RdString s) {
-	return scall(ToNulBuf, s,
-		Pool_Alloc(Pool_GetInstance(), s.len + 1));
+	return scall(ToNulBuf, s, Memory_New(s.len + 1));
 }
 
 static inline overload sdef(RdString, Slice, RdString s, ssize_t offset) {

@@ -8,7 +8,7 @@ sdef(size_t, GetSize, String s) {
 		return 0;
 	}
 
-	return Pool_GetSize(Pool_GetInstance(), s.buf);
+	return Memory_GetSize(s.buf);
 }
 
 sdef(size_t, GetFree, String s) {
@@ -16,7 +16,7 @@ sdef(size_t, GetFree, String s) {
 		return 0;
 	}
 
-	return Pool_GetSize(Pool_GetInstance(), s.buf) - s.len;
+	return Memory_GetSize(s.buf) - s.len;
 }
 
 def(void, Destroy) {
@@ -26,7 +26,7 @@ def(void, Destroy) {
 
 	/* Is the buffer safe to delete? */
 	if (this->buf != NULL) {
-		Pool_Free(Pool_GetInstance(), this->buf);
+		Memory_Destroy(this->buf);
 	}
 
 	this->buf = (void *) 0xdeadbeef;
@@ -40,9 +40,9 @@ def(void, Resize, size_t length) {
 		: this->len;
 
 	if (this->buf != NULL) {
-		this->buf = Pool_Realloc(Pool_GetInstance(), this->buf, length);
+		this->buf = Memory_Resize(this->buf, length);
 	} else {
-		char *buf = Pool_Alloc(Pool_GetInstance(), length);
+		char *buf = Memory_New(length);
 		Memory_Copy(buf, this->buf, realLength);
 		this->buf = buf;
 	}
@@ -68,7 +68,7 @@ def(void, Align, size_t length) {
 		return;
 	}
 
-	size_t size = Pool_GetSize(Pool_GetInstance(), this->buf);
+	size_t size = Memory_GetSize(this->buf);
 
 	if (size == 0) {
 		call(Resize, length);
@@ -92,7 +92,7 @@ sdef(self, Clone, RdString s) {
 	self out = { .len = s.len };
 
 	if (s.len > 0) {
-		out.buf = Pool_Alloc(Pool_GetInstance(), s.len);
+		out.buf = Memory_New(s.len);
 		Memory_Copy(out.buf, s.buf, s.len);
 	}
 
@@ -167,7 +167,7 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 				dest->buf + offset,
 				right     - offset);
 		} else {
-			char *buf = Pool_Alloc(Pool_GetInstance(), right - offset);
+			char *buf = Memory_New(right - offset);
 
 			Memory_Copy(buf,
 				dest->buf + offset,

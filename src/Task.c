@@ -3,7 +3,7 @@
 #define self Task
 
 rsdef(self *, New, size_t size, void (*destroy)(Instance $this)) {
-	self *res = Pool_Alloc(Pool_GetInstance(), sizeof(self) + size);
+	self *res = Memory_New(sizeof(self) + size);
 
 	res->next    = NULL;
 	res->destroy = destroy;
@@ -16,7 +16,7 @@ def(void, Destroy) {
 		this->destroy(this->data);
 	}
 
-	Pool_Free(Pool_GetInstance(), this);
+	Memory_Destroy(this);
 }
 
 #undef self

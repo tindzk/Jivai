@@ -11,7 +11,7 @@ rsdef(self, New) {
 }
 
 static def(void, DestroyEvent, void *item) {
-	Pool_Free(Pool_GetInstance(), item);
+	Memory_Destroy(item);
 }
 
 def(void, Destroy) {
@@ -20,7 +20,7 @@ def(void, Destroy) {
 }
 
 def(void, Enqueue, void *ptr, int flags) {
-	ref(Event) *event = Pool_Alloc(Pool_GetInstance(), sizeof(ref(Event)));
+	ref(Event) *event = Memory_New(sizeof(ref(Event)));
 
 	*event = (ref(Event)) {
 		.ptr   = ptr,

@@ -31,10 +31,10 @@ def(void, FreeNodes, ref(Node) *node) {
 	fwd(i, node->len) {
 		callback(this->destroyNode, node->buf[i]);
 		call(FreeNodes, node->buf[i]);
-		Pool_Free(Pool_GetInstance(), node->buf[i]);
+		Memory_Destroy(node->buf[i]);
 	}
 
-	Pool_Free(Pool_GetInstance(), node->buf);
+	Memory_Destroy(node->buf);
 	node->len = 0;
 }
 
@@ -44,14 +44,13 @@ def(ref(Node) *, AddCustomNode, ref(Node) *node, size_t size) {
 	}
 
 	if (node->len == 0) {
-		node->buf = Pool_Alloc(Pool_GetInstance(), sizeof(ref(Node) *));
+		node->buf = Memory_New(sizeof(ref(Node) *));
 	} else {
-		node->buf = Pool_Realloc(Pool_GetInstance(),
-			node->buf,
+		node->buf = Memory_Resize(node->buf,
 			(node->len + 1) * sizeof(ref(Node) *));
 	}
 
-	ref(Node) *res = node->buf[node->len] = Pool_Alloc(Pool_GetInstance(), size);
+	ref(Node) *res = node->buf[node->len] = Memory_New(size);
 
 	res->len    = 0;
 	res->buf    = NULL;

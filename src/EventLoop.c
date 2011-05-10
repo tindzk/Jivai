@@ -16,7 +16,7 @@ static def(void, _DestroyEntry, void *addr) {
 		delegate(data->client, onDestroy, data->data);
 	}
 
-	Pool_Free(Pool_GetInstance(), entry);
+	Memory_Destroy(entry);
 }
 
 rsdef(self, New) {
@@ -38,8 +38,7 @@ def(void, Destroy) {
 }
 
 def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput) {
-	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
-		sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
+	ref(Entry) *entry = Memory_New(sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
 
 	entry->type = ref(EntryType_Channel);
 
@@ -76,8 +75,7 @@ def(void, DetachChannel, ref(Entry) *entry, bool watcher) {
 
 /* Listens for incoming connections. */
 def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection) {
-	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
-		sizeof(ref(Entry)) + sizeof(ref(SocketEntry)));
+	ref(Entry) *entry = Memory_New(sizeof(ref(Entry)) + sizeof(ref(SocketEntry)));
 
 	entry->type = ref(EntryType_Socket);
 
@@ -119,7 +117,7 @@ def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, 
 
 	assert(implements(client, getSize));
 
-	ref(Entry) *entry = Pool_Alloc(Pool_GetInstance(),
+	ref(Entry) *entry = Memory_New(
 		sizeof(ref(Entry))       +
 		sizeof(ref(ClientEntry)) +
 		delegate(client, getSize));
