@@ -45,10 +45,15 @@ def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 }
 
 def(bool, Run) {
+	RdString name =
+		(this->args->len == 0)
+			? $("HTMLTokenizer.html")
+			: this->args->buf[0];
+
 	File file;
 
 	try {
-		file = File_New($("HTMLTokenizer.html"), FileStatus_ReadOnly);
+		file = File_New(name, FileStatus_ReadOnly);
 	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
 		excReturn false;
