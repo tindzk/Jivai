@@ -65,7 +65,7 @@ def(bool, Run) {
 	File file;
 
 	try {
-		File_Open(&file, name, FileStatus_ReadOnly);
+		file = File_New(name, FileStatus_ReadOnly);
 	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
 		return false;
@@ -78,9 +78,9 @@ def(bool, Run) {
 
 	HTML_Tree tree = HTML_Tree_New();
 
-	HTML_Tokenizer html;
-	HTML_Tokenizer_Init(&html, Callback(&tree, &HTML_Tree_ProcessToken));
-	HTML_Tokenizer_Process(&html, &BufferedStreamImpl, &stream);
+	HTML_Tokenizer html = HTML_Tokenizer_New(
+		HTML_Tokenizer_OnToken_For(&tree, HTML_Tree_ProcessToken));
+	HTML_Tokenizer_Process(&html, BufferedStream_AsStream(&stream));
 	HTML_Tokenizer_Destroy(&html);
 
 	HTML_Tree_Node *node = HTML_Tree_GetRoot(&tree);
