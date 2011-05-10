@@ -76,7 +76,7 @@ void* _Block_Copy(Block_Layout *block) {
 		/* Global block. */
 	} else {
 		/* Stack block. */
-		result = Memory_Alloc(block->descriptor->size);
+		result = Memory_New(block->descriptor->size);
 
 		Memory_Move(result, block, block->descriptor->size);
 
@@ -100,14 +100,14 @@ void _Block_Release(Block_Layout *block) {
 				(*block->descriptor->dispose)(block);
 			}
 
-			Memory_Free(block);
+			Memory_Destroy(block);
 		}
 	}
 }
 
 void __Block_object_assign(Block_ByRef **dest, Block_ByRef *src, const int flags) {
 	if (flags & Block_Flags_FieldIsByRef) {
-		Block_ByRef *copy = (Block_ByRef *) Memory_Alloc(src->size);
+		Block_ByRef *copy = (Block_ByRef *) Memory_New(src->size);
 
 		copy->flags = src->flags | Block_Flags_IsHeap | 2;
 		copy->forwarding = copy; /* Patch heap copy to point to itself (skip write-barrier). */
@@ -131,7 +131,7 @@ void __Block_object_dispose(Block_Layout *object, const int flags) {
 
 		if ((shared->flags & Block_Flags_RefCountMask) > 0) {
 			if ((Block_LatchingDecrInt(&shared->flags) & Block_Flags_RefCountMask) == 0) {
-				Memory_Free(shared);
+				Memory_Destroy(shared);
 			}
 		}
 	}
