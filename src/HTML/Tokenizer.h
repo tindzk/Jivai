@@ -44,7 +44,7 @@ def(void, Destroy);
 def(void, Reset);
 def(void, ProcessChar, char c);
 def(void, Poll);
-overload def(void, Process, String s);
+overload def(void, Process, RdString s);
 overload def(void, Process, Stream stream);
 
 #undef self

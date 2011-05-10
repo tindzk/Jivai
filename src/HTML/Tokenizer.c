@@ -48,9 +48,10 @@ def(void, ProcessChar, char c) {
 	/* End of a comment */
 	if (BitMask_Has(this->state, ref(State_Comment))
 			&& String_EndsWith(this->buf.rd, $("--"))
-			&& c == '>') {
-		String_Crop(&this->buf, 0, -2);
-		callback(this->onToken, ref(TokenType_Comment), this->buf.rd);
+			&& c == '>')
+	{
+		callback(this->onToken, ref(TokenType_Comment),
+			String_Slice(this->buf.rd, 0, -2));
 
 		BitMask_Clear(this->state, ref(State_Comment));
 		BitMask_Clear(this->state, ref(State_Tag));
@@ -192,7 +193,7 @@ def(void, Poll) {
 	}
 }
 
-overload def(void, Process, String s) {
+overload def(void, Process, RdString s) {
 	fwd (i, s.len) {
 		call(ProcessChar, s.buf[i]);
 	}
