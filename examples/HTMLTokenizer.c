@@ -10,12 +10,11 @@ static size_t depth = 0;
 
 def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
+		assert(depth > 0);
 		depth--;
 	}
 
-	size_t i = depth;
-
-	while (i--) {
+	rpt (depth) {
 		String_Print($("    "));
 	}
 
