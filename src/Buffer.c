@@ -54,14 +54,14 @@ def(void, Resize, size_t size) {
 	this->ptr = Memory_Resize(this->ptr, size);
 }
 
-def(void, Align, size_t length) {
+def(void, Align, size_t size) {
 	assert(this->ptr != NULL);
 
-	if (this->len >= length) {
+	if (this->len >= size) {
 		return;
 	}
 
-	call(Resize, length);
+	call(Resize, size);
 }
 
 sdef(void, Move, WrBuffer dest, RdBuffer src) {

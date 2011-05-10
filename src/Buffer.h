@@ -47,7 +47,7 @@ overload rdef(self, Clone);
 overload rsdef(self, Clone, RdBuffer buf);
 rsdef(bool, IsValid, RdBuffer buf);
 def(void, Resize, size_t size);
-def(void, Align, size_t length);
+def(void, Align, size_t size);
 sdef(void, Move, WrBuffer dest, RdBuffer src);
 sdef(void, Copy, WrBuffer dest, RdBuffer src);
 overload rsdef(bool, Equals, RdBuffer buf1, RdBuffer buf2);
