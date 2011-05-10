@@ -39,12 +39,12 @@ class {
 	int state;
 };
 
-def(void, Init, ref(OnToken) onToken);
+rsdef(self, New, ref(OnToken) onToken);
 def(void, Destroy);
 def(void, Reset);
 def(void, ProcessChar, char c);
 def(void, Poll);
 overload def(void, Process, String s);
-overload def(void, Process, StreamInterface *stream, void *context);
+overload def(void, Process, Stream stream);
 
 #undef self

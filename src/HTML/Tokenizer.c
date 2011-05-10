@@ -2,11 +2,13 @@
 
 #define self HTML_Tokenizer
 
-def(void, Init, ref(OnToken) onToken) {
-	this->buf      = String_New(100);
-	this->curToken = String_New(100);
-	this->onToken  = onToken;
-	this->state    = 0;
+rsdef(self, New, ref(OnToken) onToken) {
+	return (self) {
+		.buf      = String_New(100),
+		.curToken = String_New(100),
+		.onToken  = onToken,
+		.state    = 0
+	};
 }
 
 def(void, Destroy) {
@@ -191,17 +193,17 @@ def(void, Poll) {
 }
 
 overload def(void, Process, String s) {
-	for (size_t i = 0; i < s.len; i++) {
+	fwd (i, s.len) {
 		call(ProcessChar, s.buf[i]);
 	}
 
 	call(Poll);
 }
 
-overload def(void, Process, StreamInterface *stream, void *context) {
+overload def(void, Process, Stream stream) {
 	char c;
 
-	while (stream->read(context, &c, 1) > 0) {
+	while (delegate(stream, read, Buffer_ForChar(&c)) > 0) {
 		call(ProcessChar, c);
 	}
 

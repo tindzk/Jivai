@@ -1,11 +1,14 @@
+#import <Main.h>
 #import <Terminal.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 #import <HTML/Tokenizer.h>
 
+#define self Application
+
 static size_t depth = 0;
 
-void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
+def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		depth--;
 	}
@@ -41,29 +44,28 @@ void OnToken(__unused void *p, HTML_Tokenizer_TokenType type, String value) {
 	String_Print($("\n"));
 }
 
-int main(void) {
+def(bool, Run) {
 	File file;
-	BufferedStream stream;
 
 	try {
-		FileStream_Open(&file, $("HTMLTokenizer.html"), FileStatus_ReadOnly);
-	} clean catch (File, NotFound) {
+		file = File_New($("HTMLTokenizer.html"), FileStatus_ReadOnly);
+	} catch (File, NotFound) {
 		String_Print($("File not found.\n"));
-		return ExitStatus_Failure;
+		excReturn false;
 	} finally {
 
 	} tryEnd;
 
-	BufferedStream_Init(&stream, File_AsStream(&file));
+	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	HTML_Tokenizer html;
-	HTML_Tokenizer_Init(&html, Callback(NULL, &OnToken));
-	HTML_Tokenizer_Process(&html, &BufferedStreamImpl, &stream);
+	HTML_Tokenizer html = HTML_Tokenizer_New(
+		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
+	HTML_Tokenizer_Process(&html, BufferedStream_AsStream(&stream));
 	HTML_Tokenizer_Destroy(&html);
 
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 
-	return ExitStatus_Success;
+	return true;
 }
