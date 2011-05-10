@@ -33,57 +33,48 @@ def(void, Destroy) {
 	this->len = 0;
 }
 
-/* Resizes the string's buffer to be `length' characters long. */
-def(void, Resize, size_t length) {
-	size_t realLength = (this->len > length)
-		? length
-		: this->len;
-
-	if (this->buf != NULL) {
-		this->buf = Memory_Resize(this->buf, length);
+/* Resizes the string's buffer to be `size' characters long. */
+def(void, Resize, size_t size) {
+	if (this->buf == NULL) {
+		this->buf = Memory_New(size);
 	} else {
-		char *buf = Memory_New(length);
-		Memory_Copy(buf, this->buf, realLength);
-		this->buf = buf;
+		this->buf = Memory_Resize(this->buf, size);
 	}
 
-	if (this->len > length) {
+	if (this->len > size) {
 		/* The string was shortened. */
-		this->len = length;
+		this->len = size;
 	}
 }
 
-/* Ensures that the stringg is at least `length' characters long. */
-def(void, Align, size_t length) {
-	if (length == 0) {
+/* Ensures that the string can hold `size' characters. */
+def(void, Align, size_t size) {
+	if (this->len >= size) {
 		return;
 	}
 
 	if (this->buf == NULL) {
-		call(Resize, length);
+		this->buf = Memory_New(size);
 		return;
 	}
 
-	if (length < this->len) {
-		return;
-	}
+	size_t actual = Memory_GetSize(this->buf);
 
-	size_t size = Memory_GetSize(this->buf);
+	/* Requirement for the do..while loop. */
+	assert(actual != 0);
 
-	if (size == 0) {
-		call(Resize, length);
-	} else if (length > size) {
+	if (size > actual) {
 #if String_SmartAlign
 		/* See also:
 		 * http://stackoverflow.com/questions/2243366/how-to-implement-a-variable-length-string-y-in-c
 		 */
 		do {
-			size <<= 1;
-		} while (size < length);
+			actual <<= 1;
+		} while (actual < size);
 
-		call(Resize, size);
+		call(Resize, actual);
 #else
-		call(Resize, length);
+		call(Resize, size);
 #endif
 	}
 }
