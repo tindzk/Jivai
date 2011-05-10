@@ -46,7 +46,7 @@ def(Memory_Chunk *, Resize, Memory_Chunk *chunk, size_t size) {
 		return NULL;
 	}
 
-	chunk->size = new;
+	chunk->size = new - sizeof(Memory_Chunk);
 
 	return chunk;
 }
