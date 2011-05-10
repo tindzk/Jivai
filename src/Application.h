@@ -3,6 +3,7 @@
 #import "Terminal.h"
 #import "Memory/Map.h"
 #import "Memory/Libc.h"
+#import "Memory/Logger.h"
 
 #define self Application
 

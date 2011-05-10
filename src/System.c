@@ -16,3 +16,17 @@ sdef(bool, IsRunningOnValgrind) {
 
 	return false;
 }
+
+sdef(bool, IsDebugging) {
+	assert(__environ != NULL);
+
+	for (char **cur = __environ; *cur != NULL; cur++) {
+		RdString item = String_FromNul(*cur);
+
+		if (String_Equals(item, $("DEBUG=yes"))) {
+			return true;
+		}
+	}
+
+	return false;
+}

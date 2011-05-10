@@ -21,5 +21,6 @@ static inline sdef(void, Err, RdString s) {
 #define String_Print(s) System_Out(s)
 
 sdef(bool, IsRunningOnValgrind);
+sdef(bool, IsDebugging);
 
 #undef self
