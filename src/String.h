@@ -1,3 +1,6 @@
+#import <string.h> /* strlen() */
+#import <alloca.h>
+
 #import "Bit.h"
 #import "Char.h"
 #import "Types.h"
@@ -393,6 +396,22 @@ static alwaysInline overload sdef(short, NaturalCompare, RdString a, RdString b)
 }
 
 #undef self
+
+#import "Buffer.h"
+
+static alwaysInline RdBuffer String_GetRdBuffer(RdString str) {
+	return (RdBuffer) {
+		.ptr = str.buf,
+		.len = str.len
+	};
+}
+
+static alwaysInline WrBuffer String_GetWrBuffer(String str) {
+	return (WrBuffer) {
+		.ptr  = str.buf,
+		.size = String_GetSize(str)
+	};
+}
 
 #define self RdStringArray
 def(ssize_t, Find, RdString needle);
