@@ -19,7 +19,7 @@ def(void, Destroy) {
 }
 
 def(void, SetInputBuffer, size_t size, size_t threshold) {
-	if (this->in.ptr == NULL) {
+	if (!Buffer_IsValid(this->in.rd)) {
 		this->in = Buffer_New(size);
 	} else {
 		Buffer_Align(&this->in, size);
@@ -29,7 +29,7 @@ def(void, SetInputBuffer, size_t size, size_t threshold) {
 }
 
 def(void, SetOutputBuffer, size_t size) {
-	if (this->out.ptr == NULL) {
+	if (!Buffer_IsValid(this->out.rd)) {
 		this->out = Buffer_New(size);
 	} else {
 		Buffer_Align(&this->out, size);
@@ -43,6 +43,7 @@ def(bool, IsEof) {
 
 def(size_t, Read, WrBuffer buf) {
 	assert(buf.size > 0);
+	assert(Buffer_IsValid(this->in.rd));
 
 	if (this->in.len == 0) {
 		if (!this->eof) {
@@ -102,11 +103,14 @@ def(size_t, Read, WrBuffer buf) {
 }
 
 def(size_t, Write, RdBuffer buf) {
+	assert(Buffer_IsValid(this->out.rd));
+
 	if (buf.len == 0) {
 		return 0;
 	}
 
 	size_t size = Buffer_GetSize(&this->out);
+	size_t free = size - this->out.len;
 
 	if (size >= this->out.len + buf.len) {
 		/* this->out is large enough for the whole buffer. */
@@ -117,22 +121,22 @@ def(size_t, Write, RdBuffer buf) {
 
 		this->out.len += buf.len;
 	} else {
-		size_t bufLength = size - this->out.len;
+		if (free > 0) {
+			/* Jam-pack the buffer first. */
+			Buffer_Copy(
+				(WrBuffer) {
+					.ptr  = this->out.ptr + this->out.len,
+					.size = free
+				},
 
-		/* Jam-pack the buffer first. */
-		Buffer_Copy(
-			(WrBuffer) {
-				.ptr  = this->out.ptr + this->out.len,
-				.size = size          - this->out.len
-			},
+				(RdBuffer) {
+					.ptr = buf.ptr,
+					.len = free
+				}
+			);
 
-			(RdBuffer) {
-				.ptr = buf.ptr,
-				.len = bufLength
-			}
-		);
-
-		this->out.len += buf.len;
+			this->out.len += free;
+		}
 
 		/* Flush the buffer. */
 		size_t written = delegate(this->stream, write, this->out.rd);
@@ -140,10 +144,10 @@ def(size_t, Write, RdBuffer buf) {
 		this->out.len = 0;
 
 		/* Handle the remaining chunk(s). */
-		assert(buf.len - bufLength != 0);
+		assert(buf.len - free > 0);
 		call(Write, (RdBuffer) {
-			.ptr = buf.ptr + bufLength,
-			.len = buf.len - bufLength
+			.ptr = buf.ptr + free,
+			.len = buf.len - free
 		});
 	}
 
