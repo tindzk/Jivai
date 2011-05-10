@@ -1,6 +1,8 @@
 #import "String.h"
 #import "Logger.h"
 #import "Terminal.h"
+#import "Memory/Map.h"
+#import "Memory/Libc.h"
 
 #define self Application
 
@@ -16,5 +18,6 @@ def(void, Init, int argc, char *argv[], char *envp[]);
 def(void, Destroy);
 def(void, OnLogMessage, FmtString msg, Logger_Level level, RdString file, int line);
 def(bool, Run);
+earlyConstructor void configureMemory(void);
 
 #undef self

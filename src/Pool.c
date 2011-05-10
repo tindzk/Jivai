@@ -14,7 +14,7 @@ rsdef(self, New) {
 }
 
 overload rdef(ref(Session) *, CreateSession, __unused RdString name, ref(Session) *parent) {
-	ref(Session) *sess = Memory_Alloc(sizeof(ref(Session)));
+	ref(Session) *sess = Memory_New(sizeof(ref(Session)));
 
 	sess->hasParent = false;
 	sess->prev  = NULL;
@@ -96,7 +96,7 @@ rdef(size_t, Dispose, ref(Session) *sess) {
 		sess->next->prev = sess->prev;
 	}
 
-	Memory_Free(sess);
+	Memory_Destroy(sess);
 
 	return size;
 }
@@ -151,7 +151,7 @@ def(void, Link, void *alloc, void *parent) {
 }
 
 __malloc rdef(void *, Alloc, size_t size) {
-	ref(Allocation) *alloc = Memory_Alloc(sizeof(ref(Allocation)) + size);
+	ref(Allocation) *alloc = Memory_New(sizeof(ref(Allocation)) + size);
 
 	alloc->size  = size;
 	alloc->sess  = this->sess;
@@ -194,7 +194,7 @@ __malloc rdef(void *, Realloc, void *addr, size_t size) {
 	}
 
 	ref(Allocation) *alloc =
-		Memory_Realloc(old, sizeof(ref(Allocation)) + size);
+		Memory_Resize(old, sizeof(ref(Allocation)) + size);
 
 	alloc->size = size;
 
@@ -266,7 +266,7 @@ static def(size_t, _Free, ref(Allocation) *alloc) {
 		alloc->child = next;
 	}
 
-	Memory_Free(alloc);
+	Memory_Destroy(alloc);
 
 	return size;
 }

@@ -1,8 +1,7 @@
 /* These checks will cause exceptions if certain parameters do not
  * make sense.
  */
-#define Memory_BoundaryChecks    1
-#define Memory_OutOfMemoryChecks 0
+#define Memory_BoundaryChecks 1
 
 /* Save the file name and line number from which an exception was
  * raised.

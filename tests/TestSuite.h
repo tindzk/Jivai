@@ -1,5 +1,6 @@
 #import <String.h>
 #import <Exception.h>
+#import <Application.h>
 #import <Terminal/Controller.h>
 
 #define self TestSuite
@@ -100,6 +101,7 @@ class {
 #define tsFinalize                                                    \
 	TestSuite_Method ref(MethodLast) tsSection = { };                 \
 	Constructor {                                                     \
+		configureMemory(); /* TODO hack */                            \
 		ImplName(self).last = &ref(MethodLast);                       \
 		TestSuite_AddSuite(TestSuite_GetInstance(), &ImplName(self)); \
 	}

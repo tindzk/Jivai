@@ -39,3 +39,24 @@ override def(void, OnLogMessage, FmtString msg, Logger_Level level, RdString fil
 
 	String_Destroy(&sline);
 }
+
+static Memory_Map  map;
+static Memory_Libc libc;
+static bool configured = false; /* TODO earlyConstructor doesn't work yet. */
+
+override earlyConstructor void configureMemory(void) {
+	if (configured) {
+		return;
+	}
+
+	if (System_IsRunningOnValgrind()) {
+		String_Print($("[Info] Running in Valgrind. Using traditional allocator functions.\n"));
+		libc = Memory_Libc_New();
+		Memory0(Memory_Libc_AsMemory(&libc));
+	} else {
+		map = Memory_Map_New();
+		Memory0(Memory_Map_AsMemory(&map));
+	}
+
+	configured = true;
+}

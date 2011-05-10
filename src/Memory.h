@@ -1,38 +1,45 @@
-#import <stdlib.h>
-#import <string.h>
-
 #import "Object.h"
 
 #define self Memory
+
+#ifndef Memory_PageSize
+#define Memory_PageSize 4096
+#endif
 
 #ifndef Memory_BoundaryChecks
 #define Memory_BoundaryChecks 1
 #endif
 
-#ifndef Memory_OutOfMemoryChecks
-#define Memory_OutOfMemoryChecks 0
-#endif
-
-// @exc NullPointer
 // @exc OutOfBounds
 // @exc OutOfMemory
 // @exc Overlapping
+
+record(ref(Chunk)) {
+	size_t size; /* Usable size. */
+	char data[];
+};
+
+Interface(self) {
+	ref(Chunk)* (*allocate)(Instance $this, size_t size);
+	void        (*release) (Instance $this, ref(Chunk) *chunk);
+	ref(Chunk)* (*resize)  (Instance $this, ref(Chunk) *chunk, size_t size);
+};
 
 extern void *_etext;
 extern void *__data_start;
 
 static inline rsdef(bool, IsRoData, void *ptr) {
-	return
-		ptr > (void *) &_etext &&
-		ptr < (void *) &__data_start;
+	return ptr > (void *) &_etext
+		&& ptr < (void *) &__data_start;
 }
 
 rsdef(bool, Overlaps, void *dst, const void *src, size_t dstlen, size_t srclen);
-__malloc rsdef(void *, Alloc, size_t size);
-sdef(void, Free, void *pMem);
-__malloc rsdef(void *, Realloc, void *pMem, size_t size);
+void Memory0(Memory _mem);
+__malloc rsdef(void *, New, size_t size);
+sdef(void, Destroy, void *data);
+__malloc rsdef(void *, Resize, void *data, size_t size);
+rsdef(size_t, GetSize, void *data);
 sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len);
-__malloc rsdef(void *, Clone, void *pSource, size_t size);
 rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len);
 sdef(void, Move, void *pDest, void *pSource, size_t len);
 

@@ -10,9 +10,9 @@
  * Figure out if [dst .. dst+dstlen-1] overlaps with
  *               [src .. src+srclen-1].
  *
- * We assume that the address ranges do not wrap around (which is
- * safe since on Linux addresses >= 0xC0000000 are not accessible
- * and the program will segfault in this circumstance, presumably).
+ * We assume that the address ranges do not wrap around (which is safe since on
+ * Linux addresses >= 0xC0000000 are not accessible and the program will segfault
+ * in this circumstance, presumably).
  */
 
 rsdef(bool, Overlaps, void *dst, const void *src, size_t dstlen, size_t srclen) {
@@ -39,47 +39,52 @@ rsdef(bool, Overlaps, void *dst, const void *src, size_t dstlen, size_t srclen) 
 	return true;
 }
 
-__malloc rsdef(void *, Alloc, size_t size) {
-#if Memory_BoundaryChecks
-	if (size == 0) {
-		throw(OutOfBounds);
-	}
-#endif
+static Memory mem = { .impl = NULL };
 
-	void *pMem = malloc(size);
-
-#if Memory_OutOfMemoryChecks
-	if (pMem == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
-
-	return pMem;
+void Memory0(Memory _mem) {
+	mem = _mem;
 }
 
-sdef(void, Free, void *pMem) {
-	assert(pMem != NULL);
-	free(pMem);
-}
+__malloc rsdef(void *, New, size_t size) {
+	assert(mem.impl != NULL);
 
-__malloc rsdef(void *, Realloc, void *pMem, size_t size) {
-#if Memory_BoundaryChecks
-	if (size == 0) {
-		throw(OutOfBounds);
-	}
-#endif
+	ref(Chunk) *chunk = delegate(mem, allocate, size);
 
-	assert(pMem != NULL);
-
-	void *res = realloc(pMem, size);
-
-#if Memory_OutOfMemoryChecks
-	if (res == NULL) {
+	if (chunk == NULL) {
 		throw(OutOfMemory);
 	}
-#endif
 
-	return res;
+	return chunk->data;
+}
+
+sdef(void, Destroy, void *data) {
+	assert(data     != NULL);
+	assert(mem.impl != NULL);
+
+	ref(Chunk) *chunk = data - sizeof(ref(Chunk));
+
+	delegate(mem, release, chunk);
+}
+
+__malloc rsdef(void *, Resize, void *data, size_t size) {
+	assert(data     != NULL);
+	assert(mem.impl != NULL);
+
+	ref(Chunk) *chunk = data - sizeof(ref(Chunk));
+
+	chunk = delegate(mem, resize, chunk, size);
+
+	if (chunk == NULL) {
+		throw(OutOfMemory);
+	}
+
+	return chunk->data;
+}
+
+rsdef(size_t, GetSize, void *data) {
+	assert(data != NULL);
+	ref(Chunk) *chunk = data - sizeof(ref(Chunk));
+	return chunk->size;
 }
 
 sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len) {
@@ -96,28 +101,6 @@ sdef(void, Copy, void *restrict pDest, const void *restrict pSource, size_t len)
 	assert(pDest != NULL && pSource != NULL);
 
 	memcpy(pDest, pSource, len);
-}
-
-__malloc rsdef(void *, Clone, void *pSource, size_t size) {
-#if Memory_BoundaryChecks
-	if (size == 0) {
-		throw(OutOfBounds);
-	}
-#endif
-
-	assert(pSource != NULL);
-
-	void *pDest = malloc(size);
-
-#if Memory_OutOfMemoryChecks
-	if (pDest == NULL) {
-		throw(OutOfMemory);
-	}
-#endif
-
-	memcpy(pDest, pSource, size);
-
-	return pDest;
 }
 
 rsdef(bool, Equals, void *ptr1, void *ptr2, size_t len) {

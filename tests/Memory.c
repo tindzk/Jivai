@@ -19,7 +19,7 @@ char *rodata = "hello world";
 tsCase(Acute, "Detect read-only data") {
 	char c;
 	void *stack = alloca(1);
-	void *heap = Memory_Alloc(32);
+	void *heap = Memory_New(32);
 
 	Assert($("Global constant data"),
 		Memory_IsRoData(&data1) == false);
@@ -45,7 +45,7 @@ tsCase(Acute, "Detect read-only data") {
 	Assert($("Heap memory"),
 		Memory_IsRoData(heap) == false);
 
-	Memory_Free(heap);
+	Memory_Destroy(heap);
 }
 
 tsFinalize;
