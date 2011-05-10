@@ -36,11 +36,17 @@ def(Memory_Chunk *, Resize, Memory_Chunk *chunk, size_t size) {
 	size_t old = chunk->size + sizeof(Memory_Chunk);
 	size_t new = scall(AlignSize, size + sizeof(Memory_Chunk), Memory_PageSize);
 
+	if (old == new) {
+		return chunk;
+	}
+
 	chunk = mremap(chunk, old, new, MREMAP_MAYMOVE);
 
 	if (chunk == MAP_FAILED) {
 		return NULL;
 	}
+
+	chunk->size = new;
 
 	return chunk;
 }
