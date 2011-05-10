@@ -1,8 +1,6 @@
-#import "String.h"
-#import "Exception.h"
-#import "Pool.h"
+#import "LinkedMemory.h"
 
-#define self Pool
+#define self LinkedMemory
 
 Singleton(self);
 

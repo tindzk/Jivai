@@ -1,7 +1,9 @@
 #import "Types.h"
 #import "Macros.h"
+#import "String.h"
+#import "Exception.h"
 
-#define self Pool
+#define self LinkedMemory
 
 // @exc HasParent
 // @exc NotBundling
