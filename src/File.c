@@ -3,8 +3,6 @@
 #define self File
 
 rsdef(self, New, RdString path, int flags) {
-	errno = 0;
-
 	int id = Kernel_open(path, flags, 0666);
 
 	if (id == -1) {
@@ -37,8 +35,6 @@ def(void, SetXattr, RdString name, RdString value) {
 }
 
 overload def(String, GetXattr, RdString name) {
-	errno = 0;
-
 	ssize_t size = Kernel_fgetxattr(Channel_GetId(&this->ch), name, NULL, 0);
 
 	if (size == -1) {
@@ -61,8 +57,6 @@ overload def(String, GetXattr, RdString name) {
 }
 
 overload def(void, GetXattr, RdString name, String *value) {
-	errno = 0;
-
 	ssize_t size = Kernel_fgetxattr(Channel_GetId(&this->ch), name, value->buf, String_GetSize(*value));
 
 	if (size == -1) {
@@ -79,8 +73,6 @@ overload def(void, GetXattr, RdString name, String *value) {
 }
 
 overload def(void, Truncate, u64 length) {
-	errno = 0;
-
 	if (!Kernel_ftruncate64(Channel_GetId(&this->ch), length)) {
 		if (errno == EBADF) {
 			throw(InvalidFileDescriptor);
@@ -99,8 +91,6 @@ overload def(void, Truncate) {
 }
 
 def(Stat64, GetStat) {
-	errno = 0;
-
 	Stat64 attr;
 
 	if (!Kernel_fstat64(Channel_GetId(&this->ch), &attr)) {
@@ -122,8 +112,6 @@ def(u64, GetSize) {
 
 def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	assert(Channel_IsReadable(&this->ch));
-
-	errno = 0;
 
 	u64 pos;
 

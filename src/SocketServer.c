@@ -35,8 +35,6 @@ def(void, Bind, unsigned short port) {
 
 	int id = Channel_GetId(ch);
 
-	errno = 0;
-
 	if (!Kernel_bind(id, addr)) {
 		if (errno == EADDRINUSE) {
 			throw(AddressInUse);

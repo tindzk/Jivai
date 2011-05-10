@@ -27,8 +27,6 @@ def(void, Subscribe, Channel *ch, int events, void *addr) {
 	ev.addr   = addr;
 	ev.events = events;
 
-	errno = 0;
-
 	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Add, Channel_GetId(ch), &ev)) {
 		if (errno == EPERM) {
 			throw(ChannelNotSupported);
@@ -48,8 +46,6 @@ def(void, Modify, Channel *ch, int events, void *addr) {
 	ev.addr   = addr;
 	ev.events = events;
 
-	errno = 0;
-
 	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Modify, Channel_GetId(ch), &ev)) {
 		if (errno == ENOENT) {
 			throw(UnknownChannel);
@@ -64,8 +60,6 @@ def(void, Modify, Channel *ch, int events, void *addr) {
 }
 
 def(void, Unsubscribe, Channel *ch) {
-	errno = 0;
-
 	if (!Kernel_epoll_ctl(Channel_GetId(&this->ch), EpollCtl_Delete, Channel_GetId(ch), NULL)) {
 		if (errno == ENOENT) {
 			throw(UnknownChannel);
@@ -80,11 +74,10 @@ def(void, Unsubscribe, Channel *ch) {
 }
 
 def(size_t, Poll, ref(OnEvent) onEvent, int timeout) {
-	errno = 0;
+	ssize_t nfds = Kernel_epoll_wait(Channel_GetId(&this->ch),
+		this->events, ref(NumEvents), timeout);
 
-	ssize_t nfds;
-
-	if ((nfds = Kernel_epoll_wait(Channel_GetId(&this->ch), this->events, ref(NumEvents), timeout)) == -1) {
+	if (nfds == -1) {
 		if (errno == EBADF) {
 			throw(InvalidChannel);
 		} else {

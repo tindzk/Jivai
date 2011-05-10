@@ -28,8 +28,6 @@ sdef(Stat64, GetStat, RdString path) {
 		throw(EmptyPath);
 	}
 
-	errno = 0;
-
 	Stat64 attr;
 
 	if (!Kernel_stat64(path, &attr)) {
@@ -73,8 +71,6 @@ overload sdef(void, Truncate, RdString path, u64 length) {
 	if (path.len == 0) {
 		throw(EmptyPath);
 	}
-
-	errno = 0;
 
 	if (!Kernel_truncate64(path, length)) {
 		if (errno == EACCES) {
@@ -197,8 +193,6 @@ overload sdef(void, Create, RdString path, int mode, bool recursive) {
 	if (recursive) {
 		fwd(i, path.len) {
 			if (path.buf[i] == '/' || i == path.len - 1) {
-				errno = 0;
-
 				bool res = Kernel_mkdir(
 					String_Slice(path, 0, i + 1),
 					mode);
@@ -219,8 +213,6 @@ overload sdef(void, Create, RdString path, int mode, bool recursive) {
 			}
 		}
 	} else {
-		errno = 0;
-
 		if (!Kernel_mkdir(path, mode)) {
 			if (errno == EACCES) {
 				throw(AccessDenied);
@@ -240,8 +232,6 @@ overload sdef(void, Create, RdString path, int mode, bool recursive) {
 }
 
 sdef(void, Delete, RdString path) {
-	errno = 0;
-
 	if (!Kernel_unlink(path)) {
 		if (errno == EACCES) {
 			throw(AccessDenied);
@@ -258,8 +248,6 @@ sdef(void, Delete, RdString path) {
 }
 
 sdef(void, DeleteDirectory, RdString path) {
-	errno = 0;
-
 	if (!Kernel_rmdir(path)) {
 		if (errno == EACCES) {
 			throw(AccessDenied);
@@ -278,8 +266,6 @@ sdef(void, DeleteDirectory, RdString path) {
 }
 
 sdef(void, ReadLink, RdString path, String *out) {
-	errno = 0;
-
 	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(*out));
 
 	if (len == -1) {
@@ -300,8 +286,6 @@ sdef(void, ReadLink, RdString path, String *out) {
 }
 
 sdef(void, Symlink, RdString path1, RdString path2) {
-	errno = 0;
-
 	if (!Kernel_symlink(path1, path2)) {
 		if (errno == EEXIST) {
 			throw(AlreadyExists);
@@ -318,8 +302,6 @@ sdef(void, SetXattr, RdString path, RdString name, RdString value) {
 }
 
 overload sdef(String, GetXattr, RdString path, RdString name) {
-	errno = 0;
-
 	ssize_t size = Kernel_getxattr(path, name, NULL, 0);
 
 	if (size == -1) {
@@ -342,11 +324,9 @@ overload sdef(String, GetXattr, RdString path, RdString name) {
 }
 
 overload sdef(void, GetXattr, RdString path, RdString name, String *value) {
-	errno = 0;
-
 	ssize_t size = Kernel_getxattr(path, name, value->buf, String_GetSize(*value));
 
-	if (size < 0) {
+	if (size == -1) {
 		if (errno == ENODATA) {
 			throw(AttributeNonExistent);
 		} else if (errno == ERANGE) {
@@ -360,14 +340,12 @@ overload sdef(void, GetXattr, RdString path, RdString name, String *value) {
 }
 
 overload sdef(void, SetTime, RdString path, time_t timestamp, long nano, bool followSymlink) {
-	Time_UnixEpoch t;
-
-	t.sec  = timestamp;
-	t.nsec = nano;
+	Time_UnixEpoch t = {
+		.sec  = timestamp,
+		.nsec = nano
+	};
 
 	int flags = !followSymlink ? AT_SYMLINK_NOFOLLOW : 0;
-
-	errno = 0;
 
 	if (!Kernel_utimensat(AT_FDCWD, path, t, flags)) {
 		if (errno == ENAMETOOLONG) {

@@ -95,8 +95,6 @@ def(bool, IsWritable) {
 overload def(size_t, Read, void *buf, size_t len) {
 	assert(call(IsReadable));
 
-	errno = 0;
-
 	ssize_t res;
 
 	if ((res = Kernel_read(this->id, buf, len)) == -1) {
@@ -118,8 +116,6 @@ overload def(void, Read, String *res) {
 
 overload def(size_t, Write, void *buf, size_t len) {
 	assert(call(IsWritable));
-
-	errno = 0;
 
 	ssize_t res;
 

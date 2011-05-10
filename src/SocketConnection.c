@@ -28,8 +28,6 @@ def(void, Flush) {
 }
 
 def(ssize_t, Read, void *buf, size_t len) {
-	errno = 0;
-
 	ssize_t res = Kernel_recv(Channel_GetId(&this->ch), buf, len, 0);
 
 	if (res == -1) {
@@ -60,7 +58,6 @@ def(bool, SendFile, File *file, u64 *offset, size_t len) {
 		ssize_t res;
 
 		do {
-			errno = 0;
 			res = Kernel_sendfile64(
 				Channel_GetId(&this->ch),
 				Channel_GetId(&file->ch),
@@ -93,8 +90,6 @@ overload def(ssize_t, Write, void *buf, size_t len) {
 	if (this->corking) {
 		flags |= MSG_MORE;
 	}
-
-	errno = 0;
 
 	ssize_t res = Kernel_send(Channel_GetId(&this->ch), buf, len, flags);
 
