@@ -318,4 +318,30 @@ tsCase(Acute, "DOCTYPE") {
 				"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"")));
 }
 
+tsCase(Acute, "Invalid tags") {
+	/* Incomplete tags without attributes. */
+	call(Process, $("<"));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<")));
+
+	call(Process, $("< "));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("< ")));
+
+	/* UTF-8 tags should be ignored. */
+	call(Process, $("<œ"));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ")));
+	call(Process, $("<œ option"));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ option")));
+	call(Process, $("<œ option>"));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ option>")));
+
+	/* Valid but incomplete tags must not yield tokens. */
+	call(Process, $("<name"));
+	Assert($("Matches"), !call(Matches, HTML_Tokenizer_TokenType_Value, $("<name")));
+
+	call(Process, $("a <= b || c >= d || e < f || g > h"));
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Value,
+			$("a <= b || c >= d || e < f || g > h")));
+}
+
 tsFinalize;

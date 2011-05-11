@@ -293,13 +293,28 @@ def(void, ParseTag) {
 	}
 }
 
+/* Allows loose and invalid `<'s. */
+def(bool, IsTag) {
+	RdString str;
+
+	if (call(Peek, &str, 2)) {
+		if (str.buf[0] == '<') {
+			if (str.buf[1] == '!' || str.buf[1] == '/' || Char_IsAlpha(str.buf[1])) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 /* Matches "..." and "<...". */
 def(void, Parse) {
 	char c;
 	RdString value = $("");
 
 	while (call(Peek, &c)) {
-		if (c != '<') {
+		if (!call(IsTag)) {
 			call(Extend, &value);
 		} else {
 			call(Consume);
