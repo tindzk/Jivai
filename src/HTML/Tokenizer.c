@@ -125,45 +125,57 @@ def(void, ParseAttrValue) {
 }
 
 /* Decides whether the token is a named attribute (with value) or an option. */
-def(void, ParseAttr) {
+def(bool, ParseAttr) {
 	char c;
 	RdString str;
 	RdString name = $("");
 
+	/* Skip all leading spaces. */
 	while (call(Peek, &c)) {
+		if (!Char_IsSpace(c)) {
+			break;
+		}
+
+		call(Consume);
+	}
+
+	bool space = false;
+
+	while (call(Peek, &c)) {
+		if (Char_IsSpace(c)) {
+			space = true;
+		}
+
 		if (c == '=') {
 			callback(this->onToken, ref(TokenType_AttrName), name);
 			call(Consume);
 
 			call(ParseAttrValue);
-			break;
-		} else if (Char_IsSpace(c) || c == '>' ||
-				(call(Peek, &str, 2) && String_Equals(str, $("/>"))))
+			return true;
+		} else if (c == '>'
+				|| (call(Peek, &str, 2) && String_Equals(str, $("/>"))))
 		{
 			if (name.len != 0) {
 				callback(this->onToken, ref(TokenType_Option), name);
 			}
-			break;
+
+			return false;
+		} else if (space) {
+			if (!Char_IsSpace(c)) {
+				if (name.len != 0) {
+					callback(this->onToken, ref(TokenType_Option), name);
+				}
+
+				return true;
+			}
+
+			call(Consume);
 		} else {
 			call(Extend, &name);
 		}
 	}
-}
 
-/* Parses all attributes until the tag has reached its end. */
-def(void, ParseAttrs) {
-	char c;
-
-	call(ParseAttr);
-
-	while (call(Peek, &c)) {
-		if (Char_IsSpace(c)) {
-			call(Consume);
-			call(ParseAttr);
-		} else {
-			break;
-		}
-	}
+	return false;
 }
 
 /* Matches "tagName>", "tagName/>", "tagName attrs>" and "tagName attrs/>". */
@@ -199,7 +211,8 @@ def(void, ParseTagStart) {
 				commitName = false;
 			}
 
-			call(ParseAttrs);
+			/* Parse all attributes until the tag has reached its end. */
+			while(call(ParseAttr));
 		} else {
 			call(Extend, &name);
 		}

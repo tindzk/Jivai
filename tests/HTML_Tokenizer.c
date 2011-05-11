@@ -158,6 +158,40 @@ tsCase(Acute, "Tags (XHTML)") {
 }
 
 tsCase(Acute, "Tags (malformed)") {
+	call(Process, $("<input type = text />"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("text")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+
+	call(Process, $("<input  option  type = text  option />"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("text")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+
 	call(Process, $("<input   type=text   value=val/></input>"));
 
 	Assert($("Matches"),
