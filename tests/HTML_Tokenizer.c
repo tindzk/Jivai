@@ -288,4 +288,15 @@ tsCase(Acute, "CDATA") {
 		call(Matches, HTML_Tokenizer_TokenType_Data, $(">End")));
 }
 
+tsCase(Acute, "DOCTYPE") {
+	call(Process,
+		$("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+			"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Type,
+			$("html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+				"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"")));
+}
+
 tsFinalize;

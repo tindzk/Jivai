@@ -11,24 +11,26 @@ rsdef(self, New, ref(OnToken) onToken) {
 def(void, Destroy) { }
 
 overload def(bool, Peek, char *c) {
-	assert(c != NULL);
-
 	if (this->ofs >= this->buf.len) {
 		return false;
 	}
 
-	*c = this->buf.buf[this->ofs];
+	if (c != NULL) {
+		*c = this->buf.buf[this->ofs];
+	}
+
 	return true;
 }
 
 overload def(bool, Peek, RdString *str, size_t len) {
-	assert(str != NULL);
-
 	if (this->ofs + len - 1 >= this->buf.len) {
 		return false;
 	}
 
-	*str = String_Slice(this->buf, this->ofs, len);
+	if (str != NULL) {
+		*str = String_Slice(this->buf, this->ofs, len);
+	}
+
 	return true;
 }
 
@@ -222,11 +224,10 @@ def(void, ParseTagEnd) {
 
 /* Matches "...-->". */
 def(void, ParseComment) {
-	char c;
 	RdString str;
 	RdString comment = $("");
 
-	while (call(Peek, &c)) {
+	while (call(Peek, NULL)) {
 		if (call(Peek, &str, 3) && String_Equals(str, $("-->"))) {
 			call(Consume, 3);
 			callback(this->onToken, ref(TokenType_Comment), comment);
@@ -239,17 +240,32 @@ def(void, ParseComment) {
 
 /* Matches "...]]>". */
 def(void, ParseData) {
-	char c;
 	RdString str;
 	RdString data = $("");
 
-	while (call(Peek, &c)) {
+	while (call(Peek, NULL)) {
 		if (call(Peek, &str, 3) && String_Equals(str, $("]]>"))) {
 			call(Consume, 3);
 			callback(this->onToken, ref(TokenType_Data), data);
 			break;
 		} else {
 			call(Extend, &data);
+		}
+	}
+}
+
+/* Matches "...>". */
+def(void, ParseType) {
+	char c;
+	RdString type = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '>') {
+			call(Consume);
+			callback(this->onToken, ref(TokenType_Type), type);
+			break;
+		} else {
+			call(Extend, &type);
 		}
 	}
 }
@@ -266,6 +282,9 @@ def(void, ParseTag) {
 	} else if (call(Peek, &str, 8) && String_Equals(str, $("![CDATA["))) {
 		call(Consume, 8);
 		call(ParseData);
+	} else if (call(Peek, &str, 9) && String_Equals(str, $("!DOCTYPE "))) {
+		call(Consume, 9);
+		call(ParseType);
 	} else if (call(Peek, &str, 3) && String_Equals(str, $("!--"))) {
 		call(Consume, 3);
 		call(ParseComment);

@@ -4,6 +4,9 @@
 #define self HTML_Tokenizer
 
 set(ref(TokenType)) {
+	/* Refers to DOCTYPE. */
+	ref(TokenType_Type),
+
 	/* For CDATA tags. This type should not be merged with TokenType_Value as
 	 * CDATA values don't require unescaping. Normal values, however, are not
 	 * guaranteed to be already escaped.
