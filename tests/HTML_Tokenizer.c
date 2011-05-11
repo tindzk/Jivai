@@ -177,6 +177,25 @@ tsCase(Acute, "Tags (malformed)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+
+	call(Process, $("<input type/>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Option, $("type")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+
+	call(Process, $("<input type/ >"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Option, $("type/")));
 }
 
 tsCase(Acute, "Tags (single quotes)") {
