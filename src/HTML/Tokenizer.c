@@ -237,6 +237,23 @@ def(void, ParseComment) {
 	}
 }
 
+/* Matches "...]]>". */
+def(void, ParseData) {
+	char c;
+	RdString str;
+	RdString data = $("");
+
+	while (call(Peek, &c)) {
+		if (call(Peek, &str, 3) && String_Equals(str, $("]]>"))) {
+			call(Consume, 3);
+			callback(this->onToken, ref(TokenType_Data), data);
+			break;
+		} else {
+			call(Extend, &data);
+		}
+	}
+}
+
 /* Matches "...", "/..." and "!--...". */
 def(void, ParseTag) {
 	char c;
@@ -246,6 +263,9 @@ def(void, ParseTag) {
 	if (c == '/') {
 		call(Consume);
 		call(ParseTagEnd);
+	} else if (call(Peek, &str, 8) && String_Equals(str, $("![CDATA["))) {
+		call(Consume, 8);
+		call(ParseData);
 	} else if (call(Peek, &str, 3) && String_Equals(str, $("!--"))) {
 		call(Consume, 3);
 		call(ParseComment);

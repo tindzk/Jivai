@@ -269,4 +269,23 @@ tsCase(Acute, "JavaScript") {
 		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("script")));
 }
 
+tsCase(Acute, "CDATA") {
+	call(Process, $("<![CDATA[<sender>John Smith</sender>]]>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Data,
+			$("<sender>John Smith</sender>")));
+
+	/* CDATA cannot contain the ]]> sequence. The tokenizer won't merge the
+	 * contents of two blocks.
+	 */
+	call(Process, $("<![CDATA[Start]]]]><![CDATA[>End]]>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Data, $("Start]]")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Data, $(">End")));
+}
+
 tsFinalize;
