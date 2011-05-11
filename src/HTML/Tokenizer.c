@@ -4,209 +4,285 @@
 
 rsdef(self, New, ref(OnToken) onToken) {
 	return (self) {
-		.buf      = String_New(100),
-		.curToken = String_New(100),
-		.onToken  = onToken,
-		.state    = 0
+		.onToken = onToken
 	};
 }
 
-def(void, Destroy) {
-	String_Destroy(&this->buf);
-	String_Destroy(&this->curToken);
+def(void, Destroy) { }
+
+overload def(bool, Peek, char *c) {
+	assert(c != NULL);
+
+	if (this->ofs >= this->buf.len) {
+		return false;
+	}
+
+	*c = this->buf.buf[this->ofs];
+	return true;
 }
 
-def(void, Reset) {
-	this->state = 0;
+overload def(bool, Peek, RdString *str, size_t len) {
+	assert(str != NULL);
 
-	this->buf.len = 0;
-	this->curToken.len = 0;
+	if (this->ofs + len - 1 >= this->buf.len) {
+		return false;
+	}
+
+	*str = String_Slice(this->buf, this->ofs, len);
+	return true;
 }
 
-def(void, ProcessChar, char c) {
-	if (!BitMask_Has(this->state, ref(State_Tag))) {
-		/* New tag begins? */
-		if (c == '<') {
-			/* Flush the value-buffer */
-			if (this->buf.len != 0) {
-				callback(this->onToken, ref(TokenType_Value), this->buf.rd);
-				this->buf.len = 0;
-			}
+overload def(void, Consume) {
+	assert(this->ofs + 1 <= this->buf.len);
+	this->ofs++;
+}
 
-			BitMask_Set(this->state, ref(State_Tag));
-			BitMask_Set(this->state, ref(State_TagName));
+overload def(void, Consume, size_t len) {
+	assert(this->ofs + len <= this->buf.len);
+	this->ofs += len;
+}
 
-			return;
+def(void, Extend, RdString *str) {
+	assert(str != NULL);
+
+	if (str->buf == NULL) {
+		*str = String_Slice(this->buf, this->ofs, 1);
+	} else {
+		size_t ofs = str->buf - this->buf.buf;
+		assert(ofs + str->len + 1 <= this->buf.len);
+		str->len++;
+	}
+
+	this->ofs++;
+}
+
+/* Processes one attribute value, then returns. It supports the following types
+ * of values:
+ *
+ * - Values surrounded by quotes (escaping is supported, too):
+ *   <a href='path/' />
+ *   <a href="path/" />
+ *
+ * - Values without quotes:
+ *   <a href=path/ />
+ *   <a href=path />
+ *
+ * - Special cases like:
+ *   <a href=path/>
+ *
+ * As for the last type, note that slash belongs to the value and hence no end
+ * tag will be created. If this notation is chosen, the end tag must be created
+ * manually as in:
+ *   <a href=http://localhost/>Caption</a>
+ */
+def(void, ParseAttrValue) {
+	char c;
+	char prev      = '\0';
+	bool quote     = false;
+	char quoteType = '\0';
+	RdString value = $("");
+
+	/* Skip all leading spaces. */
+	while (call(Peek, &c)) {
+		if (!Char_IsSpace(c)) {
+			break;
 		}
 
-		/* Buffer value */
-		String_Append(&this->buf, c);
-
-		return;
+		call(Consume);
 	}
 
-	/* End of a comment */
-	if (BitMask_Has(this->state, ref(State_Comment))
-			&& String_EndsWith(this->buf.rd, $("--"))
-			&& c == '>')
-	{
-		callback(this->onToken, ref(TokenType_Comment),
-			String_Slice(this->buf.rd, 0, -2));
+	while (call(Peek, &c)) {
+		if (quote) {
+			call(Extend, &value);
 
-		BitMask_Clear(this->state, ref(State_Comment));
-		BitMask_Clear(this->state, ref(State_Tag));
-
-		this->buf.len = 0;
-
-		return;
-	}
-
-	/* Within comment */
-	if (BitMask_Has(this->state, ref(State_Comment))) {
-		String_Append(&this->buf, c);
-
-		return;
-	}
-
-	/* Start of a comment. */
-	if (String_Equals(this->buf.rd, $("!--"))) {
-		BitMask_Set(this->state, ref(State_Comment));
-
-		this->buf.len = 0;
-		String_Append(&this->buf, c);
-
-		return;
-	}
-
-	if (BitMask_Has(this->state, ref(State_AttrValue))) {
-		if (!BitMask_Has(this->state, ref(State_Quote))
-		&& (c == '"' || c == '\'')) {
-			this->curQuote = c;
-			BitMask_Set(this->state, ref(State_Quote));
-		} else if (BitMask_Has(this->state, ref(State_Quote))
-				&& this->curQuote == c
-				&& this->last != '\\') {
-			BitMask_Clear(this->state, ref(State_Quote));
-			String_Append(&this->buf, c);
-
-			return;
-		}
-	}
-
-	if (BitMask_Has(this->state, ref(State_Quote))) {
-		String_Append(&this->buf, c);
-		this->last = c;
-
-		return;
-	}
-
-	if (BitMask_Has(this->state, ref(State_AttrName)) && c == '=') {
-		/* Attribute name. */
-		callback(this->onToken, ref(TokenType_AttrName), this->buf.rd);
-
-		BitMask_Clear(this->state, ref(State_AttrName));
-		BitMask_Set(this->state, ref(State_AttrValue));
-
-		this->buf.len = 0;
-
-		return;
-	}
-
-	/* Parse tokens, their attributes and options. */
-	if (Char_IsSpace(c) || c == '/' || c == '>') {
-		if (BitMask_Has(this->state, ref(State_TagName))) {
-			if (this->buf.len > 0) {
-				if (!String_BeginsWith(this->buf.rd, $("/"))) {
-					/* Start of token. */
-					callback(this->onToken,
-						ref(TokenType_TagStart), this->buf.rd);
-
-					/* For XHTML-ish tags. */
-					String_Copy(&this->curToken, this->buf.rd);
-				}
+			/* As for quoted values, stop as soon as the value is complete. */
+			if (c == quoteType && prev != '\\') {
+				callback(this->onToken, ref(TokenType_AttrValue), value);
+				break;
 			}
+		} else if (c == '"' || c == '\'') {
+			/* Handle quoted values ("value", 'value'). */
+			quote     = true;
+			quoteType = c;
 
-			if (c != '/') {
-				/* Expecting a tag name (true by default when a tag is
-				 * introduced with `<'. */
+			call(Extend, &value);
+		} else if (Char_IsSpace(c) || c == '>') {
+			/* As for unquoted values, we don't have a clear end delimiter
+			 * (like ' or "). We'll stop processing after a space or ">".
+			 */
 
-				if (String_BeginsWith(this->buf.rd, $("/"))) {
-					/* End of token. */
-					if (this->buf.len > 1) {
-						String_Crop(&this->buf, 1);
-						callback(this->onToken,
-							ref(TokenType_TagEnd), this->buf.rd);
-					} else {
-						callback(this->onToken,
-							ref(TokenType_TagEnd), this->curToken.rd);
-					}
-				}
-
-				if (Char_IsSpace(c)) {
-					/* The token's end is not reached yet,
-					 * hence we are expecting an attribute name. */
-					BitMask_Set(this->state, ref(State_AttrName));
-				}
-
-				BitMask_Clear(this->state, ref(State_TagName));
-			}
-		} else if (BitMask_Has(this->state, ref(State_AttrValue))) {
-			/* Expecting an attribute value. */
-
-			HTML_Unescape(&this->buf);
-			callback(this->onToken,
-				ref(TokenType_AttrValue), this->buf.rd);
-
-			BitMask_Set(this->state, ref(State_AttrName));
-			BitMask_Clear(this->state, ref(State_AttrValue));
-		} else if (String_Equals(this->buf.rd, $("/"))) {
-			/* Create a fake `end'-token for XHTML tags such as `<br />'. */
-			callback(this->onToken,
-				ref(TokenType_TagEnd), this->curToken.rd);
+			callback(this->onToken, ref(TokenType_AttrValue), value);
+			break;
 		} else {
-			/* Neither a name nor a value, thus we are assuming the current
-			 * token to be an option such as `selected'. */
-
-			RdString cleaned = String_Trim(this->buf.rd);
-
-			if (cleaned.len > 0) {
-				callback(this->onToken, ref(TokenType_Option), cleaned);
-			}
+			/* Unquoted value. */
+			call(Extend, &value);
 		}
 
-		this->buf.len = 0;
-	}
-
-	if (c == '>') {
-		BitMask_Clear(this->state, ref(State_Tag));
-		this->buf.len = 0;
-	} else if (!Char_IsSpace(c)) {
-		String_Append(&this->buf, c);
+		prev = c;
 	}
 }
 
-/* Should be called after all characters have been processed.
- * It `flushes' the buffer. */
-def(void, Poll) {
-	if (this->buf.len != 0) {
-		callback(this->onToken, ref(TokenType_Value), this->buf.rd);
+/* Decides whether the token is a named attribute (with value) or an option. */
+def(void, ParseAttr) {
+	char c;
+	RdString str;
+	RdString name = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '=') {
+			callback(this->onToken, ref(TokenType_AttrName), name);
+			call(Consume);
+
+			call(ParseAttrValue);
+			break;
+		} else if (Char_IsSpace(c) || c == '>' ||
+				(call(Peek, &str, 2) && String_Equals(str, $("/>"))))
+		{
+			if (name.len != 0) {
+				callback(this->onToken, ref(TokenType_Option), name);
+			}
+			break;
+		} else {
+			call(Extend, &name);
+		}
 	}
 }
 
-overload def(void, Process, RdString s) {
-	fwd (i, s.len) {
-		call(ProcessChar, s.buf[i]);
-	}
-
-	call(Poll);
-}
-
-overload def(void, Process, Stream stream) {
+/* Parses all attributes until the tag has reached its end. */
+def(void, ParseAttrs) {
 	char c;
 
-	while (delegate(stream, read, Buffer_ForChar(&c)) > 0) {
-		call(ProcessChar, c);
+	call(ParseAttr);
+
+	while (call(Peek, &c)) {
+		if (Char_IsSpace(c)) {
+			call(Consume);
+			call(ParseAttr);
+		} else {
+			break;
+		}
+	}
+}
+
+/* Matches "tagName>", "tagName/>", "tagName attrs>" and "tagName attrs/>". */
+def(void, ParseTagStart) {
+	char c;
+	bool commitName = true;
+	RdString str;
+	RdString name = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '>') {
+			call(Consume);
+
+			if (commitName) {
+				callback(this->onToken, ref(TokenType_TagStart), name);
+			}
+			break;
+		} else if (call(Peek, &str, 2) && String_Equals(str, $("/>"))) {
+			/* This is an XHTML tag like `<br />'. */
+			call(Consume, 2);
+
+			if (commitName) {
+				callback(this->onToken, ref(TokenType_TagStart), name);
+			}
+
+			callback(this->onToken, ref(TokenType_TagEnd), name);
+			break;
+		} else if (Char_IsSpace(c)) {
+			call(Consume);
+
+			if (commitName) {
+				callback(this->onToken, ref(TokenType_TagStart), name);
+				commitName = false;
+			}
+
+			call(ParseAttrs);
+		} else {
+			call(Extend, &name);
+		}
+	}
+}
+
+/* Matches "tagName>". */
+def(void, ParseTagEnd) {
+	char c;
+	RdString name = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '>') {
+			call(Consume);
+			callback(this->onToken, ref(TokenType_TagEnd), name);
+			break;
+		} else {
+			call(Extend, &name);
+		}
+	}
+}
+
+/* Matches "...-->". */
+def(void, ParseComment) {
+	char c;
+	RdString str;
+	RdString comment = $("");
+
+	while (call(Peek, &c)) {
+		if (call(Peek, &str, 3) && String_Equals(str, $("-->"))) {
+			call(Consume, 3);
+			callback(this->onToken, ref(TokenType_Comment), comment);
+			break;
+		} else {
+			call(Extend, &comment);
+		}
+	}
+}
+
+/* Matches "...", "/..." and "!--...". */
+def(void, ParseTag) {
+	char c;
+	RdString str;
+	call(Peek, &c);
+
+	if (c == '/') {
+		call(Consume);
+		call(ParseTagEnd);
+	} else if (call(Peek, &str, 3) && String_Equals(str, $("!--"))) {
+		call(Consume, 3);
+		call(ParseComment);
+	} else {
+		call(ParseTagStart);
+	}
+}
+
+/* Matches "..." and "<...". */
+def(void, Parse) {
+	char c;
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		if (c != '<') {
+			call(Extend, &value);
+		} else {
+			call(Consume);
+
+			/* Flush the value buffer first. */
+			if (value.len != 0) {
+				callback(this->onToken, ref(TokenType_Value), value);
+				value.len = 0;
+			}
+
+			call(ParseTag);
+		}
 	}
 
-	call(Poll);
+	if (value.len != 0) {
+		callback(this->onToken, ref(TokenType_Value), value);
+	}
+}
+
+def(void, Process, RdString s) {
+	this->ofs = 0;
+	this->buf = s;
+
+	call(Parse);
 }

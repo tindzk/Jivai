@@ -1,8 +1,5 @@
-#import "../Bit.h"
-#import "../BitMask.h"
-#import "../HTML.h"
 #import "../String.h"
-#import "../Stream.h"
+#import "../Exception.h"
 
 #define self HTML_Tokenizer
 
@@ -16,35 +13,16 @@ set(ref(TokenType)) {
 	ref(TokenType_Option)
 };
 
-set(ref(State)) {
-	ref(State_Tag)       = Bit(0),
-	ref(State_TagName)   = Bit(1),
-	ref(State_AttrName)  = Bit(2),
-	ref(State_AttrValue) = Bit(3),
-	ref(State_Quote)     = Bit(4),
-	ref(State_Comment)   = Bit(5)
-};
-
 Callback(ref(OnToken), void, ref(TokenType), RdString);
 
 class {
 	ref(OnToken) onToken;
-
-	String buf;
-	String curToken;
-
-	char curQuote;
-	char last;
-
-	int state;
+	RdString buf;
+	size_t ofs;
 };
 
 rsdef(self, New, ref(OnToken) onToken);
 def(void, Destroy);
-def(void, Reset);
-def(void, ProcessChar, char c);
-def(void, Poll);
-overload def(void, Process, RdString s);
-overload def(void, Process, Stream stream);
+def(void, Process, RdString s);
 
 #undef self
