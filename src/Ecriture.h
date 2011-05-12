@@ -3,7 +3,7 @@
 #import "Stream.h"
 #import "Exception.h"
 
-#define self Typography
+#define self Ecriture
 
 // @exc IllegalNesting
 
@@ -29,27 +29,27 @@ record(ref(Node)) {
 	char data[0];
 };
 
-#define Typography_Item(node) \
-	((Typography_Item *) &(node)->data)
+#define Ecriture_Item(node) \
+	((Ecriture_Item *) &(node)->data)
 
 static alwaysInline sdef(RdString, Item_GetName, ref(Node) *node) {
-	return Typography_Item(node)->name.rd;
+	return Ecriture_Item(node)->name.rd;
 }
 
 static alwaysInline sdef(RdString, Item_GetOptions, ref(Node) *node) {
-	return Typography_Item(node)->options.rd;
+	return Ecriture_Item(node)->options.rd;
 }
 
-#undef Typography_Item
+#undef Ecriture_Item
 
-#define Typography_Text(node) \
-	((Typography_Text *) &(node)->data)
+#define Ecriture_Text(node) \
+	((Ecriture_Text *) &(node)->data)
 
 static alwaysInline sdef(RdString, Text_GetValue, ref(Node) *node) {
-	return Typography_Text(node)->value.rd;
+	return Ecriture_Text(node)->value.rd;
 }
 
-#undef Typography_Text
+#undef Ecriture_Text
 
 class {
 	Stream stream;

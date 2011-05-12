@@ -1,6 +1,6 @@
-#import "Typography.h"
+#import "Ecriture.h"
 
-#define self Typography
+#define self Ecriture
 
 rsdef(self, New) {
 	return (self) {
