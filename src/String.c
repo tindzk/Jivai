@@ -419,6 +419,8 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 			if (ofs != -1) {
 				RdString *value = VarArg_Get(argptr, RdString *);
 
+				assert(value != NULL);
+
 				value->buf = subject.buf + ofs;
 				value->len = subject.len - ofs;
 
@@ -451,6 +453,8 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 
 	if (ofs != -1) {
 		RdString *value = VarArg_Get(argptr, RdString *);
+
+		assert(value != NULL);
 
 		value->buf = subject.buf + ofs;
 		value->len = subject.len - ofs;
