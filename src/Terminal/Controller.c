@@ -8,22 +8,22 @@ rsdef(self, New, Terminal *term) {
 	};
 }
 
-static def(void, Print, Typography_Node *node, VarArg *argptr) {
+static def(void, Print, Ecriture_Node *node, VarArg *argptr) {
 	fwd(i, node->len) {
-		Typography_Node *child = node->buf[i];
+		Ecriture_Node *child = node->buf[i];
 
-		if (child->type == Typography_NodeType_Text) {
-			RdString value = Typography_Text_GetValue(child);
+		if (child->type == Ecriture_NodeType_Text) {
+			RdString value = Ecriture_Text_GetValue(child);
 			Terminal_FmtArgPrint(this->term, value, argptr);
-		} else if (child->type == Typography_NodeType_Item) {
-			RdString name = Typography_Item_GetName(child);
+		} else if (child->type == Ecriture_NodeType_Item) {
+			RdString name = Ecriture_Item_GetName(child);
 
 			Terminal_Style style = Terminal_GetStyle(this->term);
 
 			if (String_Equals(name, $("fg")) ||
 				String_Equals(name, $("bg")))
 			{
-				RdString strColor = Typography_Item_GetOptions(child);
+				RdString strColor = Ecriture_Item_GetOptions(child);
 
 				if (String_Equals(strColor, $("%"))) {
 					strColor = VarArg_Get(*argptr, RdString);
@@ -52,13 +52,13 @@ static def(void, Print, Typography_Node *node, VarArg *argptr) {
 }
 
 def(void, Render, RdString s, ...) {
-	Typography tyo = Typography_New(&tyo);
-	Typography_Parse(&tyo, String_AsStream(&s));
+	Ecriture ecr = Ecriture_New(&ecr);
+	Ecriture_Parse(&ecr, String_AsStream(&s));
 
 	VarArg argptr;
 	VarArg_Start(argptr, s);
-	call(Print, Typography_GetRoot(&tyo), &argptr);
+	call(Print, Ecriture_GetRoot(&ecr), &argptr);
 	VarArg_End(argptr);
 
-	Typography_Destroy(&tyo);
+	Ecriture_Destroy(&ecr);
 }

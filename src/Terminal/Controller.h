@@ -1,5 +1,5 @@
+#import "../Ecriture.h"
 #import "../Terminal.h"
-#import "../Typography.h"
 #import "../StringStream.h"
 
 #define self Terminal_Controller
