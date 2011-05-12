@@ -487,6 +487,23 @@ tsCase(Acute, "Quirks") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+
+	call(Process, $("<li><img></li>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("li")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("img")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("img")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("li")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
 }
 
 tsFinalize;

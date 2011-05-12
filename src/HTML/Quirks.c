@@ -39,14 +39,21 @@ sdef(bool, Equals, RdString a, RdString b) {
 }
 
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type != HTML_Tokenizer_TokenType_TagEnd    &&
-		type != HTML_Tokenizer_TokenType_AttrName  &&
-		type != HTML_Tokenizer_TokenType_AttrValue &&
-		type != HTML_Tokenizer_TokenType_Option)
+	if (type != HTML_Tokenizer_TokenType_Option   &&
+		type != HTML_Tokenizer_TokenType_AttrName &&
+		type != HTML_Tokenizer_TokenType_AttrValue)
 	{
-		if (this->prev.type != HTML_Tokenizer_TokenType_Unset &&
-			this->prev.type != HTML_Tokenizer_TokenType_TagEnd)
-		{
+		bool inject = this->prev.type != HTML_Tokenizer_TokenType_Unset;
+
+		if (type == HTML_Tokenizer_TokenType_TagEnd) {
+			if (this->prev.type == HTML_Tokenizer_TokenType_TagEnd ||
+				this->prev.type == HTML_Tokenizer_TokenType_TagStart)
+			{
+				inject = !scall(Equals, value, this->prevTag);
+			}
+		}
+
+		if (inject) {
 			fwd(i, nElems(tags)) {
 				if (scall(Equals, tags[i], this->prevTag)) {
 					callback(this->onToken,
