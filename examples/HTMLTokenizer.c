@@ -1,7 +1,6 @@
 #import <Main.h>
-#import <Terminal.h>
-#import <FileStream.h>
-#import <BufferedStream.h>
+#import <Path.h>
+#import <File.h>
 #import <HTML/Tokenizer.h>
 
 #define self Application
@@ -9,6 +8,10 @@
 static size_t depth = 0;
 
 def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
+	if (type == HTML_Tokenizer_TokenType_Done) {
+		return;
+	}
+
 	if (type == HTML_Tokenizer_TokenType_TagEnd) {
 		assert(depth > 0);
 		depth--;
@@ -22,8 +25,12 @@ def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 		depth++;
 	}
 
-	if (type == HTML_Tokenizer_TokenType_Value) {
+	if (type == HTML_Tokenizer_TokenType_Type) {
+		String_Print($("type"));
+	} else if (type == HTML_Tokenizer_TokenType_Value) {
 		String_Print($("value"));
+	} else if (type == HTML_Tokenizer_TokenType_Data) {
+		String_Print($("data"));
 	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
 		String_Print($("tag start"));
 	} else if (type == HTML_Tokenizer_TokenType_TagEnd) {
@@ -38,38 +45,26 @@ def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 		String_Print($("option"));
 	}
 
-	String_Print($(": "));
+	String_Print($(": '"));
 	String_Print(value);
-	String_Print($("\n"));
+	String_Print($("'\n"));
 }
 
 def(bool, Run) {
-	RdString name =
+	RdString path =
 		(this->args->len == 0)
 			? $("HTMLTokenizer.html")
 			: this->args->buf[0];
 
-	File file;
-
-	try {
-		file = File_New(name, FileStatus_ReadOnly);
-	} catch (File, NotFound) {
-		String_Print($("File not found.\n"));
-		excReturn false;
-	} finally {
-
-	} tryEnd;
-
-	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
-	BufferedStream_SetInputBuffer(&stream, 1024, 128);
+	String s = String_New((size_t) Path_GetSize(path));
+	File_GetContents(path, &s);
 
 	HTML_Tokenizer html = HTML_Tokenizer_New(
 		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
-	HTML_Tokenizer_Process(&html, BufferedStream_AsStream(&stream));
+	HTML_Tokenizer_Process(&html, s.rd);
 	HTML_Tokenizer_Destroy(&html);
 
-	BufferedStream_Close(&stream);
-	BufferedStream_Destroy(&stream);
+	String_Destroy(&s);
 
 	return true;
 }
