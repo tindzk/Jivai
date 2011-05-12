@@ -412,7 +412,16 @@ tsCase(Acute, "Quirks") {
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("BR")));
 
-	call(Process, $("<br>test"));
+	call(Process, $("<br>test<br>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Value, $("test")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
