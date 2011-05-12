@@ -50,6 +50,8 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 				this->prev.type == HTML_Tokenizer_TokenType_TagStart)
 			{
 				inject = !scall(Equals, value, this->prevTag);
+			} else {
+				inject = false;
 			}
 		}
 
