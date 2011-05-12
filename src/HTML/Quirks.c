@@ -54,9 +54,9 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 					break;
 				}
 			}
-
-			this->prevTag = $("");
 		}
+
+		this->prevTag = $("");
 	}
 
 	if (type == HTML_Tokenizer_TokenType_TagStart) {
