@@ -384,6 +384,16 @@ tsCase(Acute, "Invalid tags") {
 			$("a <= b || c >= d || e < f || g > h")));
 }
 
+tsCase(Acute, "Nesting") {
+	call(Process, $("value<p><b>parag</b></p>"));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("value")));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagStart, $("p")));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagStart, $("b")));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("parag")));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("b")));
+	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("p")));
+}
+
 /* These should be taken care of by HTML_Quirks. */
 tsCase(Acute, "Quirks") {
 	call(Process, $("<br>"));
