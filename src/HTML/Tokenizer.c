@@ -345,6 +345,8 @@ def(void, Parse) {
 	if (value.len != 0) {
 		callback(this->onToken, ref(TokenType_Value), value);
 	}
+
+	callback(this->onToken, ref(TokenType_Done), $(""));
 }
 
 def(void, Process, RdString s) {

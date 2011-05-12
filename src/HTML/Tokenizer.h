@@ -4,6 +4,8 @@
 #define self HTML_Tokenizer
 
 set(ref(TokenType)) {
+	ref(TokenType_Unset),
+
 	/* Refers to DOCTYPE. */
 	ref(TokenType_Type),
 
@@ -23,7 +25,8 @@ set(ref(TokenType)) {
 	ref(TokenType_Comment),
 	ref(TokenType_AttrName),
 	ref(TokenType_AttrValue),
-	ref(TokenType_Option)
+	ref(TokenType_Option),
+	ref(TokenType_Done)
 };
 
 Callback(ref(OnToken), void, ref(TokenType), RdString);

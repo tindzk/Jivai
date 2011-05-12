@@ -1,3 +1,4 @@
+#import <HTML/Quirks.h>
 #import <HTML/Tokenizer.h>
 
 #import "TestSuite.h"
@@ -10,6 +11,7 @@ record(ref(Element)) {
 };
 
 class {
+	HTML_Quirks quirks;
 	HTML_Tokenizer html;
 	ref(Element) elements[64];
 	size_t cur;
@@ -23,8 +25,11 @@ tsRegister("HTML.Tokenizer") {
 def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value);
 
 tsInit {
-	this->html = HTML_Tokenizer_New(
+	this->quirks = HTML_Quirks_New(
 		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
+
+	this->html = HTML_Tokenizer_New(
+		HTML_Tokenizer_OnToken_For(&this->quirks, HTML_Quirks_ProcessToken));
 
 	fwd (i, nElems(this->elements)) {
 		this->elements[i] = (ref(Element)) { .value = $("") };
@@ -36,6 +41,7 @@ tsInit {
 
 tsDestroy {
 	HTML_Tokenizer_Destroy(&this->html);
+	HTML_Quirks_Destroy(&this->quirks);
 }
 
 def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
@@ -376,6 +382,58 @@ tsCase(Acute, "Invalid tags") {
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_Value,
 			$("a <= b || c >= d || e < f || g > h")));
+}
+
+/* These should be taken care of by HTML_Quirks. */
+tsCase(Acute, "Quirks") {
+	call(Process, $("<br>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+
+	call(Process, $("<BR>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("BR")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("BR")));
+
+	call(Process, $("<br>test"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+
+	call(Process, $("<br><input>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+
+	call(Process, $("<br option>"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
 }
 
 tsFinalize;
