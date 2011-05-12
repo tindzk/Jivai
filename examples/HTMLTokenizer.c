@@ -1,6 +1,7 @@
 #import <Main.h>
 #import <Path.h>
 #import <File.h>
+#import <HTML/Quirks.h>
 #import <HTML/Tokenizer.h>
 
 #define self Application
@@ -59,10 +60,15 @@ def(bool, Run) {
 	String s = String_New((size_t) Path_GetSize(path));
 	File_GetContents(path, &s);
 
-	HTML_Tokenizer html = HTML_Tokenizer_New(
+	HTML_Quirks quirks = HTML_Quirks_New(
 		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
+	HTML_Tokenizer html = HTML_Tokenizer_New(
+		HTML_Tokenizer_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
+
 	HTML_Tokenizer_Process(&html, s.rd);
+
 	HTML_Tokenizer_Destroy(&html);
+	HTML_Quirks_Destroy(&quirks);
 
 	String_Destroy(&s);
 
