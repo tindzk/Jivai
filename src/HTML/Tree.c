@@ -34,15 +34,7 @@ def(ref(Node) *, GetRoot) {
 }
 
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type == HTML_Tokenizer_TokenType_TagEnd) {
-		if (this->node->parent == NULL) {
-			throw(IllegalNesting);
-		}
-
-		this->node = this->node->parent;
-
-		this->depth--;
-	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
+	if (type == HTML_Tokenizer_TokenType_TagStart) {
 		this->node = Tree_AddNode(&this->tree, this->node);
 
 		this->node->type  = ref(NodeType_Tag);
@@ -50,11 +42,27 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 		this->node->attrs = scall(Attrs_New, 0);
 
 		this->depth++;
+	} else if (type == HTML_Tokenizer_TokenType_TagEnd) {
+		if (this->node->parent == NULL) {
+			throw(IllegalNesting);
+		}
+
+		this->node = this->node->parent;
+
+		this->depth--;
 	} else if (type == HTML_Tokenizer_TokenType_Value) {
 		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
 		node->type  = ref(NodeType_Value);
+		node->attrs = NULL;
 		node->value = HTML_Entities_Decode(value);
+
+		HTML_Unescape(&node->value);
+	} else if (type == HTML_Tokenizer_TokenType_Data) {
+		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
+
+		node->type  = ref(NodeType_Value);
+		node->value = String_Clone(value);
 		node->attrs = NULL;
 	} else if (type == HTML_Tokenizer_TokenType_AttrName
 			|| type == HTML_Tokenizer_TokenType_Option)
@@ -68,6 +76,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
 		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
 		attr->value = String_Clone(value);
+		HTML_Unescape(&attr->value);
 	}
 }
 

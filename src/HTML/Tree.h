@@ -1,9 +1,8 @@
 #import "Entities.h"
 #import "Tokenizer.h"
 
+#import "../HTML.h"
 #import "../Tree.h"
-#import "../Block.h"
-#import "../Array.h"
 #import "../String.h"
 #import "../Exception.h"
 
