@@ -424,11 +424,24 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 				value->buf = subject.buf + ofs;
 				value->len = subject.len - ofs;
 
-				fwd(j, value->len) {
-					if (value->buf[j] == pattern.buf[i]) {
-						value->len = j;
-						subj = j + ofs;
-						break;
+				ssize_t ofsNext = String_Find(pattern, i, '%');
+
+				if (ofsNext != String_NotFound) {
+					RdString param = String_Slice(pattern, i, ofsNext - i);
+
+					ssize_t ofsParam = String_Find(*value, param);
+
+					if (ofsParam != String_NotFound) {
+						value->len = ofsParam;
+						subj = ofsParam + ofs;
+					}
+				} else {
+					fwd(j, value->len) {
+						if (value->buf[j] == pattern.buf[i]) {
+							value->len = j;
+							subj = j + ofs;
+							break;
+						}
 					}
 				}
 

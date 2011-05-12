@@ -242,6 +242,20 @@ tsCase(Acute, "Parsing") {
 	Assert($("Equals"),  String_Equals(result2, expected2));
 }
 
+tsCase(Acute, "Parsing") {
+	RdString subject   = $(" Hello  World.");
+	RdString pattern   = $("%  %");
+	RdString expected  = $(" Hello");
+	RdString expected2 = $("World.");
+
+	RdString result, result2;
+	bool matches = String_Parse(pattern, subject, &result, &result2);
+
+	Assert($("Matches"), matches);
+	Assert($("Equals"),  String_Equals(result,  expected));
+	Assert($("Equals"),  String_Equals(result2, expected2));
+}
+
 tsCase(Acute, "Format") {
 	String s = String_Format($("Hel!%lo %."), $("World"));
 
