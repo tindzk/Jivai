@@ -453,6 +453,17 @@ tsCase(Acute, "Quirks") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+
+	call(Process, $("<meta />"));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("meta")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("meta")));
+
+	Assert($("Matches"),
+		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
 }
 
 tsFinalize;

@@ -39,7 +39,8 @@ sdef(bool, Equals, RdString a, RdString b) {
 }
 
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type != HTML_Tokenizer_TokenType_AttrName  &&
+	if (type != HTML_Tokenizer_TokenType_TagEnd    &&
+		type != HTML_Tokenizer_TokenType_AttrName  &&
 		type != HTML_Tokenizer_TokenType_AttrValue &&
 		type != HTML_Tokenizer_TokenType_Option)
 	{
