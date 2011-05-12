@@ -9,11 +9,9 @@ set(ref(State)) {
 	ref(State_Depth)
 };
 
-rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context) {
+rsdef(self, New, size_t depthWidth) {
 	return (self) {
-		.tree    = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode))),
-		.stream  = stream,
-		.context = context,
+		.tree       = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode))),
 		.depthWidth = depthWidth
 	};
 }
@@ -121,7 +119,7 @@ static def(void, AddItem, size_t depth, RdString key, RdString value) {
 	item->value = String_Clone(value);
 }
 
-def(void, Parse) {
+def(void, Parse, Stream stream) {
 	char c;
 
 	ref(State) state = ref(State_Key);
@@ -230,12 +228,12 @@ def(void, Parse) {
 			continue;
 		}
 
-		if (this->stream->isEof(this->context)) {
+		if (delegate(stream, isEof)) {
 			break;
 		}
 
 	next:
-		this->stream->read(this->context, Buffer_ForChar(&c));
+		delegate(stream, read, Buffer_ForChar(&c));
 
 		if (c == '\n') {
 			this->line++;

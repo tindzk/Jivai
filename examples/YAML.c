@@ -1,8 +1,11 @@
+#import <Main.h>
 #import <YAML.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
-void PrintTree(YAML_Node *node, int depth) {
+#define self Application
+
+def(void, PrintTree, YAML_Node *node, int depth) {
 	if (node->type == YAML_NodeType_Section ||
 		node->type == YAML_NodeType_Item)
 	{
@@ -30,21 +33,20 @@ void PrintTree(YAML_Node *node, int depth) {
 	}
 
 	fwd(i, node->len) {
-		PrintTree(node->buf[i], depth + 1);
+		call(PrintTree, node->buf[i], depth + 1);
 	}
 }
 
-int main(void) {
+def(bool, Run) {
 	File file = File_New($("YAML.yml"), FileStatus_ReadOnly);
 
 	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	YAML yml = YAML_New(4, &BufferedStreamImpl, &stream);
-	YAML_Parse(&yml);
+	YAML yml = YAML_New(4);
+	YAML_Parse(&yml, BufferedStream_AsStream(&stream));
 
-	/* Print the final tree. */
-	PrintTree(YAML_GetRoot(&yml), 0);
+	call(PrintTree, YAML_GetRoot(&yml), 0);
 
 	YAML_Destroy(&yml);
 
@@ -53,5 +55,5 @@ int main(void) {
 
 	String_Print($("\n"));
 
-	return ExitStatus_Success;
+	return true;
 }

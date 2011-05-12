@@ -30,14 +30,10 @@ record(ref(Node)) {
 };
 
 class {
-	StreamInterface *stream;
-	void *context;
-
-	size_t line;
-
 	Tree tree;
 	ref(Node) *node;
 
+	size_t line;
 	size_t depth;
 	size_t depthWidth;
 };
@@ -64,12 +60,12 @@ static alwaysInline sdef(RdString, Item_GetValue, ref(Node) *node) {
 
 #undef YAML_Item
 
-rsdef(self, New, size_t depthWidth, StreamInterface *stream, void *context);
+rsdef(self, New, size_t depthWidth);
 def(void, Destroy);
 def(void, DestroyNode, Tree_Node *ptr);
 def(ref(Node) *, GetRoot);
 def(size_t, GetLine);
 def(void *, Store, size_t depth, ref(NodeType) type, size_t size);
-def(void, Parse);
+def(void, Parse, Stream stream);
 
 #undef self
