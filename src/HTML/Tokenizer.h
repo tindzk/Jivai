@@ -26,6 +26,7 @@ set(ref(TokenType)) {
 	ref(TokenType_AttrName),
 	ref(TokenType_AttrValue),
 	ref(TokenType_Option),
+	ref(TokenType_AttrEnd),
 	ref(TokenType_Done)
 };
 

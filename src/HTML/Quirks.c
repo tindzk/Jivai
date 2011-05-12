@@ -39,44 +39,29 @@ sdef(bool, Equals, RdString a, RdString b) {
 }
 
 def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type != HTML_Tokenizer_TokenType_Option   &&
-		type != HTML_Tokenizer_TokenType_AttrName &&
-		type != HTML_Tokenizer_TokenType_AttrValue)
-	{
-		bool inject = this->prev.type != HTML_Tokenizer_TokenType_Unset;
+	if (this->prev.type == HTML_Tokenizer_TokenType_AttrEnd) {
+		bool inject = true;
 
 		if (type == HTML_Tokenizer_TokenType_TagEnd) {
-			if (this->prev.type == HTML_Tokenizer_TokenType_TagEnd ||
-				this->prev.type == HTML_Tokenizer_TokenType_TagStart)
-			{
-				inject = !scall(Equals, value, this->prevTag);
-			} else {
-				inject = false;
-			}
+			inject = !scall(Equals, value, this->prev.value);
 		}
 
 		if (inject) {
 			fwd(i, nElems(tags)) {
-				if (scall(Equals, tags[i], this->prevTag)) {
+				if (scall(Equals, tags[i], this->prev.value)) {
 					callback(this->onToken,
-						HTML_Tokenizer_TokenType_TagEnd, this->prevTag);
+						HTML_Tokenizer_TokenType_TagEnd, this->prev.value);
 					break;
 				}
 			}
 		}
-
-		this->prevTag = $("");
 	}
-
-	if (type == HTML_Tokenizer_TokenType_TagStart) {
-		this->prevTag = value;
-	}
-
-	this->prev.type  = type;
-	this->prev.value = value;
 
 	if (type == HTML_Tokenizer_TokenType_Done) {
 		this->prev.type = HTML_Tokenizer_TokenType_Unset;
+	} else {
+		this->prev.type  = type;
+		this->prev.value = value;
 	}
 
 	callback(this->onToken, type, value);

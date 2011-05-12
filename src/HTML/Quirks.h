@@ -9,7 +9,6 @@ record(ref(Element)) {
 
 class {
 	ref(Element) prev;
-	RdString prevTag;
 	HTML_Tokenizer_OnToken onToken;
 };
 
