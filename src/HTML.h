@@ -52,6 +52,7 @@ static inline rsdef(bool, IsTagAttr, ref(TokenType) type) {
 
 Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
-sdef(void, Unescape, String *html);
+overload sdef(void, Unescape, String *str);
+overload sdef(String, Unescape, RdString str);
 
 #undef self

@@ -2,34 +2,40 @@
 
 #define self HTML
 
-sdef(void, Unescape, String *html) {
-	if (html->len == 0) {
+overload sdef(void, Unescape, String *str) {
+	if (str->len == 0) {
 		return;
 	}
 
-	if (html->buf[0] != '"' && html->buf[0] != '\'') {
+	if (str->buf[0] != '"' && str->buf[0] != '\'') {
 		return;
 	}
 
 	int idx = 0;
 
 	char prev  = '\0';
-	char quote = html->buf[0];
+	char quote = str->buf[0];
 
-	for (size_t i = 1; i < html->len; i++) {
+	for (size_t i = 1; i < str->len; i++) {
 		if (prev == '\\') {
-			if (html->buf[i] == quote) {
-				html->buf[idx] = html->buf[i];
+			if (str->buf[i] == quote) {
+				str->buf[idx] = str->buf[i];
 				idx++;
 				i++;
 			}
 		} else if (prev != '\0') {
-			html->buf[idx] = prev;
+			str->buf[idx] = prev;
 			idx++;
 		}
 
-		prev = html->buf[i];
+		prev = str->buf[i];
 	}
 
-	html->len = idx;
+	str->len = idx;
+}
+
+overload sdef(String, Unescape, RdString str) {
+	String res = String_Clone(str);
+	scall(Unescape, &res);
+	return res;
 }
