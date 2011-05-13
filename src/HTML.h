@@ -54,5 +54,6 @@ Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
 overload sdef(void, Unescape, String *str);
 overload sdef(String, Unescape, RdString str);
+sdef(String, Escape, RdString str);
 
 #undef self

@@ -39,3 +39,24 @@ overload sdef(String, Unescape, RdString str) {
 	scall(Unescape, &res);
 	return res;
 }
+
+sdef(String, Escape, RdString str) {
+	String res = String_New(str.len + 128);
+
+	res.buf[0] = '"';
+	res.len++;
+
+	fwd(i, str.len) {
+		switch (str.buf[i]) {
+			case '"':
+				String_Append(&res, $("\\"));
+
+			default:
+				String_Append(&res, str.buf[i]);
+		}
+	}
+
+	String_Append(&res, $("\""));
+
+	return res;
+}
