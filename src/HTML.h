@@ -5,6 +5,9 @@
 set(ref(TokenType)) {
 	ref(TokenType_Unset),
 
+	/* The parser doesn't ignore comments. */
+	ref(TokenType_Comment),
+
 	/* Refers to DOCTYPE. */
 	ref(TokenType_Type),
 
@@ -14,11 +17,12 @@ set(ref(TokenType)) {
 	 */
 	ref(TokenType_Data),
 
-	/* Must be unescaped via HTML_Unescape(). Even then it may still contain
-	 * entities which HTML_Entities_Decode() will convert to their UTF-8
-	 * equivalents.
+	/* Must be decoded using HTML_Entities_Decode() which will convert the
+	 * entities to their UTF-8 equivalents.
 	 */
 	ref(TokenType_Value),
+
+	/* Generated when a new tag begins. */
 	ref(TokenType_TagStart),
 
 	/* This is generated when a tag is closed. If the value is empty, it refers
@@ -27,10 +31,16 @@ set(ref(TokenType)) {
 	 */
 	ref(TokenType_TagEnd),
 
-	ref(TokenType_Comment),
+	/* For attribute names. No decoding required. */
 	ref(TokenType_AttrName),
+
+	/* Must be unescaped via HTML_Unescape(). */
 	ref(TokenType_AttrValue),
+
+	/* An option is an attribute without value. */
 	ref(TokenType_Option),
+
+	/* Generated when parsing is done. */
 	ref(TokenType_Done)
 };
 

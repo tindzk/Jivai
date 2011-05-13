@@ -56,8 +56,6 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 		node->type  = ref(NodeType_Value);
 		node->attrs = NULL;
 		node->value = HTML_Entities_Decode(value);
-
-		HTML_Unescape(&node->value);
 	} else if (type == HTML_TokenType_Data) {
 		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
