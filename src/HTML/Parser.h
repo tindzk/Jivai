@@ -2,7 +2,7 @@
 #import "../String.h"
 #import "../Exception.h"
 
-#define self HTML_Tokenizer
+#define self HTML_Parser
 
 class {
 	HTML_OnToken onToken;

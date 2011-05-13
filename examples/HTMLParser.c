@@ -1,8 +1,8 @@
 #import <Main.h>
 #import <Path.h>
 #import <File.h>
+#import <HTML/Parser.h>
 #import <HTML/Quirks.h>
-#import <HTML/Tokenizer.h>
 
 #define self Application
 
@@ -54,7 +54,7 @@ def(void, OnToken, HTML_TokenType type, RdString value) {
 def(bool, Run) {
 	RdString path =
 		(this->args->len == 0)
-			? $("HTMLTokenizer.html")
+			? $("HTMLParser.html")
 			: this->args->buf[0];
 
 	String s = String_New((size_t) Path_GetSize(path));
@@ -62,12 +62,12 @@ def(bool, Run) {
 
 	HTML_Quirks quirks = HTML_Quirks_New(
 		HTML_OnToken_For(this, ref(OnToken)));
-	HTML_Tokenizer html = HTML_Tokenizer_New(
+	HTML_Parser html = HTML_Parser_New(
 		HTML_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
 
-	HTML_Tokenizer_Process(&html, s.rd);
+	HTML_Parser_Process(&html, s.rd);
 
-	HTML_Tokenizer_Destroy(&html);
+	HTML_Parser_Destroy(&html);
 	HTML_Quirks_Destroy(&quirks);
 
 	String_Destroy(&s);

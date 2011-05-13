@@ -1,9 +1,9 @@
+#import <HTML/Parser.h>
 #import <HTML/Quirks.h>
-#import <HTML/Tokenizer.h>
 
 #import "TestSuite.h"
 
-#define self tsHTML_Tokenizer
+#define self tsHTML_Parser
 
 record(ref(Element)) {
 	HTML_TokenType type;
@@ -12,13 +12,13 @@ record(ref(Element)) {
 
 class {
 	HTML_Quirks quirks;
-	HTML_Tokenizer html;
+	HTML_Parser html;
 	ref(Element) elements[64];
 	size_t cur;
 	size_t count;
 };
 
-tsRegister("HTML.Tokenizer") {
+tsRegister("HTML.Parser") {
 	return true;
 }
 
@@ -27,7 +27,7 @@ def(void, OnToken, HTML_TokenType type, RdString value);
 tsInit {
 	this->quirks = HTML_Quirks_New(HTML_OnToken_For(this, ref(OnToken)));
 
-	this->html = HTML_Tokenizer_New(
+	this->html = HTML_Parser_New(
 		HTML_OnToken_For(&this->quirks, HTML_Quirks_ProcessToken));
 
 	fwd (i, nElems(this->elements)) {
@@ -39,7 +39,7 @@ tsInit {
 }
 
 tsDestroy {
-	HTML_Tokenizer_Destroy(&this->html);
+	HTML_Parser_Destroy(&this->html);
 	HTML_Quirks_Destroy(&this->quirks);
 }
 
@@ -74,7 +74,7 @@ def(void, Process, RdString str) {
 	this->cur   = 0;
 	this->count = 0;
 
-	HTML_Tokenizer_Process(&this->html, str);
+	HTML_Parser_Process(&this->html, str);
 }
 
 tsCase(Acute, "Value") {

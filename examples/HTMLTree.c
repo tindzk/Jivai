@@ -1,7 +1,7 @@
 #import <Path.h>
 #import <Main.h>
 #import <HTML/Tree.h>
-#import <HTML/Tokenizer.h>
+#import <HTML/Parser.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
@@ -68,13 +68,13 @@ def(bool, Run) {
 	File_GetContents(path, &s);
 
 	HTML_Tree tree = HTML_Tree_New();
-	HTML_Tokenizer html = HTML_Tokenizer_New(
+	HTML_Parser html = HTML_Parser_New(
 		HTML_OnToken_For(&tree, HTML_Tree_ProcessToken));
 
-	HTML_Tokenizer_Process(&html, s.rd);
+	HTML_Parser_Process(&html, s.rd);
 	call(PrintTree, HTML_Tree_GetRoot(&tree), 0);
 
-	HTML_Tokenizer_Destroy(&html);
+	HTML_Parser_Destroy(&html);
 	HTML_Tree_Destroy(&tree);
 	String_Destroy(&s);
 

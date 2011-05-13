@@ -1,6 +1,6 @@
-#import "Tokenizer.h"
+#import "Parser.h"
 
-#define self HTML_Tokenizer
+#define self HTML_Parser
 
 rsdef(self, New, HTML_OnToken onToken) {
 	return (self) {
