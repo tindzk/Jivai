@@ -8,7 +8,8 @@ record(ref(Element)) {
 };
 
 class {
-	ref(Element) prev;
+	bool toClose;
+	RdString tagName;
 	HTML_OnToken onToken;
 };
 

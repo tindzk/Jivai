@@ -191,7 +191,6 @@ def(void, ParseTagStart) {
 
 			if (commitName) {
 				callback(this->onToken, HTML_TokenType_TagStart, name);
-				callback(this->onToken, HTML_TokenType_AttrEnd, name);
 			}
 			break;
 		} else if (call(Peek, &str, 2) && String_Equals(str, $("/>"))) {
@@ -200,7 +199,6 @@ def(void, ParseTagStart) {
 
 			if (commitName) {
 				callback(this->onToken, HTML_TokenType_TagStart, name);
-				callback(this->onToken, HTML_TokenType_AttrEnd, name);
 			}
 
 			callback(this->onToken, HTML_TokenType_TagEnd, $(""));
@@ -215,8 +213,6 @@ def(void, ParseTagStart) {
 
 			/* Parse all attributes until the tag has reached its end. */
 			while(call(ParseAttr));
-
-			callback(this->onToken, HTML_TokenType_AttrEnd, name);
 		} else {
 			call(Extend, &name);
 		}

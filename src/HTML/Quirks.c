@@ -4,8 +4,7 @@
 
 rsdef(self, New, HTML_OnToken onToken) {
 	return (self) {
-		.onToken   = onToken,
-		.prev.type = HTML_TokenType_Unset
+		.onToken = onToken,
 	};
 }
 
@@ -39,33 +38,29 @@ sdef(bool, Equals, RdString a, RdString b) {
 }
 
 def(void, ProcessToken, HTML_TokenType type, RdString value) {
-	if (this->prev.type == HTML_TokenType_AttrEnd) {
-		bool inject = true;
-
-		if (type == HTML_TokenType_TagEnd) {
-			if (value.len == 0) {
-				/* The tag was already closed. */
-				inject = false;
-			} else {
-				inject = !scall(Equals, value, this->prev.value);
-			}
-		}
-
-		if (inject) {
-			fwd(i, nElems(tags)) {
-				if (scall(Equals, tags[i], this->prev.value)) {
-					callback(this->onToken, HTML_TokenType_TagEnd, $(""));
-					break;
-				}
-			}
+	if (type == HTML_TokenType_TagEnd) {
+		if (value.len == 0) {
+			/* Refers to the last tag. */
+			this->toClose = false;
+		} else if (scall(Equals, value, this->tagName)) {
+			/* Current tag is already closed. */
+			this->toClose = false;
 		}
 	}
 
-	if (type == HTML_TokenType_Done) {
-		this->prev.type = HTML_TokenType_Unset;
-	} else {
-		this->prev.type  = type;
-		this->prev.value = value;
+	if (this->toClose && !HTML_IsTagAttr(type)) {
+		callback(this->onToken, HTML_TokenType_TagEnd, $(""));
+		this->toClose = false;
+	}
+
+	if (type == HTML_TokenType_TagStart) {
+		this->tagName = value;
+		fwd(i, nElems(tags)) {
+			if (scall(Equals, tags[i], this->tagName)) {
+				this->toClose = true;
+				break;
+			}
+		}
 	}
 
 	callback(this->onToken, type, value);

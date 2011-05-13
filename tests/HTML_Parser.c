@@ -119,9 +119,6 @@ tsCase(Acute, "Tags (simple)") {
 		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("br")));
 }
 
@@ -130,9 +127,6 @@ tsCase(Acute, "Tags (XHTML)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("br")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -146,18 +140,12 @@ tsCase(Acute, "Tags (XHTML)") {
 		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<br />"));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("br")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -169,9 +157,6 @@ tsCase(Acute, "Tags (XHTML)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Option, $("option")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -188,9 +173,6 @@ tsCase(Acute, "Tags (malformed)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_AttrValue, $("text")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -213,9 +195,6 @@ tsCase(Acute, "Tags (malformed)") {
 		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<input   type=text   value=val/></input>"));
@@ -236,9 +215,6 @@ tsCase(Acute, "Tags (malformed)") {
 		call(Matches, HTML_TokenType_AttrValue, $("val/")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<input type/>"));
@@ -250,9 +226,6 @@ tsCase(Acute, "Tags (malformed)") {
 		call(Matches, HTML_TokenType_Option, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<input type/ >"));
@@ -262,9 +235,6 @@ tsCase(Acute, "Tags (malformed)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Option, $("type/")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 }
 
 tsCase(Acute, "Tags (single quotes)") {
@@ -286,9 +256,6 @@ tsCase(Acute, "Tags (single quotes)") {
 		call(Matches, HTML_TokenType_AttrValue, $("'http://localhost/'")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("img")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 }
 
@@ -303,9 +270,6 @@ tsCase(Acute, "Tags (double quotes)") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_AttrValue, $("\"http://localhost/\"")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("a")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Value, $("Caption")));
@@ -348,9 +312,6 @@ tsCase(Acute, "JavaScript") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_AttrValue, $("\"text/javascript\"")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("script")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Value, $(
@@ -426,9 +387,7 @@ tsCase(Acute, "Nesting") {
 	call(Process, $("value<p><b>parag</b></p>"));
 	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("value")));
 	Assert($("Matches"), call(Matches, HTML_TokenType_TagStart, $("p")));
-	Assert($("Matches"), call(Matches, HTML_TokenType_AttrEnd, $("p")));
 	Assert($("Matches"), call(Matches, HTML_TokenType_TagStart, $("b")));
-	Assert($("Matches"), call(Matches, HTML_TokenType_AttrEnd, $("b")));
 	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("parag")));
 	Assert($("Matches"), call(Matches, HTML_TokenType_TagEnd, $("b")));
 	Assert($("Matches"), call(Matches, HTML_TokenType_TagEnd, $("p")));
@@ -442,9 +401,6 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<BR>"));
@@ -453,18 +409,12 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("BR")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("BR")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<br>test<br>"));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("br")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -476,9 +426,6 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<br><input>"));
@@ -487,16 +434,10 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("input")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -510,18 +451,12 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("br")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	call(Process, $("<meta />"));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("meta")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -535,9 +470,6 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	Assert($("Matches"),
@@ -545,9 +477,6 @@ tsCase(Acute, "Quirks") {
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("title")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("title")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Value, $("value")));
@@ -564,13 +493,7 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("li")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("img")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("img")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
@@ -590,9 +513,6 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));
 
 	Assert($("Matches"),
@@ -604,16 +524,10 @@ tsCase(Acute, "Quirks") {
 		call(Matches, HTML_TokenType_TagStart, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("li")));
-
-	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagStart, $("img")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_Option, $("option")));
-
-	Assert($("Matches"),
-		call(Matches, HTML_TokenType_AttrEnd, $("img")));
 
 	Assert($("Matches"),
 		call(Matches, HTML_TokenType_TagEnd, $("")));

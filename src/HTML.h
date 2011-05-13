@@ -31,9 +31,14 @@ set(ref(TokenType)) {
 	ref(TokenType_AttrName),
 	ref(TokenType_AttrValue),
 	ref(TokenType_Option),
-	ref(TokenType_AttrEnd),
 	ref(TokenType_Done)
 };
+
+static inline rsdef(bool, IsTagAttr, ref(TokenType) type) {
+	return type == ref(TokenType_AttrName)
+		|| type == ref(TokenType_AttrValue)
+		|| type == ref(TokenType_Option);
+}
 
 Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
