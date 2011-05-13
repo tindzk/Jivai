@@ -43,14 +43,18 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 		bool inject = true;
 
 		if (type == HTML_TokenType_TagEnd) {
-			inject = !scall(Equals, value, this->prev.value);
+			if (value.len == 0) {
+				/* The tag was already closed. */
+				inject = false;
+			} else {
+				inject = !scall(Equals, value, this->prev.value);
+			}
 		}
 
 		if (inject) {
 			fwd(i, nElems(tags)) {
 				if (scall(Equals, tags[i], this->prev.value)) {
-					callback(this->onToken,
-						HTML_TokenType_TagEnd, this->prev.value);
+					callback(this->onToken, HTML_TokenType_TagEnd, $(""));
 					break;
 				}
 			}

@@ -203,7 +203,7 @@ def(void, ParseTagStart) {
 				callback(this->onToken, HTML_TokenType_AttrEnd, name);
 			}
 
-			callback(this->onToken, HTML_TokenType_TagEnd, name);
+			callback(this->onToken, HTML_TokenType_TagEnd, $(""));
 			break;
 		} else if (Char_IsSpace(c)) {
 			call(Consume);

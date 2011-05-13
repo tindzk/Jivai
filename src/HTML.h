@@ -20,7 +20,13 @@ set(ref(TokenType)) {
 	 */
 	ref(TokenType_Value),
 	ref(TokenType_TagStart),
+
+	/* This is generated when a tag is closed. If the value is empty, it refers
+	 * to the most recently added tag. This is the case for XHTML tags like
+	 * `<br />' whereas for `<br></br>' the value is `br'.
+	 */
 	ref(TokenType_TagEnd),
+
 	ref(TokenType_Comment),
 	ref(TokenType_AttrName),
 	ref(TokenType_AttrValue),
