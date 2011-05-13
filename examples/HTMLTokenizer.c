@@ -8,12 +8,12 @@
 
 static size_t depth = 0;
 
-def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type == HTML_Tokenizer_TokenType_Done) {
+def(void, OnToken, HTML_TokenType type, RdString value) {
+	if (type == HTML_TokenType_Done) {
 		return;
 	}
 
-	if (type == HTML_Tokenizer_TokenType_TagEnd) {
+	if (type == HTML_TokenType_TagEnd) {
 		assert(depth > 0);
 		depth--;
 	}
@@ -22,27 +22,27 @@ def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 		String_Print($("    "));
 	}
 
-	if (type == HTML_Tokenizer_TokenType_TagStart) {
+	if (type == HTML_TokenType_TagStart) {
 		depth++;
 	}
 
-	if (type == HTML_Tokenizer_TokenType_Type) {
+	if (type == HTML_TokenType_Type) {
 		String_Print($("type"));
-	} else if (type == HTML_Tokenizer_TokenType_Value) {
+	} else if (type == HTML_TokenType_Value) {
 		String_Print($("value"));
-	} else if (type == HTML_Tokenizer_TokenType_Data) {
+	} else if (type == HTML_TokenType_Data) {
 		String_Print($("data"));
-	} else if (type == HTML_Tokenizer_TokenType_TagStart) {
+	} else if (type == HTML_TokenType_TagStart) {
 		String_Print($("tag start"));
-	} else if (type == HTML_Tokenizer_TokenType_TagEnd) {
+	} else if (type == HTML_TokenType_TagEnd) {
 		String_Print($("tag end"));
-	} else if (type == HTML_Tokenizer_TokenType_Comment) {
+	} else if (type == HTML_TokenType_Comment) {
 		String_Print($("comment"));
-	} else if (type == HTML_Tokenizer_TokenType_AttrName) {
+	} else if (type == HTML_TokenType_AttrName) {
 		String_Print($("attr name"));
-	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
+	} else if (type == HTML_TokenType_AttrValue) {
 		String_Print($("attr value"));
-	} else if (type == HTML_Tokenizer_TokenType_Option) {
+	} else if (type == HTML_TokenType_Option) {
 		String_Print($("option"));
 	}
 
@@ -61,9 +61,9 @@ def(bool, Run) {
 	File_GetContents(path, &s);
 
 	HTML_Quirks quirks = HTML_Quirks_New(
-		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
+		HTML_OnToken_For(this, ref(OnToken)));
 	HTML_Tokenizer html = HTML_Tokenizer_New(
-		HTML_Tokenizer_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
+		HTML_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
 
 	HTML_Tokenizer_Process(&html, s.rd);
 

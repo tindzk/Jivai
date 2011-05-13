@@ -6,7 +6,7 @@
 #define self tsHTML_Tokenizer
 
 record(ref(Element)) {
-	HTML_Tokenizer_TokenType type;
+	HTML_TokenType type;
 	RdString value;
 };
 
@@ -22,14 +22,13 @@ tsRegister("HTML.Tokenizer") {
 	return true;
 }
 
-def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value);
+def(void, OnToken, HTML_TokenType type, RdString value);
 
 tsInit {
-	this->quirks = HTML_Quirks_New(
-		HTML_Tokenizer_OnToken_For(this, ref(OnToken)));
+	this->quirks = HTML_Quirks_New(HTML_OnToken_For(this, ref(OnToken)));
 
 	this->html = HTML_Tokenizer_New(
-		HTML_Tokenizer_OnToken_For(&this->quirks, HTML_Quirks_ProcessToken));
+		HTML_OnToken_For(&this->quirks, HTML_Quirks_ProcessToken));
 
 	fwd (i, nElems(this->elements)) {
 		this->elements[i] = (ref(Element)) { .value = $("") };
@@ -44,7 +43,7 @@ tsDestroy {
 	HTML_Quirks_Destroy(&this->quirks);
 }
 
-def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
+def(void, OnToken, HTML_TokenType type, RdString value) {
 	this->elements[this->count] = (ref(Element)) {
 		.type  = type,
 		.value = value
@@ -53,7 +52,7 @@ def(void, OnToken, HTML_Tokenizer_TokenType type, RdString value) {
 	this->count++;
 }
 
-def(bool, Matches, HTML_Tokenizer_TokenType type, RdString value) {
+def(bool, Matches, HTML_TokenType type, RdString value) {
 	if (this->cur >= this->count) {
 		return false;
 	}
@@ -82,34 +81,34 @@ tsCase(Acute, "Value") {
 	call(Process, $("  Hello World!  "));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $("  Hello World!  ")));
+		call(Matches, HTML_TokenType_Value, $("  Hello World!  ")));
 
 	call(Process, $("  "));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $("  ")));
+		call(Matches, HTML_TokenType_Value, $("  ")));
 }
 
 tsCase(Acute, "Comments") {
 	call(Process, $("<!---->"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Comment, $("")));
+		call(Matches, HTML_TokenType_Comment, $("")));
 
 	call(Process, $("<!--Comment-->"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Comment, $("Comment")));
+		call(Matches, HTML_TokenType_Comment, $("Comment")));
 
 	call(Process, $("<!-- Comment -->"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Comment, $(" Comment ")));
+		call(Matches, HTML_TokenType_Comment, $(" Comment ")));
 
 	call(Process, $("<!--[if IE]><link rel=\"stylesheet\" /><![endif]-->"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Comment,
+		call(Matches, HTML_TokenType_Comment,
 			$("[if IE]><link rel=\"stylesheet\" /><![endif]")));
 }
 
@@ -117,215 +116,215 @@ tsCase(Acute, "Tags (simple)") {
 	call(Process, $("<br></br>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 }
 
 tsCase(Acute, "Tags (XHTML)") {
 	call(Process, $("<br/>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<br option/>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<br />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<br option    />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 }
 
 tsCase(Acute, "Tags (malformed)") {
 	call(Process, $("<input type = text />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+		call(Matches, HTML_TokenType_AttrName, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("text")));
+		call(Matches, HTML_TokenType_AttrValue, $("text")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<input  option  type = text  option />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+		call(Matches, HTML_TokenType_AttrName, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("text")));
+		call(Matches, HTML_TokenType_AttrValue, $("text")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<input   type=text   value=val/></input>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+		call(Matches, HTML_TokenType_AttrName, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("text")));
+		call(Matches, HTML_TokenType_AttrValue, $("text")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("value")));
+		call(Matches, HTML_TokenType_AttrName, $("value")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("val/")));
+		call(Matches, HTML_TokenType_AttrValue, $("val/")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<input type/>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("type")));
+		call(Matches, HTML_TokenType_Option, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<input type/ >"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("type/")));
+		call(Matches, HTML_TokenType_Option, $("type/")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 }
 
 tsCase(Acute, "Tags (single quotes)") {
 	call(Process, $("<img alt='' src='http://localhost/' />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("img")));
+		call(Matches, HTML_TokenType_TagStart, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("alt")));
+		call(Matches, HTML_TokenType_AttrName, $("alt")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("''")));
+		call(Matches, HTML_TokenType_AttrValue, $("''")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("src")));
+		call(Matches, HTML_TokenType_AttrName, $("src")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("'http://localhost/'")));
+		call(Matches, HTML_TokenType_AttrValue, $("'http://localhost/'")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("img")));
+		call(Matches, HTML_TokenType_AttrEnd, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("img")));
+		call(Matches, HTML_TokenType_TagEnd, $("img")));
 }
 
 tsCase(Acute, "Tags (double quotes)") {
 	call(Process, $("<a href=\"http://localhost/\">Caption</a>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("a")));
+		call(Matches, HTML_TokenType_TagStart, $("a")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("href")));
+		call(Matches, HTML_TokenType_AttrName, $("href")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("\"http://localhost/\"")));
+		call(Matches, HTML_TokenType_AttrValue, $("\"http://localhost/\"")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("a")));
+		call(Matches, HTML_TokenType_AttrEnd, $("a")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $("Caption")));
+		call(Matches, HTML_TokenType_Value, $("Caption")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("a")));
+		call(Matches, HTML_TokenType_TagEnd, $("a")));
 }
 
 tsCase(Acute, "Tags (escaping quotes)") {
 	call(Process, $("<img alt=\"This needs to be \\\"escaped\\\".\" \">"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("img")));
+		call(Matches, HTML_TokenType_TagStart, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("alt")));
+		call(Matches, HTML_TokenType_AttrName, $("alt")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue,
+		call(Matches, HTML_TokenType_AttrValue,
 			$("\"This needs to be \\\"escaped\\\".\"")));
 }
 
@@ -342,19 +341,19 @@ tsCase(Acute, "JavaScript") {
 	));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("script")));
+		call(Matches, HTML_TokenType_TagStart, $("script")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrName, $("type")));
+		call(Matches, HTML_TokenType_AttrName, $("type")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrValue, $("\"text/javascript\"")));
+		call(Matches, HTML_TokenType_AttrValue, $("\"text/javascript\"")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("script")));
+		call(Matches, HTML_TokenType_AttrEnd, $("script")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $(
+		call(Matches, HTML_TokenType_Value, $(
 			"\nfunction getCookieVal (offset) {\n"
 					"\tvar endstr = document.cookie.indexOf(\";\", offset);\n"
 					"\tif (endstr == -1)\n"
@@ -364,14 +363,14 @@ tsCase(Acute, "JavaScript") {
 	)));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("script")));
+		call(Matches, HTML_TokenType_TagEnd, $("script")));
 }
 
 tsCase(Acute, "CDATA") {
 	call(Process, $("<![CDATA[<sender>John Smith</sender>]]>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Data,
+		call(Matches, HTML_TokenType_Data,
 			$("<sender>John Smith</sender>")));
 
 	/* CDATA cannot contain the ]]> sequence. The tokenizer won't merge the
@@ -380,10 +379,10 @@ tsCase(Acute, "CDATA") {
 	call(Process, $("<![CDATA[Start]]]]><![CDATA[>End]]>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Data, $("Start]]")));
+		call(Matches, HTML_TokenType_Data, $("Start]]")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Data, $(">End")));
+		call(Matches, HTML_TokenType_Data, $(">End")));
 }
 
 tsCase(Acute, "DOCTYPE") {
@@ -392,7 +391,7 @@ tsCase(Acute, "DOCTYPE") {
 			"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Type,
+		call(Matches, HTML_TokenType_Type,
 			$("html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
 				"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"")));
 }
@@ -400,39 +399,39 @@ tsCase(Acute, "DOCTYPE") {
 tsCase(Acute, "Invalid tags") {
 	/* Incomplete tags without attributes. */
 	call(Process, $("<"));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("<")));
 
 	call(Process, $("< "));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("< ")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("< ")));
 
 	/* UTF-8 tags should be ignored. */
 	call(Process, $("<œ"));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("<œ")));
 	call(Process, $("<œ option"));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ option")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("<œ option")));
 	call(Process, $("<œ option>"));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("<œ option>")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("<œ option>")));
 
 	/* Valid but incomplete tags must not yield tokens. */
 	call(Process, $("<name"));
-	Assert($("Matches"), !call(Matches, HTML_Tokenizer_TokenType_Value, $("<name")));
+	Assert($("Matches"), !call(Matches, HTML_TokenType_Value, $("<name")));
 
 	call(Process, $("a <= b || c >= d || e < f || g > h"));
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value,
+		call(Matches, HTML_TokenType_Value,
 			$("a <= b || c >= d || e < f || g > h")));
 }
 
 tsCase(Acute, "Nesting") {
 	call(Process, $("value<p><b>parag</b></p>"));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("value")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagStart, $("p")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("p")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagStart, $("b")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("b")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_Value, $("parag")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("b")));
-	Assert($("Matches"), call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("p")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("value")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_TagStart, $("p")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_AttrEnd, $("p")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_TagStart, $("b")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_AttrEnd, $("b")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_Value, $("parag")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_TagEnd, $("b")));
+	Assert($("Matches"), call(Matches, HTML_TokenType_TagEnd, $("p")));
 }
 
 /* These should be taken care of by HTML_Quirks. */
@@ -440,190 +439,190 @@ tsCase(Acute, "Quirks") {
 	call(Process, $("<br>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<BR>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("BR")));
+		call(Matches, HTML_TokenType_TagStart, $("BR")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("BR")));
+		call(Matches, HTML_TokenType_AttrEnd, $("BR")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("BR")));
+		call(Matches, HTML_TokenType_TagEnd, $("BR")));
 
 	call(Process, $("<br>test<br>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $("test")));
+		call(Matches, HTML_TokenType_Value, $("test")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<br><input>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("input")));
+		call(Matches, HTML_TokenType_TagStart, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("input")));
+		call(Matches, HTML_TokenType_AttrEnd, $("input")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("input")));
+		call(Matches, HTML_TokenType_TagEnd, $("input")));
 
 	call(Process, $("<br option>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("br")));
+		call(Matches, HTML_TokenType_TagStart, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("br")));
+		call(Matches, HTML_TokenType_AttrEnd, $("br")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("br")));
+		call(Matches, HTML_TokenType_TagEnd, $("br")));
 
 	call(Process, $("<meta />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("meta")));
+		call(Matches, HTML_TokenType_TagStart, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("meta")));
+		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("meta")));
+		call(Matches, HTML_TokenType_TagEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+		call(Matches, HTML_TokenType_Done, $("")));
 
 	call(Process, $("<meta /> <title>value</title>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("meta")));
+		call(Matches, HTML_TokenType_TagStart, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("meta")));
+		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("meta")));
+		call(Matches, HTML_TokenType_TagEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $(" ")));
+		call(Matches, HTML_TokenType_Value, $(" ")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("title")));
+		call(Matches, HTML_TokenType_TagStart, $("title")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("title")));
+		call(Matches, HTML_TokenType_AttrEnd, $("title")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Value, $("value")));
+		call(Matches, HTML_TokenType_Value, $("value")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("title")));
+		call(Matches, HTML_TokenType_TagEnd, $("title")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+		call(Matches, HTML_TokenType_Done, $("")));
 
 	call(Process, $("<li><img></li>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("li")));
+		call(Matches, HTML_TokenType_TagStart, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("li")));
+		call(Matches, HTML_TokenType_AttrEnd, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("img")));
+		call(Matches, HTML_TokenType_TagStart, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("img")));
+		call(Matches, HTML_TokenType_AttrEnd, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("img")));
+		call(Matches, HTML_TokenType_TagEnd, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("li")));
+		call(Matches, HTML_TokenType_TagEnd, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+		call(Matches, HTML_TokenType_Done, $("")));
 
 	call(Process, $("<meta option />"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("meta")));
+		call(Matches, HTML_TokenType_TagStart, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("meta")));
+		call(Matches, HTML_TokenType_AttrEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("meta")));
+		call(Matches, HTML_TokenType_TagEnd, $("meta")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+		call(Matches, HTML_TokenType_Done, $("")));
 
 	call(Process, $("<li><img option></li>"));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("li")));
+		call(Matches, HTML_TokenType_TagStart, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("li")));
+		call(Matches, HTML_TokenType_AttrEnd, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagStart, $("img")));
+		call(Matches, HTML_TokenType_TagStart, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Option, $("option")));
+		call(Matches, HTML_TokenType_Option, $("option")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_AttrEnd, $("img")));
+		call(Matches, HTML_TokenType_AttrEnd, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("img")));
+		call(Matches, HTML_TokenType_TagEnd, $("img")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_TagEnd, $("li")));
+		call(Matches, HTML_TokenType_TagEnd, $("li")));
 
 	Assert($("Matches"),
-		call(Matches, HTML_Tokenizer_TokenType_Done, $("")));
+		call(Matches, HTML_TokenType_Done, $("")));
 }
 
 tsFinalize;

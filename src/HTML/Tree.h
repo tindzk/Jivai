@@ -1,5 +1,4 @@
 #import "Entities.h"
-#import "Tokenizer.h"
 
 #import "../HTML.h"
 #import "../Tree.h"
@@ -41,7 +40,7 @@ rsdef(self, New);
 def(void, Destroy);
 def(void, DestroyNode, Tree_Node *_node);
 def(ref(Node) *, GetRoot);
-def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value);
+def(void, ProcessToken, HTML_TokenType type, RdString value);
 sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name);
 sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...);
 sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...);

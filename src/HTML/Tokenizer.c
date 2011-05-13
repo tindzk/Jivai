@@ -2,7 +2,7 @@
 
 #define self HTML_Tokenizer
 
-rsdef(self, New, ref(OnToken) onToken) {
+rsdef(self, New, HTML_OnToken onToken) {
 	return (self) {
 		.onToken = onToken
 	};
@@ -99,7 +99,7 @@ def(void, ParseAttrValue) {
 
 			/* As for quoted values, stop as soon as the value is complete. */
 			if (c == quoteType && prev != '\\') {
-				callback(this->onToken, ref(TokenType_AttrValue), value);
+				callback(this->onToken, HTML_TokenType_AttrValue, value);
 				break;
 			}
 		} else if (c == '"' || c == '\'') {
@@ -113,7 +113,7 @@ def(void, ParseAttrValue) {
 			 * (like ' or "). We'll stop processing after a space or ">".
 			 */
 
-			callback(this->onToken, ref(TokenType_AttrValue), value);
+			callback(this->onToken, HTML_TokenType_AttrValue, value);
 			break;
 		} else {
 			/* Unquoted value. */
@@ -147,7 +147,7 @@ def(bool, ParseAttr) {
 		}
 
 		if (c == '=') {
-			callback(this->onToken, ref(TokenType_AttrName), name);
+			callback(this->onToken, HTML_TokenType_AttrName, name);
 			call(Consume);
 
 			call(ParseAttrValue);
@@ -156,14 +156,14 @@ def(bool, ParseAttr) {
 				|| (call(Peek, &str, 2) && String_Equals(str, $("/>"))))
 		{
 			if (name.len != 0) {
-				callback(this->onToken, ref(TokenType_Option), name);
+				callback(this->onToken, HTML_TokenType_Option, name);
 			}
 
 			return false;
 		} else if (space) {
 			if (!Char_IsSpace(c)) {
 				if (name.len != 0) {
-					callback(this->onToken, ref(TokenType_Option), name);
+					callback(this->onToken, HTML_TokenType_Option, name);
 				}
 
 				return true;
@@ -190,8 +190,8 @@ def(void, ParseTagStart) {
 			call(Consume);
 
 			if (commitName) {
-				callback(this->onToken, ref(TokenType_TagStart), name);
-				callback(this->onToken, ref(TokenType_AttrEnd), name);
+				callback(this->onToken, HTML_TokenType_TagStart, name);
+				callback(this->onToken, HTML_TokenType_AttrEnd, name);
 			}
 			break;
 		} else if (call(Peek, &str, 2) && String_Equals(str, $("/>"))) {
@@ -199,24 +199,24 @@ def(void, ParseTagStart) {
 			call(Consume, 2);
 
 			if (commitName) {
-				callback(this->onToken, ref(TokenType_TagStart), name);
-				callback(this->onToken, ref(TokenType_AttrEnd), name);
+				callback(this->onToken, HTML_TokenType_TagStart, name);
+				callback(this->onToken, HTML_TokenType_AttrEnd, name);
 			}
 
-			callback(this->onToken, ref(TokenType_TagEnd), name);
+			callback(this->onToken, HTML_TokenType_TagEnd, name);
 			break;
 		} else if (Char_IsSpace(c)) {
 			call(Consume);
 
 			if (commitName) {
-				callback(this->onToken, ref(TokenType_TagStart), name);
+				callback(this->onToken, HTML_TokenType_TagStart, name);
 				commitName = false;
 			}
 
 			/* Parse all attributes until the tag has reached its end. */
 			while(call(ParseAttr));
 
-			callback(this->onToken, ref(TokenType_AttrEnd), name);
+			callback(this->onToken, HTML_TokenType_AttrEnd, name);
 		} else {
 			call(Extend, &name);
 		}
@@ -231,7 +231,7 @@ def(void, ParseTagEnd) {
 	while (call(Peek, &c)) {
 		if (c == '>') {
 			call(Consume);
-			callback(this->onToken, ref(TokenType_TagEnd), name);
+			callback(this->onToken, HTML_TokenType_TagEnd, name);
 			break;
 		} else {
 			call(Extend, &name);
@@ -247,7 +247,7 @@ def(void, ParseComment) {
 	while (call(Peek, NULL)) {
 		if (call(Peek, &str, 3) && String_Equals(str, $("-->"))) {
 			call(Consume, 3);
-			callback(this->onToken, ref(TokenType_Comment), comment);
+			callback(this->onToken, HTML_TokenType_Comment, comment);
 			break;
 		} else {
 			call(Extend, &comment);
@@ -263,7 +263,7 @@ def(void, ParseData) {
 	while (call(Peek, NULL)) {
 		if (call(Peek, &str, 3) && String_Equals(str, $("]]>"))) {
 			call(Consume, 3);
-			callback(this->onToken, ref(TokenType_Data), data);
+			callback(this->onToken, HTML_TokenType_Data, data);
 			break;
 		} else {
 			call(Extend, &data);
@@ -279,7 +279,7 @@ def(void, ParseType) {
 	while (call(Peek, &c)) {
 		if (c == '>') {
 			call(Consume);
-			callback(this->onToken, ref(TokenType_Type), type);
+			callback(this->onToken, HTML_TokenType_Type, type);
 			break;
 		} else {
 			call(Extend, &type);
@@ -338,7 +338,7 @@ def(void, Parse) {
 
 			/* Flush the value buffer first. */
 			if (value.len != 0) {
-				callback(this->onToken, ref(TokenType_Value), value);
+				callback(this->onToken, HTML_TokenType_Value, value);
 				value.len = 0;
 			}
 
@@ -347,10 +347,10 @@ def(void, Parse) {
 	}
 
 	if (value.len != 0) {
-		callback(this->onToken, ref(TokenType_Value), value);
+		callback(this->onToken, HTML_TokenType_Value, value);
 	}
 
-	callback(this->onToken, ref(TokenType_Done), $(""));
+	callback(this->onToken, HTML_TokenType_Done, $(""));
 }
 
 def(void, Process, RdString s) {

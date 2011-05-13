@@ -1,6 +1,7 @@
 #import <Path.h>
 #import <Main.h>
 #import <HTML/Tree.h>
+#import <HTML/Tokenizer.h>
 #import <FileStream.h>
 #import <BufferedStream.h>
 
@@ -68,7 +69,7 @@ def(bool, Run) {
 
 	HTML_Tree tree = HTML_Tree_New();
 	HTML_Tokenizer html = HTML_Tokenizer_New(
-		HTML_Tokenizer_OnToken_For(&tree, HTML_Tree_ProcessToken));
+		HTML_OnToken_For(&tree, HTML_Tree_ProcessToken));
 
 	HTML_Tokenizer_Process(&html, s.rd);
 	call(PrintTree, HTML_Tree_GetRoot(&tree), 0);

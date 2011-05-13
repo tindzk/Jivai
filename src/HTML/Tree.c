@@ -33,8 +33,8 @@ def(ref(Node) *, GetRoot) {
 	return (ref(Node) *) &this->tree.root;
 }
 
-def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
-	if (type == HTML_Tokenizer_TokenType_TagStart) {
+def(void, ProcessToken, HTML_TokenType type, RdString value) {
+	if (type == HTML_TokenType_TagStart) {
 		this->node = Tree_AddNode(&this->tree, this->node);
 
 		this->node->type  = ref(NodeType_Tag);
@@ -42,7 +42,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 		this->node->attrs = scall(Attrs_New, 0);
 
 		this->depth++;
-	} else if (type == HTML_Tokenizer_TokenType_TagEnd) {
+	} else if (type == HTML_TokenType_TagEnd) {
 		if (this->node->parent == NULL) {
 			throw(IllegalNesting);
 		}
@@ -50,7 +50,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 		this->node = this->node->parent;
 
 		this->depth--;
-	} else if (type == HTML_Tokenizer_TokenType_Value) {
+	} else if (type == HTML_TokenType_Value) {
 		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
 		node->type  = ref(NodeType_Value);
@@ -58,14 +58,14 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 		node->value = HTML_Entities_Decode(value);
 
 		HTML_Unescape(&node->value);
-	} else if (type == HTML_Tokenizer_TokenType_Data) {
+	} else if (type == HTML_TokenType_Data) {
 		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
 		node->type  = ref(NodeType_Value);
 		node->value = String_Clone(value);
 		node->attrs = NULL;
-	} else if (type == HTML_Tokenizer_TokenType_AttrName
-			|| type == HTML_Tokenizer_TokenType_Option)
+	} else if (type == HTML_TokenType_AttrName
+			|| type == HTML_TokenType_Option)
 	{
 		ref(Attr) item = {
 			.name  = String_Clone(value),
@@ -73,7 +73,7 @@ def(void, ProcessToken, HTML_Tokenizer_TokenType type, RdString value) {
 		};
 
 		scall(Attrs_Push, &this->node->attrs, item);
-	} else if (type == HTML_Tokenizer_TokenType_AttrValue) {
+	} else if (type == HTML_TokenType_AttrValue) {
 		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
 		attr->value = String_Clone(value);
 		HTML_Unescape(&attr->value);
