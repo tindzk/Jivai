@@ -9,7 +9,7 @@
 static size_t depth = 0;
 
 def(void, OnToken, HTML_TokenType type, RdString value) {
-	if (type == HTML_TokenType_AttrEnd || type == HTML_TokenType_Done) {
+	if (type == HTML_TokenType_Done) {
 		return;
 	}
 
