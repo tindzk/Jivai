@@ -47,6 +47,13 @@ def(size_t, Write, RdBuffer buf) {
 	return buf.len;
 }
 
+def(void, Clear) {
+	assert(!this->str.omni);
+
+	this->str.len = 0;
+	this->orig->len = 0;
+}
+
 def(void, Close) { }
 
 def(bool, IsEof) {

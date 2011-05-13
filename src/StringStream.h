@@ -15,6 +15,7 @@ overload rsdef(self, New, StringInst s);
 overload rsdef(self, New, OmniString s);
 def(size_t, Read, WrBuffer buf);
 def(size_t, Write, RdBuffer buf);
+def(void, Clear);
 def(void, Close);
 def(bool, IsEof);
 
