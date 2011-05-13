@@ -6,6 +6,7 @@
 #import "Types.h"
 #import "Object.h"
 #import "Macros.h"
+#import "Buffer.h"
 #import "BitMask.h"
 #import "Compiler.h"
 
@@ -169,6 +170,20 @@ static inline sdef(self, New, size_t size) {
 
 	return (self) {
 		.buf = Memory_New(size)
+	};
+}
+
+static alwaysInline rsdef(RdBuffer, GetRdBuffer, RdString str) {
+	return (RdBuffer) {
+		.ptr = str.buf,
+		.len = str.len
+	};
+}
+
+static alwaysInline rsdef(WrBuffer, GetWrBuffer, String str) {
+	return (WrBuffer) {
+		.ptr  = str.buf,
+		.size = String_GetSize(str)
 	};
 }
 
@@ -394,22 +409,6 @@ static alwaysInline overload sdef(short, NaturalCompare, RdString a, RdString b)
 }
 
 #undef self
-
-#import "Buffer.h"
-
-static alwaysInline RdBuffer String_GetRdBuffer(RdString str) {
-	return (RdBuffer) {
-		.ptr = str.buf,
-		.len = str.len
-	};
-}
-
-static alwaysInline WrBuffer String_GetWrBuffer(String str) {
-	return (WrBuffer) {
-		.ptr  = str.buf,
-		.size = String_GetSize(str)
-	};
-}
 
 #define self RdStringArray
 def(ssize_t, Find, RdString needle);
