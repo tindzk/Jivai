@@ -20,8 +20,8 @@ tsCase(Acute, "Memory") {
 	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
 	BufferedStream_SetInputBuffer(&stream, 1024, 128);
 
-	YAML yml = YAML_New(4, &BufferedStreamImpl, &stream);
-	YAML_Parse(&yml);
+	YAML yml = YAML_New(4);
+	YAML_Parse(&yml, BufferedStream_AsStream(&stream));
 
 	Assert($("Empty buffer"), BufferedStream_Flush(&stream).len == 0);
 
@@ -34,7 +34,7 @@ tsCase(Acute, "Memory") {
 	/* Parse the file again. No memory should get leaked. Verify
 	 * with Valgrind.
 	 */
-	YAML_Parse(&yml);
+	YAML_Parse(&yml, BufferedStream_AsStream(&stream));
 
 	Assert($("Same number of top-level nodes"), oldNodes == YAML_GetRoot(&yml)->len);
 
