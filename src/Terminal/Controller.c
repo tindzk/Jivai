@@ -53,7 +53,7 @@ static def(void, Print, Ecriture_Node *node, VarArg *argptr) {
 
 def(void, Render, RdString s, ...) {
 	Ecriture ecr = Ecriture_New(&ecr);
-	Ecriture_Parse(&ecr, String_AsStream(&s));
+	Ecriture_Parse(&ecr, String_AsStream(RdString_Exalt(s)));
 
 	VarArg argptr;
 	VarArg_Start(argptr, s);

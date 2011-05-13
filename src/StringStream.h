@@ -6,11 +6,13 @@
 #define self StringStream
 
 class {
-	RdString *str;
+	CarrierString str;
+	String *orig;
 	size_t offset;
 };
 
-rsdef(self, New, RdStringInst s);
+overload rsdef(self, New, StringInst s);
+overload rsdef(self, New, OmniString s);
 def(size_t, Read, WrBuffer buf);
 def(size_t, Write, RdBuffer buf);
 def(void, Close);
@@ -18,7 +20,12 @@ def(bool, IsEof);
 
 ExportImpl(Stream);
 
-static alwaysInline Stream String_AsStream(RdStringInst s) {
+static overload alwaysInline Stream String_AsStream(StringInst s) {
+	StringStream stream = StringStream_New(s);
+	return StringStream_AsStream(&stream);
+}
+
+static overload alwaysInline Stream String_AsStream(OmniString s) {
 	StringStream stream = StringStream_New(s);
 	return StringStream_AsStream(&stream);
 }

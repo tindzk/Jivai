@@ -2,21 +2,27 @@
 
 #define self StringStream
 
-rsdef(self, New, RdStringInst s) {
+overload rsdef(self, New, StringInst s) {
 	return (self) {
-		.str    = s.addr,
-		.offset = 0
+		.str  = String_ToCarrier(*s.addr),
+		.orig = s.addr
+	};
+}
+
+overload rsdef(self, New, OmniString s) {
+	return (self) {
+		.str = String_ToCarrier(s)
 	};
 }
 
 def(size_t, Read, WrBuffer buf) {
-	if (buf.size > this->str->len - this->offset) {
-		buf.size = this->str->len - this->offset;
+	if (buf.size > this->str.len - this->offset) {
+		buf.size = this->str.len - this->offset;
 	}
 
 	if (buf.size > 0) {
 		RdBuffer src = {
-			.ptr = this->str->buf + this->offset,
+			.ptr = this->str.buf + this->offset,
 			.len = buf.size
 		};
 
@@ -27,15 +33,24 @@ def(size_t, Read, WrBuffer buf) {
 	return buf.size;
 }
 
-def(size_t, Write, __unused RdBuffer buf) {
-	assert(false);
-	return 0;
+def(size_t, Write, RdBuffer buf) {
+	assert(!this->str.omni);
+
+	String_Append((String *) &this->str, (RdString) {
+		.buf = buf.ptr,
+		.len = buf.len
+	});
+
+	this->orig->buf = this->str.buf;
+	this->orig->len = this->str.len;
+
+	return buf.len;
 }
 
 def(void, Close) { }
 
 def(bool, IsEof) {
-	return this->offset >= this->str->len;
+	return this->offset >= this->str.len;
 }
 
 Impl(Stream) = {

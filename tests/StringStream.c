@@ -15,7 +15,7 @@ tsRegister("StringStream") {
 
 tsCase(Acute, "Empty string") {
 	String out = String_New(16);
-	RdString s = $("");
+	String s   = String_New(0);
 
 	StringStream stream = StringStream_New(&s);
 
@@ -29,15 +29,16 @@ tsCase(Acute, "Empty string") {
 }
 
 tsCase(Acute, "Non-empty string") {
-	RdString s = $("Hello World.");
 	String out = String_New(128);
+	RdString s = $("Hello World.");
 
-	StringStream stream = StringStream_New(&s);
+	StringStream stream = StringStream_New(RdString_Exalt(s));
 
 	WrBuffer buf = {
 		.ptr  = out.buf,
 		.size = 2
 	};
+
 	Assert($("read() return value"),
 		(out.len = StringStream_Read(&stream, buf)) == 2);
 
@@ -55,6 +56,21 @@ tsCase(Acute, "Non-empty string") {
 
 	Assert($("isEof()"),
 		StringStream_IsEof(&stream) == true);
+
+	String_Destroy(&out);
+}
+
+tsCase(Acute, "Writing") {
+	String out = String_New(128);
+	RdString s = $("Hello World.");
+
+	StringStream stream = StringStream_New(&out);
+
+	Assert($("isEof()"), StringStream_IsEof(&stream));
+	Assert($("write() return value"),
+		StringStream_Write(&stream, String_GetRdBuffer(s)) == s.len);
+	Assert($("Equals"), String_Equals(out.rd, s));
+	Assert($("isEof()"), !StringStream_IsEof(&stream));
 
 	String_Destroy(&out);
 }
