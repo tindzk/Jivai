@@ -148,24 +148,18 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 		throw(BufferOverflow);
 	}
 
-	if (offset > 0 && right - offset > 0) {
-		if (dest->buf != NULL) {
-			/* Memory_Move is preferable because it also works with
-			 * overlapping memory areas.
-			 */
+	assert(right - offset > 0);
 
-			Memory_Move(dest->buf,
-				dest->buf + offset,
-				right     - offset);
-		} else {
-			char *buf = Memory_New(right - offset);
+	if (offset > 0) {
+		assert(dest->buf != NULL);
 
-			Memory_Copy(buf,
-				dest->buf + offset,
-				right     - offset);
+		/* Memory_Move is preferable because it also works with overlapping
+		 * memory areas.
+		 */
 
-			dest->buf = buf;
-		}
+		Memory_Move(dest->buf,
+			dest->buf + offset,
+			right     - offset);
 	}
 
 	dest->len = right - offset;
