@@ -82,6 +82,26 @@ static def(void, ParseOption) {
 	}
 }
 
+static def(void, ParseComment) {
+	char c;
+	char next = '\0';
+	RdString comment = $("");
+
+	while (call(Peek, &c)) {
+		call(Peek, &next, 1);
+
+		if (c == '*' && next == '/') {
+			call(Consume);
+			call(Consume);
+
+			callback(this->onToken, Ecriture_TokenType_Comment, comment, this->line);
+			break;
+		} else {
+			call(Extend, &comment);
+		}
+	}
+}
+
 static def(void, ParseLiteral) {
 	char c;
 	char next = '\0';
@@ -155,6 +175,16 @@ def(void, Parse, bool inTag) {
 			}
 
 			call(ParseTag);
+		} else if (c == '/' && call(Peek, &next, 1) && next == '*') {
+			call(Consume);
+			call(Consume);
+
+			if (value.len != 0) {
+				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				value.len = 0;
+			}
+
+			call(ParseComment);
 		} else if (inTag && c == '}') {
 			call(Consume);
 			break;

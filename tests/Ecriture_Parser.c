@@ -196,4 +196,24 @@ tsCase(Acute, "Malformed") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 
+tsCase(Acute, "Comments") {
+	call(Process, $("/**/"));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Comment, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("/*Comment*/"));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Comment, $("Comment")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("/* Comment */"));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Comment, $(" Comment ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("start /*.b{}*/ end"));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("start ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Comment, $(".b{}")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $(" end")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+}
+
 tsFinalize;

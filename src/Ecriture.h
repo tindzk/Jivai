@@ -7,6 +7,7 @@ set(ref(TokenType)) {
 	ref(TokenType_TagStart),
 	ref(TokenType_Option), /* Requires unescaping. */
 	ref(TokenType_Value),
+	ref(TokenType_Comment),
 	ref(TokenType_Literal), /* Requires unescaping. */
 	ref(TokenType_TagEnd),
 	ref(TokenType_Done)
