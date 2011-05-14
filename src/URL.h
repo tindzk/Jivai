@@ -11,7 +11,7 @@ record(ref(Parts)) {
 	String fragment;
 };
 
-sdef(ref(Parts), Parse, String url);
+sdef(ref(Parts), Parse, RdString url);
 sdef(void, Parts_Destroy, ref(Parts) *parts);
 
 #undef self

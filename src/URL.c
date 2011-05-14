@@ -10,11 +10,11 @@ set(ref(State)) {
 	ref(State_Fragment)
 };
 
-sdef(ref(Parts), Parse, String url) {
+sdef(ref(Parts), Parse, RdString url) {
 	ref(Parts) res;
 
-	res.scheme   = $("");
-	res.host     = $("");
+	res.scheme   = String_New(0);
+	res.host     = String_New(0);
 	res.port     = 0;
 	res.path     = String_New(128);
 	res.fragment = String_New(32);
@@ -28,9 +28,9 @@ sdef(ref(Parts), Parse, String url) {
 	for (size_t i = 0; i < url.len; i++) {
 		switch (state) {
 			case ref(State_Scheme):
-				if (String_EndsWith(buf, $("://"))) {
+				if (String_EndsWith(buf.rd, $("://"))) {
 					String_Copy(&res.scheme,
-						String_Slice(buf, 0, -3));
+						String_Slice(buf.rd, 0, -3));
 
 					buf.len = 0;
 
@@ -40,15 +40,15 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Host):
-				if (String_EndsWith(buf, $(":"))) {
+				if (String_EndsWith(buf.rd, $(":"))) {
 					state = ref(State_Port);
-				} else if (String_EndsWith(buf, $("/"))) {
+				} else if (String_EndsWith(buf.rd, $("/"))) {
 					state = ref(State_Path);
 				}
 
 				if (state != ref(State_Host)) {
 					String_Copy(&res.host,
-						String_Slice(buf, 0, -1));
+						String_Slice(buf.rd, 0, -1));
 
 					buf.len = 0;
 				}
@@ -56,8 +56,8 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Port):
-				if (String_EndsWith(buf, $("/"))) {
-					res.port = Int16_Parse(buf);
+				if (String_EndsWith(buf.rd, $("/"))) {
+					res.port = Int16_Parse(buf.rd);
 					buf.len = 0;
 
 					state = ref(State_Path);
@@ -66,9 +66,9 @@ sdef(ref(Parts), Parse, String url) {
 				break;
 
 			case ref(State_Path):
-				if (String_EndsWith(buf, $("#"))) {
+				if (String_EndsWith(buf.rd, $("#"))) {
 					String_Append(&res.path,
-						String_Slice(buf, 0, -1));
+						String_Slice(buf.rd, 0, -1));
 					state = ref(State_Fragment);
 					buf.len = 0;
 				}
@@ -84,9 +84,9 @@ sdef(ref(Parts), Parse, String url) {
 
 	if (buf.len > 0) {
 		if (state == ref(State_Path)) {
-			String_Append(&res.path, buf);
+			String_Append(&res.path, buf.rd);
 		} else if (state == ref(State_Fragment)) {
-			String_Append(&res.fragment, buf);
+			String_Append(&res.fragment, buf.rd);
 		}
 	}
 
