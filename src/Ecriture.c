@@ -11,15 +11,15 @@ rsdef(CarrierString, Unescape, RdString str) {
 				i++;
 			}
 
-			if (!res.omni) {
-				res.buf[res.len] = str.buf[i];
-				res.len++;
-			} else {
+			if (res.omni) {
 				res = String_ToCarrier(String_New(str.len - 1));
 				Memory_Copy(res.buf, str.buf, i);
 				res.len = i;
+				continue;
 			}
-		} else if (!res.omni) {
+		}
+
+		if (!res.omni) {
 			res.buf[res.len] = str.buf[i];
 			res.len++;
 		}
