@@ -3,15 +3,16 @@
 
 #define self URL
 
+// @exc SchemeMissing
+
 record(ref(Parts)) {
-	String scheme;
-	String host;
-	short port;
-	String path;
-	String fragment;
+	RdString scheme;
+	RdString host;
+	unsigned short port;
+	RdString path;
+	RdString fragment;
 };
 
 sdef(ref(Parts), Parse, RdString url);
-sdef(void, Parts_Destroy, ref(Parts) *parts);
 
 #undef self
