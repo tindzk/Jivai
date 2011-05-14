@@ -38,6 +38,13 @@ sdef(ref(Parts), Parse, RdString url) {
 			res.fragment = String_Slice(res.path, pos4 + 1);
 			res.path     = String_Slice(res.path, 0, pos4);
 		}
+
+		ssize_t pos5 = String_ReverseFind(res.path, '?');
+
+		if (pos5 != String_NotFound) {
+			res.query = String_Slice(res.path, pos5 + 1);
+			res.path  = String_Slice(res.path, 0, pos5);
+		}
 	}
 
 	return res;

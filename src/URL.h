@@ -11,6 +11,7 @@ record(ref(Parts)) {
 	unsigned short port;
 	RdString path;
 	RdString fragment;
+	RdString query;
 };
 
 sdef(ref(Parts), Parse, RdString url);
