@@ -181,4 +181,12 @@ tsCase(Acute, "Nesting") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 
+tsCase(Acute, "Malformed") {
+	call(Process, $(".br {}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+}
+
 tsFinalize;

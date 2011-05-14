@@ -114,7 +114,8 @@ static def(void, ParseTag) {
 			call(Consume);
 
 			if (name.len != 0) {
-				callback(this->onToken, Ecriture_TokenType_TagStart, name, this->line);
+				callback(this->onToken, Ecriture_TokenType_TagStart,
+					String_Trim(name), this->line);
 				name.len = 0;
 			}
 		}
