@@ -8,57 +8,67 @@ rsdef(self, New, Terminal *term) {
 	};
 }
 
-static def(void, Print, Ecriture_Node *node, VarArg *argptr) {
-	fwd(i, node->len) {
-		Ecriture_Node *child = node->buf[i];
+static def(void, OnToken, Ecriture_TokenType type, String value, __unused size_t line) {
+	if (type == Ecriture_TokenType_TagStart) {
+		assert(this->depth + 1 <= Terminal_Controller_Depth);
 
-		if (child->type == Ecriture_NodeType_Text) {
-			RdString value = Ecriture_Text_GetValue(child);
-			Terminal_FmtArgPrint(this->term, value, argptr);
-		} else if (child->type == Ecriture_NodeType_Item) {
-			RdString name = Ecriture_Item_GetName(child);
+		this->items[this->depth].name  = value;
+		this->items[this->depth].style = Terminal_GetStyle(this->term);
 
-			Terminal_Style style = Terminal_GetStyle(this->term);
+		this->depth++;
 
-			if (String_Equals(name, $("fg")) ||
-				String_Equals(name, $("bg")))
-			{
-				RdString strColor = Ecriture_Item_GetOptions(child);
+		if (String_Equals(value.rd, $("b"))) {
+			Terminal_SetVT100Font(this->term, Terminal_Font_Bold);
+		} else if (String_Equals(value.rd, $("i"))) {
+			Terminal_SetVT100Font(this->term, Terminal_Font_Italics);
+		} else if (String_Equals(value.rd, $("u"))) {
+			Terminal_SetVT100Font(this->term, Terminal_Font_Underline);
+		} else if (String_Equals(value.rd, $("bl"))) {
+			Terminal_SetVT100Font(this->term, Terminal_Font_Blink);
+		}
+	} else if (type == Ecriture_TokenType_Option) {
+		assert(this->depth > 0);
 
-				if (String_Equals(strColor, $("%"))) {
-					strColor = VarArg_Get(*argptr, RdString);
-				}
+		RdString name = this->items[this->depth - 1].name.rd;
 
-				int color = Terminal_ResolveColorName(
-					strColor,
-					String_Equals(name, $("bg")));
+		if (String_Equals(name, $("fg")) ||
+			String_Equals(name, $("bg")))
+		{
+			RdString strColor = value.rd;
 
-				Terminal_SetVT100Color(this->term, color);
-			} else if (String_Equals(name, $("b"))) {
-				Terminal_SetVT100Font(this->term, Terminal_Font_Bold);
-			} else if (String_Equals(name, $("i"))) {
-				Terminal_SetVT100Font(this->term, Terminal_Font_Italics);
-			} else if (String_Equals(name, $("u"))) {
-				Terminal_SetVT100Font(this->term, Terminal_Font_Underline);
-			} else if (String_Equals(name, $("bl"))) {
-				Terminal_SetVT100Font(this->term, Terminal_Font_Blink);
+			if (String_Equals(strColor, $("%"))) {
+				strColor = VarArg_Get(this->argptr, RdString);
 			}
 
-			call(Print, child, argptr);
+			int color = Terminal_ResolveColorName(
+				strColor,
+				String_Equals(name, $("bg")));
 
-			Terminal_Restore(this->term, style);
+			Terminal_SetVT100Color(this->term, color);
 		}
+
+		String_Destroy(&value);
+	} else if (type == Ecriture_TokenType_Value) {
+		Terminal_FmtArgPrint(this->term, value.rd, &this->argptr);
+		String_Destroy(&value);
+	} else if (type == Ecriture_TokenType_TagEnd) {
+		assert(this->depth > 0);
+
+		Terminal_Restore(this->term, this->items[this->depth - 1].style);
+		String_Destroy(&this->items[this->depth - 1].name);
+		this->depth--;
 	}
 }
 
 def(void, Render, RdString s, ...) {
-	Ecriture ecr = Ecriture_New(&ecr);
-	Ecriture_Parse(&ecr, String_AsStream(RdString_Exalt(s)));
+	Ecriture_Parser ecr =
+		Ecriture_Parser_New(Ecriture_OnToken_For(this, ref(OnToken)));
 
-	VarArg argptr;
-	VarArg_Start(argptr, s);
-	call(Print, Ecriture_GetRoot(&ecr), &argptr);
-	VarArg_End(argptr);
+	VarArg_Start(this->argptr, s);
 
-	Ecriture_Destroy(&ecr);
+	Ecriture_Parser_Process(&ecr, String_AsStream(RdString_Exalt(s)));
+
+	VarArg_End(this->argptr);
+
+	Ecriture_Parser_Destroy(&ecr);
 }

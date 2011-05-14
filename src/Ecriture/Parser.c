@@ -1,53 +1,14 @@
-#import "Ecriture.h"
+#import "Parser.h"
 
-#define self Ecriture
+#define self Ecriture_Parser
 
-rsdef(self, New) {
+rsdef(self, New, Ecriture_OnToken onToken) {
 	return (self) {
-		.tree = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode)))
+		.onToken = onToken
 	};
 }
 
-def(void, Destroy) {
-	Tree_Destroy(&this->tree);
-}
-
-def(void, DestroyNode, Tree_Node *ptr) {
-	ref(Node) *node = (ref(Node) *) ptr;
-
-	if (node->type == ref(NodeType_Item)) {
-		ref(Item) *item = (ref(Item) *) &node->data;
-
-		String_Destroy(&item->name);
-		String_Destroy(&item->options);
-	} else if (node->type == ref(NodeType_Text)) {
-		ref(Text) *text = (ref(Text) *) &node->data;
-
-		String_Destroy(&text->value);
-	}
-}
-
-def(ref(Node) *, GetRoot) {
-	return (ref(Node) *) &this->tree.root;
-}
-
-static def(void, Flush, String *value) {
-	if (value->len > 0) {
-		ref(Node) *node =
-			(ref(Node) *) Tree_AddCustomNode(&this->tree,
-				(Tree_Node *) this->node,
-				sizeof(ref(Node)) +
-				sizeof(ref(Text)));
-
-		node->type = ref(NodeType_Text);
-		node->line = this->line;
-
-		ref(Text) *text = (ref(Text) *) &node->data;
-		text->value = String_Clone(value->rd);
-
-		value->len = 0;
-	}
-}
+def(void, Destroy) { }
 
 static def(char, Read, size_t st, char next) {
 	char cur    = '\0';
@@ -85,7 +46,10 @@ static def(char, Read, size_t st, char next) {
 					prevstate = NONE;
 					state     = POINT;
 
-					call(Flush, &value);
+					if (value.len != 0) {
+						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+						value.len = 0;
+					}
 				} else {
 					String_Append(&value, cur);
 				}
@@ -104,26 +68,20 @@ static def(char, Read, size_t st, char next) {
 				} else if (Char_IsAlpha(cur) || Char_IsDigit(cur) || (cur == ' ' && name.len != 0)) {
 					String_Append(&name, cur);
 				} else if (cur == '[') {
+					callback(this->onToken, Ecriture_TokenType_TagStart, String_Clone(name.rd), this->line);
+					name.len = 0;
+
 					state = OPTIONS;
 				} else if (cur == '{') {
-					call(Flush, &value);
+					if (value.len != 0) {
+						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+						value.len = 0;
+					}
 
-					this->node =
-						(ref(Node) *) Tree_AddCustomNode(&this->tree,
-							(Tree_Node *) this->node,
-							sizeof(ref(Node)) +
-							sizeof(ref(Item)));
-
-					this->node->type = ref(NodeType_Item);
-					this->node->line = this->line;
-
-					ref(Item) *item = (ref(Item) *) &this->node->data;
-
-					item->name    = String_Clone(String_Trim(name.rd));
-					item->options = String_Clone(options.rd);
-
-					options.len = 0;
-					name.len    = 0;
+					if (name.len != 0) {
+						callback(this->onToken, Ecriture_TokenType_TagStart, String_Clone(name.rd), this->line);
+						name.len = 0;
+					}
 
 					if (next == '{') {
 						if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
@@ -156,13 +114,12 @@ static def(char, Read, size_t st, char next) {
 
 					String_Append(&value, cur);
 				} else if (cur == '}') {
-					call(Flush, &value);
-
-					if (this->node->parent == NULL) {
-						throw(IllegalNesting);
+					if (value.len != 0) {
+						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+						value.len = 0;
 					}
 
-					this->node = this->node->parent;
+					callback(this->onToken, Ecriture_TokenType_TagEnd, String_New(0), this->line);
 
 					goto out;
 				} else if (cur == '.') {
@@ -178,6 +135,8 @@ static def(char, Read, size_t st, char next) {
 				if (prev == '\\') {
 					String_Append(&options, cur);
 				} else if (cur == ']') {
+					callback(this->onToken, Ecriture_TokenType_Option, String_Clone(options.rd), this->line);
+					options.len = 0;
 					state = POINT;
 				} else if (cur != '\\') {
 					String_Append(&options, cur);
@@ -193,13 +152,12 @@ static def(char, Read, size_t st, char next) {
 
 					String_Append(&value, cur);
 				} else if (cur == '}' && next == '}') {
-					call(Flush, &value);
-
-					if (this->node->parent == NULL) {
-						throw(IllegalNesting);
+					if (value.len != 0) {
+						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+						value.len = 0;
 					}
 
-					this->node = this->node->parent;
+					callback(this->onToken, Ecriture_TokenType_TagEnd, String_New(0), this->line);
 
 					if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
 						next = '\0';
@@ -216,7 +174,9 @@ static def(char, Read, size_t st, char next) {
 		prev = cur;
 	}
 
-	call(Flush, &value);
+	if (value.len != 0) {
+		callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+	}
 
 out:
 	String_Destroy(&options);
@@ -226,15 +186,14 @@ out:
 	return next;
 }
 
-def(void, Parse, Stream stream) {
+def(void, Process, Stream stream) {
 	this->line   = 1;
-	this->node   = NULL;
 	this->stream = stream;
-
-	Tree_Reset(&this->tree);
 
 	char c = '\0';
 	delegate(this->stream, read, Buffer_ForChar(&c));
 
 	call(Read, 0, c);
+
+	callback(this->onToken, Ecriture_TokenType_Done, String_New(0), this->line);
 }
