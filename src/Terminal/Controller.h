@@ -1,5 +1,4 @@
 #import "../Terminal.h"
-#import "../StringStream.h"
 #import "../Ecriture/Parser.h"
 
 #define self Terminal_Controller
@@ -9,7 +8,7 @@
 #endif
 
 record(ref(Item)) {
-	String name;
+	RdString name;
 	Terminal_Style style;
 };
 

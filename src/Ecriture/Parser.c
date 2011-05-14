@@ -10,190 +10,169 @@ rsdef(self, New, Ecriture_OnToken onToken) {
 
 def(void, Destroy) { }
 
-static def(char, Read, size_t st, char next) {
-	char cur    = '\0';
-	char prev   = '\0';
-	char inject = '\0';
+overload def(bool, Peek, char *c) {
+	assert(c != NULL);
 
-	enum state_t { NONE, POINT, OPTIONS, BLOCK, LITERAL };
+	if (this->ofs >= this->buf.len) {
+		*c = '\0';
+		return false;
+	}
 
-	enum state_t state     = st;
-	enum state_t prevstate = NONE;
+	*c = this->buf.buf[this->ofs];
 
-	String name    = String_New(0);
-	String value   = String_New(0);
-	String options = String_New(0);
+	return true;
+}
 
-	while (next != '\0') {
-		if (inject != '\0') {
-			cur    = inject;
-			inject = '\0';
-		} else if (next != '\0') {
-			cur = next;
+overload def(bool, Peek, char *c, size_t cnt) {
+	assert(c != NULL);
 
-			if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
-				next = '\0';
-			}
+	if (this->ofs + cnt >= this->buf.len) {
+		*c = '\0';
+		return false;
+	}
 
-			if (cur == '\n') {
-				this->line++;
+	*c = this->buf.buf[this->ofs + cnt];
+
+	return true;
+}
+
+overload def(void, Consume) {
+	assert(this->ofs + 1 <= this->buf.len);
+
+	if (this->buf.buf[this->ofs] == '\n') {
+		this->line++;
+	}
+
+	this->ofs++;
+}
+
+def(void, Extend, RdString *str) {
+	assert(str != NULL);
+
+	if (str->len == 0) {
+		*str = String_Slice(this->buf, this->ofs, 1);
+	} else {
+		size_t ofs = str->buf - this->buf.buf;
+		assert(ofs + str->len + 1 <= this->buf.len);
+		str->len++;
+	}
+
+	if (this->buf.buf[this->ofs] == '\n') {
+		this->line++;
+	}
+
+	this->ofs++;
+}
+
+static def(void, ParseOption) {
+	char c;
+	char prev = '\0';
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		if (c == ']' && prev != '`') {
+			call(Consume);
+			callback(this->onToken, Ecriture_TokenType_Option, value, this->line);
+			break;
+		} else {
+			call(Extend, &value);
+		}
+
+		prev = c;
+	}
+}
+
+static def(void, ParseLiteral) {
+	char c;
+	char next = '\0';
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		call(Peek, &next, 1);
+
+		if (c == '`' && next == '`') {
+			call(Extend, &value);
+			call(Extend, &value);
+		} else if (c == '`') {
+			call(Consume);
+			callback(this->onToken, Ecriture_TokenType_Literal, value, this->line);
+			break;
+		} else {
+			call(Extend, &value);
+		}
+	}
+}
+
+static def(void, Parse, bool inTag);
+
+static def(void, ParseTag) {
+	char c;
+	RdString name = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '[' || c == '{') {
+			call(Consume);
+
+			if (name.len != 0) {
+				callback(this->onToken, Ecriture_TokenType_TagStart, name, this->line);
+				name.len = 0;
 			}
 		}
 
-		switch (state) {
-			case NONE:
-				if (cur == '.') {
-					prevstate = NONE;
-					state     = POINT;
-
-					if (value.len != 0) {
-						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
-						value.len = 0;
-					}
-				} else {
-					String_Append(&value, cur);
-				}
-
-				break;
-
-			case POINT:
-				if (prev == '\\') {
-					if (cur != '[' && cur != ']' &&
-						cur != '{' && cur != '}')
-					{
-						String_Append(&name, '\\');
-					}
-
-					String_Append(&name, cur);
-				} else if (Char_IsAlpha(cur) || Char_IsDigit(cur) || (cur == ' ' && name.len != 0)) {
-					String_Append(&name, cur);
-				} else if (cur == '[') {
-					callback(this->onToken, Ecriture_TokenType_TagStart, String_Clone(name.rd), this->line);
-					name.len = 0;
-
-					state = OPTIONS;
-				} else if (cur == '{') {
-					if (value.len != 0) {
-						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
-						value.len = 0;
-					}
-
-					if (name.len != 0) {
-						callback(this->onToken, Ecriture_TokenType_TagStart, String_Clone(name.rd), this->line);
-						name.len = 0;
-					}
-
-					if (next == '{') {
-						if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
-							next = '\0';
-						}
-
-						next = call(Read, LITERAL, next);
-					} else {
-						next = call(Read, BLOCK, next);
-					}
-
-					state = prevstate;
-				} else if (cur != '\\') {
-					String_Append(&value, '.');
-					String_Append(&value, name.rd);
-
-					name.len = 0;
-
-					inject = cur;
-					state  = prevstate;
-				}
-
-				break;
-
-			case BLOCK:
-				if (prev == '\\') {
-					if (cur == '{' || cur == '}') {
-						value.len--;
-					}
-
-					String_Append(&value, cur);
-				} else if (cur == '}') {
-					if (value.len != 0) {
-						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
-						value.len = 0;
-					}
-
-					callback(this->onToken, Ecriture_TokenType_TagEnd, String_New(0), this->line);
-
-					goto out;
-				} else if (cur == '.') {
-					prevstate = BLOCK;
-					state     = POINT;
-				} else {
-					String_Append(&value, cur);
-				}
-
-				break;
-
-			case OPTIONS:
-				if (prev == '\\') {
-					String_Append(&options, cur);
-				} else if (cur == ']') {
-					callback(this->onToken, Ecriture_TokenType_Option, String_Clone(options.rd), this->line);
-					options.len = 0;
-					state = POINT;
-				} else if (cur != '\\') {
-					String_Append(&options, cur);
-				}
-
-				break;
-
-			case LITERAL:
-				if (prev == '\\') {
-					if (cur != '}' && next != '}') {
-						String_Append(&value, '\\');
-					}
-
-					String_Append(&value, cur);
-				} else if (cur == '}' && next == '}') {
-					if (value.len != 0) {
-						callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
-						value.len = 0;
-					}
-
-					callback(this->onToken, Ecriture_TokenType_TagEnd, String_New(0), this->line);
-
-					if (delegate(this->stream, read, Buffer_ForChar(&next)) == 0) {
-						next = '\0';
-					}
-
-					goto out;
-				} else if (cur != '\\') {
-					String_Append(&value, cur);
-				}
-
-				break;
+		if (c == '[') {
+			call(ParseOption);
+		} else if (c == '{') {
+			call(Parse, true);
+			callback(this->onToken, Ecriture_TokenType_TagEnd, $(""), this->line);
+			break;
+		} else {
+			call(Extend, &name);
 		}
+	}
+}
 
-		prev = cur;
+def(void, Parse, bool inTag) {
+	char c, next;
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		if (c == '`') {
+			call(Consume);
+
+			if (value.len != 0) {
+				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				value.len = 0;
+			}
+
+			call(ParseLiteral);
+		} else if (c == '.' && call(Peek, &next, 1) && (Char_IsAlpha(next) || Char_IsDigit(next))) {
+			call(Consume);
+
+			if (value.len != 0) {
+				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				value.len = 0;
+			}
+
+			call(ParseTag);
+		} else if (inTag && c == '}') {
+			call(Consume);
+			break;
+		} else {
+			call(Extend, &value);
+		}
 	}
 
 	if (value.len != 0) {
-		callback(this->onToken, Ecriture_TokenType_Value, String_Clone(value.rd), this->line);
+		callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
 	}
-
-out:
-	String_Destroy(&options);
-	String_Destroy(&value);
-	String_Destroy(&name);
-
-	return next;
 }
 
-def(void, Process, Stream stream) {
-	this->line   = 1;
-	this->stream = stream;
+def(void, Process, RdString s) {
+	this->ofs  = 0;
+	this->buf  = s;
+	this->line = 1;
 
-	char c = '\0';
-	delegate(this->stream, read, Buffer_ForChar(&c));
+	call(Parse, false);
 
-	call(Read, 0, c);
-
-	callback(this->onToken, Ecriture_TokenType_Done, String_New(0), this->line);
+	callback(this->onToken, Ecriture_TokenType_Done, $(""), this->line);
 }

@@ -1,4 +1,3 @@
-#import <StringStream.h>
 #import <Ecriture/Parser.h>
 
 #import "TestSuite.h"
@@ -7,7 +6,7 @@
 
 record(ref(Element)) {
 	Ecriture_TokenType type;
-	String value;
+	RdString value;
 };
 
 class {
@@ -21,13 +20,13 @@ tsRegister("Ecriture.Parser") {
 	return true;
 }
 
-def(void, OnToken, Ecriture_TokenType type, String value, size_t line);
+def(void, OnToken, Ecriture_TokenType type, RdString value, size_t line);
 
 tsInit {
 	this->ecr = Ecriture_Parser_New(Ecriture_OnToken_For(this, ref(OnToken)));
 
 	fwd(i, nElems(this->elements)) {
-		this->elements[i] = (ref(Element)) { .value = String_New(0) };
+		this->elements[i] = (ref(Element)) { .value = $("") };
 	}
 
 	this->cur   = 0;
@@ -35,29 +34,16 @@ tsInit {
 }
 
 tsDestroy {
-	fwd(i, this->count) {
-		String_Destroy(&this->elements[i].value);
-	}
-
 	Ecriture_Parser_Destroy(&this->ecr);
 }
 
-def(void, OnToken, Ecriture_TokenType type, String value, __unused size_t line) {
-	if (this->count != 0
-		&& type == Ecriture_TokenType_Value
-		&& this->elements[this->count - 1].type == Ecriture_TokenType_Value)
-	{
-		/* Merge values. */
-		String_Append(&this->elements[this->count - 1].value, value.rd);
-		String_Destroy(&value);
-	} else {
-		this->elements[this->count] = (ref(Element)) {
-			.type  = type,
-			.value = value
-		};
+def(void, OnToken, Ecriture_TokenType type, RdString value, __unused size_t line) {
+	this->elements[this->count] = (ref(Element)) {
+		.type  = type,
+		.value = value
+	};
 
-		this->count++;
-	}
+	this->count++;
 }
 
 def(bool, Matches, Ecriture_TokenType type, RdString value) {
@@ -71,7 +57,7 @@ def(bool, Matches, Ecriture_TokenType type, RdString value) {
 		return false;
 	}
 
-	if (!String_Equals(value, this->elements[this->cur - 1].value.rd)) {
+	if (!String_Equals(value, this->elements[this->cur - 1].value)) {
 		return false;
 	}
 
@@ -79,18 +65,13 @@ def(bool, Matches, Ecriture_TokenType type, RdString value) {
 }
 
 def(void, Process, RdString str) {
-	fwd(i, this->count) {
-		String_Destroy(&this->elements[i].value);
-	}
-
 	this->cur   = 0;
 	this->count = 0;
 
-	StringStream stream = StringStream_New(RdString_Exalt(str));
-	Ecriture_Parser_Process(&this->ecr, StringStream_AsStream(&stream));
+	Ecriture_Parser_Process(&this->ecr, str);
 }
 
-tsCase(Acute, "Value") {
+tsCase(Acute, "Values") {
 	call(Process, $("  Hello World!  "));
 
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("  Hello World!  ")));
@@ -102,7 +83,7 @@ tsCase(Acute, "Value") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 
-tsCase(Acute, "Tags (simple)") {
+tsCase(Acute, "Tags") {
 	call(Process, $(".br{}"));
 
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
@@ -129,14 +110,74 @@ tsCase(Acute, "Tags (simple)") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("start .br{} end"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("start ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $(" end")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 
-tsCase(Acute, "Tags (extended)") {
+tsCase(Acute, "Options") {
 	call(Process, $(".br[option]{}"));
 
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $(".br[option][option2]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option2")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+}
+
+tsCase(Acute, "Escaping") {
+	call(Process, $(".br[op`]tion][option2`]]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("op`]tion")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option2`]")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("`.br{}`"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Literal, $(".br{}")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("`.br{}```"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Literal, $(".br{}``")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $("`.br[op``]tion][option2``]]{}`"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Literal,
+		$(".br[op``]tion][option2``]]{}")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+}
+
+tsCase(Acute, "Nesting") {
+	call(Process, $("a .fg[blue]{b .b{c .i{d}}}e"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("a ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("fg")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("blue")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("b ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("b")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("c ")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("i")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("d")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $("e")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 

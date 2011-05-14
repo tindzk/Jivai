@@ -8,7 +8,7 @@ rsdef(self, New, Terminal *term) {
 	};
 }
 
-static def(void, OnToken, Ecriture_TokenType type, String value, __unused size_t line) {
+static def(void, OnToken, Ecriture_TokenType type, RdString value, __unused size_t line) {
 	if (type == Ecriture_TokenType_TagStart) {
 		assert(this->depth + 1 <= Terminal_Controller_Depth);
 
@@ -17,24 +17,24 @@ static def(void, OnToken, Ecriture_TokenType type, String value, __unused size_t
 
 		this->depth++;
 
-		if (String_Equals(value.rd, $("b"))) {
+		if (String_Equals(value, $("b"))) {
 			Terminal_SetVT100Font(this->term, Terminal_Font_Bold);
-		} else if (String_Equals(value.rd, $("i"))) {
+		} else if (String_Equals(value, $("i"))) {
 			Terminal_SetVT100Font(this->term, Terminal_Font_Italics);
-		} else if (String_Equals(value.rd, $("u"))) {
+		} else if (String_Equals(value, $("u"))) {
 			Terminal_SetVT100Font(this->term, Terminal_Font_Underline);
-		} else if (String_Equals(value.rd, $("bl"))) {
+		} else if (String_Equals(value, $("bl"))) {
 			Terminal_SetVT100Font(this->term, Terminal_Font_Blink);
 		}
 	} else if (type == Ecriture_TokenType_Option) {
 		assert(this->depth > 0);
 
-		RdString name = this->items[this->depth - 1].name.rd;
+		RdString name = this->items[this->depth - 1].name;
 
 		if (String_Equals(name, $("fg")) ||
 			String_Equals(name, $("bg")))
 		{
-			RdString strColor = value.rd;
+			RdString strColor = value;
 
 			if (String_Equals(strColor, $("%"))) {
 				strColor = VarArg_Get(this->argptr, RdString);
@@ -46,17 +46,15 @@ static def(void, OnToken, Ecriture_TokenType type, String value, __unused size_t
 
 			Terminal_SetVT100Color(this->term, color);
 		}
-
-		String_Destroy(&value);
 	} else if (type == Ecriture_TokenType_Value) {
-		Terminal_FmtArgPrint(this->term, value.rd, &this->argptr);
-		String_Destroy(&value);
+		Terminal_FmtArgPrint(this->term, value, &this->argptr);
 	} else if (type == Ecriture_TokenType_TagEnd) {
 		assert(this->depth > 0);
 
 		Terminal_Restore(this->term, this->items[this->depth - 1].style);
-		String_Destroy(&this->items[this->depth - 1].name);
 		this->depth--;
+	} else if (type == Ecriture_TokenType_Done) {
+		assert(this->depth == 0);
 	}
 }
 
@@ -66,7 +64,7 @@ def(void, Render, RdString s, ...) {
 
 	VarArg_Start(this->argptr, s);
 
-	Ecriture_Parser_Process(&ecr, String_AsStream(RdString_Exalt(s)));
+	Ecriture_Parser_Process(&ecr, s);
 
 	VarArg_End(this->argptr);
 
