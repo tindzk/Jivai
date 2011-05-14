@@ -73,4 +73,30 @@ tsCase(Acute, "Parsing") {
 	Assert($("Fragment"), String_Equals(parts.fragment, $("main")));
 }
 
+tsCase(Acute, "Parsing") {
+	URL_Parts parts = URL_Parse($("http://user@localhost:80/info?qry#main"));
+
+	Assert($("Scheme"),   String_Equals(parts.scheme,   $("http")));
+	Assert($("Host"),     String_Equals(parts.host,     $("localhost")));
+	Assert($("Username"), String_Equals(parts.username, $("user")));
+	Assert($("Password"), String_Equals(parts.password, $("")));
+	Assert($("Port"),     parts.port == 80);
+	Assert($("Path"),     String_Equals(parts.path,     $("/info")));
+	Assert($("Query"),    String_Equals(parts.query,    $("qry")));
+	Assert($("Fragment"), String_Equals(parts.fragment, $("main")));
+}
+
+tsCase(Acute, "Parsing") {
+	URL_Parts parts = URL_Parse($("http://user:pass@localhost:80/info?qry#main"));
+
+	Assert($("Scheme"),   String_Equals(parts.scheme,   $("http")));
+	Assert($("Host"),     String_Equals(parts.host,     $("localhost")));
+	Assert($("Username"), String_Equals(parts.username, $("user")));
+	Assert($("Password"), String_Equals(parts.password, $("pass")));
+	Assert($("Port"),     parts.port == 80);
+	Assert($("Path"),     String_Equals(parts.path,     $("/info")));
+	Assert($("Query"),    String_Equals(parts.query,    $("qry")));
+	Assert($("Fragment"), String_Equals(parts.fragment, $("main")));
+}
+
 tsFinalize;

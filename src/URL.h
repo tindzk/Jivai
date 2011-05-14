@@ -7,6 +7,8 @@
 
 record(ref(Parts)) {
 	RdString scheme;
+	RdString username;
+	RdString password;
 	RdString host;
 	unsigned short port;
 	RdString path;

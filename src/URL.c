@@ -47,5 +47,20 @@ sdef(ref(Parts), Parse, RdString url) {
 		}
 	}
 
+	ssize_t pos3 = String_Find(res.host, '@');
+
+	if (pos3 != String_NotFound) {
+		ssize_t pos4 = String_Find(res.host, 0, pos3, ':');
+
+		if (pos4 == String_NotFound) {
+			res.username = String_Slice(res.host, 0, pos3);
+		} else {
+			res.username = String_Slice(res.host, 0, pos4);
+			res.password = String_Slice(res.host, pos4 + 1, pos3 - pos4 - 1);
+		}
+
+		res.host = String_Slice(res.host, pos3 + 1);
+	}
+
 	return res;
 }
