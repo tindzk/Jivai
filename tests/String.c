@@ -413,4 +413,26 @@ tsCase(Acute, "Joining") {
 	String_Destroy(&joined);
 }
 
+tsCase(Acute, "BeginsWith()") {
+	RdString str = $("Hello World.");
+
+	Assert($("Return value"), String_BeginsWith(str, $("")));
+	Assert($("Return value"), String_BeginsWith(str, $("H")));
+	Assert($("Return value"), String_BeginsWith(str, $("Hello")));
+	Assert($("Return value"), String_BeginsWith(str, $("Hello World.")));
+	Assert($("Return value"), !String_BeginsWith(str, $("e")));
+	Assert($("Return value"), !String_BeginsWith(str, $("ello World.")));
+}
+
+tsCase(Acute, "EndsWith()") {
+	RdString str = $("Hello World.");
+
+	Assert($("Return value"), String_EndsWith(str, $("")));
+	Assert($("Return value"), String_EndsWith(str, $(".")));
+	Assert($("Return value"), String_EndsWith(str, $("World.")));
+	Assert($("Return value"), String_EndsWith(str, $("Hello World.")));
+	Assert($("Return value"), !String_EndsWith(str, $("d")));
+	Assert($("Return value"), !String_EndsWith(str, $("Hello World")));
+}
+
 tsFinalize;

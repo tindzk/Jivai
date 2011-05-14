@@ -287,35 +287,24 @@ overload sdef(void, Append, self *dest, FmtString s) {
 	}
 }
 
-sdef(bool, RangeEquals, RdString s, ssize_t offset, RdString needle, ssize_t needleOffset) {
+sdef(bool, BeginsWith, RdString s, RdString needle) {
 	if (needle.len == 0) {
 		return true;
-	}
-
-	if (needle.len > s.len) {
+	} else if (needle.len > s.len) {
 		return false;
 	}
 
-	if (offset < 0) {
-		offset += s.len;
-	}
+	return Memory_Equals(s.buf, needle.buf, needle.len);
+}
 
-	if (needleOffset < 0) {
-		needleOffset += needle.len;
-	}
-
-	if ((size_t) offset > s.len) {
+sdef(bool, EndsWith, RdString s, RdString needle) {
+	if (needle.len == 0) {
+		return true;
+	} else if (needle.len > s.len) {
 		return false;
 	}
 
-	if ((size_t) needleOffset > needle.len) {
-		return false;
-	}
-
-	return Memory_Equals(
-		s.buf + offset,
-		needle.buf + needleOffset,
-		needle.len - needleOffset);
+	return Memory_Equals(s.buf + s.len - needle.len, needle.buf, needle.len);
 }
 
 def(void, ToLower) {

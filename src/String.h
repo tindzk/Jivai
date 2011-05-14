@@ -110,7 +110,8 @@ def(void, Copy, RdString src);
 overload sdef(void, Append, self *dest, RdString s);
 overload sdef(void, Append, self *dest, char c);
 overload sdef(void, Append, self *dest, FmtString s);
-sdef(bool, RangeEquals, RdString s, ssize_t offset, RdString needle, ssize_t needleOffset);
+sdef(bool, BeginsWith, RdString s, RdString needle);
+sdef(bool, EndsWith, RdString s, RdString needle);
 def(void, ToLower);
 def(void, ToUpper);
 overload sdef(bool, Split, RdString s, char c, RdString *res);
@@ -296,14 +297,6 @@ static inline overload sdef(void, Crop, self *dest, ssize_t offset) {
 
 static alwaysInline sdef(bool, Equals, RdString s, RdString needle) {
 	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
-}
-
-static alwaysInline sdef(bool, BeginsWith, RdString s, RdString needle) {
-	return scall(RangeEquals, s, 0, needle, 0);
-}
-
-static alwaysInline sdef(bool, EndsWith, RdString s, RdString needle) {
-	return scall(RangeEquals, s, s.len - needle.len, needle, 0);
 }
 
 static alwaysInline overload sdef(ssize_t, ReverseFind, RdString s, char c) {
