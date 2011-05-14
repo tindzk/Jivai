@@ -146,6 +146,13 @@ tsCase(Acute, "Escaping") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 
+	call(Process, $(".br[option``]]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option``]")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
 	call(Process, $("`.br{}`"));
 
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Literal, $(".br{}")));
