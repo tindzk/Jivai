@@ -9,6 +9,10 @@ rsdef(self, New, RdString s) {
 	};
 }
 
+def(bool, IsEnd) {
+	return this->ofs >= this->buf.len;
+}
+
 overload def(bool, Peek, char *c) {
 	assert(c != NULL);
 
@@ -35,6 +39,19 @@ overload def(bool, Peek, char *c, size_t cnt) {
 	return true;
 }
 
+overload def(bool, Peek, RdString *str, size_t len) {
+	assert(str != NULL);
+
+	if (this->ofs + len - 1 >= this->buf.len) {
+		*str = $("");
+		return false;
+	}
+
+	*str = String_Slice(this->buf, this->ofs, len);
+
+	return true;
+}
+
 overload def(void, Consume) {
 	assert(this->ofs + 1 <= this->buf.len);
 
@@ -43,6 +60,12 @@ overload def(void, Consume) {
 	}
 
 	this->ofs++;
+}
+
+overload def(void, Consume, size_t len) {
+	rpt(len) {
+		call(Consume);
+	}
 }
 
 def(void, Extend, RdString *str) {

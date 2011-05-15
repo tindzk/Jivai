@@ -10,54 +10,6 @@ rsdef(self, New, HTML_OnToken onToken) {
 
 def(void, Destroy) { }
 
-overload def(bool, Peek, char *c) {
-	if (this->ofs >= this->buf.len) {
-		return false;
-	}
-
-	if (c != NULL) {
-		*c = this->buf.buf[this->ofs];
-	}
-
-	return true;
-}
-
-overload def(bool, Peek, RdString *str, size_t len) {
-	if (this->ofs + len - 1 >= this->buf.len) {
-		return false;
-	}
-
-	if (str != NULL) {
-		*str = String_Slice(this->buf, this->ofs, len);
-	}
-
-	return true;
-}
-
-overload def(void, Consume) {
-	assert(this->ofs + 1 <= this->buf.len);
-	this->ofs++;
-}
-
-overload def(void, Consume, size_t len) {
-	assert(this->ofs + len <= this->buf.len);
-	this->ofs += len;
-}
-
-def(void, Extend, RdString *str) {
-	assert(str != NULL);
-
-	if (str->len == 0) {
-		*str = String_Slice(this->buf, this->ofs, 1);
-	} else {
-		size_t ofs = str->buf - this->buf.buf;
-		assert(ofs + str->len + 1 <= this->buf.len);
-		str->len++;
-	}
-
-	this->ofs++;
-}
-
 /* Processes one attribute value, then returns. It supports the following types
  * of values:
  *
@@ -85,17 +37,17 @@ def(void, ParseAttrValue) {
 	RdString value = $("");
 
 	/* Skip all leading spaces. */
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (!Char_IsSpace(c)) {
 			break;
 		}
 
-		call(Consume);
+		StringReader_Consume(&this->reader);
 	}
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (quote) {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 
 			/* As for quoted values, stop as soon as the value is complete. */
 			if (c == quoteType && prev != '\\') {
@@ -107,7 +59,7 @@ def(void, ParseAttrValue) {
 			quote     = true;
 			quoteType = c;
 
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		} else if (Char_IsSpace(c) || c == '>') {
 			/* As for unquoted values, we don't have a clear end delimiter
 			 * (like ' or "). We'll stop processing after a space or ">".
@@ -117,7 +69,7 @@ def(void, ParseAttrValue) {
 			break;
 		} else {
 			/* Unquoted value. */
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		}
 
 		prev = c;
@@ -131,29 +83,29 @@ def(bool, ParseAttr) {
 	RdString name = $("");
 
 	/* Skip all leading spaces. */
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (!Char_IsSpace(c)) {
 			break;
 		}
 
-		call(Consume);
+		StringReader_Consume(&this->reader);
 	}
 
 	bool space = false;
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (Char_IsSpace(c)) {
 			space = true;
 		}
 
 		if (c == '=') {
 			callback(this->onToken, HTML_TokenType_AttrName, name);
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			call(ParseAttrValue);
 			return true;
 		} else if (c == '>'
-				|| (call(Peek, &str, 2) && String_Equals(str, $("/>"))))
+				|| (StringReader_Peek(&this->reader, &str, 2) && String_Equals(str, $("/>"))))
 		{
 			if (name.len != 0) {
 				callback(this->onToken, HTML_TokenType_Option, name);
@@ -169,9 +121,9 @@ def(bool, ParseAttr) {
 				return true;
 			}
 
-			call(Consume);
+			StringReader_Consume(&this->reader);
 		} else {
-			call(Extend, &name);
+			StringReader_Extend(&this->reader, &name);
 		}
 	}
 
@@ -185,17 +137,17 @@ def(void, ParseTagStart) {
 	RdString str;
 	RdString name = $("");
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '>') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			if (commitName) {
 				callback(this->onToken, HTML_TokenType_TagStart, name);
 			}
 			break;
-		} else if (call(Peek, &str, 2) && String_Equals(str, $("/>"))) {
+		} else if (StringReader_Peek(&this->reader, &str, 2) && String_Equals(str, $("/>"))) {
 			/* This is an XHTML tag like `<br />'. */
-			call(Consume, 2);
+			StringReader_Consume(&this->reader, 2);
 
 			if (commitName) {
 				callback(this->onToken, HTML_TokenType_TagStart, name);
@@ -204,7 +156,7 @@ def(void, ParseTagStart) {
 			callback(this->onToken, HTML_TokenType_TagEnd, $(""));
 			break;
 		} else if (Char_IsSpace(c)) {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			if (commitName) {
 				callback(this->onToken, HTML_TokenType_TagStart, name);
@@ -214,7 +166,7 @@ def(void, ParseTagStart) {
 			/* Parse all attributes until the tag has reached its end. */
 			while(call(ParseAttr));
 		} else {
-			call(Extend, &name);
+			StringReader_Extend(&this->reader, &name);
 		}
 	}
 }
@@ -224,13 +176,13 @@ def(void, ParseTagEnd) {
 	char c;
 	RdString name = $("");
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '>') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 			callback(this->onToken, HTML_TokenType_TagEnd, name);
 			break;
 		} else {
-			call(Extend, &name);
+			StringReader_Extend(&this->reader, &name);
 		}
 	}
 }
@@ -240,13 +192,13 @@ def(void, ParseComment) {
 	RdString str;
 	RdString comment = $("");
 
-	while (call(Peek, NULL)) {
-		if (call(Peek, &str, 3) && String_Equals(str, $("-->"))) {
-			call(Consume, 3);
+	while (!StringReader_IsEnd(&this->reader)) {
+		if (StringReader_Peek(&this->reader, &str, 3) && String_Equals(str, $("-->"))) {
+			StringReader_Consume(&this->reader, 3);
 			callback(this->onToken, HTML_TokenType_Comment, comment);
 			break;
 		} else {
-			call(Extend, &comment);
+			StringReader_Extend(&this->reader, &comment);
 		}
 	}
 }
@@ -256,13 +208,13 @@ def(void, ParseData) {
 	RdString str;
 	RdString data = $("");
 
-	while (call(Peek, NULL)) {
-		if (call(Peek, &str, 3) && String_Equals(str, $("]]>"))) {
-			call(Consume, 3);
+	while (!StringReader_IsEnd(&this->reader)) {
+		if (StringReader_Peek(&this->reader, &str, 3) && String_Equals(str, $("]]>"))) {
+			StringReader_Consume(&this->reader, 3);
 			callback(this->onToken, HTML_TokenType_Data, data);
 			break;
 		} else {
-			call(Extend, &data);
+			StringReader_Extend(&this->reader, &data);
 		}
 	}
 }
@@ -272,13 +224,13 @@ def(void, ParseType) {
 	char c;
 	RdString type = $("");
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '>') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 			callback(this->onToken, HTML_TokenType_Type, type);
 			break;
 		} else {
-			call(Extend, &type);
+			StringReader_Extend(&this->reader, &type);
 		}
 	}
 }
@@ -287,19 +239,19 @@ def(void, ParseType) {
 def(void, ParseTag) {
 	char c;
 	RdString str;
-	call(Peek, &c);
+	StringReader_Peek(&this->reader, &c);
 
 	if (c == '/') {
-		call(Consume);
+		StringReader_Consume(&this->reader);
 		call(ParseTagEnd);
-	} else if (call(Peek, &str, 8) && String_Equals(str, $("![CDATA["))) {
-		call(Consume, 8);
+	} else if (StringReader_Peek(&this->reader, &str, 8) && String_Equals(str, $("![CDATA["))) {
+		StringReader_Consume(&this->reader, 8);
 		call(ParseData);
-	} else if (call(Peek, &str, 9) && String_Equals(str, $("!DOCTYPE "))) {
-		call(Consume, 9);
+	} else if (StringReader_Peek(&this->reader, &str, 9) && String_Equals(str, $("!DOCTYPE "))) {
+		StringReader_Consume(&this->reader, 9);
 		call(ParseType);
-	} else if (call(Peek, &str, 3) && String_Equals(str, $("!--"))) {
-		call(Consume, 3);
+	} else if (StringReader_Peek(&this->reader, &str, 3) && String_Equals(str, $("!--"))) {
+		StringReader_Consume(&this->reader, 3);
 		call(ParseComment);
 	} else {
 		call(ParseTagStart);
@@ -310,7 +262,7 @@ def(void, ParseTag) {
 def(bool, IsTag) {
 	RdString str;
 
-	if (call(Peek, &str, 2)) {
+	if (StringReader_Peek(&this->reader, &str, 2)) {
 		if (str.buf[0] == '<') {
 			if (str.buf[1] == '!' || str.buf[1] == '/' || Char_IsAlpha(str.buf[1])) {
 				return true;
@@ -322,15 +274,15 @@ def(bool, IsTag) {
 }
 
 /* Matches "..." and "<...". */
-def(void, Parse) {
+static def(void, Parse) {
 	char c;
 	RdString value = $("");
 
-	while (call(Peek, &c)) {
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (!call(IsTag)) {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		} else {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			/* Flush the value buffer first. */
 			if (value.len != 0) {
@@ -350,8 +302,6 @@ def(void, Parse) {
 }
 
 def(void, Process, RdString s) {
-	this->ofs = 0;
-	this->buf = s;
-
+	this->reader = StringReader_New(s);
 	call(Parse);
 }

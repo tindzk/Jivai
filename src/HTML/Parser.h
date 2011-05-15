@@ -1,13 +1,12 @@
 #import "../HTML.h"
 #import "../String.h"
-#import "../Exception.h"
+#import "../StringReader.h"
 
 #define self HTML_Parser
 
 class {
 	HTML_OnToken onToken;
-	RdString buf;
-	size_t ofs;
+	StringReader reader;
 };
 
 rsdef(self, New, HTML_OnToken onToken);

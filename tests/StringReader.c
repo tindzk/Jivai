@@ -25,13 +25,41 @@ tsCase(Acute, "Peek") {
 	Assert($("Equals"), c2 == 'a');
 	Assert($("Equals"), c3 == 'a');
 
-	Assert($("Return value"), StringReader_Peek(&reader, &c1, 1));
-	Assert($("Return value"), StringReader_Peek(&reader, &c2, 2));
+	Assert($("Return value"),  StringReader_Peek(&reader, &c1, 1));
+	Assert($("Return value"),  StringReader_Peek(&reader, &c2, 2));
 	Assert($("Return value"), !StringReader_Peek(&reader, &c3, 3));
 
 	Assert($("Equals"), c1 == 'b');
 	Assert($("Equals"), c2 == 'c');
 	Assert($("Equals"), c3 == '\0');
+}
+
+tsCase(Acute, "Peek") {
+	StringReader reader = StringReader_New($("abcd"));
+
+	StringReader_Consume(&reader);
+
+	RdString s1, s2, s3, s4;
+
+	Assert($("Return value"), StringReader_Peek(&reader, &s1, 2));
+	Assert($("Return value"), StringReader_Peek(&reader, &s2, 2));
+	Assert($("Return value"), StringReader_Peek(&reader, &s3, 2));
+	Assert($("Return value"), StringReader_Peek(&reader, &s4, 2));
+
+	Assert($("Equals"), String_Equals(s1, $("bc")));
+	Assert($("Equals"), String_Equals(s2, $("bc")));
+	Assert($("Equals"), String_Equals(s3, $("bc")));
+	Assert($("Equals"), String_Equals(s4, $("bc")));
+
+	Assert($("Return value"),  StringReader_Peek(&reader, &s1, 1));
+	Assert($("Return value"),  StringReader_Peek(&reader, &s2, 2));
+	Assert($("Return value"),  StringReader_Peek(&reader, &s3, 3));
+	Assert($("Return value"), !StringReader_Peek(&reader, &s4, 4));
+
+	Assert($("Equals"), String_Equals(s1, $("b")));
+	Assert($("Equals"), String_Equals(s2, $("bc")));
+	Assert($("Equals"), String_Equals(s3, $("bcd")));
+	Assert($("Equals"), s4.len == 0);
 }
 
 tsCase(Acute, "Consume") {
@@ -46,14 +74,31 @@ tsCase(Acute, "Consume") {
 	StringReader_Consume(&reader);
 
 	Assert($("Return value"), StringReader_Peek(&reader, &c3));
+	Assert($("IsEnd()"), !StringReader_IsEnd(&reader));
 	StringReader_Consume(&reader);
 
 	Assert($("Return value"), !StringReader_Peek(&reader, &c4));
+	Assert($("IsEnd()"), StringReader_IsEnd(&reader));
 
 	Assert($("Equals"), c1 == 'a');
 	Assert($("Equals"), c2 == 'b');
 	Assert($("Equals"), c3 == 'c');
 	Assert($("Equals"), c4 == '\0');
+}
+
+tsCase(Acute, "Consume") {
+	char c;
+
+	StringReader reader = StringReader_New($("abc"));
+	StringReader_Consume(&reader, 2);
+
+	Assert($("Return value"), StringReader_Peek(&reader, &c));
+	Assert($("Equals"), c == 'c');
+
+	StringReader_Consume(&reader, 1);
+
+	Assert($("Return value"), !StringReader_Peek(&reader, &c));
+	Assert($("Equals"), c == '\0');
 }
 
 tsCase(Acute, "Extend") {
