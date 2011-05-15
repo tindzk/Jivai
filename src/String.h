@@ -118,19 +118,19 @@ overload sdef(bool, Split, RdString s, char c, RdString *res);
 overload sdef(bool, Split, RdString s, RdString needle, RdString *res);
 overload sdef(RdStringArray *, Split, RdString s, char c);
 sdef(bool, Parse, RdString pattern, RdString subject, ...);
-overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c);
-overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, char c);
-overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, RdString needle);
-overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdString needle);
+overload sdef(ssize_t, Find, RdString s, char c);
+overload sdef(ssize_t, ReverseFind, RdString s, char c);
+overload sdef(ssize_t, Find, RdString s, RdString needle);
+overload sdef(ssize_t, ReverseFind, RdString s, RdString needle);
 overload sdef(RdString, Trim, RdString s, short type);
-overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdString right, bool leftAligned, RdString *out);
+overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, bool leftAligned, RdString *out);
 sdef(RdString, Cut, RdString s, RdString left, RdString right);
 def(bool, Filter, RdString s1, RdString s2);
 def(bool, Outside, RdString left, RdString right);
 overload sdef(self, Concat, RdString a, RdString b);
 overload sdef(self, Concat, RdString s, char c);
-overload sdef(bool, Replace, self *dest, ssize_t offset, RdString needle, RdString replacement);
-overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdString replacement);
+overload sdef(bool, Replace, self *dest, RdString needle, RdString replacement);
+overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement);
 sdef(short, CompareRight, RdString a, RdString b);
 sdef(short, CompareLeft, RdString a, RdString b);
 overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros);
@@ -299,44 +299,12 @@ static alwaysInline sdef(bool, Equals, RdString s, RdString needle) {
 	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
 }
 
-static alwaysInline overload sdef(ssize_t, ReverseFind, RdString s, char c) {
-	return scall(ReverseFind, s, s.len - 1, c);
-}
-
-static alwaysInline overload sdef(ssize_t, ReverseFind, RdString s, RdString needle) {
-	return scall(ReverseFind, s, s.len - 1, needle);
-}
-
-static alwaysInline overload sdef(ssize_t, Find, RdString s, RdString needle) {
-	return scall(Find, s, 0, s.len, needle);
-}
-
-static inline overload sdef(ssize_t, Find, RdString s, ssize_t offset, RdString needle) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return scall(Find, s, offset, s.len - offset, needle);
-}
-
-static alwaysInline overload sdef(ssize_t, Find, RdString s, char c) {
-	return scall(Find, s, 0, s.len, c);
-}
-
-static inline overload sdef(ssize_t, Find, RdString s, ssize_t offset, char c) {
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	return scall(Find, s, offset, s.len - offset, c);
+static alwaysInline overload sdef(bool, Contains, RdString s, char needle) {
+	return scall(Find, s, needle) != ref(NotFound);
 }
 
 static alwaysInline overload sdef(bool, Contains, RdString s, RdString needle) {
-	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
-}
-
-static alwaysInline overload sdef(bool, Contains, RdString s, char needle) {
-	return scall(Find, s, 0, s.len, needle) != ref(NotFound);
+	return scall(Find, s, needle) != ref(NotFound);
 }
 
 static alwaysInline overload sdef(RdString, Trim, RdString s) {
@@ -346,54 +314,30 @@ static alwaysInline overload sdef(RdString, Trim, RdString s) {
 }
 
 static alwaysInline overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, RdString *out) {
-	return scall(Between, s, 0, left, right, true, out);
-}
-
-static alwaysInline overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdString right, RdString *out) {
-	return scall(Between, s, offset, left, right, true, out);
-}
-
-static alwaysInline overload sdef(RdString, Between, RdString s, ssize_t offset, RdString left, RdString right, bool leftAligned) {
-	RdString out = $("");
-	scall(Between, s, offset, left, right, leftAligned, &out);
-	return out;
-}
-
-static alwaysInline overload sdef(RdString, Between, RdString s, ssize_t offset, RdString left, RdString right) {
-	RdString out = $("");
-	scall(Between, s, offset, left, right, &out);
-	return out;
+	return scall(Between, s, left, right, true, out);
 }
 
 static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, RdString right, bool leftAligned) {
 	RdString out = $("");
-	scall(Between, s, 0, left, right, leftAligned, &out);
+	scall(Between, s, left, right, leftAligned, &out);
 	return out;
 }
 
 static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, RdString right) {
 	RdString out = $("");
-	scall(Between, s, 0, left, right, true, &out);
+	scall(Between, s, left, right, &out);
 	return out;
-}
-
-static alwaysInline overload sdef(bool, Replace, self *dest, RdString needle, RdString replacement) {
-	return scall(Replace, dest, 0, needle, replacement);
 }
 
 static alwaysInline overload sdef(self, Replace, self s, RdString needle, RdString replacement) {
 	self tmp = s;
-	scall(Replace, &tmp, 0, needle, replacement);
+	scall(Replace, &tmp, needle, replacement);
 	return tmp;
-}
-
-static alwaysInline overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement) {
-	return scall(ReplaceAll, dest, 0, needle, replacement);
 }
 
 static alwaysInline overload sdef(self, ReplaceAll, RdString s, RdString needle, RdString replacement) {
 	self tmp = scall(Clone, s);
-	scall(ReplaceAll, &tmp, 0, needle, replacement);
+	scall(ReplaceAll, &tmp, needle, replacement);
 	return tmp;
 }
 

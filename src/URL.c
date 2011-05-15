@@ -17,11 +17,13 @@ sdef(ref(Parts), Parse, RdString url) {
 
 	pos += $("://").len;
 
-	ssize_t pos2 = String_Find(url, pos, '/');
+	ssize_t pos2 = String_Find(String_Slice(url, pos), '/');
 
 	if (pos2 == String_NotFound) {
 		res.host = String_Slice(url, pos);
 	} else {
+		pos2 += pos;
+
 		res.host = String_Slice(url, pos, pos2 - pos);
 		res.path = String_Slice(url, pos2);
 
@@ -50,7 +52,7 @@ sdef(ref(Parts), Parse, RdString url) {
 	ssize_t pos3 = String_Find(res.host, '@');
 
 	if (pos3 != String_NotFound) {
-		ssize_t pos4 = String_Find(res.host, 0, pos3, ':');
+		ssize_t pos4 = String_Find(String_Slice(res.host, 0, pos3), ':');
 
 		if (pos4 == String_NotFound) {
 			res.username = String_Slice(res.host, 0, pos3);

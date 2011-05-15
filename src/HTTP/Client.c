@@ -468,7 +468,7 @@ overload def(bool, Read, String *res) {
 					 * at once.
 					 */
 
-					if (String_Find(this->resp.rd, 2, $("\r\n")) != String_NotFound) {
+					if (String_Contains(String_Slice(this->resp.rd, 2), $("\r\n"))) {
 						/* We have enough data to deal with it.
 						 * Fall through.
 						 */

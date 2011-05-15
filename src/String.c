@@ -407,9 +407,11 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 				value->buf = subject.buf + ofs;
 				value->len = subject.len - ofs;
 
-				ssize_t ofsNext = String_Find(pattern, i, '%');
+				ssize_t ofsNext = String_Find(String_Slice(pattern, i), '%');
 
 				if (ofsNext != String_NotFound) {
+					ofsNext += i;
+
 					RdString param = String_Slice(pattern, i, ofsNext - i);
 
 					ssize_t ofsParam = String_Find(*value, param);
@@ -461,20 +463,8 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 	return true;
 }
 
-overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c) {
-	size_t right;
-
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	if (length < 0) {
-		right = length + s.len;
-	} else {
-		right = length + offset;
-	}
-
-	for (size_t i = offset; i < right; i++) {
+overload sdef(ssize_t, Find, RdString s, char c) {
+	fwd(i, s.len) {
 		if (s.buf[i] == c) {
 			return i;
 		}
@@ -483,20 +473,8 @@ overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, char c)
 	return ref(NotFound);
 }
 
-overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, char c) {
-	if (s.len == 0) {
-		return ref(NotFound);
-	}
-
-	if (offset < 0) {
-		offset += s.len - 1;
-	}
-
-	if ((size_t) offset > s.len) {
-		throw(BufferOverflow);
-	}
-
-	bwd(i, offset + 1) {
+overload sdef(ssize_t, ReverseFind, RdString s, char c) {
+	bwd(i, s.len) {
 		if (s.buf[i] == c) {
 			return i;
 		}
@@ -505,59 +483,10 @@ overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, char c) {
 	return ref(NotFound);
 }
 
-overload sdef(ssize_t, ReverseFind, RdString s, ssize_t offset, RdString needle) {
-	if (s.len == 0) {
-		return ref(NotFound);
-	}
-
-	if (offset < 0) {
-		offset += s.len - 1;
-	}
-
-	if ((size_t) offset > s.len) {
-		throw(BufferOverflow);
-	}
-
+overload sdef(ssize_t, Find, RdString s, RdString needle) {
 	size_t cnt = 0;
 
-	bwd(i, offset + 1) {
-		if (s.buf[i] == needle.buf[needle.len - cnt - 1]) {
-			cnt++;
-
-			if (cnt == needle.len) {
-				return i;
-			}
-		} else if (cnt > 0) {
-			cnt = 0;
-			i++;
-		}
-	}
-
-	return ref(NotFound);
-}
-
-overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdString needle) {
-	size_t right;
-
-	if (offset < 0) {
-		offset += s.len;
-	}
-
-	if (length < 0) {
-		right = length + s.len;
-	} else {
-		right = length + offset;
-	}
-
-	if ((size_t) offset > s.len ||
-		(size_t) right  > s.len)
-	{
-		throw(BufferOverflow);
-	}
-
-	size_t cnt = 0;
-
-	for (size_t i = offset; i < right; i++) {
+	fwd(i, s.len) {
 		if (s.buf[i] == needle.buf[cnt]) {
 			cnt++;
 
@@ -567,6 +496,25 @@ overload sdef(ssize_t, Find, RdString s, ssize_t offset, ssize_t length, RdStrin
 		} else if (cnt > 0) {
 			cnt = 0;
 			i--;
+		}
+	}
+
+	return ref(NotFound);
+}
+
+overload sdef(ssize_t, ReverseFind, RdString s, RdString needle) {
+	size_t cnt = 0;
+
+	bwd(i, s.len) {
+		if (s.buf[i] == needle.buf[needle.len - cnt - 1]) {
+			cnt++;
+
+			if (cnt == needle.len) {
+				return i;
+			}
+		} else if (cnt > 0) {
+			cnt = 0;
+			i++;
 		}
 	}
 
@@ -590,33 +538,36 @@ overload sdef(RdString, Trim, RdString s, short type) {
 	return s;
 }
 
-overload sdef(ssize_t, Between, RdString s, ssize_t offset, RdString left, RdString right, bool leftAligned, RdString *out) {
+overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, bool leftAligned, RdString *out) {
 	ssize_t posLeft, posRight;
 
-	if (offset < 0) {
-		offset += s.len;
-	}
-
 	if (leftAligned) {
-		if ((posLeft = scall(Find, s, offset, left)) == ref(NotFound)) {
+		if ((posLeft = scall(Find, s, left)) == ref(NotFound)) {
 			return ref(NotFound);
 		}
 
 		posLeft += left.len;
 
-		if ((posRight = scall(Find, s, posLeft + 1, right)) == ref(NotFound)) {
+		posRight = scall(Find, String_Slice(s, posLeft + 1), right);
+
+		if (posRight == ref(NotFound)) {
 			return ref(NotFound);
 		}
+
+		posRight += posLeft + 1;
 	} else {
-		if ((posRight = scall(Find, s, offset, right)) == ref(NotFound)) {
+		if ((posRight = scall(Find, s, right)) == ref(NotFound)) {
 			return ref(NotFound);
 		}
 
 		if (posRight > 0) {
-			if ((posLeft = scall(ReverseFind, s, posRight - 1, left)) == ref(NotFound)) {
+			posLeft = scall(ReverseFind, String_Slice(s, posRight - 1), left);
+
+			if (posLeft == ref(NotFound)) {
 				return ref(NotFound);
 			}
 
+			posLeft += posRight - 1;
 			posLeft += left.len;
 		} else {
 			return ref(NotFound);
@@ -638,11 +589,13 @@ sdef(RdString, Cut, RdString s, RdString left, RdString right) {
 		return $("");
 	}
 
-	ssize_t posRight = scall(Find, s, posLeft + left.len, right);
+	ssize_t posRight = scall(Find, String_Slice(s, posLeft + left.len), right);
 
 	if (posRight == ref(NotFound)) {
 		return $("");
 	}
+
+	posRight += posLeft + left.len;
 
 	return scall(Slice, s, posLeft, posRight - posLeft);
 }
@@ -662,9 +615,11 @@ def(bool, Filter, RdString s1, RdString s2) {
 
 	left += s1.len;
 
-	if ((right = scall(Find, this->rd, left, s2)) == ref(NotFound)) {
+	if ((right = scall(Find, String_Slice(this->rd, left), s2)) == ref(NotFound)) {
 		return false;
 	}
+
+	right += left;
 
 	scall(Append, &out, String_Slice(this->rd, left, right - left));
 	scall(Append, &out, String_Slice(this->rd, right + s2.len));
@@ -683,9 +638,11 @@ def(bool, Outside, RdString left, RdString right) {
 		return false;
 	}
 
-	if ((posRight = scall(Find, this->rd, posLeft + left.len, right)) == ref(NotFound)) {
+	if ((posRight = scall(Find, String_Slice(this->rd, posLeft + left.len), right)) == ref(NotFound)) {
 		return false;
 	}
+
+	posRight += posLeft + left.len;
 
 	self out = String_New(posLeft + this->len - posRight - right.len);
 
@@ -723,12 +680,8 @@ overload sdef(self, Concat, RdString s, char c) {
 	return res;
 }
 
-overload sdef(bool, Replace, self *dest, ssize_t offset, RdString needle, RdString replacement) {
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
-	ssize_t pos = scall(Find, dest->rd, offset, needle);
+overload sdef(bool, Replace, self *dest, RdString needle, RdString replacement) {
+	ssize_t pos = scall(Find, dest->rd, needle);
 
 	if (pos == ref(NotFound)) {
 		return false;
@@ -753,11 +706,7 @@ overload sdef(bool, Replace, self *dest, ssize_t offset, RdString needle, RdStri
 	return true;
 }
 
-overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdString replacement) {
-	if (offset < 0) {
-		offset += dest->len;
-	}
-
+overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement) {
 	ssize_t len = dest->len - needle.len + replacement.len;
 
 	if (len < 0) {
@@ -770,7 +719,7 @@ overload sdef(bool, ReplaceAll, self *dest, ssize_t offset, RdString needle, RdS
 	size_t cnt     = 0;
 	size_t lastPos = 0;
 
-	for (size_t i = offset; i < dest->len; i++) {
+	for (size_t i = 0; i < dest->len; i++) {
 		if (dest->buf[i] == needle.buf[cnt]) {
 			cnt++;
 
