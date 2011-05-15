@@ -132,6 +132,25 @@ static def(void, ParseTag) {
 	}
 }
 
+static def(bool, IsTag) {
+	char cur;
+	size_t ofs = 1; /* cur=. for ofs=1 */
+
+	while (StringReader_Peek(&this->reader, &cur, ofs)) {
+		if (cur == '{' || cur == '[') {
+			return true;
+		}
+
+		if (!Char_IsSpace(cur) && !Char_IsAlpha(cur) && !Char_IsDigit(cur)) {
+			return false;
+		}
+
+		ofs++;
+	}
+
+	return false;
+}
+
 static def(void, Parse, bool inTag) {
 	char c, next;
 	RdString value = $("");
@@ -150,7 +169,7 @@ static def(void, Parse, bool inTag) {
 			}
 
 			call(ParseLiteral);
-		} else if (c == '.' && (Char_IsAlpha(next) || Char_IsDigit(next))) {
+		} else if (c == '.' && call(IsTag)) {
 			StringReader_Consume(&this->reader);
 
 			if (value.len != 0) {
