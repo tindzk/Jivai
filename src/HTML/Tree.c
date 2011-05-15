@@ -33,47 +33,63 @@ def(ref(Node) *, GetRoot) {
 	return (ref(Node) *) &this->tree.root;
 }
 
+def(void, AddTag, CarrierString value) {
+	this->node = Tree_AddNode(&this->tree, this->node);
+
+	this->node->type  = ref(NodeType_Tag);
+	this->node->value = value;
+	this->node->attrs = scall(Attrs_New, 0);
+
+	this->depth++;
+}
+
+def(void, CloseTag) {
+	if (this->node->parent == NULL) {
+		throw(IllegalNesting);
+	}
+
+	this->node = this->node->parent;
+
+	this->depth--;
+}
+
+def(void, AddValue, CarrierString value) {
+	ref(Node) *node = Tree_AddNode(&this->tree, this->node);
+
+	node->type  = ref(NodeType_Value);
+	node->attrs = NULL;
+	node->value = value;
+}
+
+def(void, AddAttr, CarrierString value) {
+	ref(Attr) item = {
+		.name  = value,
+		.value = CarrierString_New()
+	};
+
+	scall(Attrs_Push, &this->node->attrs, item);
+}
+
+def(void, SetAttrValue, CarrierString value) {
+	ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
+	attr->value = value;
+}
+
 def(void, ProcessToken, HTML_TokenType type, RdString value) {
 	if (type == HTML_TokenType_TagStart) {
-		this->node = Tree_AddNode(&this->tree, this->node);
-
-		this->node->type  = ref(NodeType_Tag);
-		this->node->value = String_ToCarrier(RdString_Exalt(value));
-		this->node->attrs = scall(Attrs_New, 0);
-
-		this->depth++;
+		call(AddTag, String_ToCarrier(RdString_Exalt(value)));
 	} else if (type == HTML_TokenType_TagEnd) {
-		if (this->node->parent == NULL) {
-			throw(IllegalNesting);
-		}
-
-		this->node = this->node->parent;
-
-		this->depth--;
+		call(CloseTag);
 	} else if (type == HTML_TokenType_Value) {
-		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
-
-		node->type  = ref(NodeType_Value);
-		node->attrs = NULL;
-		node->value = String_ToCarrier(HTML_Entities_Decode(value));
+		call(AddValue, String_ToCarrier(HTML_Entities_Decode(value)));
 	} else if (type == HTML_TokenType_Data) {
-		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
-
-		node->type  = ref(NodeType_Value);
-		node->value = String_ToCarrier(RdString_Exalt(value));
-		node->attrs = NULL;
+		call(AddValue, String_ToCarrier(RdString_Exalt(value)));
 	} else if (type == HTML_TokenType_AttrName
 			|| type == HTML_TokenType_Option)
 	{
-		ref(Attr) item = {
-			.name  = String_ToCarrier(RdString_Exalt(value)),
-			.value = CarrierString_New()
-		};
-
-		scall(Attrs_Push, &this->node->attrs, item);
+		call(AddAttr, String_ToCarrier(RdString_Exalt(value)));
 	} else if (type == HTML_TokenType_AttrValue) {
-		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
-		attr->value = HTML_Unescape(value);
+		call(SetAttrValue, HTML_Unescape(value));
 	}
 }
 
