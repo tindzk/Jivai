@@ -5,10 +5,12 @@
 set(ref(TokenType)) {
 	ref(TokenType_Unset),
 	ref(TokenType_TagStart),
-	ref(TokenType_Option), /* Requires unescaping. */
+	ref(TokenType_Option),    /* Requires unescaping. */
+	ref(TokenType_AttrName),  /* Requires unescaping. */
+	ref(TokenType_AttrValue), /* Requires unescaping. */
+	ref(TokenType_Literal),   /* Requires unescaping. */
 	ref(TokenType_Value),
 	ref(TokenType_Comment),
-	ref(TokenType_Literal), /* Requires unescaping. */
 	ref(TokenType_TagEnd),
 	ref(TokenType_Done)
 };

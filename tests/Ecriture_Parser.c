@@ -135,9 +135,40 @@ tsCase(Acute, "Options") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option2")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $(".br[=value]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_AttrName, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_AttrValue, $("value")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $(".br[name=value][option]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_AttrName, $("name")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_AttrValue, $("value")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("option")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
 
 tsCase(Acute, "Escaping") {
+	call(Process, $(".br[`=value]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("`=value")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
+	call(Process, $(".br[name`=value]{}"));
+
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Option, $("name`=value")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagEnd, $("")));
+	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
+
 	call(Process, $(".br[op`]tion][option2`]]{}"));
 
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_TagStart, $("br")));

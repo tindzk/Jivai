@@ -28,5 +28,9 @@ def(void, ProcessToken, Ecriture_TokenType type, RdString value, __unused size_t
 	} else if (type == Ecriture_TokenType_Option) {
 		DocumentTree_AddAttr(&this->tree, CarrierString_New());
 		DocumentTree_SetAttrValue(&this->tree, Ecriture_Unescape(value));
+	} else if (type == Ecriture_TokenType_AttrName) {
+		DocumentTree_AddAttr(&this->tree, Ecriture_Unescape(value));
+	} else if (type == Ecriture_TokenType_AttrValue) {
+		DocumentTree_SetAttrValue(&this->tree, Ecriture_Unescape(value));
 	}
 }

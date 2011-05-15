@@ -64,6 +64,24 @@ def(void, Extend, RdString *str) {
 	this->ofs++;
 }
 
+static def(void, ParseAttrValue) {
+	char c;
+	char prev = '\0';
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		if (c == ']' && prev != '`') {
+			call(Consume);
+			callback(this->onToken, Ecriture_TokenType_AttrValue, value, this->line);
+			break;
+		} else {
+			call(Extend, &value);
+		}
+
+		prev = c;
+	}
+}
+
 static def(void, ParseOption) {
 	char c;
 	char prev = '\0';
@@ -73,6 +91,11 @@ static def(void, ParseOption) {
 		if (c == ']' && prev != '`') {
 			call(Consume);
 			callback(this->onToken, Ecriture_TokenType_Option, value, this->line);
+			break;
+		} else if (c == '=' && prev != '`') {
+			call(Consume);
+			callback(this->onToken, Ecriture_TokenType_AttrName, value, this->line);
+			call(ParseAttrValue);
 			break;
 		} else {
 			call(Extend, &value);
