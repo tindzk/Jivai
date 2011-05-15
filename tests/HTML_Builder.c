@@ -1,3 +1,4 @@
+#import <StringStream.h>
 #import <HTML/Builder.h>
 
 #import "TestSuite.h"
