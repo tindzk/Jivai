@@ -2,45 +2,40 @@
 
 #define self HTML
 
-overload sdef(void, Unescape, String *str) {
-	if (str->len == 0) {
-		return;
+rsdef(CarrierString, Unescape, RdString str) {
+	if (str.buf[0] != '"' && str.buf[0] != '\'') {
+		return String_ToCarrier(RdString_Exalt(str));
 	}
 
-	if (str->buf[0] != '"' && str->buf[0] != '\'') {
-		return;
-	}
+	char quote = str.buf[0];
 
-	int idx = 0;
+	str = String_Slice(str, 1, -1);
 
-	char prev  = '\0';
-	char quote = str->buf[0];
+	CarrierString res = String_ToCarrier(RdString_Exalt(str));
 
-	for (size_t i = 1; i < str->len; i++) {
-		if (prev == '\\') {
-			if (str->buf[i] == quote) {
-				str->buf[idx] = str->buf[i];
-				idx++;
+	fwd(i, str.len) {
+		if (str.buf[i] == '\\') {
+			if (res.omni) {
+				res = String_ToCarrier(String_New(str.len - 1));
+				Memory_Copy(res.buf, str.buf, i);
+				res.len = i;
+			}
+
+			if (i + 1 < str.len && str.buf[i + 1] == quote) {
 				i++;
 			}
-		} else if (prev != '\0') {
-			str->buf[idx] = prev;
-			idx++;
 		}
 
-		prev = str->buf[i];
+		if (!res.omni) {
+			res.buf[res.len] = str.buf[i];
+			res.len++;
+		}
 	}
 
-	str->len = idx;
-}
-
-overload sdef(String, Unescape, RdString str) {
-	String res = String_Clone(str);
-	scall(Unescape, &res);
 	return res;
 }
 
-sdef(String, Escape, RdString str) {
+rsdef(String, Escape, RdString str) {
 	String res = String_New(str.len + 128);
 
 	res.buf[0] = '"';

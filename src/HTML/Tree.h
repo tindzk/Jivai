@@ -11,7 +11,7 @@
 
 record(ref(Attr)) {
 	String name;
-	String value;
+	CarrierString value;
 };
 
 Array(ref(Attr), ref(Attrs));

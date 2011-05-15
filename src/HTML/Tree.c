@@ -22,7 +22,7 @@ def(void, DestroyNode, Tree_Node *_node) {
 	if (node->type == ref(NodeType_Tag)) {
 		each(item, node->attrs) {
 			String_Destroy(&item->name);
-			String_Destroy(&item->value);
+			CarrierString_Destroy(&item->value);
 		}
 
 		scall(Attrs_Free, node->attrs);
@@ -67,14 +67,13 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 	{
 		ref(Attr) item = {
 			.name  = String_Clone(value),
-			.value = String_New(0)
+			.value = CarrierString_New()
 		};
 
 		scall(Attrs_Push, &this->node->attrs, item);
 	} else if (type == HTML_TokenType_AttrValue) {
 		ref(Attr) *attr = &this->node->attrs->buf[this->node->attrs->len - 1];
-		attr->value = String_Clone(value);
-		HTML_Unescape(&attr->value);
+		attr->value = HTML_Unescape(value);
 	}
 }
 
