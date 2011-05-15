@@ -24,6 +24,8 @@ record(ref(Node)) {
 	CarrierString value;
 
 	ref(Attrs) *attrs;
+
+	size_t line;
 };
 
 class {
@@ -38,6 +40,7 @@ def(void, Destroy);
 def(ref(Node) *, GetRoot);
 def(void, AddTag, CarrierString value);
 def(void, CloseTag);
+def(void, SetLine, size_t line);
 def(void, AddValue, CarrierString value);
 def(void, AddAttr, CarrierString value);
 def(void, SetAttrValue, CarrierString value);

@@ -41,6 +41,7 @@ def(void, AddTag, CarrierString value) {
 	this->node->type  = ref(NodeType_Tag);
 	this->node->value = value;
 	this->node->attrs = scall(Attrs_New, 0);
+	this->node->line  = 0;
 
 	this->depth++;
 }
@@ -53,6 +54,13 @@ def(void, CloseTag) {
 	this->node = this->node->parent;
 
 	this->depth--;
+}
+
+def(void, SetLine, size_t line) {
+	assert(line > 0);
+	assert(this->node != NULL);
+
+	this->node->line = line;
 }
 
 def(void, AddValue, CarrierString value) {

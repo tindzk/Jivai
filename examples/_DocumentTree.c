@@ -17,9 +17,11 @@ def(void, PrintTree, DocumentTree_Node *nodes, int level) {
 		if (node->type == DocumentTree_NodeType_Tag) {
 			call(IndentTree, level);
 
-			tmp = String_Format($("tag=%\n"), node->value.rd);
+			String line = Integer_ToString(node->line);
+			tmp = String_Format($("tag=% line=%\n"), node->value.rd, line.rd);
 			String_Print(tmp.rd);
 			String_Destroy(&tmp);
+			String_Destroy(&line);
 
 			fwd(i, node->attrs->len) {
 				call(IndentTree, level + 1);

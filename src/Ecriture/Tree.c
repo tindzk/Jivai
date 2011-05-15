@@ -16,9 +16,10 @@ def(DocumentTree_Node *, GetRoot) {
 	return DocumentTree_GetRoot(&this->tree);
 }
 
-def(void, ProcessToken, Ecriture_TokenType type, RdString value, __unused size_t line) {
+def(void, ProcessToken, Ecriture_TokenType type, RdString value, size_t line) {
 	if (type == Ecriture_TokenType_TagStart) {
 		DocumentTree_AddTag(&this->tree, String_ToCarrier(RdString_Exalt(value)));
+		DocumentTree_SetLine(&this->tree, line);
 	} else if (type == Ecriture_TokenType_TagEnd) {
 		DocumentTree_CloseTag(&this->tree);
 	} else if (type == Ecriture_TokenType_Value) {
