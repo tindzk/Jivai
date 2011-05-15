@@ -1,65 +1,34 @@
-/* Ecriture is a lightweight markup language. */
-
 #import <Main.h>
 #import <File.h>
-#import <Integer.h>
-#import <Ecriture.h>
-#import <FileStream.h>
-#import <BufferedStream.h>
+#import <Path.h>
+#import <Ecriture/Tree.h>
+#import <Ecriture/Parser.h>
+
+#import "_DocumentTree.h"
 
 #define self Application
 
-def(void, PrintTree, Ecriture_Node *node, size_t depth) {
-	String strDepth = Integer_ToString(depth);
-
-	String_Print($("depth="));
-	String_Print(strDepth.rd);
-
-	String_Destroy(&strDepth);
-
-	rpt(depth) {
-		String_Print($("    "));
-	}
-
-	if (node->type == Ecriture_NodeType_Text) {
-		String_Print($("value: "));
-
-		String_Print(Ecriture_Text_GetValue(node));
-	} else if (node->type == Ecriture_NodeType_Item) {
-		String_Print($("name: "));
-
-		String_Print(Ecriture_Item_GetName(node));
-
-		String_Print($(" options: "));
-
-		if (Ecriture_Item_GetOptions(node).len > 0) {
-			String_Print(Ecriture_Item_GetOptions(node));
-		} else {
-			String_Print($("(empty)"));
-		}
-	}
-
-	String_Print($("\n"));
-
-	fwd(i, node->len) {
-		call(PrintTree, node->buf[i], depth + 1);
-	}
-}
-
 def(bool, Run) {
-	File file = File_New($("Ecriture.ecr"), FileStatus_ReadOnly);
+	RdString path =
+		(this->args->len == 0)
+			? $("Ecriture.ecr")
+			: this->args->buf[0];
 
-	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
-	BufferedStream_SetInputBuffer(&stream, 1024, 128);
+	String s = String_New((size_t) Path_GetSize(path));
+	File_GetContents(path, &s);
 
-	Ecriture ecr = Ecriture_New();
+	Ecriture_Tree tree = Ecriture_Tree_New();
+
+	Ecriture_Parser ecr = Ecriture_Parser_New(
+		Ecriture_OnToken_For(&tree, Ecriture_Tree_ProcessToken));
 
 	try {
-		Ecriture_Parse(&ecr, BufferedStream_AsStream(&stream));
-		call(PrintTree, Ecriture_GetRoot(&ecr), 0);
+		Ecriture_Parser_Process(&ecr, s.rd);
+		call(PrintTree, Ecriture_Tree_GetRoot(&tree), 0);
 	} finally {
-		BufferedStream_Destroy(&stream);
-		Ecriture_Destroy(&ecr);
+		Ecriture_Parser_Destroy(&ecr);
+		Ecriture_Tree_Destroy(&tree);
+		String_Destroy(&s);
 	} tryEnd;
 
 	return true;
