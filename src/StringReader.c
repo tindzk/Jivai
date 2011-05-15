@@ -47,6 +47,7 @@ overload def(void, Consume) {
 
 def(void, Extend, RdString *str) {
 	assert(str != NULL);
+	assert(this->ofs + 1 <= this->buf.len);
 
 	if (str->len == 0) {
 		*str = String_Slice(this->buf, this->ofs, 1);
