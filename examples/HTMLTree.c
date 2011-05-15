@@ -14,13 +14,13 @@ def(void, IndentTree, int level) {
 	}
 }
 
-def(void, PrintTree, HTML_Tree_Node *nodes, int level) {
+def(void, PrintTree, DocumentTree_Node *nodes, int level) {
 	each(_node, nodes) {
-		HTML_Tree_Node *node = *_node;
+		DocumentTree_Node *node = *_node;
 
 		String tmp;
 
-		if (node->type == HTML_Tree_NodeType_Tag) {
+		if (node->type == DocumentTree_NodeType_Tag) {
 			call(IndentTree, level);
 
 			tmp = String_Format($("tag=%\n"), node->value.rd);
@@ -39,7 +39,7 @@ def(void, PrintTree, HTML_Tree_Node *nodes, int level) {
 			}
 
 			call(PrintTree, node, level + 1);
-		} else if (node->type == HTML_Tree_NodeType_Value) {
+		} else if (node->type == DocumentTree_NodeType_Value) {
 			call(IndentTree, level);
 
 			/* HTML_Tree also creates nodes for values only consisting

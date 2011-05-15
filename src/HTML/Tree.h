@@ -1,48 +1,18 @@
 #import "Entities.h"
 
 #import "../HTML.h"
-#import "../Tree.h"
 #import "../String.h"
-#import "../Exception.h"
+#import "../DocumentTree.h"
 
 #define self HTML_Tree
 
-// @exc IllegalNesting
-
-record(ref(Attr)) {
-	CarrierString name;
-	CarrierString value;
-};
-
-Array(ref(Attr), ref(Attrs));
-
-record(ref(Node)) {
-	Tree_Define(ref(Node));
-
-	enum {
-		ref(NodeType_Value),
-		ref(NodeType_Tag)
-	} type;
-
-	CarrierString value;
-
-	ref(Attrs) *attrs;
-};
-
 class {
-	Tree tree;
-	ref(Node) *node;
-
-	size_t depth;
+	DocumentTree tree;
 };
 
 rsdef(self, New);
 def(void, Destroy);
-def(void, DestroyNode, Tree_Node *_node);
-def(ref(Node) *, GetRoot);
+def(DocumentTree_Node *, GetRoot);
 def(void, ProcessToken, HTML_TokenType type, RdString value);
-sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name);
-sdef(ref(Node) *, GetNodeByNames, ref(Node) *node, ...);
-sdef(ref(Node) *, GetNodeByIds, ref(Node) *node, ...);
 
 #undef self
