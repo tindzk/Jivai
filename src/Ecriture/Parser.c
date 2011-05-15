@@ -112,9 +112,10 @@ static def(void, ParseTag) {
 		if (c == '[' || c == '{') {
 			StringReader_Consume(&this->reader);
 
-			if (name.len != 0) {
-				callback(this->onToken, Ecriture_TokenType_TagStart,
-					String_Trim(name), line);
+			RdString auxName = String_Trim(name);
+
+			if (auxName.len != 0) {
+				callback(this->onToken, Ecriture_TokenType_TagStart, auxName, line);
 				name.len = 0;
 			}
 		}
