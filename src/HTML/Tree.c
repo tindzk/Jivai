@@ -17,11 +17,11 @@ def(void, Destroy) {
 def(void, DestroyNode, Tree_Node *_node) {
 	ref(Node) *node = (void *) _node;
 
-	String_Destroy(&node->value);
+	CarrierString_Destroy(&node->value);
 
 	if (node->type == ref(NodeType_Tag)) {
 		each(item, node->attrs) {
-			String_Destroy(&item->name);
+			CarrierString_Destroy(&item->name);
 			CarrierString_Destroy(&item->value);
 		}
 
@@ -38,7 +38,7 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 		this->node = Tree_AddNode(&this->tree, this->node);
 
 		this->node->type  = ref(NodeType_Tag);
-		this->node->value = String_Clone(value);
+		this->node->value = String_ToCarrier(RdString_Exalt(value));
 		this->node->attrs = scall(Attrs_New, 0);
 
 		this->depth++;
@@ -55,18 +55,18 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 
 		node->type  = ref(NodeType_Value);
 		node->attrs = NULL;
-		node->value = HTML_Entities_Decode(value);
+		node->value = String_ToCarrier(HTML_Entities_Decode(value));
 	} else if (type == HTML_TokenType_Data) {
 		ref(Node) *node = Tree_AddNode(&this->tree, this->node);
 
 		node->type  = ref(NodeType_Value);
-		node->value = String_Clone(value);
+		node->value = String_ToCarrier(RdString_Exalt(value));
 		node->attrs = NULL;
 	} else if (type == HTML_TokenType_AttrName
 			|| type == HTML_TokenType_Option)
 	{
 		ref(Attr) item = {
-			.name  = String_Clone(value),
+			.name  = String_ToCarrier(RdString_Exalt(value)),
 			.value = CarrierString_New()
 		};
 

@@ -10,7 +10,7 @@
 // @exc IllegalNesting
 
 record(ref(Attr)) {
-	String name;
+	CarrierString name;
 	CarrierString value;
 };
 
@@ -24,7 +24,7 @@ record(ref(Node)) {
 		ref(NodeType_Tag)
 	} type;
 
-	String value;
+	CarrierString value;
 
 	ref(Attrs) *attrs;
 };
