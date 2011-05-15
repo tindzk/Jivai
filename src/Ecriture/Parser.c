@@ -10,72 +10,20 @@ rsdef(self, New, Ecriture_OnToken onToken) {
 
 def(void, Destroy) { }
 
-overload def(bool, Peek, char *c) {
-	assert(c != NULL);
-
-	if (this->ofs >= this->buf.len) {
-		*c = '\0';
-		return false;
-	}
-
-	*c = this->buf.buf[this->ofs];
-
-	return true;
-}
-
-overload def(bool, Peek, char *c, size_t cnt) {
-	assert(c != NULL);
-
-	if (this->ofs + cnt >= this->buf.len) {
-		*c = '\0';
-		return false;
-	}
-
-	*c = this->buf.buf[this->ofs + cnt];
-
-	return true;
-}
-
-overload def(void, Consume) {
-	assert(this->ofs + 1 <= this->buf.len);
-
-	if (this->buf.buf[this->ofs] == '\n') {
-		this->line++;
-	}
-
-	this->ofs++;
-}
-
-def(void, Extend, RdString *str) {
-	assert(str != NULL);
-
-	if (str->len == 0) {
-		*str = String_Slice(this->buf, this->ofs, 1);
-	} else {
-		size_t ofs = str->buf - this->buf.buf;
-		assert(ofs + str->len + 1 <= this->buf.len);
-		str->len++;
-	}
-
-	if (this->buf.buf[this->ofs] == '\n') {
-		this->line++;
-	}
-
-	this->ofs++;
-}
-
 static def(void, ParseAttrValue) {
 	char c;
 	char prev = '\0';
 	RdString value = $("");
 
-	while (call(Peek, &c)) {
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == ']' && prev != '`') {
-			call(Consume);
-			callback(this->onToken, Ecriture_TokenType_AttrValue, value, this->line);
+			StringReader_Consume(&this->reader);
+			callback(this->onToken, Ecriture_TokenType_AttrValue, value, line);
 			break;
 		} else {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		}
 
 		prev = c;
@@ -87,18 +35,20 @@ static def(void, ParseOption) {
 	char prev = '\0';
 	RdString value = $("");
 
-	while (call(Peek, &c)) {
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == ']' && prev != '`') {
-			call(Consume);
-			callback(this->onToken, Ecriture_TokenType_Option, value, this->line);
+			StringReader_Consume(&this->reader);
+			callback(this->onToken, Ecriture_TokenType_Option, value, line);
 			break;
 		} else if (c == '=' && prev != '`') {
-			call(Consume);
-			callback(this->onToken, Ecriture_TokenType_AttrName, value, this->line);
+			StringReader_Consume(&this->reader);
+			callback(this->onToken, Ecriture_TokenType_AttrName, value, line);
 			call(ParseAttrValue);
 			break;
 		} else {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		}
 
 		prev = c;
@@ -110,17 +60,19 @@ static def(void, ParseComment) {
 	char next = '\0';
 	RdString comment = $("");
 
-	while (call(Peek, &c)) {
-		call(Peek, &next, 1);
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
+		StringReader_Peek(&this->reader, &next, 1);
 
 		if (c == '*' && next == '/') {
-			call(Consume);
-			call(Consume);
+			StringReader_Consume(&this->reader);
+			StringReader_Consume(&this->reader);
 
-			callback(this->onToken, Ecriture_TokenType_Comment, comment, this->line);
+			callback(this->onToken, Ecriture_TokenType_Comment, comment, line);
 			break;
 		} else {
-			call(Extend, &comment);
+			StringReader_Extend(&this->reader, &comment);
 		}
 	}
 }
@@ -130,18 +82,20 @@ static def(void, ParseLiteral) {
 	char next = '\0';
 	RdString value = $("");
 
-	while (call(Peek, &c)) {
-		call(Peek, &next, 1);
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
+		StringReader_Peek(&this->reader, &next, 1);
 
 		if (c == '`' && next == '`') {
-			call(Extend, &value);
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
+			StringReader_Extend(&this->reader, &value);
 		} else if (c == '`') {
-			call(Consume);
-			callback(this->onToken, Ecriture_TokenType_Literal, value, this->line);
+			StringReader_Consume(&this->reader);
+			callback(this->onToken, Ecriture_TokenType_Literal, value, line);
 			break;
 		} else {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		}
 	}
 }
@@ -152,13 +106,15 @@ static def(void, ParseTag) {
 	char c;
 	RdString name = $("");
 
-	while (call(Peek, &c)) {
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '[' || c == '{') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			if (name.len != 0) {
 				callback(this->onToken, Ecriture_TokenType_TagStart,
-					String_Trim(name), this->line);
+					String_Trim(name), line);
 				name.len = 0;
 			}
 		}
@@ -167,68 +123,69 @@ static def(void, ParseTag) {
 			call(ParseOption);
 		} else if (c == '{') {
 			call(Parse, true);
-			callback(this->onToken, Ecriture_TokenType_TagEnd, $(""), this->line);
+			callback(this->onToken, Ecriture_TokenType_TagEnd, $(""), line);
 			break;
 		} else {
-			call(Extend, &name);
+			StringReader_Extend(&this->reader, &name);
 		}
 	}
 }
 
-def(void, Parse, bool inTag) {
+static def(void, Parse, bool inTag) {
 	char c, next;
 	RdString value = $("");
 
-	while (call(Peek, &c)) {
-		call(Peek, &next, 1);
+	size_t line = StringReader_GetLine(&this->reader);
+
+	while (StringReader_Peek(&this->reader, &c)) {
+		StringReader_Peek(&this->reader, &next, 1);
 
 		if (c == '`') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			if (value.len != 0) {
-				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				callback(this->onToken, Ecriture_TokenType_Value, value, line);
 				value.len = 0;
 			}
 
 			call(ParseLiteral);
 		} else if (c == '.' && (Char_IsAlpha(next) || Char_IsDigit(next))) {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 
 			if (value.len != 0) {
-				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				callback(this->onToken, Ecriture_TokenType_Value, value, line);
 				value.len = 0;
 			}
 
 			call(ParseTag);
 		} else if (c == '/' && next == '*') {
-			call(Consume);
-			call(Consume);
+			StringReader_Consume(&this->reader);
+			StringReader_Consume(&this->reader);
 
 			if (value.len != 0) {
-				callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+				callback(this->onToken, Ecriture_TokenType_Value, value, line);
 				value.len = 0;
 			}
 
 			call(ParseComment);
 		} else if (inTag && c == '}') {
-			call(Consume);
+			StringReader_Consume(&this->reader);
 			break;
 		} else {
-			call(Extend, &value);
+			StringReader_Extend(&this->reader, &value);
 		}
 	}
 
 	if (value.len != 0) {
-		callback(this->onToken, Ecriture_TokenType_Value, value, this->line);
+		callback(this->onToken, Ecriture_TokenType_Value, value, line);
 	}
 }
 
 def(void, Process, RdString s) {
-	this->ofs  = 0;
-	this->buf  = s;
-	this->line = 1;
+	this->reader = StringReader_New(s);
 
 	call(Parse, false);
 
-	callback(this->onToken, Ecriture_TokenType_Done, $(""), this->line);
+	size_t line = StringReader_GetLine(&this->reader);
+	callback(this->onToken, Ecriture_TokenType_Done, $(""), line);
 }

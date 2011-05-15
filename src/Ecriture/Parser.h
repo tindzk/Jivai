@@ -1,14 +1,12 @@
 #import "../String.h"
 #import "../Ecriture.h"
-#import "../Exception.h"
+#import "../StringReader.h"
 
 #define self Ecriture_Parser
 
 class {
 	Ecriture_OnToken onToken;
-	RdString buf;
-	size_t line;
-	size_t ofs;
+	StringReader reader;
 };
 
 rsdef(self, New, Ecriture_OnToken onToken);
