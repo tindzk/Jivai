@@ -157,6 +157,8 @@ def(void, Parse, bool inTag) {
 	RdString value = $("");
 
 	while (call(Peek, &c)) {
+		call(Peek, &next, 1);
+
 		if (c == '`') {
 			call(Consume);
 
@@ -166,7 +168,7 @@ def(void, Parse, bool inTag) {
 			}
 
 			call(ParseLiteral);
-		} else if (c == '.' && call(Peek, &next, 1) && (Char_IsAlpha(next) || Char_IsDigit(next))) {
+		} else if (c == '.' && (Char_IsAlpha(next) || Char_IsDigit(next))) {
 			call(Consume);
 
 			if (value.len != 0) {
@@ -175,7 +177,7 @@ def(void, Parse, bool inTag) {
 			}
 
 			call(ParseTag);
-		} else if (c == '/' && call(Peek, &next, 1) && next == '*') {
+		} else if (c == '/' && next == '*') {
 			call(Consume);
 			call(Consume);
 
