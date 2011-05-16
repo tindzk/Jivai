@@ -703,28 +703,30 @@ sdef(CarrierString, Replace, RdString s, RdString needle, RdString replacement) 
 	return String_ToCarrier(out);
 }
 
-overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement) {
-	ssize_t len = dest->len - needle.len + replacement.len;
+sdef(CarrierString, ReplaceAll, RdString s, RdString needle, RdString replacement) {
+	CarrierString out = String_ToCarrier(RdString_Exalt(s));
 
-	if (len < 0) {
-		len = replacement.len;
+	if (needle.len > s.len) {
+		return out;
 	}
 
-	/* Approximation for one occurence. */
-	self out = String_New(len);
-
+	size_t len     = s.len - needle.len + replacement.len;
 	size_t cnt     = 0;
 	size_t lastPos = 0;
 
-	for (size_t i = 0; i < dest->len; i++) {
-		if (dest->buf[i] == needle.buf[cnt]) {
+	fwd(i, s.len) {
+		if (s.buf[i] == needle.buf[cnt]) {
 			cnt++;
 
 			if (cnt == needle.len) {
+				if (out.omni) {
+					out = String_ToCarrier(String_New(len));
+				}
+
 				size_t cur = i - needle.len + 1;
 
-				scall(Append, &out, String_Slice(dest->rd, lastPos, cur - lastPos));
-				scall(Append, &out, replacement);
+				scall(Append, (String *) &out, String_Slice(s, lastPos, cur - lastPos));
+				scall(Append, (String *) &out, replacement);
 
 				lastPos = i + 1;
 				cnt = 0;
@@ -735,13 +737,11 @@ overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacemen
 		}
 	}
 
-	scall(Append, &out, String_Slice(dest->rd, lastPos));
+	if (lastPos != 0) {
+		scall(Append, (String *) &out, String_Slice(s, lastPos));
+	}
 
-	scall(Copy, dest, out.rd);
-
-	scall(Destroy, &out);
-
-	return lastPos != 0;
+	return out;
 }
 
 /*

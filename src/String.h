@@ -130,7 +130,7 @@ def(bool, Outside, RdString left, RdString right);
 overload sdef(self, Concat, RdString a, RdString b);
 overload sdef(self, Concat, RdString s, char c);
 sdef(CarrierString, Replace, RdString s, RdString needle, RdString replacement);
-overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement);
+sdef(CarrierString, ReplaceAll, RdString s, RdString needle, RdString replacement);
 sdef(short, CompareRight, RdString a, RdString b);
 sdef(short, CompareLeft, RdString a, RdString b);
 overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros);
@@ -327,12 +327,6 @@ static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, 
 	RdString out = $("");
 	scall(Between, s, left, right, &out);
 	return out;
-}
-
-static alwaysInline overload sdef(self, ReplaceAll, RdString s, RdString needle, RdString replacement) {
-	self tmp = scall(Clone, s);
-	scall(ReplaceAll, &tmp, needle, replacement);
-	return tmp;
 }
 
 static alwaysInline overload sdef(short, NaturalCompare, RdString a, RdString b) {

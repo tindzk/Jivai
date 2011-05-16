@@ -491,4 +491,23 @@ tsCase(Acute, "Replace") {
 	CarrierString_Destroy(&result);
 }
 
+tsCase(Acute, "Replace all") {
+	RdString s = $("Hello World");
+
+	CarrierString result = String_ReplaceAll(s, $(" Hello"), $(""));
+	Assert($("Stack"),    result.omni);
+	Assert($("Original"), result.buf == s.buf && result.len == s.len);
+	CarrierString_Destroy(&result);
+
+	result = String_ReplaceAll(s, $("Hello World!"), $(""));
+	Assert($("Stack"),    result.omni);
+	Assert($("Original"), result.buf == s.buf && result.len == s.len);
+	CarrierString_Destroy(&result);
+
+	result = String_ReplaceAll(s, $("o"), $("*"));
+	Assert($("Heap"),   !result.omni);
+	Assert($("Equals"), String_Equals(result.rd, $("Hell* W*rld")));
+	CarrierString_Destroy(&result);
+}
+
 tsFinalize;
