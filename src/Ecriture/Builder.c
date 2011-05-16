@@ -16,7 +16,11 @@ def(void, Write, RdString str) {
 }
 
 def(void, ProcessToken, Ecriture_TokenType type, RdString value) {
-	if (type != Ecriture_TokenType_Option && this->flush) {
+	if (this->flush &&
+		type != Ecriture_TokenType_Option   &&
+		type != Ecriture_TokenType_AttrName &&
+		type != Ecriture_TokenType_AttrValue)
+	{
 		call(Write, $("{"));
 		this->flush = false;
 	}
@@ -35,6 +39,13 @@ def(void, ProcessToken, Ecriture_TokenType type, RdString value) {
 		call(Write, $("*/"));
 	} else if (type == Ecriture_TokenType_Option) {
 		call(Write, $("["));
+		call(Write, value);
+		call(Write, $("]"));
+	} else if (type == Ecriture_TokenType_AttrName) {
+		call(Write, $("["));
+		call(Write, value);
+		call(Write, $("="));
+	} else if (type == Ecriture_TokenType_AttrValue) {
 		call(Write, value);
 		call(Write, $("]"));
 	} else if (type == Ecriture_TokenType_Done) {

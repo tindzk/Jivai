@@ -100,6 +100,17 @@ tsCase(Acute, "Tags") {
 	call(Process, Ecriture_TokenType_Done);
 
 	Assert($("Equals"), call(Equals, $(".br[option]{value}")));
+
+	call(Process, Ecriture_TokenType_TagStart, $("br"));
+	call(Process, Ecriture_TokenType_AttrName, $("name"));
+	call(Process, Ecriture_TokenType_AttrValue, $("value"));
+	call(Process, Ecriture_TokenType_AttrName, $("name2"));
+	call(Process, Ecriture_TokenType_AttrValue, $("value2"));
+	call(Process, Ecriture_TokenType_Value, $("value"));
+	call(Process, Ecriture_TokenType_TagEnd, $(""));
+	call(Process, Ecriture_TokenType_Done);
+
+	Assert($("Equals"), call(Equals, $(".br[name=value][name2=value2]{value}")));
 }
 
 tsCase(Acute, "Nesting") {
