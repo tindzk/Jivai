@@ -35,6 +35,8 @@ def(void, ProcessToken, HTML_TokenType type, RdString value) {
 		DocumentTree_AddAttr(&this->tree, String_ToCarrier(RdString_Exalt(value)));
 	} else if (type == HTML_TokenType_AttrValue) {
 		DocumentTree_SetAttrValue(&this->tree, HTML_Unescape(value));
+	} else if (type == HTML_TokenType_Comment) {
+		DocumentTree_AddComment(&this->tree, String_ToCarrier(RdString_Exalt(value)));
 	}
 }
 
@@ -71,6 +73,10 @@ sdef(void, BuildTokens, HTML_OnToken onToken, DocumentTree_Node *node) {
 				(cur->len == 0 && !HTML_IsNestable(cur->value.rd))
 					? $("") /* XHTML end tag. */
 					: cur->value.rd);
+		} else if (node->buf[i]->type == DocumentTree_NodeType_Comment) {
+			CarrierString str = String_Replace(cur->value.rd, $("-->"), $(""));
+			callback(onToken, HTML_TokenType_Comment, str.rd);
+			CarrierString_Destroy(&str);
 		} else if (node->buf[i]->type == DocumentTree_NodeType_Value) {
 			String value = HTML_Entities_Encode(cur->value.rd);
 			callback(onToken, HTML_TokenType_Value, value.rd);

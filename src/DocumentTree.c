@@ -82,6 +82,16 @@ def(void, AddValue, CarrierString value) {
 	node->value = value;
 }
 
+def(void, AddComment, CarrierString value) {
+	assert(this->node != NULL);
+
+	ref(Node) *node = Tree_AddNode(&this->tree, this->node);
+
+	node->type  = ref(NodeType_Comment);
+	node->attrs = NULL;
+	node->value = value;
+}
+
 def(void, AddAttr, CarrierString value) {
 	assert(this->node != NULL);
 

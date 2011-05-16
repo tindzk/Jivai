@@ -19,6 +19,7 @@ record(ref(Node)) {
 	enum {
 		ref(NodeType_Node),
 		ref(NodeType_Value),
+		ref(NodeType_Comment),
 		ref(NodeType_Tag)
 	} type;
 
@@ -44,6 +45,7 @@ def(void, AddTag, CarrierString value);
 def(void, CloseTag);
 def(void, SetLine, size_t line);
 def(void, AddValue, CarrierString value);
+def(void, AddComment, CarrierString value);
 def(void, AddAttr, CarrierString value);
 def(void, SetAttrValue, CarrierString value);
 sdef(ref(Attr) *, GetAttr, ref(Node) *node, RdString name);

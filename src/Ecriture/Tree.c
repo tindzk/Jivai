@@ -37,6 +37,8 @@ def(void, ProcessToken, Ecriture_TokenType type, RdString value, size_t line) {
 		DocumentTree_AddAttr(&this->tree, Ecriture_Unescape(value));
 	} else if (type == Ecriture_TokenType_AttrValue) {
 		DocumentTree_SetAttrValue(&this->tree, Ecriture_Unescape(value));
+	} else if (type == Ecriture_TokenType_Comment) {
+		DocumentTree_AddComment(&this->tree, String_ToCarrier(RdString_Exalt(value)));
 	}
 }
 
@@ -77,6 +79,10 @@ sdef(void, BuildTokens, Ecriture_OnBuildToken onToken, DocumentTree_Node *node) 
 			CarrierString value = Ecriture_Escape(cur->value.rd,
 				Ecriture_TokenType_Value);
 			callback(onToken, Ecriture_TokenType_Value, value.rd);
+			CarrierString_Destroy(&value);
+		} else if (node->buf[i]->type == DocumentTree_NodeType_Comment) {
+			CarrierString value = String_Replace(cur->value.rd, $("*/"), $(""));
+			callback(onToken, Ecriture_TokenType_Comment, value.rd);
 			CarrierString_Destroy(&value);
 		} else if (node->buf[i]->type == DocumentTree_NodeType_Node) { /* Root node. */
 			scall(BuildTokens, onToken, cur);
