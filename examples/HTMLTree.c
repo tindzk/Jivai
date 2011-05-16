@@ -1,10 +1,9 @@
-#import <Path.h>
 #import <Main.h>
+#import <File.h>
+#import <Path.h>
 #import <HTML/Tree.h>
 #import <HTML/Parser.h>
 #import <HTML/Quirks.h>
-#import <FileStream.h>
-#import <BufferedStream.h>
 
 #import "_DocumentTree.h"
 
