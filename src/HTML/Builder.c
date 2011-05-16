@@ -18,7 +18,7 @@ def(void, Write, RdString str) {
 def(void, ProcessToken, HTML_TokenType type, RdString value) {
 	if (type == HTML_TokenType_TagEnd) {
 		if (value.len == 0) {
-			call(Write, $("/"));
+			call(Write, $(" /"));
 		}
 	}
 
