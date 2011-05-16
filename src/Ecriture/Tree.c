@@ -12,6 +12,10 @@ def(void, Destroy) {
 	DocumentTree_Destroy(&this->tree);
 }
 
+def(void, Initialize) {
+	DocumentTree_Initialize(&this->tree);
+}
+
 def(DocumentTree_Node *, GetRoot) {
 	return DocumentTree_GetRoot(&this->tree);
 }
@@ -74,6 +78,8 @@ sdef(void, BuildTokens, Ecriture_OnBuildToken onToken, DocumentTree_Node *node) 
 				Ecriture_TokenType_Value);
 			callback(onToken, Ecriture_TokenType_Value, value.rd);
 			CarrierString_Destroy(&value);
+		} else if (node->buf[i]->type == DocumentTree_NodeType_Node) { /* Root node. */
+			scall(BuildTokens, onToken, cur);
 		}
 	}
 }

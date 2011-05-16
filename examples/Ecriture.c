@@ -22,14 +22,16 @@ def(bool, Run) {
 	Ecriture_Parser ecr = Ecriture_Parser_New(
 		Ecriture_OnToken_For(&tree, Ecriture_Tree_ProcessToken));
 
-	try {
-		Ecriture_Parser_Process(&ecr, s.rd);
-		call(PrintTree, Ecriture_Tree_GetRoot(&tree), 0);
-	} finally {
-		Ecriture_Parser_Destroy(&ecr);
-		Ecriture_Tree_Destroy(&tree);
-		String_Destroy(&s);
-	} tryEnd;
+	Ecriture_Parser_Process(&ecr, s.rd);
+
+	DocumentTree_Node *root = Ecriture_Tree_GetRoot(&tree);
+	fwd(i, root->len) {
+		call(PrintTree, root->buf[i], 0);
+	}
+
+	Ecriture_Parser_Destroy(&ecr);
+	Ecriture_Tree_Destroy(&tree);
+	String_Destroy(&s);
 
 	return true;
 }

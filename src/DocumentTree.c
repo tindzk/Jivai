@@ -6,9 +6,7 @@ static def(void, DestroyNode, Tree_Node *_node);
 
 rsdef(self, New) {
 	return (self) {
-		.tree  = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode))),
-		.depth = 0,
-		.node  = NULL
+		.tree = Tree_New(Tree_DestroyNode_For(NULL, ref(DestroyNode)))
 	};
 }
 
@@ -33,6 +31,17 @@ static def(void, DestroyNode, Tree_Node *_node) {
 
 def(ref(Node) *, GetRoot) {
 	return (ref(Node) *) &this->tree.root;
+}
+
+def(void, Initialize) {
+	assert(this->node == NULL);
+
+	this->node = Tree_AddNode(&this->tree, this->node);
+
+	this->node->type  = ref(NodeType_Node);
+	this->node->value = CarrierString_New();
+	this->node->attrs = NULL;
+	this->node->line  = 0;
 }
 
 def(void, AddTag, CarrierString value) {

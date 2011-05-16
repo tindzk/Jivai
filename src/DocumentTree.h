@@ -17,6 +17,7 @@ record(ref(Node)) {
 	Tree_Define(ref(Node));
 
 	enum {
+		ref(NodeType_Node),
 		ref(NodeType_Value),
 		ref(NodeType_Tag)
 	} type;
@@ -30,6 +31,7 @@ record(ref(Node)) {
 
 class {
 	Tree tree;
+	ref(Node) *root;
 	ref(Node) *node;
 
 	size_t depth;
@@ -38,6 +40,7 @@ class {
 rsdef(self, New);
 def(void, Destroy);
 def(ref(Node) *, GetRoot);
+def(void, Initialize);
 def(void, AddTag, CarrierString value);
 def(void, CloseTag);
 def(void, SetLine, size_t line);
