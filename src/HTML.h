@@ -54,5 +54,7 @@ Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
 rsdef(CarrierString, Unescape, RdString str);
 rsdef(CarrierString, Escape, RdString str);
+rsdef(bool, Equals, RdString a, RdString b);
+rsdef(bool, IsNestable, RdString tagName);
 
 #undef self

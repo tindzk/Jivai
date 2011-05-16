@@ -75,3 +75,40 @@ rsdef(CarrierString, Escape, RdString str) {
 
 	return res;
 }
+
+/* Non-nestable tags. */
+static RdString tags[] = {
+	$("area"),
+	$("base"),
+	$("br"),
+	$("hr"),
+	$("img"),
+	$("input"),
+	$("link"),
+	$("meta"),
+	$("param")
+};
+
+rsdef(bool, Equals, RdString a, RdString b) {
+	if (a.len != b.len) {
+		return false;
+	}
+
+	fwd(i, a.len) {
+		if (Char_ToLower(a.buf[i]) != Char_ToLower(b.buf[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+rsdef(bool, IsNestable, RdString tagName) {
+	fwd(i, nElems(tags)) {
+		if (scall(Equals, tags[i], tagName)) {
+			return false;
+		}
+	}
+
+	return true;
+}
