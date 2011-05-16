@@ -35,23 +35,43 @@ rsdef(CarrierString, Unescape, RdString str) {
 	return res;
 }
 
-rsdef(String, Escape, RdString str) {
-	String res = String_New(str.len + 128);
+rsdef(CarrierString, Escape, RdString str) {
+	if (str.len == 0) {
+		return String_ToCarrier($$("\"\""));
+	}
 
-	res.buf[0] = '"';
-	res.len++;
+	CarrierString res = String_ToCarrier(RdString_Exalt(str));
 
 	fwd(i, str.len) {
-		switch (str.buf[i]) {
-			case '"':
-				String_Append(&res, $("\\"));
+		if (str.buf[i] != '.' &&
+			str.buf[i] != ':' &&
+			str.buf[i] != '-' &&
+			str.buf[i] != '_' &&
+			!Char_IsAlpha(str.buf[i]) &&
+			!Char_IsDigit(str.buf[i]))
+		{
+			if (res.omni) {
+				res = String_ToCarrier(String_New(str.len + 3));
 
-			default:
-				String_Append(&res, str.buf[i]);
+				res.buf[0] = '"';
+				Memory_Copy(res.buf + 1, str.buf, i);
+
+				res.len = i + 1;
+			}
+		}
+
+		if (!res.omni) {
+			if (str.buf[i] == '"') {
+				String_Append((String *) &res, '\\');
+			}
+
+			String_Append((String *) &res, str.buf[i]);
 		}
 	}
 
-	String_Append(&res, $("\""));
+	if (!res.omni) {
+		String_Append((String *) &res, $("\""));
+	}
 
 	return res;
 }

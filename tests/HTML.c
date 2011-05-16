@@ -13,21 +13,25 @@ tsRegister("HTML") {
 }
 
 tsCase(Acute, "Escaping") {
-	String s = HTML_Escape($("Hello World!"));
+	CarrierString s = HTML_Escape($("Hello"));
+	Assert($("No quotes"), String_Equals(s.rd, $("Hello")));
+	CarrierString_Destroy(&s);
+
+	s = HTML_Escape($("Hello World!"));
 	Assert($("No quotes"), String_Equals(s.rd, $("\"Hello World!\"")));
-	String_Destroy(&s);
+	CarrierString_Destroy(&s);
 
 	s = HTML_Escape($("Hello' World!"));
 	Assert($("Single quotes"), String_Equals(s.rd, $("\"Hello' World!\"")));
-	String_Destroy(&s);
+	CarrierString_Destroy(&s);
 
 	s = HTML_Escape($("Hello\" World!"));
 	Assert($("Double quotes"), String_Equals(s.rd, $("\"Hello\\\" World!\"")));
-	String_Destroy(&s);
+	CarrierString_Destroy(&s);
 
 	s = HTML_Escape($("Hello'\" World!"));
 	Assert($("Single and double quotes"), String_Equals(s.rd, $("\"Hello'\\\" World!\"")));
-	String_Destroy(&s);
+	CarrierString_Destroy(&s);
 }
 
 tsCase(Acute, "Unescaping") {

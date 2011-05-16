@@ -53,6 +53,6 @@ static inline rsdef(bool, IsTagAttr, ref(TokenType) type) {
 Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
 rsdef(CarrierString, Unescape, RdString str);
-rsdef(String, Escape, RdString str);
+rsdef(CarrierString, Escape, RdString str);
 
 #undef self
