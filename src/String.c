@@ -484,6 +484,10 @@ overload sdef(ssize_t, ReverseFind, RdString s, char c) {
 }
 
 overload sdef(ssize_t, Find, RdString s, RdString needle) {
+	if (needle.len > s.len) {
+		return ref(NotFound);
+	}
+
 	size_t cnt = 0;
 
 	fwd(i, s.len) {
@@ -503,6 +507,10 @@ overload sdef(ssize_t, Find, RdString s, RdString needle) {
 }
 
 overload sdef(ssize_t, ReverseFind, RdString s, RdString needle) {
+	if (needle.len > s.len) {
+		return ref(NotFound);
+	}
+
 	size_t cnt = 0;
 
 	bwd(i, s.len) {

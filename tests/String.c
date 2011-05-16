@@ -439,26 +439,30 @@ tsCase(Acute, "Find") {
 	RdString subject = $("Hello World.");
 	RdString needle  = $("Hello World.");
 	RdString needle2 = $("World");
-	char needle3 = '.';
-	char needle4 = 'l';
+	RdString needle3 = $("Hello World...");
+	char needle4 = '.';
+	char needle5 = 'l';
 
 	Assert($("Return value"), String_Find(subject, needle)  == 0);
 	Assert($("Return value"), String_Find(subject, needle2) == 6);
-	Assert($("Return value"), String_Find(subject, needle3) == 11);
-	Assert($("Return value"), String_Find(subject, needle4) == 2);
+	Assert($("Return value"), String_Find(subject, needle3) == String_NotFound);
+	Assert($("Return value"), String_Find(subject, needle4) == 11);
+	Assert($("Return value"), String_Find(subject, needle5) == 2);
 }
 
 tsCase(Acute, "Reverse find") {
 	RdString subject = $("Hello World.");
 	RdString needle  = $("Hello World.");
 	RdString needle2 = $("World");
-	char needle3 = '.';
-	char needle4 = 'l';
+	RdString needle3 = $("Hello World...");
+	char needle4 = '.';
+	char needle5 = 'l';
 
 	Assert($("Return value"), String_ReverseFind(subject, needle)  == 0);
 	Assert($("Return value"), String_ReverseFind(subject, needle2) == 6);
-	Assert($("Return value"), String_ReverseFind(subject, needle3) == 11);
-	Assert($("Return value"), String_ReverseFind(subject, needle4) == 9);
+	Assert($("Return value"), String_ReverseFind(subject, needle3) == String_NotFound);
+	Assert($("Return value"), String_ReverseFind(subject, needle4) == 11);
+	Assert($("Return value"), String_ReverseFind(subject, needle5) == 9);
 }
 
 tsCase(Acute, "Replace") {
