@@ -27,6 +27,16 @@ tsCase(Acute, "Escaping") {
 	Assert($("Equals"), String_Equals(s.rd, $("Hello```` World!")));
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);
+
+	s = Ecriture_Escape($("Hello=World!"), Ecriture_TokenType_Value);
+	Assert($("Equals"), String_Equals(s.rd, $("Hello=World!")));
+	Assert($("Stack"),  s.omni);
+	CarrierString_Destroy(&s);
+
+	s = Ecriture_Escape($("Hello=World!"), Ecriture_TokenType_Option);
+	Assert($("Equals"), String_Equals(s.rd, $("Hello`=World!")));
+	Assert($("Heap"),   !s.omni);
+	CarrierString_Destroy(&s);
 }
 
 tsCase(Acute, "Unescaping") {
