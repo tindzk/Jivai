@@ -129,7 +129,7 @@ def(bool, Filter, RdString s1, RdString s2);
 def(bool, Outside, RdString left, RdString right);
 overload sdef(self, Concat, RdString a, RdString b);
 overload sdef(self, Concat, RdString s, char c);
-overload sdef(bool, Replace, self *dest, RdString needle, RdString replacement);
+sdef(CarrierString, Replace, RdString s, RdString needle, RdString replacement);
 overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement);
 sdef(short, CompareRight, RdString a, RdString b);
 sdef(short, CompareLeft, RdString a, RdString b);
@@ -327,12 +327,6 @@ static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, 
 	RdString out = $("");
 	scall(Between, s, left, right, &out);
 	return out;
-}
-
-static alwaysInline overload sdef(self, Replace, self s, RdString needle, RdString replacement) {
-	self tmp = s;
-	scall(Replace, &tmp, needle, replacement);
-	return tmp;
 }
 
 static alwaysInline overload sdef(self, ReplaceAll, RdString s, RdString needle, RdString replacement) {

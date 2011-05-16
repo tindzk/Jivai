@@ -680,30 +680,27 @@ overload sdef(self, Concat, RdString s, char c) {
 	return res;
 }
 
-overload sdef(bool, Replace, self *dest, RdString needle, RdString replacement) {
-	ssize_t pos = scall(Find, dest->rd, needle);
+sdef(CarrierString, Replace, RdString s, RdString needle, RdString replacement) {
+	ssize_t pos = scall(Find, s, needle);
 
 	if (pos == ref(NotFound)) {
-		return false;
+		return String_ToCarrier(RdString_Exalt(s));
 	}
 
-	ssize_t len = dest->len - needle.len + replacement.len;
+	self out = String_New(s.len - needle.len + replacement.len);
 
-	if (len < 0) {
-		len = replacement.len;
-	}
+	Memory_Copy(out.buf, s.buf, pos);
+	out.len += pos;
 
-	self out = String_New(len);
+	Memory_Copy(out.buf + out.len, replacement.buf, replacement.len);
+	out.len += replacement.len;
 
-	scall(Append, &out, String_Slice(dest->rd, 0, pos));
-	scall(Append, &out, replacement);
-	scall(Append, &out, String_Slice(dest->rd, pos + needle.len));
+	Memory_Copy(out.buf + out.len,
+		s.buf + pos + needle.len,
+		s.len - pos - needle.len);
+	out.len += s.len - pos - needle.len;
 
-	scall(Copy, dest, out.rd);
-
-	scall(Destroy, &out);
-
-	return true;
+	return String_ToCarrier(out);
 }
 
 overload sdef(bool, ReplaceAll, self *dest, RdString needle, RdString replacement) {

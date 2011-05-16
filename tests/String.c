@@ -413,7 +413,7 @@ tsCase(Acute, "Joining") {
 	String_Destroy(&joined);
 }
 
-tsCase(Acute, "BeginsWith()") {
+tsCase(Acute, "Begins with") {
 	RdString str = $("Hello World.");
 
 	Assert($("Return value"), String_BeginsWith(str, $("")));
@@ -424,7 +424,7 @@ tsCase(Acute, "BeginsWith()") {
 	Assert($("Return value"), !String_BeginsWith(str, $("ello World.")));
 }
 
-tsCase(Acute, "EndsWith()") {
+tsCase(Acute, "Ends with") {
 	RdString str = $("Hello World.");
 
 	Assert($("Return value"), String_EndsWith(str, $("")));
@@ -435,7 +435,7 @@ tsCase(Acute, "EndsWith()") {
 	Assert($("Return value"), !String_EndsWith(str, $("Hello World")));
 }
 
-tsCase(Acute, "Find()") {
+tsCase(Acute, "Find") {
 	RdString subject = $("Hello World.");
 	RdString needle  = $("Hello World.");
 	RdString needle2 = $("World");
@@ -448,7 +448,7 @@ tsCase(Acute, "Find()") {
 	Assert($("Return value"), String_Find(subject, needle4) == 2);
 }
 
-tsCase(Acute, "ReverseFind()") {
+tsCase(Acute, "Reverse find") {
 	RdString subject = $("Hello World.");
 	RdString needle  = $("Hello World.");
 	RdString needle2 = $("World");
@@ -459,6 +459,36 @@ tsCase(Acute, "ReverseFind()") {
 	Assert($("Return value"), String_ReverseFind(subject, needle2) == 6);
 	Assert($("Return value"), String_ReverseFind(subject, needle3) == 11);
 	Assert($("Return value"), String_ReverseFind(subject, needle4) == 9);
+}
+
+tsCase(Acute, "Replace") {
+	RdString s = $("Hello World");
+
+	CarrierString result = String_Replace(s, $(" Hello"), $(""));
+	Assert($("Stack"),    result.omni);
+	Assert($("Original"), result.buf == s.buf && result.len == s.len);
+	CarrierString_Destroy(&result);
+
+	result = String_Replace(s, $("Hello World"), $(""));
+	Assert($("Heap"),   !result.omni);
+	Assert($("Equals"), String_Equals(result.rd, $("")));
+	Assert($("No allocation"), result.buf == NULL && result.len == 0);
+	CarrierString_Destroy(&result);
+
+	result = String_Replace($(""), $(""), $(""));
+	Assert($("Stack"),  result.omni);
+	Assert($("Equals"), String_Equals(result.rd, $("")));
+	CarrierString_Destroy(&result);
+
+	result = String_Replace($("Hello"), $("Hello"), $(""));
+	Assert($("Heap"),   !result.omni);
+	Assert($("Equals"), String_Equals(result.rd, $("")));
+	CarrierString_Destroy(&result);
+
+	result = String_Replace(s, $("Hello"), $("Hi"));
+	Assert($("Heap"),   !result.omni);
+	Assert($("Equals"), String_Equals(result.rd, $("Hi World")));
+	CarrierString_Destroy(&result);
 }
 
 tsFinalize;
