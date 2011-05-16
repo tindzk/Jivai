@@ -16,7 +16,8 @@ set(ref(TokenType)) {
 	ref(TokenType_Done)
 };
 
-Callback(ref(OnToken), void, ref(TokenType) type, RdString value, size_t line);
+Callback(ref(OnToken),      void, ref(TokenType) type, RdString value, size_t line);
+Callback(ref(OnBuildToken), void, ref(TokenType) type, RdString value);
 
 rsdef(CarrierString, Unescape, RdString str);
 rsdef(CarrierString, Escape, RdString str, ref(TokenType) type);
