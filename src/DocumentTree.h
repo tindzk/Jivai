@@ -31,7 +31,6 @@ record(ref(Node)) {
 
 class {
 	Tree tree;
-	ref(Node) *root;
 	ref(Node) *node;
 
 	size_t depth;
