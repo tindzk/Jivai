@@ -13,17 +13,17 @@ tsRegister("Ecriture") {
 }
 
 tsCase(Acute, "Escaping") {
-	CarrierString s = Ecriture_Escape($("Hello World!"));
+	CarrierString s = Ecriture_Escape($("Hello World!"), Ecriture_TokenType_Value);
 	Assert($("Equals"), String_Equals(s.rd, $("Hello World!")));
 	Assert($("Stack"),  s.omni);
 	CarrierString_Destroy(&s);
 
-	s = Ecriture_Escape($("Hello` World!"));
+	s = Ecriture_Escape($("Hello` World!"), Ecriture_TokenType_Value);
 	Assert($("Equals"), String_Equals(s.rd, $("Hello`` World!")));
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);
 
-	s = Ecriture_Escape($("Hello`` World!"));
+	s = Ecriture_Escape($("Hello`` World!"), Ecriture_TokenType_Value);
 	Assert($("Equals"), String_Equals(s.rd, $("Hello``` World!")));
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);

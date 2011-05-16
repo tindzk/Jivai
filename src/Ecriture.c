@@ -28,14 +28,36 @@ rsdef(CarrierString, Unescape, RdString str) {
 	return res;
 }
 
-rsdef(CarrierString, Escape, RdString str) {
+rsdef(CarrierString, Escape, RdString str, ref(TokenType) type) {
+	assert(type == ref(TokenType_Option)    /* Escape "`", "=" and "]". */
+		|| type == ref(TokenType_AttrName)  /* Escape "`" and "]". */
+		|| type == ref(TokenType_AttrValue) /* Escape "`" and "]". */
+		|| type == ref(TokenType_Value));   /* Escape "`". */
+
 	CarrierString res = String_ToCarrier(RdString_Exalt(str));
 
 	fwd(i, str.len) {
-		if (str.buf[i] == '`' && res.omni) {
-			res = String_ToCarrier(String_New(str.len + 1));
-			Memory_Copy(res.buf, str.buf, i + 1);
-			res.len = i + 1;
+		if (str.buf[i] == '`') {
+			goto escape;
+		} else if (type == ref(TokenType_Option)) {
+			if (str.buf[i] == '=' || str.buf[i] == ']') {
+				goto escape;
+			}
+		} else if (type == ref(TokenType_AttrName)
+				|| type == ref(TokenType_AttrValue))
+		{
+			if (str.buf[i] == ']') {
+				goto escape;
+			}
+		}
+
+		when (escape) {
+			if (res.omni) {
+				res = String_ToCarrier(String_New(str.len + 1));
+				Memory_Copy(res.buf, str.buf, i);
+				res.buf[i] = '`';
+				res.len = i + 1;
+			}
 		}
 
 		if (!res.omni) {

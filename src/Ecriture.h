@@ -1,4 +1,5 @@
 #import "String.h"
+#import "Exception.h"
 
 #define self Ecriture
 
@@ -18,6 +19,6 @@ set(ref(TokenType)) {
 Callback(ref(OnToken), void, ref(TokenType) type, RdString value, size_t line);
 
 rsdef(CarrierString, Unescape, RdString str);
-rsdef(CarrierString, Escape, RdString str);
+rsdef(CarrierString, Escape, RdString str, ref(TokenType) type);
 
 #undef self
