@@ -18,13 +18,13 @@ tsCase(Acute, "Escaping") {
 	Assert($("Stack"),  s.omni);
 	CarrierString_Destroy(&s);
 
-	s = Ecriture_Escape($("Hello` World!"), Ecriture_TokenType_Value);
-	Assert($("Equals"), String_Equals(s.rd, $("Hello`` World!")));
+	s = Ecriture_Escape($("Hello` World`!"), Ecriture_TokenType_Value);
+	Assert($("Equals"), String_Equals(s.rd, $("Hello`` World``!")));
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);
 
 	s = Ecriture_Escape($("Hello`` World!"), Ecriture_TokenType_Value);
-	Assert($("Equals"), String_Equals(s.rd, $("Hello``` World!")));
+	Assert($("Equals"), String_Equals(s.rd, $("Hello```` World!")));
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);
 }

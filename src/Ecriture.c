@@ -55,14 +55,14 @@ rsdef(CarrierString, Escape, RdString str, ref(TokenType) type) {
 			if (res.omni) {
 				res = String_ToCarrier(String_New(str.len + 1));
 				Memory_Copy(res.buf, str.buf, i);
-				res.buf[i] = '`';
-				res.len = i + 1;
+				res.len = i;
 			}
+
+			String_Append((String *) &res, '`');
 		}
 
 		if (!res.omni) {
-			res.buf[res.len] = str.buf[i];
-			res.len++;
+			String_Append((String *) &res, str.buf[i]);
 		}
 	}
 
