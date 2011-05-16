@@ -22,6 +22,7 @@ def(bool, Run) {
 	File_GetContents(path, &s);
 
 	HTML_Tree tree = HTML_Tree_New();
+	HTML_Tree_Initialize(&tree);
 
 	HTML_Quirks quirks = HTML_Quirks_New(
 		HTML_OnToken_For(&tree, HTML_Tree_ProcessToken));

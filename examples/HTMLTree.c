@@ -19,6 +19,7 @@ def(bool, Run) {
 	File_GetContents(path, &s);
 
 	HTML_Tree tree = HTML_Tree_New();
+	HTML_Tree_Initialize(&tree);
 
 	HTML_Quirks quirks = HTML_Quirks_New(
 		HTML_OnToken_For(&tree, HTML_Tree_ProcessToken));
@@ -26,7 +27,11 @@ def(bool, Run) {
 		HTML_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
 
 	HTML_Parser_Process(&html, s.rd);
-	call(PrintTree, HTML_Tree_GetRoot(&tree), 0);
+
+	DocumentTree_Node *root = HTML_Tree_GetRoot(&tree);
+	fwd(i, root->len) {
+		call(PrintTree, root->buf[i], 0);
+	}
 
 	HTML_Parser_Destroy(&html);
 	HTML_Tree_Destroy(&tree);
