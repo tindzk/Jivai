@@ -320,7 +320,7 @@ tsCase(Acute, "Trim") {
 	RdString subject  = $("  Hello World  \n");
 	RdString expected = $("Hello World");
 
-	Assert($("Return value"),
+	Assert($("Result"),
 		String_Equals(
 			String_Trim(subject),
 			expected));
@@ -344,13 +344,13 @@ tsCase(Acute, "Split") {
 	String_Append(&s, $("Hello World."));
 
 	RdString part = $("");
-	Assert($("Return value"), String_Split(s.rd, ' ', &part));
+	Assert($("Result"), String_Split(s.rd, ' ', &part));
 	Assert($("off=0 len=5"), part.buf == s.buf && part.len == 5);
 
-	Assert($("Return value"), String_Split(s.rd, ' ', &part));
+	Assert($("Result"), String_Split(s.rd, ' ', &part));
 	Assert($("off=6 len=11"), part.buf == s.buf + 6 && part.len == 11);
 
-	Assert($("Return value"), String_Split(s.rd, ' ', &part));
+	Assert($("Result"), String_Split(s.rd, ' ', &part));
 	Assert($("off=18 len=6"), part.buf == s.buf + 18 && part.len == 6);
 
 	String_Destroy(&s);
@@ -358,27 +358,27 @@ tsCase(Acute, "Split") {
 
 tsCase(Acute, "Split with empty string") {
 	RdString part = $("");
-	Assert($("Return value"), String_Split($(""), ' ', &part) == false);
+	Assert($("Result"), String_Split($(""), ' ', &part) == false);
 }
 
 tsCase(Acute, "Split with empty string") {
 	RdString part = $("");
-	Assert($("Return value"), String_Split($(""), $(" "), &part) == false);
+	Assert($("Result"), String_Split($(""), $(" "), &part) == false);
 }
 
 tsCase(Acute, "Split") {
 	RdString part    = $("");
 	RdString subject = $("This  is  a  sentence.");
 
-	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
 	Assert($("Equals"),       String_Equals(part, $("This")));
-	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
 	Assert($("Equals"),       String_Equals(part, $("is")));
-	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
 	Assert($("Equals"),       String_Equals(part, $("a")));
-	Assert($("Return value"), String_Split(subject, $("  "), &part) == true);
+	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
 	Assert($("Equals"),       String_Equals(part, $("sentence.")));
-	Assert($("Return value"), String_Split(subject, $("  "), &part) == false);
+	Assert($("Result"), String_Split(subject, $("  "), &part) == false);
 }
 
 tsCase(Acute, "Joining") {
@@ -416,23 +416,23 @@ tsCase(Acute, "Joining") {
 tsCase(Acute, "Begins with") {
 	RdString str = $("Hello World.");
 
-	Assert($("Return value"), String_BeginsWith(str, $("")));
-	Assert($("Return value"), String_BeginsWith(str, $("H")));
-	Assert($("Return value"), String_BeginsWith(str, $("Hello")));
-	Assert($("Return value"), String_BeginsWith(str, $("Hello World.")));
-	Assert($("Return value"), !String_BeginsWith(str, $("e")));
-	Assert($("Return value"), !String_BeginsWith(str, $("ello World.")));
+	Assert($("Result"), String_BeginsWith(str, $("")));
+	Assert($("Result"), String_BeginsWith(str, $("H")));
+	Assert($("Result"), String_BeginsWith(str, $("Hello")));
+	Assert($("Result"), String_BeginsWith(str, $("Hello World.")));
+	Assert($("Result"), !String_BeginsWith(str, $("e")));
+	Assert($("Result"), !String_BeginsWith(str, $("ello World.")));
 }
 
 tsCase(Acute, "Ends with") {
 	RdString str = $("Hello World.");
 
-	Assert($("Return value"), String_EndsWith(str, $("")));
-	Assert($("Return value"), String_EndsWith(str, $(".")));
-	Assert($("Return value"), String_EndsWith(str, $("World.")));
-	Assert($("Return value"), String_EndsWith(str, $("Hello World.")));
-	Assert($("Return value"), !String_EndsWith(str, $("d")));
-	Assert($("Return value"), !String_EndsWith(str, $("Hello World")));
+	Assert($("Result"), String_EndsWith(str, $("")));
+	Assert($("Result"), String_EndsWith(str, $(".")));
+	Assert($("Result"), String_EndsWith(str, $("World.")));
+	Assert($("Result"), String_EndsWith(str, $("Hello World.")));
+	Assert($("Result"), !String_EndsWith(str, $("d")));
+	Assert($("Result"), !String_EndsWith(str, $("Hello World")));
 }
 
 tsCase(Acute, "Find") {
@@ -444,12 +444,12 @@ tsCase(Acute, "Find") {
 	char needle5 = '.';
 	char needle6 = 'l';
 
-	Assert($("Return value"), String_Find(subject, needle)  == 0);
-	Assert($("Return value"), String_Find(subject, needle2) == 6);
-	Assert($("Return value"), String_Find(subject, needle3) == String_NotFound);
-	Assert($("Return value"), String_Find(subject, needle4) == String_NotFound);
-	Assert($("Return value"), String_Find(subject, needle5) == 11);
-	Assert($("Return value"), String_Find(subject, needle6) == 2);
+	Assert($("Result"), String_Find(subject, needle)  == 0);
+	Assert($("Result"), String_Find(subject, needle2) == 6);
+	Assert($("Result"), String_Find(subject, needle3) == String_NotFound);
+	Assert($("Result"), String_Find(subject, needle4) == String_NotFound);
+	Assert($("Result"), String_Find(subject, needle5) == 11);
+	Assert($("Result"), String_Find(subject, needle6) == 2);
 }
 
 tsCase(Acute, "Reverse find") {
@@ -461,12 +461,12 @@ tsCase(Acute, "Reverse find") {
 	char needle5 = '.';
 	char needle6 = 'l';
 
-	Assert($("Return value"), String_ReverseFind(subject, needle)  == 0);
-	Assert($("Return value"), String_ReverseFind(subject, needle2) == 6);
-	Assert($("Return value"), String_ReverseFind(subject, needle3) == String_NotFound);
-	Assert($("Return value"), String_ReverseFind(subject, needle4) == String_NotFound);
-	Assert($("Return value"), String_ReverseFind(subject, needle5) == 11);
-	Assert($("Return value"), String_ReverseFind(subject, needle6) == 9);
+	Assert($("Result"), String_ReverseFind(subject, needle)  == 0);
+	Assert($("Result"), String_ReverseFind(subject, needle2) == 6);
+	Assert($("Result"), String_ReverseFind(subject, needle3) == String_NotFound);
+	Assert($("Result"), String_ReverseFind(subject, needle4) == String_NotFound);
+	Assert($("Result"), String_ReverseFind(subject, needle5) == 11);
+	Assert($("Result"), String_ReverseFind(subject, needle6) == 9);
 }
 
 tsCase(Acute, "Replace") {
