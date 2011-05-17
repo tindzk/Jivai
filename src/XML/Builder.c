@@ -1,6 +1,6 @@
 #import "Builder.h"
 
-#define self HTML_Builder
+#define self XML_Builder
 
 rsdef(self, New, Stream stream) {
 	return (self) {
@@ -16,11 +16,9 @@ def(void, Write, RdString str) {
 }
 
 def(void, ProcessToken, XML_TokenType type, RdString value) {
-	assert(type != XML_TokenType_Data); /* CDATA is not supported by HTML. */
-
 	if (type == XML_TokenType_TagEnd) {
 		if (value.len == 0) {
-			call(Write, $(" /"));
+			call(Write, $("/"));
 		}
 	}
 
@@ -31,6 +29,10 @@ def(void, ProcessToken, XML_TokenType type, RdString value) {
 
 	if (type == XML_TokenType_Type) {
 		call(Write, $("<!DOCTYPE "));
+		call(Write, value);
+		call(Write, $("]]>"));
+	} else if (type == XML_TokenType_Data) {
+		call(Write, $("<![CDATA["));
 		call(Write, value);
 		call(Write, $("]]>"));
 	} else if (type == XML_TokenType_Value) {

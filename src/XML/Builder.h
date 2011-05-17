@@ -1,10 +1,9 @@
 #import "../XML.h"
-#import "../HTML.h"
 #import "../Stream.h"
 #import "../String.h"
 #import "../Exception.h"
 
-#define self HTML_Builder
+#define self XML_Builder
 
 class {
 	Stream stream;

@@ -3,7 +3,6 @@
 #import <Path.h>
 #import <HTML/Tree.h>
 #import <HTML/Parser.h>
-#import <HTML/Quirks.h>
 
 #import "_DocumentTree.h"
 
@@ -21,11 +20,9 @@ def(bool, Run) {
 	HTML_Tree tree = HTML_Tree_New();
 	HTML_Tree_Initialize(&tree);
 
-	HTML_Quirks quirks = HTML_Quirks_New(
-		HTML_OnToken_For(&tree, HTML_Tree_ProcessToken));
 	HTML_Parser html = HTML_Parser_New(
-		HTML_OnToken_For(&quirks, HTML_Quirks_ProcessToken));
-
+		XML_OnToken_For(&tree, HTML_Tree_ProcessToken));
+	HTML_Parser_Initialize(&html);
 	HTML_Parser_Process(&html, s.rd);
 
 	DocumentTree_Node *root = HTML_Tree_GetRoot(&tree);
