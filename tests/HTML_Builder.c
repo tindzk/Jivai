@@ -103,14 +103,14 @@ tsCase(Acute, "Tags (XHTML)") {
 	call(Process, HTML_TokenType_TagEnd);
 	call(Process, HTML_TokenType_Done);
 
-	Assert($("Equals"), call(Equals, $("<br/>")));
+	Assert($("Equals"), call(Equals, $("<br />")));
 
 	call(Process, HTML_TokenType_TagStart, $("br"));
 	call(Process, HTML_TokenType_Option, $("option"));
 	call(Process, HTML_TokenType_TagEnd);
 	call(Process, HTML_TokenType_Done);
 
-	Assert($("Equals"), call(Equals, $("<br option/>")));
+	Assert($("Equals"), call(Equals, $("<br option />")));
 }
 
 tsCase(Acute, "Attributes") {
@@ -120,7 +120,7 @@ tsCase(Acute, "Attributes") {
 	call(Process, HTML_TokenType_TagEnd);
 	call(Process, HTML_TokenType_Done);
 
-	Assert($("Equals"), call(Equals, $("<input name=text/>")));
+	Assert($("Equals"), call(Equals, $("<input name=text />")));
 
 	call(Process, HTML_TokenType_TagStart, $("input"));
 	call(Process, HTML_TokenType_AttrName, $("name"));
