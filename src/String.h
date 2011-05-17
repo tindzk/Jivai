@@ -123,7 +123,7 @@ overload sdef(ssize_t, ReverseFind, RdString s, char c);
 overload sdef(ssize_t, Find, RdString s, RdString needle);
 overload sdef(ssize_t, ReverseFind, RdString s, RdString needle);
 overload sdef(RdString, Trim, RdString s, short type);
-overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, bool leftAligned, RdString *out);
+sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result);
 sdef(RdString, Cut, RdString s, RdString left, RdString right);
 def(bool, Filter, RdString s1, RdString s2);
 def(bool, Outside, RdString left, RdString right);
@@ -311,22 +311,6 @@ static alwaysInline overload sdef(RdString, Trim, RdString s) {
 	return scall(Trim, s,
 		ref(TrimLeft) |
 		ref(TrimRight));
-}
-
-static alwaysInline overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, RdString *out) {
-	return scall(Between, s, left, right, true, out);
-}
-
-static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, RdString right, bool leftAligned) {
-	RdString out = $("");
-	scall(Between, s, left, right, leftAligned, &out);
-	return out;
-}
-
-static alwaysInline overload sdef(RdString, Between, RdString s, RdString left, RdString right) {
-	RdString out = $("");
-	scall(Between, s, left, right, &out);
-	return out;
 }
 
 static alwaysInline overload sdef(short, NaturalCompare, RdString a, RdString b) {

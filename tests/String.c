@@ -518,4 +518,15 @@ tsCase(Acute, "Replace all") {
 	CarrierString_Destroy(&result);
 }
 
+tsCase(Acute, "Between") {
+	RdString s = $("Hello World");
+
+	RdString result;
+
+	Assert($("Result"), String_Between(s, $("H"), $("d"), &result));
+	Assert($("Equals"), String_Equals(result, $("ello Worl")));
+
+	Assert($("Result"), !String_Between(s, $("H"), $("World!"), NULL));
+}
+
 tsFinalize;

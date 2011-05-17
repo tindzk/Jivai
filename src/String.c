@@ -554,48 +554,34 @@ overload sdef(RdString, Trim, RdString s, short type) {
 	return s;
 }
 
-overload sdef(ssize_t, Between, RdString s, RdString left, RdString right, bool leftAligned, RdString *out) {
-	ssize_t posLeft, posRight;
+sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result) {
+	ssize_t posLeft = scall(Find, s, left);
 
-	if (leftAligned) {
-		if ((posLeft = scall(Find, s, left)) == ref(NotFound)) {
-			return ref(NotFound);
-		}
-
-		posLeft += left.len;
-
-		posRight = scall(Find, String_Slice(s, posLeft + 1), right);
-
-		if (posRight == ref(NotFound)) {
-			return ref(NotFound);
-		}
-
-		posRight += posLeft + 1;
-	} else {
-		if ((posRight = scall(Find, s, right)) == ref(NotFound)) {
-			return ref(NotFound);
-		}
-
-		if (posRight > 0) {
-			posLeft = scall(ReverseFind, String_Slice(s, posRight - 1), left);
-
-			if (posLeft == ref(NotFound)) {
-				return ref(NotFound);
-			}
-
-			posLeft += posRight - 1;
-			posLeft += left.len;
-		} else {
-			return ref(NotFound);
-		}
+	if (posLeft == ref(NotFound)) {
+		return false;
 	}
 
-	*out = (RdString) {
-		.buf = s.buf + posLeft,
-		.len = posRight - posLeft
-	};
+	posLeft += left.len;
 
-	return posRight + right.len;
+	ssize_t posRight = scall(Find, (RdString) {
+		.buf = s.buf + posLeft + 1,
+		.len = s.len - posLeft - 1
+	}, right);
+
+	if (posRight == ref(NotFound)) {
+		return false;
+	}
+
+	posRight += posLeft + 1;
+
+	if (result != NULL) {
+		*result = (RdString) {
+			.buf = s.buf    + posLeft,
+			.len = posRight - posLeft
+		};
+	}
+
+	return true;
 }
 
 sdef(RdString, Cut, RdString s, RdString left, RdString right) {
