@@ -484,8 +484,12 @@ overload sdef(ssize_t, ReverseFind, RdString s, char c) {
 }
 
 overload sdef(ssize_t, Find, RdString s, RdString needle) {
-	if (needle.len > s.len) {
+	if (needle.len == 0 || needle.len > s.len) {
 		return ref(NotFound);
+	} else if (needle.len == s.len) {
+		return !Memory_Equals(s.buf, needle.buf, needle.len)
+			? ref(NotFound)
+			: 0;
 	}
 
 	size_t cnt = 0;
@@ -507,8 +511,12 @@ overload sdef(ssize_t, Find, RdString s, RdString needle) {
 }
 
 overload sdef(ssize_t, ReverseFind, RdString s, RdString needle) {
-	if (needle.len > s.len) {
+	if (needle.len == 0 || needle.len > s.len) {
 		return ref(NotFound);
+	} else if (needle.len == s.len) {
+		return !Memory_Equals(s.buf, needle.buf, needle.len)
+			? ref(NotFound)
+			: 0;
 	}
 
 	size_t cnt = 0;
