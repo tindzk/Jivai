@@ -2,46 +2,46 @@
 
 #define self Integer
 
-#define DefineParseString(type, name)                \
-	type name(RdString s) {                          \
-		type res = 0;                                \
-		size_t c = 0;                                \
-		bool neg = (s.len > 0 && s.buf[0] == '-');   \
-		bwd(i, s.len) {                              \
-			if (!Char_IsDigit(s.buf[i])) {           \
-				continue;                            \
-			}                                        \
-			type digit = Char_ParseDigit(s.buf[i]);  \
-			if (digit) {                             \
-				rpt(c) {                             \
-					if (digit * 10 / 10 != digit) {  \
-						goto error;                  \
-					}                                \
-					digit *= 10;                     \
-					if (digit < 0) {                 \
-						goto error;                  \
-					}                                \
-				}                                    \
-				if (!safeAdd(res, res, digit)) {     \
-					goto error;                      \
-				}                                    \
-			}                                        \
-			when (error) {                           \
-				if (neg) {                           \
-					throw(Underflow);                \
-				} else {                             \
-					throw(Overflow);                 \
-				}                                    \
-			}                                        \
-			c++;                                     \
-		}                                            \
-		if (neg) {                                   \
-			if (!isSigned(type)) {                   \
-				throw(Underflow);                    \
-			}                                        \
-			res *= -1;                               \
-		}                                            \
-		return res;                                  \
+#define DefineParseString(type, name)               \
+	type name(RdString s) {                         \
+		type res = 0;                               \
+		size_t c = 0;                               \
+		bool neg = (s.len > 0 && s.buf[0] == '-');  \
+		bwd(i, s.len) {                             \
+			if (!Char_IsDigit(s.buf[i])) {          \
+				continue;                           \
+			}                                       \
+			type digit = Char_ParseDigit(s.buf[i]); \
+			if (digit) {                            \
+				rpt(c) {                            \
+					if (digit * 10 / 10 != digit) { \
+						goto error;                 \
+					}                               \
+					digit *= 10;                    \
+					if (digit < 0) {                \
+						goto error;                 \
+					}                               \
+				}                                   \
+				if (!safeAdd(res, res, digit)) {    \
+					goto error;                     \
+				}                                   \
+			}                                       \
+			when (error) {                          \
+				if (neg) {                          \
+					throw(Underflow);               \
+				} else {                            \
+					throw(Overflow);                \
+				}                                   \
+			}                                       \
+			c++;                                    \
+		}                                           \
+		if (neg) {                                  \
+			if (!isSigned(type)) {                  \
+				throw(Underflow);                   \
+			}                                       \
+			res *= -1;                              \
+		}                                           \
+		return res;                                 \
 	}
 
 DefineParseString(s8,  Int8_Parse);
