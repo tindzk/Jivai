@@ -2,6 +2,7 @@
 #import <alloca.h>
 
 #import "Bit.h"
+#import "Math.h"
 #import "Char.h"
 #import "Types.h"
 #import "Object.h"
@@ -134,6 +135,7 @@ sdef(CarrierString, ReplaceAll, RdString s, RdString needle, RdString replacemen
 sdef(short, CompareRight, RdString a, RdString b);
 sdef(short, CompareLeft, RdString a, RdString b);
 overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool skipSpaces, bool skipZeros);
+sdef(short, Compare, RdString left, RdString right);
 
 #if String_FmtChecks
 #define FmtString(_fmt, ...)  \

@@ -896,6 +896,11 @@ overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool
 	}
 }
 
+sdef(short, Compare, RdString left, RdString right) {
+	short len = Min(left.len, right.len);
+	return memcmp(left.buf, right.buf, len);
+}
+
 #undef self
 
 #define self RdStringArray
