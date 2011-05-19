@@ -71,6 +71,20 @@ tsCase(Acute, "Parsing UInt32") {
 	Assert($("Detect overflow"), caught);
 }
 
+tsCase(Acute, "Parsing Int16") {
+	bool caught = false;
+
+	try {
+		Int16_Parse($("1114111"));
+	} catch(Integer, Overflow) {
+		caught = true;
+	} finally {
+
+	} tryEnd;
+
+	Assert($("Detect overflow"), caught);
+}
+
 tsCase(Acute, "Parsing UInt32") {
 	bool caught = false;
 

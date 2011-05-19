@@ -15,20 +15,22 @@
 			if (digit) {                             \
 				rpt(c) {                             \
 					if (digit * 10 / 10 != digit) {  \
-						if (neg) {                   \
-							throw(Underflow);        \
-						} else {                     \
-							throw(Overflow);         \
-						}                            \
+						goto error;                  \
 					}                                \
 					digit *= 10;                     \
+					if (digit < 0) {                 \
+						goto error;                  \
+					}                                \
 				}                                    \
 				if (!safeAdd(res, res, digit)) {     \
-					if (neg) {                       \
-						throw(Underflow);            \
-					} else {                         \
-						throw(Overflow);             \
-					}                                \
+					goto error;                      \
+				}                                    \
+			}                                        \
+			when (error) {                           \
+				if (neg) {                           \
+					throw(Underflow);                \
+				} else {                             \
+					throw(Overflow);                 \
 				}                                    \
 			}                                        \
 			c++;                                     \
