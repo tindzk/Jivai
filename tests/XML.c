@@ -13,47 +13,47 @@ tsRegister("XML") {
 }
 
 tsCase(Acute, "Unescaping") {
-	CarrierString s = HTML_Unescape($("Hello World!"));
+	CarrierString s = XML_Unescape($("Hello World!"));
 	Assert($("No quotes"), String_Equals(s.rd, $("Hello World!")));
 	Assert($("Stack"),     s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("'Hello World!'"));
+	s = XML_Unescape($("'Hello World!'"));
 	Assert($("Single quotes"), String_Equals(s.rd, $("Hello World!")));
 	Assert($("Stack"),         s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("\"Hello World!\""));
+	s = XML_Unescape($("\"Hello World!\""));
 	Assert($("Double quotes"), String_Equals(s.rd, $("Hello World!")));
 	Assert($("Stack"),         s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("'Hello\\' World!'"));
+	s = XML_Unescape($("'Hello\\' World!'"));
 	Assert($("Escaped single quotes"), String_Equals(s.rd, $("Hello' World!")));
 	Assert($("Heap"), !s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("'Hello\" World!'"));
+	s = XML_Unescape($("'Hello\" World!'"));
 	Assert($("Escaped single quotes"), String_Equals(s.rd, $("Hello\" World!")));
 	Assert($("Stack"), s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("\"Hello\\\" World!\""));
+	s = XML_Unescape($("\"Hello\\\" World!\""));
 	Assert($("Escaped double quotes"), String_Equals(s.rd, $("Hello\" World!")));
 	Assert($("Heap"), !s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("\"Hello' World!\""));
+	s = XML_Unescape($("\"Hello' World!\""));
 	Assert($("Escaped double quotes"), String_Equals(s.rd, $("Hello' World!")));
 	Assert($("Stack"), s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("'Hello\\'\" World!'"));
+	s = XML_Unescape($("'Hello\\'\" World!'"));
 	Assert($("Mixing single and double quotes"), String_Equals(s.rd, $("Hello'\" World!")));
 	Assert($("Heap"), !s.omni);
 	CarrierString_Destroy(&s);
 
-	s = HTML_Unescape($("\"Hello'\\\" World!\""));
+	s = XML_Unescape($("\"Hello'\\\" World!\""));
 	Assert($("Mixing single and double quotes"), String_Equals(s.rd, $("Hello'\" World!")));
 	Assert($("Heap"), !s.omni);
 	CarrierString_Destroy(&s);
