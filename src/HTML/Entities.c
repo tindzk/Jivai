@@ -284,12 +284,12 @@ sdef(String, Decode, RdString s) {
 						goto error;
 					}
 
-					s16 c;
+					s32 c;
 					if (entity.buf[1] == 'x') {
 						c = Hex_ToInteger(String_Slice(entity, 2));
 					} else {
 						try {
-							c = Int16_Parse(String_Slice(entity, 1));
+							c = Int32_Parse(String_Slice(entity, 1));
 						} catchAny {
 							excGoto error;
 						} finally {
@@ -297,7 +297,9 @@ sdef(String, Decode, RdString s) {
 						} tryEnd;
 					}
 
-					Unicode_ToMultiByte(c, &res);
+					if (!Unicode_ToMultiByte(c, &res)) {
+						goto error;
+					}
 				} else {
 					size_t j;
 
@@ -310,7 +312,9 @@ sdef(String, Decode, RdString s) {
 					goto error;
 
 					when (found) {
-						Unicode_ToMultiByte(entities[j].c, &res);
+						if (!Unicode_ToMultiByte(entities[j].c, &res)) {
+							goto error;
+						}
 					}
 				}
 

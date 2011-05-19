@@ -54,6 +54,11 @@ tsCase(Acute, "Decoding") {
 	Assert($("Decimal entity"), String_Equals(s.rd, $("œ")));
 	String_Destroy(&s);
 
+	/* Invalid Unicode sequence (0x10FFFF + 1). */
+	s = HTML_Entities_Decode($("&#1114112;"));
+	Assert($("Invalid decimal entity"), String_Equals(s.rd, $("&#1114112;")));
+	String_Destroy(&s);
+
 	s = HTML_Entities_Decode($("&#x153;"));
 	Assert($("Hex entity"), String_Equals(s.rd, $("œ")));
 	String_Destroy(&s);
