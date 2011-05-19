@@ -288,7 +288,13 @@ sdef(String, Decode, RdString s) {
 					if (entity.buf[1] == 'x') {
 						c = Hex_ToInteger(String_Slice(entity, 2));
 					} else {
-						c = Int16_Parse(String_Slice(entity, 1));
+						try {
+							c = Int16_Parse(String_Slice(entity, 1));
+						} catchAny {
+							excGoto error;
+						} finally {
+
+						} tryEnd;
 					}
 
 					String s = String_New(4);

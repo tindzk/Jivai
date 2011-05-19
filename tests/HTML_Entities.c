@@ -29,6 +29,11 @@ tsCase(Acute, "Decoding") {
 	Assert($("No entities"), String_Equals(s.rd, $("&abcd;")));
 	String_Destroy(&s);
 
+	/* Overflows s16. */
+	s = HTML_Entities_Decode($("&#12345678987654321;"));
+	Assert($("No entities"), String_Equals(s.rd, $("&#12345678987654321;")));
+	String_Destroy(&s);
+
 	s = HTML_Entities_Decode($("&#x;"));
 	Assert($("Non-existent named entity"), String_Equals(s.rd, $("&#x;")));
 	String_Destroy(&s);
