@@ -335,38 +335,32 @@ sdef(String, Decode, RdString s) {
     return res;
 }
 
-overload sdef(void, Encode, RdString s, String *out) {
-	fwd(i, s.len) {
-		switch (s.buf[i]) {
-			case '&':
-				String_Append(out, $("&amp;"));
-				break;
+static RdString encode[] = {
+	['&']  = $("&amp;"),
+	['"']  = $("&quot;"),
+	['\''] = $("&#039;"),
+	['<']  = $("&lt;"),
+	['>']  = $("&gt;")
+};
 
-			case '"':
-				String_Append(out, $("&quot;"));
-				break;
+sdef(CarrierString, Encode, RdString str) {
+	CarrierString res = String_ToCarrier(RdString_Exalt(str));
 
-			case '\'':
-				String_Append(out, $("&#039;"));
-				break;
+	fwd(i, str.len) {
+		size_t idx = str.buf[i];
 
-			case '<':
-				String_Append(out, $("&lt;"));
-				break;
+		if (idx < nElems(encode) && encode[idx].len != 0) {
+			if (res.omni) {
+				res = String_ToCarrier(String_New(str.len + encode[idx].len - 1));
+				Memory_Copy(res.buf, str.buf, i);
+				res.len = i;
+			}
 
-			case '>':
-				String_Append(out, $("&gt;"));
-				break;
-
-			default:
-				String_Append(out, s.buf[i]);
+			String_Append((String *) &res, encode[idx]);
+		} else if (!res.omni) {
+			String_Append((String *) &res, str.buf[i]);
 		}
 	}
-}
-
-overload sdef(String, Encode, RdString s) {
-	String res = String_New(s.len * HTML_Entities_GrowthFactor);
-	HTML_Entities_Encode(s, &res);
 
 	return res;
 }

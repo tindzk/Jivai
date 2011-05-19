@@ -64,4 +64,21 @@ tsCase(Acute, "Decoding") {
 	String_Destroy(&s);
 }
 
+tsCase(Acute, "Encoding") {
+	CarrierString s = HTML_Entities_Encode($("Hello"));
+	Assert($("Stack"), s.omni);
+	Assert($("No entities"), String_Equals(s.rd, $("Hello")));
+	CarrierString_Destroy(&s);
+
+	s = HTML_Entities_Encode($("Hel&lo"));
+	Assert($("Heap"), !s.omni);
+	Assert($("Entities"), String_Equals(s.rd, $("Hel&amp;lo")));
+	CarrierString_Destroy(&s);
+
+	s = HTML_Entities_Encode($("<Hel&>lo"));
+	Assert($("Heap"), !s.omni);
+	Assert($("Entities"), String_Equals(s.rd, $("&lt;Hel&amp;&gt;lo")));
+	CarrierString_Destroy(&s);
+}
+
 tsFinalize;
