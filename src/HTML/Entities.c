@@ -2,11 +2,13 @@
 
 #define self HTML_Entities
 
-/* Taken from http://www.w3.org/TR/REC-html40/sgml/entities.html */
-static struct {
-	RdString entity;
+record(ref(Entity)) {
+	RdString name;
 	int c;
-} entities[] = {
+};
+
+/* Taken from http://www.w3.org/TR/REC-html40/sgml/entities.html */
+static ref(Entity) entities[] = {
 	{ $("AElig"), 198 },
 	{ $("Aacute"), 193 },
 	{ $("Acirc"), 194 },
@@ -261,6 +263,10 @@ static struct {
 	{ $("zwnj"), 8204 }
 };
 
+static sdef(short, CompareEntity, ref(Entity) *left, ref(Entity) *right) {
+	return String_Compare(left->name, right->name);
+}
+
 sdef(String, Decode, RdString s) {
 	String res = String_New(s.len);
 
@@ -301,18 +307,14 @@ sdef(String, Decode, RdString s) {
 						goto error;
 					}
 				} else {
-					size_t j;
+					ref(Entity) *found = bsearch(&entity, entities,
+						nElems(entities), sizeof(ref(Entity)),
+						(void *) ref(CompareEntity));
 
-					for (j = 0; j < nElems(entities); j++) {
-						if (String_Equals(entities[j].entity, entity)) {
-							goto found;
-						}
-					}
-
-					goto error;
-
-					when (found) {
-						if (!Unicode_ToMultiByte(entities[j].c, &res)) {
+					if (found == NULL) {
+						goto error;
+					} else {
+						if (!Unicode_ToMultiByte(found->c, &res)) {
 							goto error;
 						}
 					}
