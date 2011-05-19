@@ -1,5 +1,21 @@
 #import "Macros.h"
 
+#define Min(left, right) ({                         \
+	typeof(left) __left   = (left);                 \
+	typeof(right) __right = (right);                \
+	staticAssert(                                   \
+		isType(typeof(&__left), typeof(&__right))); \
+	__left < __right ? __left : __right;            \
+})
+
+#define Max(left, right) ({                         \
+	typeof(left) __left   = (left);                 \
+	typeof(right) __right = (right);                \
+	staticAssert(                                   \
+		isType(typeof(&__left), typeof(&__right))); \
+	__left > __right ? __left : __right;            \
+})
+
 #define Abs(val) ({            \
 	typeof(val) __val = (val); \
 	(__val > 0)                \
