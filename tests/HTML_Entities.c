@@ -17,6 +17,22 @@ tsCase(Acute, "Decoding") {
 	Assert($("No entities"), String_Equals(s.rd, $("Hello")));
 	String_Destroy(&s);
 
+	s = HTML_Entities_Decode($("&#"));
+	Assert($("No entities"), String_Equals(s.rd, $("&#")));
+	String_Destroy(&s);
+
+	s = HTML_Entities_Decode($("&#;"));
+	Assert($("No entities"), String_Equals(s.rd, $("&#;")));
+	String_Destroy(&s);
+
+	s = HTML_Entities_Decode($("&abcd;"));
+	Assert($("No entities"), String_Equals(s.rd, $("&abcd;")));
+	String_Destroy(&s);
+
+	s = HTML_Entities_Decode($("&#x;"));
+	Assert($("Non-existent named entity"), String_Equals(s.rd, $("&#x;")));
+	String_Destroy(&s);
+
 	s = HTML_Entities_Decode($("&amp;"));
 	Assert($("Named entity"), String_Equals(s.rd, $("&")));
 	String_Destroy(&s);
