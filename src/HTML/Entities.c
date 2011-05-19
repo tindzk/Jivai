@@ -297,12 +297,7 @@ sdef(String, Decode, RdString s) {
 						} tryEnd;
 					}
 
-					String s = String_New(4);
-					Unicode_ToMultiByte(c, &s);
-
-					String_Append(&res, s.rd);
-
-					String_Destroy(&s);
+					Unicode_ToMultiByte(c, &res);
 				} else {
 					size_t j;
 
@@ -315,12 +310,7 @@ sdef(String, Decode, RdString s) {
 					goto error;
 
 					when (found) {
-						String s = String_New(4);
-						Unicode_ToMultiByte(entities[j].c, &s);
-
-						String_Append(&res, s.rd);
-
-						String_Destroy(&s);
+						Unicode_ToMultiByte(entities[j].c, &res);
 					}
 				}
 

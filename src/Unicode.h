@@ -9,6 +9,6 @@ sdef(size_t, Prev, RdString s, size_t offset);
 overload sdef(size_t, Count, RdString s, size_t offset, size_t len);
 overload sdef(size_t, Count, RdString s);
 sdef(void, Shrink, String *s, size_t len);
-sdef(void, ToMultiByte, int c, String *res);
+sdef(bool, ToMultiByte, int c, String *res);
 
 #undef self
