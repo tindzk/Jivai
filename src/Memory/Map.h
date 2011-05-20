@@ -2,6 +2,8 @@
 
 #import <sys/mman.h>
 
+#define MAP_UNINITIALIZED 0x4000000
+
 #import "../Memory.h"
 
 #define self Memory_Map

@@ -17,7 +17,7 @@ def(Memory_Chunk *, Allocate, size_t size) {
 
 	Memory_Chunk *chunk = mmap(NULL, size,
 		PROT_READ | PROT_WRITE,
-		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
 
 	if (chunk == MAP_FAILED) {
 		return NULL;
