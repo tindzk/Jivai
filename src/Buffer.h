@@ -14,17 +14,17 @@ record(RdBuffer) {
  * Don't read from WrBuffer because `.size' corresponds to the allocated size,
  * not the actual number of occupied bytes.
  */
-typedef union WrBuffer {
+variant(WrBuffer) {
 	RdBuffer rd;
 
 	struct {
 		size_t size;
 		void   *ptr;
 	};
-} WrBuffer;
+};
 
 /* Can be written to and read from. */
-typedef union self {
+variant(self) {
 	RdBuffer rd;
 
 	/* This interprets `.len' as the occupied size! If this isn't desired, use
@@ -36,7 +36,7 @@ typedef union self {
 		size_t len;
 		void   *ptr;
 	};
-} self;
+};
 
 Instance(self);
 

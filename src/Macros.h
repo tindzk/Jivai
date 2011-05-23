@@ -8,6 +8,10 @@
 	typedef struct name name; \
 	struct name
 
+#define variant(name)        \
+	typedef union name name; \
+	union name
+
 #define when(lbl) \
 	if (0) lbl: if (1)
 

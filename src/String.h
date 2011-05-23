@@ -38,34 +38,34 @@ record(RdString) {
 
 Instance(RdString);
 
-typedef union OmniString {
+variant(OmniString) {
 	RdString rd;
 	struct {
 		char   *buf;
 		size_t len;
 	};
-} OmniString;
+};
 
 Instance(OmniString);
 
-typedef union self {
+variant(self) {
 	RdString rd;
 	struct {
 		char   *buf;
 		size_t len;
 	};
-} self;
+};
 
 Instance(self);
 
-typedef union CarrierString {
+variant(CarrierString) {
 	RdString rd;
 	struct {
 		char   *buf;
 		size_t len;
 		bool   omni;
 	};
-} CarrierString;
+};
 
 Instance(CarrierString);
 

@@ -3,12 +3,12 @@
 #define self DynObject
 
 /* References an heap-allocated object. */
-typedef union {
+variant(self) {
 	Instance inst;
 	struct {
 		void *addr;
 	};
-} self transparentUnion;
+} transparentUnion;
 
 rsdef(self, New, size_t size);
 overload sdef(void, Destroy, self $this);

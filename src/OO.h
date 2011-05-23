@@ -7,9 +7,9 @@
 // ---------
 
 /* References any object. To be used in callbacks. */
-typedef union {
+variant(Instance) {
 	void *addr;
-} Instance transparentUnion;
+} transparentUnion;
 
 static alwaysInline bool Instance_IsValid(Instance $this) {
 	return $this.addr != NULL;
@@ -21,14 +21,14 @@ static alwaysInline bool Instance_IsValid(Instance $this) {
 #define DynInstName(name) \
 	simpleConcat(name, DynInst)
 
-#define Instance(name)                    \
-	typedef union {                       \
-		name *addr;                       \
-	} InstName(name) transparentUnion;    \
-	typedef union {                       \
-		name *addr;                       \
-		Instance genericAddr;             \
-	} DynInstName(name) transparentUnion; \
+#define Instance(name)           \
+	variant(InstName(name)) {    \
+		name *addr;              \
+	} transparentUnion;          \
+	variant(DynInstName(name)) { \
+		name *addr;              \
+		Instance genericAddr;    \
+	} transparentUnion;          \
 
 // -------
 // Classes
