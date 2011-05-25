@@ -1,6 +1,9 @@
+#import <Main.h>
 #import <String.h>
 
-int main(void) {
+#define self Application
+
+def(bool, Run) {
 	/* Define a string on the stack, i.e. there is no need to
 	 * call String_Destroy() afterwards (although it is allowed).
 	 *
@@ -51,7 +54,7 @@ int main(void) {
 	 */
 	if (pos == String_NotFound) {
 		String_Print($("Needle not found!\n"));
-		return ExitStatus_Failure;
+		return false;
 	}
 
 	/* Extract and print both parts: */
@@ -64,5 +67,5 @@ int main(void) {
 	String_Print(String_Slice(s, pos));
 	String_Print($("\n"));
 
-	return ExitStatus_Success;
+	return true;
 }
