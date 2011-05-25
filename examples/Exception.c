@@ -2,7 +2,7 @@
 #import <String.h>
 #import <Exception.h>
 
-#define self Example
+#define self Application
 
 // @exc CustomException
 
@@ -18,14 +18,10 @@ void func1(void) {
 	func2();
 }
 
-bool Main (
-	__unused ProtString base,
-	__unused ProtStringArray *args,
-	__unused ProtStringArray *env
-) {
+def(bool, Run) {
 	try {
 		func1();
-	} catch(Example, CustomException) {
+	} catch(Application, CustomException) {
 		String_Print($("CustomException caught.\n"));
 	} finally {
 		String_Print($("finally block.\n"));
