@@ -1,3 +1,5 @@
+#import <stdlib.h> /* qsort() */
+
 #import "Memory.h"
 
 #define Array_Sort(this, cmp) \
