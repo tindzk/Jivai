@@ -18,8 +18,5 @@
 /* Check for element mismatches in FmtString(). */
 #define String_FmtChecks 1
 
-/* Support formatting call traces. */
-#define Backtrace_HasBFD
-
 /* Log everything by default. */
 #define Logger_DisabledLevels 0

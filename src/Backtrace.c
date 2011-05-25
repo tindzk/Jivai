@@ -1,39 +1,48 @@
 #import "Backtrace.h"
 
-void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
-	if (System_IsRunningOnValgrind()) {
-		System_Err($("Error: Traceback cannot printed when running on Valgrind.\n"));
-		return;
+#define self Backtrace
+
+sdef(void, PrintTrace, void **addr, size_t size) {
+	ELF elf;
+
+	if (!System_IsRunningOnValgrind()) {
+		elf = ELF_New($("/proc/self/exe"));
+	} else {
+		/* As for Valgrind, we have to follow the symbolic link manually. */
+		String link = String_New(256);
+		Path_ReadLink($("/proc/self/exe"), &link);
+		elf = ELF_New(link.rd);
+		String_Destroy(&link);
 	}
 
-#ifdef Backtrace_HasBFD
-	BFD_Item *items = BFD_ResolveSymbols((void *const *) dest, (int) size);
+	DWARF dwarf = DWARF_New(ELF_GetSection(&elf, $(".debug_line")));
+	DWARF_ParseLineNumberProgram(&dwarf);
+
+	ELF_Symbols *symbols = ELF_GetSymbolTable(&elf);
 
 	System_Err($("Traceback (most recent call first):\n"));
 
-	bwd(i, size) {
+	fwd(i, size) {
 		System_Err($("\tat "));
 
-		if (items[i].function.len == 0) {
+		RdString function = ELF_Symbols_FindNearest(symbols, addr[i]);
+
+		if (function.len == 0) {
 			System_Err($("0x"));
 
-			String hex = Hex_ToString(items[i].addr);
+			String hex = Hex_ToString(addr[i]);
 			System_Err(hex.rd);
 			String_Destroy(&hex);
 		} else {
-			System_Err(items[i].function.rd);
+			System_Err(function);
 			System_Err($("("));
 
-			if (items[i].filename.len > 0) {
-				ssize_t pos = String_ReverseFind(items[i].filename.rd, '/');
+			DWARF_Match match = DWARF_ResolveSymbol(&dwarf, addr[i]);
 
-				if (pos != -1) {
-					String_Crop(&items[i].filename, pos + 1);
-				}
+			if (match.file.name.len > 0) {
+				String line = Integer_ToString(match.line);
 
-				String line = Integer_ToString(items[i].line);
-
-				System_Err(items[i].filename.rd);
+				System_Err(match.file.name);
 				System_Err($(":"));
 				System_Err(line.rd);
 
@@ -43,17 +52,15 @@ void Backtrace_PrintTrace(__unused void **dest, __unused size_t size) {
 			System_Err($(")"));
 		}
 
-		String_Destroy(&items[i].filename);
-		String_Destroy(&items[i].function);
-
 		System_Err($("\n"));
 	}
 
-	free(items);
-#endif
+	ELF_Symbols_Free(symbols);
+	DWARF_Destroy(&dwarf);
+	ELF_Destroy(&elf);
 }
 
-inline void* Backtrace_GetFrameAddr(u32 level) {
+inline sdef(void *, GetFrameAddr, u32 level) {
 	switch (level) {
 		case 1: return __builtin_frame_address(1);
 		case 2: return __builtin_frame_address(2);
@@ -75,7 +82,7 @@ inline void* Backtrace_GetFrameAddr(u32 level) {
 	}
 }
 
-inline void* Backtrace_GetReturnAddr(u32 level) {
+inline sdef(void *, GetReturnAddr, u32 level) {
 	switch (level) {
 		case 1: return __builtin_return_address(1);
 		case 2: return __builtin_return_address(2);
@@ -97,8 +104,8 @@ inline void* Backtrace_GetReturnAddr(u32 level) {
 	}
 }
 
-size_t Backtrace_GetTrace(void **buf, u32 size) {
-	u32 i;
+sdef(size_t, GetTrace, void **buf, u32 size) {
+	size_t i;
 
 	for (i = 1; i < size; i++) {
 		if (Backtrace_GetFrameAddr(i) == NULL) {

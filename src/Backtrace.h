@@ -1,15 +1,18 @@
+#import "ELF.h"
 #import "Hex.h"
+#import "Path.h"
+#import "DWARF.h"
 #import "String.h"
 #import "Memory.h"
 #import "Channel.h"
 #import "Integer.h"
 #import "Compiler.h"
 
-#ifdef Backtrace_HasBFD
-#import "BFD.h"
-#endif
+#define self Backtrace
 
-void Backtrace_PrintTrace(void **dest, size_t size);
-void* Backtrace_GetFrameAddr(u32 level);
-void* Backtrace_GetReturnAddr(u32 level);
-size_t Backtrace_GetTrace(void **buf, u32 size);
+sdef(void, PrintTrace, void **addr, size_t size);
+sdef(void *, GetFrameAddr, u32 level);
+sdef(void *, GetReturnAddr, u32 level);
+sdef(size_t, GetTrace, void **buf, u32 size);
+
+#undef self
