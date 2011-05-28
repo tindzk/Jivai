@@ -11,6 +11,8 @@
 // @exc InvalidFile
 // @exc UnknownError
 
+Callback(ref(OnSection), bool, RdString name, RdBuffer sect);
+
 #if defined(__x86_64__)
 #define ELF_Class ELFCLASS64
 #define ELF_Ehdr  Elf64_Ehdr
@@ -45,6 +47,7 @@ rsdef(self, New, RdString path);
 def(void, Destroy);
 overload def(RdBuffer, GetSection, RdString name);
 overload def(RdBuffer, GetSection, ref(Word) type);
+def(void, Each, RdString name, ref(OnSection) onSection);
 def(ref(Symbols) *, GetSymbolTable);
 rsdef(RdString, Symbols_FindNearest, ref(Symbols) *symbols, void *addr);
 

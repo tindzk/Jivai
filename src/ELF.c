@@ -112,6 +112,34 @@ overload def(RdBuffer, GetSection, ref(Word) type) {
 	};
 }
 
+def(void, Each, RdString name, ref(OnSection) onSection) {
+	assert(name.len != 0);
+
+	ref(Ehdr) *header  = this->base;
+	ref(Shdr) *section = this->base + header->e_shoff;
+
+	fwd(i, header->e_shnum) {
+		ref(Shdr) *cur = &section[i];
+
+		if (cur->sh_name == 0) {
+			continue;
+		}
+
+		RdString sectName = call(ResolveSectName, cur->sh_name);
+
+		if (String_BeginsWith(sectName, name)) {
+			bool cont = callbackRet(onSection, false, sectName, (RdBuffer) {
+				.ptr = this->base + cur->sh_offset,
+				.len = cur->sh_size
+			});
+
+			if (!cont) {
+				break;
+			}
+		}
+	}
+}
+
 static sdef(short, Compare, ref(Symbol) *left, ref(Symbol) *right) {
 	return Integer_Compare(
 		(IntPtr) left->address,
