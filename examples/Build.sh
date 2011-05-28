@@ -13,6 +13,7 @@ fi
 	output=build/$1.bin    \
 	manifest=Manifest.h    \
 	main=$1.c              \
+	include=.              \
 	include=../src         \
 	map=.:build            \
 	map=../src:build/Jivai \

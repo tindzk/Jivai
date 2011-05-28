@@ -7,6 +7,7 @@ mkdir -p build/Jivai
 	main=TestSuite.c       \
 	output=TestSuite.bin   \
 	manifest=Manifest.h    \
+	include=.              \
 	include=../src         \
 	map=.:build            \
 	map=../src:build/Jivai \

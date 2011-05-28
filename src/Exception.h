@@ -1,5 +1,7 @@
 #import <setjmp.h>
 
+#import <Manifest.h>
+
 #import "Types.h"
 #import "Macros.h"
 #import "String.h"
