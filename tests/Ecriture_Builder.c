@@ -124,5 +124,3 @@ tsCase(Acute, "Nesting") {
 
 	Assert($("Equals"), call(Equals, $("value.p{.b{parag}}")));
 }
-
-tsFinalize;

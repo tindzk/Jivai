@@ -66,5 +66,3 @@ tsCase(Acute, "Parsing") {
 	number = Float_Parse($("-3"), '.');
 	Assert($("-3"), Float_Equals(number, -3, 0.00001));
 }
-
-tsFinalize;

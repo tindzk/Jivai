@@ -43,5 +43,3 @@ tsCase(Acute, "Memory") {
 	BufferedStream_Close(&stream);
 	BufferedStream_Destroy(&stream);
 }
-
-tsFinalize;

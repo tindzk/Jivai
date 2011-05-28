@@ -8,22 +8,15 @@ SingletonDestructor(self);
 
 rsdef(self, New) {
 	return (self) {
-		.suites = TestSuites_New(128),
 		.acuteFailed = false
 	};
 }
 
-def(void, Destroy) {
-	TestSuites_Free(this->suites);
-}
+def(void, Destroy) { }
 
 def(void, SetTerminal, Terminal *term) {
 	this->term       = term;
 	this->controller = Terminal_Controller_New(term);
-}
-
-def(void, AddSuite, ITestSuiteInterface *suite) {
-	TestSuites_Push(&this->suites, suite);
 }
 
 def(void, Assert, RdString descr, bool succeeded) {
@@ -47,59 +40,55 @@ def(void, Assert, RdString descr, bool succeeded) {
 		descr);
 }
 
-static def(void *, Resolve, ITestSuiteInterface *suite, ref(MethodType) type) {
-	fwd(i, suite->last - suite->first) {
-		ref(Method) *method = &suite->first[i];
-
-		if (method->type == type) {
-			return method->addr;
+static def(void *, Resolve, RdBuffer methods, ref(Type) type) {
+	for (TestSuite_Method *cur = methods.ptr; (void *) cur < methods.ptr + methods.len; cur++) {
+		if (cur->type == type) {
+			return cur->addr;
 		}
 	}
 
 	return NULL;
 }
 
-static def(bool, RunSuite, ITestSuiteInterface *suite) {
-	ref(MethodRun) *method = call(Resolve, suite, ref(MethodType_Run));
+static inline def(bool, RunSuite, RdBuffer methods) {
+	ref(MethodRun) *method = call(Resolve, methods, ref(Type_Run));
 
 	return (method != NULL)
 		? method()
 		: false;
 }
 
-static def(void, InitSuite, ITestSuiteInterface *suite, DynObject inst) {
-	ref(MethodInit) *method = call(Resolve, suite, ref(MethodType_Init));
+static inline def(void, InitSuite, RdBuffer methods, DynObject inst) {
+	ref(MethodInit) *method = call(Resolve, methods, ref(Type_Init));
 
 	if (method != NULL) {
 		method(inst.addr);
 	}
 }
 
-static def(void, DestroySuite, ITestSuiteInterface *suite, DynObject inst) {
-	ref(MethodDestroy) *method = call(Resolve, suite, ref(MethodType_Destroy));
+static inline def(void, DestroySuite, RdBuffer methods, DynObject inst) {
+	ref(MethodDestroy) *method = call(Resolve, methods, ref(Type_Destroy));
 
 	if (method != NULL) {
 		method(inst.addr);
 	}
 }
 
-static def(void, RunTestSuite, ITestSuiteInterface *suite, DynObject inst) {
-	fwd(i, suite->last - suite->first) {
-		ref(Method) *method = &suite->first[i];
-
-		if (method->type == ref(MethodType_TestCase)) {
+static inline def(void, RunTestSuite, RdBuffer methods, DynObject inst) {
+	for (TestSuite_Method *cur = methods.ptr; (void *) cur < methods.ptr + methods.len; cur++) {
+		if (cur->type == ref(Type_TestCase)) {
 			Terminal_Controller_Render(&this->controller,
 				$(" % .fg[yellow]{.b{Test case:} .i{%}}\n"),
 
-				method->level == ref(Level_Trivial)
+				cur->level == ref(Level_Trivial)
 					? $("·")
 					: $("★"),
 
-				method->name);
+				cur->name);
 
-			((TestSuite_MethodTestCase *) method->addr)(inst.addr, this);
+			((TestSuite_MethodTestCase *) cur->addr)(inst.addr, this);
 
-			if (method->level == ref(Level_Acute)) {
+			if (cur->level == ref(Level_Acute)) {
 				if (this->failure > 0) {
 					Terminal_Controller_Render(&this->controller,
 						$("\n   .fg[red]{.b{Omitting all remaining test cases.}}\n"));
@@ -115,18 +104,27 @@ static def(void, RunTestSuite, ITestSuiteInterface *suite, DynObject inst) {
 	Terminal_Print(this->term, '\n');
 }
 
-def(ITestSuiteInterface *, ResolveSuite, RdString name) {
-	each(suite, this->suites) {
-		if (String_Equals((*suite)->name, name)) {
-			return *suite;
+def(bool, OnSection, __unused RdString name, RdBuffer sect) {
+	assert(sect.len > sizeof(ITestSuiteInterface));
+
+	ITestSuiteInterface *suite = sect.ptr;
+
+	assert(suite->type == ref(Type_Section));
+
+	if (this->name.len > 0) {
+		if (String_Equals(suite->name, this->name)) {
+			this->found = true;
+		} else {
+			return true;
 		}
 	}
 
-	return NULL;
-}
+	RdBuffer methods = {
+		.ptr = sect.ptr + sizeof(ITestSuiteInterface),
+		.len = sect.len - sizeof(ITestSuiteInterface)
+	};
 
-def(void, _Run, ITestSuiteInterface *suite) {
-	bool run = call(RunSuite, suite);
+	bool run = call(RunSuite, methods);
 
 	Terminal_Controller_Render(&this->controller,
 		$(".fg[blue]{.b{% suite .i{%...}}}\n\n"),
@@ -143,9 +141,9 @@ def(void, _Run, ITestSuiteInterface *suite) {
 
 		DynObject object = DynObject_New(suite->size);
 
-		call(InitSuite,    suite, object);
-		call(RunTestSuite, suite, object);
-		call(DestroySuite, suite, object);
+		call(InitSuite,    methods, object);
+		call(RunTestSuite, methods, object);
+		call(DestroySuite, methods, object);
 
 		String strSuccess = Integer_ToString(this->success);
 		String strFailure = Integer_ToString(this->failure);
@@ -161,25 +159,24 @@ def(void, _Run, ITestSuiteInterface *suite) {
 	}
 
 	Terminal_Print(this->term, '\n');
+
+	return this->name.len == 0;
 }
 
-def(void, Run, RdString name) {
-	ITestSuiteInterface *suite = call(ResolveSuite, name);
+overload def(void, Run) {
+	ELF elf = ELF_New($("./TestSuite.bin")); /* TODO */
+	ELF_Each(&elf, $(".suite."), ELF_OnSection_For(this, ref(OnSection)));
+	ELF_Destroy(&elf);
+}
 
-	if (suite == NULL) {
+overload def(void, Run, RdString name) {
+	this->name = name;
+	call(Run);
+
+	if (!this->found) {
 		Terminal_Controller_Render(&this->controller,
 			$(".fg[red]{.b{Error:} Test suite .i{%} not found!}\n"),
 			name);
-
-		return;
-	}
-
-	call(_Run, suite);
-}
-
-def(void, RunAll) {
-	each(suite, this->suites) {
-		call(_Run, *suite);
 	}
 }
 
@@ -199,7 +196,7 @@ def(bool, Run) {
 	TestSuite_SetTerminal(inst, &this->term);
 
 	if (this->args->len == 0) {
-		TestSuite_RunAll(inst);
+		TestSuite_Run(inst);
 	} else {
 		fwd(i, this->args->len) {
 			TestSuite_Run(inst, this->args->buf[i]);

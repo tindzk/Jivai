@@ -215,5 +215,3 @@ tsCase(Acute, "Quirks") {
 	Assert($("Matches"),
 		call(Matches, XML_TokenType_Done, $("")));
 }
-
-tsFinalize;

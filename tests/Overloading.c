@@ -91,5 +91,3 @@ tsCase(Acute, "Overload") {
 	Assert($("Select u32 function by passing a variable"),
 		this->type == MethodUInt32);
 }
-
-tsFinalize;

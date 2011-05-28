@@ -204,5 +204,3 @@ tsCase(Acute, "Int64 conversion") {
 	Assert($("Positive numbers"), String_Equals(s.rd, $("12345678987654321")));
 	String_Destroy(&s);
 }
-
-tsFinalize;

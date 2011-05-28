@@ -98,5 +98,3 @@ tsCase(Acute, "Parsing") {
 	Assert($("Query"),    String_Equals(parts.query,    $("qry")));
 	Assert($("Fragment"), String_Equals(parts.fragment, $("main")));
 }
-
-tsFinalize;

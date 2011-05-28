@@ -47,5 +47,3 @@ tsCase(Acute, "Detect read-only data") {
 
 	Memory_Destroy(heap);
 }
-
-tsFinalize;

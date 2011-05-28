@@ -48,5 +48,3 @@ tsCase(Acute, "Prune()") {
 
 	Assert($("Is empty"), !EventQueue_HasEvents(&this->queue));
 }
-
-tsFinalize;

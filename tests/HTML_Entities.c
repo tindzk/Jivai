@@ -80,5 +80,3 @@ tsCase(Acute, "Encoding") {
 	Assert($("Entities"), String_Equals(s.rd, $("&lt;Hel&amp;&gt;lo")));
 	CarrierString_Destroy(&s);
 }
-
-tsFinalize;

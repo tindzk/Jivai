@@ -24,5 +24,3 @@ tsCase(Acute, "Week day for leap years") {
 	Assert($("Time"),    Time_Equals(rfc822.time, time));
 	Assert($("Weekday"), rfc822.weekday == 2);
 }
-
-tsFinalize;

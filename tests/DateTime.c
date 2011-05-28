@@ -215,5 +215,3 @@ tsCase(Acute, "Drift (+1)") {
 	Assert($("Hour"),   dt.time.hour + 1 == dtNew.time.hour);
 	Assert($("Minute"), dt.time.minute   == dtNew.time.minute);
 }
-
-tsFinalize;

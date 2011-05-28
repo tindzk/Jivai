@@ -108,5 +108,3 @@ tsCase(Acute, "Safety") {
 	Assert($("No stack corruption"),
 		__exc_mgr.cur == this->old);
 }
-
-tsFinalize;

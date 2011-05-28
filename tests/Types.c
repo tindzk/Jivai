@@ -51,5 +51,3 @@ tsCase(Acute, "Signedness") {
 	Assert($("s32"), (s32)-1 < 0);
 	Assert($("s64"), (s64)-1 < 0);
 }
-
-tsFinalize;

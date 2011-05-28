@@ -80,5 +80,3 @@ tsCase(Acute, "Real week number") {
 	Assert($("2011-01-17"),
 		Date_GetRealWeekNumber((Date) {2011, 1, 17}) == 4);
 }
-
-tsFinalize;

@@ -169,5 +169,3 @@ tsCase(Acute, "GetLine (extend)") {
 	StringReader_Extend(&reader, &s); // \n
 	Assert($("Equals"), StringReader_GetLine(&reader) == 3);
 }
-
-tsFinalize;

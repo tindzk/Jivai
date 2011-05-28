@@ -46,5 +46,3 @@ tsCase(Acute, "Symbol table") {
 
 	ELF_Destroy(&elf);
 }
-
-tsFinalize;

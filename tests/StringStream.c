@@ -74,5 +74,3 @@ tsCase(Acute, "Writing") {
 
 	String_Destroy(&out);
 }
-
-tsFinalize;

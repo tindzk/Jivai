@@ -39,5 +39,3 @@ tsCase(Acute, "MaxUnsigned()") {
 	Assert($("u32"), MaxUnsigned(u32) > 0);
 	Assert($("u64"), MaxUnsigned(u64) > 0);
 }
-
-tsFinalize;

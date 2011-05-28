@@ -37,5 +37,3 @@ tsCase(Acute, "Copy") {
 	Buffer_Destroy(&buf);
 	String_Destroy(&s);
 }
-
-tsFinalize;

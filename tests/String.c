@@ -528,5 +528,3 @@ tsCase(Acute, "Between") {
 
 	Assert($("Result"), !String_Between(s, $("H"), $("World!"), NULL));
 }
-
-tsFinalize;

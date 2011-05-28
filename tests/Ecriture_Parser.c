@@ -258,5 +258,3 @@ tsCase(Acute, "Comments") {
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Value, $(" end")));
 	Assert($("Matches"), call(Matches, Ecriture_TokenType_Done, $("")));
 }
-
-tsFinalize;

@@ -155,5 +155,3 @@ tsCase(Acute, "Cloning") {
 	LinkedMemory_Free(LinkedMemory_GetInstance(), copy);
 	LinkedMemory_Free(LinkedMemory_GetInstance(), orig);
 }
-
-tsFinalize;

@@ -39,5 +39,3 @@ tsCase(Acute, "Format") {
 	Assert($("-1"), String_Equals(s.rd, $("-01")));
 	String_Destroy(&s);
 }
-
-tsFinalize;

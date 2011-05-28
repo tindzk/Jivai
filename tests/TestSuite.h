@@ -1,3 +1,4 @@
+#import <ELF.h>
 #import <String.h>
 #import <Exception.h>
 #import <Application.h>
@@ -10,15 +11,16 @@ set(ref(Level)) {
 	ref(Level_Trivial)
 };
 
-set(ref(MethodType)) {
-	ref(MethodType_Run),
-	ref(MethodType_Init),
-	ref(MethodType_Destroy),
-	ref(MethodType_TestCase),
+set(ref(Type)) {
+	ref(Type_Section) = 1,
+	ref(Type_Run),
+	ref(Type_Init),
+	ref(Type_Destroy),
+	ref(Type_TestCase),
 };
 
 record(ref(Method)) {
-	ref(MethodType) type;
+	ref(Type) type;
 	void *addr;
 
 	RdString name;
@@ -26,19 +28,18 @@ record(ref(Method)) {
 };
 
 Interface(ITestSuite) {
+	ref(Type) type;
 	RdString name;
 	size_t size;
-	TestSuite_Method *first;
-	TestSuite_Method *last;
 };
-
-Array(ITestSuiteInterface *, TestSuites);
 
 class {
 	Terminal *term;
 	Terminal_Controller controller;
 
-	TestSuites *suites;
+	bool found;
+
+	RdString name;
 
 	size_t failure;
 	size_t success;
@@ -46,27 +47,32 @@ class {
 	bool acuteFailed;
 };
 
+#define __tsSection(x) \
+	".suite." #x
+
+#define _tsSection(x) \
+	__tsSection(x)
+
 #define tsSection \
-	__section(".data.suite")
+	__section(_tsSection(self))
 
 #define tsRegister(caption)                       \
+	tsSection Impl(ITestSuite) = {                \
+		.type = TestSuite_Type_Section,           \
+		.name = $(caption),                       \
+		.size = sizeof(self)                      \
+	};                                            \
 	sdef(bool, Run);                              \
 	TestSuite_Method tsSection ref(MethodRun) = { \
-		.type = TestSuite_MethodType_Run,         \
+		.type = TestSuite_Type_Run,               \
 		.addr = ref(Run)                          \
-	};                                            \
-	Impl(ITestSuite) = {                          \
-		.name  = $(caption),                      \
-		.size  = sizeof(self),                    \
-		.first = &ref(MethodRun),                 \
-		.last  = NULL                             \
 	};                                            \
 	sdef(bool, Run)
 
 #define tsInit                                     \
 	def(void, OnInit);                             \
 	TestSuite_Method tsSection ref(MethodInit) = { \
-		.type = TestSuite_MethodType_Init,         \
+		.type = TestSuite_Type_Init,               \
 		.addr = ref(OnInit)                        \
 	};                                             \
 	def(void, OnInit)
@@ -74,7 +80,7 @@ class {
 #define tsDestroy                                     \
 	def(void, OnDestroy);                             \
 	TestSuite_Method tsSection ref(MethodDestroy) = { \
-		.type = TestSuite_MethodType_Destroy,         \
+		.type = TestSuite_Type_Destroy,               \
 		.addr = ref(OnDestroy)                        \
 	};                                                \
 	def(void, OnDestroy)
@@ -91,20 +97,12 @@ class {
 #define tsCase(caseLevel, descr)                \
 	tsCaseMethod;                               \
 	TestSuite_Method tsSection tsMethodName = { \
-		.type  = TestSuite_MethodType_TestCase, \
+		.type  = TestSuite_Type_TestCase,       \
 		.name  = $(descr),                      \
 		.level = TestSuite_Level_ ## caseLevel, \
 		.addr  = tsCaseName                     \
 	};                                          \
 	tsCaseMethod
-
-#define tsFinalize                                                    \
-	TestSuite_Method ref(MethodLast) tsSection = { };                 \
-	Constructor {                                                     \
-		configureMemory(); /* TODO hack */                            \
-		ImplName(self).last = &ref(MethodLast);                       \
-		TestSuite_AddSuite(TestSuite_GetInstance(), &ImplName(self)); \
-	}
 
 #define Assert(descr, expr) \
 	TestSuite_Assert(ts, descr, expr)
@@ -118,7 +116,6 @@ SingletonPrototype(self);
 
 rsdef(self, New);
 def(void, Destroy);
-def(void, AddSuite, ITestSuiteInterface *suite);
 def(void, Assert, RdString descr, bool succeeded);
 
 #undef self

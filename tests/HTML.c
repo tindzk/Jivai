@@ -33,5 +33,3 @@ tsCase(Acute, "Escaping") {
 	Assert($("Single and double quotes"), String_Equals(s.rd, $("\"Hello'\\\" World!\"")));
 	CarrierString_Destroy(&s);
 }
-
-tsFinalize;

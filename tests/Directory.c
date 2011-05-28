@@ -27,5 +27,3 @@ tsCase(Acute, "Listing") {
 
 	Directory_Destroy(&dir);
 }
-
-tsFinalize;

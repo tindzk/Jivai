@@ -65,5 +65,3 @@ tsCase(Acute, "Unescaping") {
 	Assert($("Heap"),   !s.omni);
 	CarrierString_Destroy(&s);
 }
-
-tsFinalize;

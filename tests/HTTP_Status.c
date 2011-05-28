@@ -56,5 +56,3 @@ tsCase(Acute, "Error") {
 			HTTP_Status_GetItem(
 				HTTP_Status_ServerError_Internal)));
 }
-
-tsFinalize;
