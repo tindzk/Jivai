@@ -1,0 +1,12 @@
+main=TestSuite.c
+output=TestSuite.exe
+manifest=yes
+include=.
+include=../src
+map=.:build
+map=../src:build/Jivai
+optimlevel=0
+dbgsym=yes
+add=*.c
+inclhdr=../config.h
+link=@m
