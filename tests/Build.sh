@@ -2,10 +2,10 @@
 
 mkdir -p build/Jivai
 
-../../Depend/Depend.bin    \
+../../Depend/Depend.exe    \
 	build                  \
 	main=TestSuite.c       \
-	output=TestSuite.bin   \
+	output=TestSuite.exe   \
 	manifest=Manifest.h    \
 	include=.              \
 	include=../src         \

@@ -8,9 +8,9 @@ then
 	exit 1
 fi
 
-../../Depend/Depend.bin    \
+../../Depend/Depend.exe    \
 	build                  \
-	output=build/$1.bin    \
+	output=build/$1.exe    \
 	manifest=Manifest.h    \
 	main=$1.c              \
 	include=.              \
