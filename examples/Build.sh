@@ -1,5 +1,3 @@
-#!/bin/sh
-
 mkdir -p build/Jivai
 
 if [ -z "$1" ]
