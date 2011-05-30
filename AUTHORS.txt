@@ -4,3 +4,10 @@ Tim Nieradzik
 Felix von Leitner
    The `Char', `Date' and `NetworkAddress' modules are heavily based
    upon Leitner's diet libc code.
+
+Matt Fleming
+	The LEB128 decoder ReadSigned() and ReadUnsigned() originate from
+	Fleming's DWARF unwinder for the Linux kernel.
+
+	Path: linux-2.6.39/arch/sh/kernel/dwarf.c
+	Functions: dwarf_read_uleb128(), dwarf_read_leb128()
