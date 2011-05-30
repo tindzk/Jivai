@@ -164,7 +164,7 @@ def(bool, OnSection, __unused RdString name, RdBuffer sect) {
 }
 
 overload def(void, Run) {
-	ELF elf = ELF_New($("./TestSuite.bin")); /* TODO */
+	ELF elf = ELF_New($("./TestSuite.exe")); /* TODO */
 	ELF_Each(&elf, $(".suite."), ELF_OnSection_For(this, ref(OnSection)));
 	ELF_Destroy(&elf);
 }
