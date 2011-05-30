@@ -15,7 +15,7 @@ record(ref(LineTableHeader)) {
 	uword header_length;
 	ubyte minimum_instruction_length;
 	ubyte default_is_stmt;
-	sbyte line_base;
+	byte  line_base;
 	ubyte line_range;
 	ubyte opcode_base;
 	ubyte standard_opcode_lengths[0];

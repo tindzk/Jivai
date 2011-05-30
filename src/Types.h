@@ -15,8 +15,11 @@ typedef unsigned int       u32;
 typedef   signed long long s64;
 typedef unsigned long long u64;
 
-typedef   signed char  sbyte;
+typedef   signed char  byte;
 typedef unsigned char  ubyte;
+typedef unsigned short ushort;
+typedef unsigned int   uint;
+typedef unsigned long  ulong;
 
 #if defined(__x86_64__)
 	typedef unsigned long  size_t;
