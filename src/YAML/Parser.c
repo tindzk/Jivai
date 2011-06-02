@@ -89,7 +89,7 @@ static def(void, Parse) {
 		} else if (c == ':') {
 			StringReader_Consume(&this->reader);
 
-			if (call(Indent) ^ mustIndent) {
+			if (call(Indent) != mustIndent) {
 				throw(InvalidIndention);
 			}
 
