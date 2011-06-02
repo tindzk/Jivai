@@ -1,13 +1,13 @@
 #import <Main.h>
-#import <YAML.h>
-#import <FileStream.h>
-#import <BufferedStream.h>
+#import <File.h>
+#import <YAML/Tree.h>
+#import <YAML/Parser.h>
 
 #define self Application
 
-def(void, PrintTree, YAML_Node *node, int depth) {
-	if (node->type == YAML_NodeType_Section ||
-		node->type == YAML_NodeType_Item)
+def(void, PrintTree, YAML_Tree_Node *node, int depth) {
+	if (node->type == YAML_Tree_NodeType_Section ||
+		node->type == YAML_Tree_NodeType_Item)
 	{
 		String_Print($("\n"));
 
@@ -16,20 +16,20 @@ def(void, PrintTree, YAML_Node *node, int depth) {
 		}
 	}
 
-	if (node->type == YAML_NodeType_Section) {
+	if (node->type == YAML_Tree_NodeType_Section) {
 		String_Print($("section: "));
-		String_Print(YAML_Section_GetName(node));
-	} else if (node->type == YAML_NodeType_Item) {
+		String_Print(node->name);
+	} else if (node->type == YAML_Tree_NodeType_Item) {
 		String_Print($("key: "));
 
-		if (YAML_Item_GetKey(node).len == 0) {
+		if (node->name.len == 0) {
 			String_Print($("(empty)"));
 		} else {
-			String_Print(YAML_Item_GetKey(node));
+			String_Print(node->name);
 		}
 
 		String_Print($(" value: "));
-		String_Print(YAML_Item_GetValue(node));
+		String_Print(node->value);
 	}
 
 	fwd(i, node->len) {
@@ -38,22 +38,22 @@ def(void, PrintTree, YAML_Node *node, int depth) {
 }
 
 def(bool, Run) {
-	File file = File_New($("YAML.yml"), FileStatus_ReadOnly);
+	String s = String_New(1024);
+	File_GetContents($("YAML.yml"), &s);
 
-	BufferedStream stream = BufferedStream_New(File_AsStream(&file));
-	BufferedStream_SetInputBuffer(&stream, 1024, 128);
+	YAML_Tree tree = YAML_Tree_New();
+	YAML_Tree_Initialize(&tree);
 
-	YAML yml = YAML_New(4);
-	YAML_Parse(&yml, BufferedStream_AsStream(&stream));
+	YAML_Parser yml = YAML_Parser_New(
+		YAML_OnToken_For(&tree, YAML_Tree_ProcessToken));
+	YAML_Parser_Process(&yml, s.rd);
 
-	call(PrintTree, YAML_GetRoot(&yml), 0);
+	call(PrintTree, YAML_Tree_GetRoot(&tree), 0);
 
-	YAML_Destroy(&yml);
+	YAML_Parser_Destroy(&yml);
+	YAML_Tree_Destroy(&tree);
 
-	BufferedStream_Close(&stream);
-	BufferedStream_Destroy(&stream);
-
-	String_Print($("\n"));
+	String_Destroy(&s);
 
 	return true;
 }

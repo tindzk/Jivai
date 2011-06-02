@@ -1,71 +1,16 @@
-#import "Tree.h"
 #import "String.h"
-#import "Stream.h"
-#import "Exception.h"
 
 #define self YAML
 
-// @exc IllegalNesting
-
-set(ref(NodeType)) {
-	ref(NodeType_Node),
-	ref(NodeType_Section),
-	ref(NodeType_Item)
+set(ref(TokenType)) {
+	ref(TokenType_Unset),
+	ref(TokenType_Comment),
+	ref(TokenType_Name),
+	ref(TokenType_Value),
+	ref(TokenType_Enter),
+	ref(TokenType_Leave)
 };
 
-record(ref(Section)) {
-	String name;
-};
-
-record(ref(Item)) {
-	String key;
-	String value;
-};
-
-record(ref(Node)) {
-	Tree_Define(ref(Node));
-
-	ref(NodeType) type;
-	char data[0];
-};
-
-class {
-	Tree tree;
-	ref(Node) *node;
-
-	size_t line;
-	size_t depth;
-	size_t depthWidth;
-};
-
-#define YAML_Section(node) \
-	((YAML_Section *) &(node)->data)
-
-static alwaysInline sdef(RdString, Section_GetName, ref(Node) *node) {
-	return YAML_Section(node)->name.rd;
-}
-
-#undef YAML_Section
-
-#define YAML_Item(node) \
-	((YAML_Item *) &(node)->data)
-
-static alwaysInline sdef(RdString, Item_GetKey, ref(Node) *node) {
-	return YAML_Item(node)->key.rd;
-}
-
-static alwaysInline sdef(RdString, Item_GetValue, ref(Node) *node) {
-	return YAML_Item(node)->value.rd;
-}
-
-#undef YAML_Item
-
-rsdef(self, New, size_t depthWidth);
-def(void, Destroy);
-def(void, DestroyNode, Tree_Node *ptr);
-def(ref(Node) *, GetRoot);
-def(size_t, GetLine);
-def(void *, Store, size_t depth, ref(NodeType) type, size_t size);
-def(void, Parse, Stream stream);
+Callback(ref(OnToken), void, ref(TokenType) type, RdString value);
 
 #undef self
