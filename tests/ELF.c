@@ -16,7 +16,7 @@ tsCase(Acute, "Validation") {
 	bool error = false;
 
 	try {
-		ELF elf = ELF_New($("./TestSuite.bin"));
+		ELF elf = ELF_New($("./TestSuite.exe"));
 		ELF_Destroy(&elf);
 	} catchAny {
 		error = true;
@@ -28,7 +28,7 @@ tsCase(Acute, "Validation") {
 }
 
 tsCase(Acute, "Symbol table") {
-	ELF elf = ELF_New($("./TestSuite.bin"));
+	ELF elf = ELF_New($("./TestSuite.exe"));
 
 	ELF_Symbols *symbols = ELF_GetSymbolTable(&elf);
 

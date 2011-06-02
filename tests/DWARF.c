@@ -21,7 +21,7 @@ tsCase(Acute, "Line number program") {
 	bool error = false;
 
 	try {
-		ELF elf = ELF_New($("./TestSuite.bin"));
+		ELF elf = ELF_New($("./TestSuite.exe"));
 
 		DWARF dwarf = DWARF_New(ELF_GetSection(&elf, $(".debug_line")));
 		DWARF_ParseLineNumberProgram(&dwarf);
