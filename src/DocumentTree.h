@@ -33,8 +33,6 @@ record(ref(Node)) {
 class {
 	Tree tree;
 	ref(Node) *node;
-
-	size_t depth;
 };
 
 rsdef(self, New);
