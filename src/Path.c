@@ -88,10 +88,14 @@ overload sdef(void, Truncate, RdString path, u64 length) {
 }
 
 sdef(RdString, GetExtension, RdString path) {
-	ssize_t pos = String_ReverseFind(path, '.');
+	bwd(i, path.len) {
+		if (path.buf[i] == '/') {
+			break;
+		}
 
-	if (pos != String_NotFound) {
-		return String_Slice(path, pos + 1);
+		if (path.buf[i] == '.') {
+			return String_Slice(path, i + 1);
+		}
 	}
 
 	return $("");
