@@ -4,6 +4,9 @@
 #define unlikely(x) \
 	__builtin_expect((x), 0)
 
+#define nonNull(x) \
+	__attribute__((nonnull(x)))
+
 #define __section(x) \
 	__attribute__((__section__(x)))
 
