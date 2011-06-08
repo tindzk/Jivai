@@ -42,7 +42,7 @@ sdef(void, Ignore, int signal) {
 	}
 }
 
-sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *ucontext) {
+noReturn sdef(void, OnSignal, int signal, __unused siginfo_t *info, __unused void *ucontext) {
 	int code;
 
 	if (signal == SIGALRM) {
