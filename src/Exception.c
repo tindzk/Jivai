@@ -63,14 +63,14 @@ sdef(OmniString, Format, int code) {
 #if Exception_SaveOrigin
 	return scall(InternalFormat,
 		$("Uncaught exception %.% (in %)"),
-			String_FromNul(Manifest_ResolveName(code)),
-			String_FromNul(Manifest_ResolveCode(code)),
+			String_FromNul((char *) Manifest_ResolveName(code)),
+			String_FromNul((char *) Manifest_ResolveCode(code)),
 			Exception_GetOrigin());
 #else
 	return scall(InternalFormat,
 		$("Uncaught exception %.%"),
-			String_FromNul(Manifest_ResolveName(code)),
-			String_FromNul(Manifest_ResolveCode(code)));
+			String_FromNul((char *) Manifest_ResolveName(code)),
+			String_FromNul((char *) Manifest_ResolveCode(code)));
 #endif
 }
 
