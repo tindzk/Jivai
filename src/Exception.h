@@ -80,7 +80,7 @@ static inline sdef(void, Pop, int code) {
 	__exc_mgr.cur = __exc_mgr.cur->prev;
 }
 
-static inline sdef(void, Raise, int code) {
+static inline noReturn sdef(void, Raise, int code) {
 	ref(Frame) *cur = __exc_mgr.cur;
 	scall(Pop, code);
 	longjmp(cur->jmpBuffer, code);
