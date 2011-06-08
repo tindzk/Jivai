@@ -1,4 +1,5 @@
 #import <ELF.h>
+#import <Main.h>
 #import <String.h>
 #import <Exception.h>
 #import <Application.h>

@@ -1,4 +1,3 @@
-#import <Main.h>
 #import "TestSuite.h"
 
 #define self TestSuite
