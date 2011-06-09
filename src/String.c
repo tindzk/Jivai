@@ -554,14 +554,14 @@ overload sdef(RdString, Trim, RdString s, short type) {
 	return s;
 }
 
-sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result) {
-	assert(result != NULL);
+sdef(bool, Between, RdString s, RdString left, RdString right, RdString *res) {
+	assert(res != NULL);
 
-	size_t offset = (result->buf != NULL)
-		? result->buf - s.buf + result->len + right.len
+	size_t offset = (res->buf != NULL)
+		? res->buf - s.buf + res->len + right.len
 		: 0;
 
-	result->len = 0;
+	res->len = 0;
 
 	if (s.len == 0 || offset > s.len) {
 		return false;
@@ -588,7 +588,7 @@ sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result)
 
 	posRight += posLeft + 1;
 
-	*result = (RdString) {
+	*res = (RdString) {
 		.buf = s.buf    + posLeft,
 		.len = posRight - posLeft
 	};
@@ -858,7 +858,7 @@ overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool
 
 		/* Process run of digits. */
 		if (Char_IsDigit(a.buf[ai]) && Char_IsDigit(b.buf[bi])) {
-			short result;
+			short res;
 
 			RdString __a = scall(Slice, a, ai);
 			RdString __b = scall(Slice, b, bi);
@@ -866,18 +866,18 @@ overload sdef(short, NaturalCompare, RdString a, RdString b, bool foldcase, bool
 			if (!skipZeros) {
 				/* Is fractional? */
 				if (a.buf[ai] == '0' || b.buf[bi] == '0') {
-					result = scall(CompareLeft, __a, __b);
+					res = scall(CompareLeft, __a, __b);
 
-					if (result != 0) {
-						return result;
+					if (res != 0) {
+						return res;
 					}
 				}
 			}
 
-			result = scall(CompareRight, __a, __b);
+			res = scall(CompareRight, __a, __b);
 
-			if (result != 0) {
-				return result;
+			if (res != 0) {
+				return res;
 			}
 		}
 
