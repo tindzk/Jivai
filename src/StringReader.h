@@ -17,6 +17,7 @@ overload def(bool, Peek, RdString *str, size_t len);
 overload def(void, Consume);
 overload def(void, Consume, size_t len);
 def(void, Extend, RdString *str);
+def(bool, ReadUntil, char needle, RdString *res);
 
 static alwaysInline rdef(size_t, GetLine) {
 	return this->line;

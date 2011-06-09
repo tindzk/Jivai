@@ -169,3 +169,23 @@ tsCase(Acute, "GetLine (extend)") {
 	StringReader_Extend(&reader, &s); // \n
 	Assert($("Equals"), StringReader_GetLine(&reader) == 3);
 }
+
+tsCase(Acute, "ReadUntil") {
+	StringReader reader = StringReader_New($("ab\ncd\n"));
+
+	Assert($("Line"), StringReader_GetLine(&reader) == 1);
+
+	RdString s;
+
+	Assert($("Return value"), StringReader_ReadUntil(&reader, '\n', &s));
+	Assert($("Equals"), String_Equals(s, $("ab")));
+
+	Assert($("Line"), StringReader_GetLine(&reader) == 2);
+
+	Assert($("Return value"), StringReader_ReadUntil(&reader, '\n', &s));
+	Assert($("Equals"), String_Equals(s, $("cd")));
+
+	Assert($("Line"), StringReader_GetLine(&reader) == 3);
+
+	Assert($("End"), StringReader_IsEnd(&reader));
+}

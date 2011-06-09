@@ -86,3 +86,22 @@ def(void, Extend, RdString *str) {
 
 	this->ofs++;
 }
+
+def(bool, ReadUntil, char needle, RdString *res) {
+	assert(res != NULL);
+
+	char c;
+	RdString value = $("");
+
+	while (call(Peek, &c)) {
+		if (c == needle) {
+			call(Consume);
+			*res = value;
+			return true;
+		} else {
+			call(Extend, &value);
+		}
+	}
+
+	return false;
+}
