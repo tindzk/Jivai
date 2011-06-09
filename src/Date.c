@@ -2,14 +2,14 @@
 
 #define self Date
 
-const short ref(DaysPerMonth)[] = {
+const YearMonth ref(DaysPerMonth)[] = {
 	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
 /* Contains the days up until the end of a month. Refers to a non-leap year.
  * Taken from diet libc (dietlibc-0.32/libugly/time_table_spd.c).
  */
-const short ref(AddedDaysPerMonth)[] = {
+const YearDay ref(AddedDaysPerMonth)[] = {
 	0,
 	(31),
 	(31 + 28),
@@ -61,7 +61,7 @@ rsdef(self, New) {
 }
 
 /* Taken from diet libc (dietlibc-0.32/libugly/isleap.c) */
-rsdef(bool, IsLeapYear, int year) {
+rsdef(bool, IsLeapYear, Year year) {
 	/* Every fourth year is a leap year except for century years that are
 	 * not divisible by 400.
 	 */
@@ -75,12 +75,12 @@ rsdef(bool, IsLeapYear, int year) {
  * http://personal.ecu.edu/mccartyr/ISOwdALG.txt
  */
 
-rsdef(size_t, GetWeekNumber, self date) {
-	size_t dayOfYear   = scall(GetDayOfYear, date);
-	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
-	size_t weekDay     = scall(GetWeekDay, date);
-	size_t weekNumber  = 0;
-	size_t yearNumber  = date.year;
+rsdef(YearWeek, GetWeekNumber, self date) {
+	YearDay  dayOfYear   = scall(GetDayOfYear, date);
+	YearDay  jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+	WeekDay  weekDay     = scall(GetWeekDay, date);
+	YearWeek weekNumber  = 0;
+	Year     yearNumber  = date.year;
 
 	if (dayOfYear <= 8 - jan1WeekDay && jan1WeekDay > 4) {
 		yearNumber--;
@@ -93,7 +93,7 @@ rsdef(size_t, GetWeekNumber, self date) {
 	}
 
 	if (yearNumber == date.year) {
-		size_t totalDays;
+		YearDay totalDays;
 
 		if (scall(IsLeapYear, date.year)) {
 			totalDays = 366;
@@ -108,7 +108,7 @@ rsdef(size_t, GetWeekNumber, self date) {
 	}
 
 	if (yearNumber == date.year) {
-		size_t j = dayOfYear + (7 - weekDay) + (jan1WeekDay - 1);
+		uint j = dayOfYear + (7 - weekDay) + (jan1WeekDay - 1);
 
 		weekNumber = j / 7;
 
@@ -120,9 +120,9 @@ rsdef(size_t, GetWeekNumber, self date) {
 	return weekNumber;
 }
 
-rsdef(short, GetRealWeekNumber, self date) {
-	size_t dayOfYear   = scall(GetDayOfYear, date);
-	size_t jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+rsdef(YearWeek, GetRealWeekNumber, self date) {
+	YearDay dayOfYear   = scall(GetDayOfYear, date);
+	YearDay jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
 
 	return (7 + (dayOfYear - 1) + (jan1WeekDay - 1)) / 7;
 }
@@ -143,8 +143,8 @@ rsdef(short, Compare, self a, self b) {
 	return Integer_Compare(a.day, b.day);
 }
 
-rsdef(size_t, GetDayOfYear, self date) {
-	int days = date.day;
+rsdef(YearDay, GetDayOfYear, self date) {
+	YearDay days = date.day;
 
 	/* Add number of days up until last month. */
 	days += ref(AddedDaysPerMonth)[date.month - 1];
@@ -162,10 +162,10 @@ rsdef(size_t, GetDayOfYear, self date) {
 }
 
 /* See also DateTime_ToUnixEpoch(). */
-rsdef(short, GetWeekDay, self date) {
-	short year = date.year - 1900;
+rsdef(WeekDay, GetWeekDay, self date) {
+	Year year = date.year - 1900;
 
-	int day = (year * 365) + (year / 4);
+	uint day = (year * 365) + (year / 4);
 
 	day += ref(AddedDaysPerMonth)[date.month - 1] + date.day;
 
@@ -175,7 +175,7 @@ rsdef(short, GetWeekDay, self date) {
 		}
 	}
 
-	return (short) (day % 7);
+	return day % 7;
 }
 
 rsdef(String, Format, self date, bool wday) {

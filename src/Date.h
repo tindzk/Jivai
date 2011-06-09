@@ -2,10 +2,17 @@
 
 #define self Date
 
+typedef u16 Year;
+typedef u16 YearDay;
+typedef u16 YearWeek;
+typedef u8  YearMonth;
+typedef u8  MonthDay;
+typedef u8  WeekDay;
+
 class {
-	u16 year;
-	u8  month;
-	u8  day;
+	Year      year;
+	YearMonth month;
+	MonthDay  day;
 };
 
 set(ref(Month)) {
@@ -43,18 +50,18 @@ enum {
 	ref(SecondsYear)   = ref(SecondsDay)    * 365
 };
 
-const short ref(DaysPerMonth)[13];
-const short ref(AddedDaysPerMonth)[13];
-const RdString ref(MonthNames)[13];
-const RdString ref(WeekDays)[8];
+const YearMonth ref(DaysPerMonth)[13];
+const YearDay   ref(AddedDaysPerMonth)[13];
+const RdString  ref(MonthNames)[13];
+const RdString  ref(WeekDays)[8];
 
 rsdef(self, New);
-rsdef(bool, IsLeapYear, int year);
-rsdef(size_t, GetWeekNumber, self date);
-rsdef(short, GetRealWeekNumber, self date);
+rsdef(bool, IsLeapYear, Year year);
+rsdef(YearWeek, GetWeekNumber, self date);
+rsdef(YearWeek, GetRealWeekNumber, self date);
 rsdef(short, Compare, self a, self b);
-rsdef(size_t, GetDayOfYear, self date);
-rsdef(short, GetWeekDay, self date);
+rsdef(YearDay, GetDayOfYear, self date);
+rsdef(WeekDay, GetWeekDay, self date);
 rsdef(String, Format, self date, bool wday);
 
 static alwaysInline rsdef(bool, Equals, self a, self b) {
