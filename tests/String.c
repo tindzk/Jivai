@@ -521,10 +521,28 @@ tsCase(Acute, "Replace all") {
 tsCase(Acute, "Between") {
 	RdString s = $("Hello World");
 
-	RdString result;
+	RdString result = $("");
 
 	Assert($("Result"), String_Between(s, $("H"), $("d"), &result));
 	Assert($("Equals"), String_Equals(result, $("ello Worl")));
 
-	Assert($("Result"), !String_Between(s, $("H"), $("World!"), NULL));
+	result = $("");
+
+	Assert($("Result"), !String_Between(s, $("H"), $("World!"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
+
+	s = $("<a><b><c>");
+	result = $("");
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("a")));
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("b")));
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("c")));
+
+	Assert($("Result"), !String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
 }

@@ -555,6 +555,20 @@ overload sdef(RdString, Trim, RdString s, short type) {
 }
 
 sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result) {
+	assert(result != NULL);
+
+	size_t offset = (result->buf != NULL)
+		? result->buf - s.buf + result->len + right.len
+		: 0;
+
+	result->len = 0;
+
+	if (s.len == 0 || offset > s.len) {
+		return false;
+	}
+
+	s = String_Slice(s, offset);
+
 	ssize_t posLeft = scall(Find, s, left);
 
 	if (posLeft == ref(NotFound)) {
@@ -574,12 +588,10 @@ sdef(bool, Between, RdString s, RdString left, RdString right, RdString *result)
 
 	posRight += posLeft + 1;
 
-	if (result != NULL) {
-		*result = (RdString) {
-			.buf = s.buf    + posLeft,
-			.len = posRight - posLeft
-		};
-	}
+	*result = (RdString) {
+		.buf = s.buf    + posLeft,
+		.len = posRight - posLeft
+	};
 
 	return true;
 }
