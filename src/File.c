@@ -171,14 +171,16 @@ overload sdef(String, GetContents, RdString path) {
 	File file = scall(New, path, FileStatus_ReadOnly);
 
 	size_t len  = 0;
-	size_t size = scall(GetSize, &file);
+	u64    size = scall(GetSize, &file);
 
-	String res = String_New(size);
+	assert(size <= MaxValue(size_t));
+
+	String res = String_New((size_t) size);
 
 	do {
 		len = scall(Read, &file,
 			res.buf + res.len,
-			size - res.len);
+			(size_t) size - res.len);
 
 		res.len += len;
 	} while (len > 0);
