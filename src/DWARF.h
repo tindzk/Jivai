@@ -1,5 +1,3 @@
-#import <dwarf.h>
-
 #import "Buffer.h"
 #import "String.h"
 #import "LEB128.h"
@@ -16,7 +14,28 @@
 	#define DWARF_64bit defined(__x86_64__)
 #endif
 
-#define DW_LNS_extended_op 0
+/* DWARF's (DW) line number (LN) program constants. */
+enum {
+	/* Standard opcodes (S). */
+	DW_LNS_copy               = 1,
+	DW_LNS_advance_pc         = 2,
+	DW_LNS_advance_line       = 3,
+	DW_LNS_set_file           = 4,
+	DW_LNS_set_column         = 5,
+	DW_LNS_negate_stmt        = 6,
+	DW_LNS_set_basic_block    = 7,
+	DW_LNS_const_add_pc       = 8,
+	DW_LNS_fixed_advance_pc   = 9,
+	DW_LNS_set_prologue_end   = 10,
+	DW_LNS_set_epilogue_begin = 11,
+	DW_LNS_set_isa            = 12,
+
+	/* Extended opcodes (E). */
+	DW_LNE              = 0,
+	DW_LNE_end_sequence = 1,
+	DW_LNE_set_address  = 2,
+	DW_LNE_define_file  = 3
+};
 
 #if DWARF_64bit
 	typedef s64 ref(Pointer);

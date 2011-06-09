@@ -82,7 +82,7 @@ static def(void, StateMachine, RdStringArray *paths, ref(Files) *files, void *p,
 		ubyte opcode = *(ubyte *) cur;
 		cur++;
 
-		if (opcode == DW_LNS_extended_op) {
+		if (opcode == DW_LNE) {
 			/* Extended opcode. */
 			u32 opsize;
 			cur += LEB128_ReadUnsigned(cur, &opsize);
