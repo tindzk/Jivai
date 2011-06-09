@@ -1,4 +1,5 @@
 #import "Char.h"
+#import "Exception.h"
 
 /* Taken from diet libc (dietlibc-0.32/lib/isalpha.c). */
 bool Char_IsAlpha(s32 ch) {
@@ -59,6 +60,7 @@ bool Char_IsDigit(char c) {
 	return c >= '0' && c <= '9';
 }
 
-short Char_ParseDigit(char c) {
-	return (short) (c - 48);
+u8 Char_ParseDigit(char c) {
+	assert(Char_IsDigit(c));
+	return c - 48;
 }

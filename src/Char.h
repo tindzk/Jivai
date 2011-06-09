@@ -9,4 +9,4 @@ bool Char_IsPrintable(s32 ch);
 bool Char_IsHexDigit(s32 ch);
 bool Char_IsSpace(char c);
 bool Char_IsDigit(char c);
-short Char_ParseDigit(char c);
+u8 Char_ParseDigit(char c);
