@@ -182,7 +182,7 @@ record(EpollEvent) {
 
 #define self Kernel
 
-sdef(ssize_t, open, RdString path, int flags, int mode);
+sdef(int, open, RdString path, int flags, int mode);
 sdef(bool, close, int id);
 sdef(void, exit, ExitStatus status);
 sdef(ssize_t, read, int id, void *buf, size_t len);

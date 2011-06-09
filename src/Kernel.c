@@ -3,7 +3,7 @@
 
 #define self Kernel
 
-sdef(ssize_t, open, RdString path, int flags, int mode) {
+sdef(int, open, RdString path, int flags, int mode) {
 	return syscall(__NR_open, String_ToNul(path), flags, mode);
 }
 
