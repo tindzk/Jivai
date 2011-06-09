@@ -155,7 +155,7 @@ sdef(String, Resolve, RdString path) {
 		throw(EmptyPath);
 	}
 
-	ssize_t fd;
+	int fd;
 
 	if ((fd = Kernel_open($("."), FileStatus_ReadOnly, 0)) == -1) {
 		throw(ResolvingFailed);
