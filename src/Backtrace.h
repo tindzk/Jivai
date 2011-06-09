@@ -10,9 +10,9 @@
 
 #define self Backtrace
 
-sdef(void, PrintTrace, void **addr, size_t size);
-sdef(void *, GetFrameAddr, u32 level);
-sdef(void *, GetReturnAddr, u32 level);
-sdef(size_t, GetTrace, void **buf, u32 size);
+sdef(void, PrintTrace, void **addr, uint size);
+sdef(void *, GetFrameAddr, uint level);
+sdef(void *, GetReturnAddr, uint level);
+sdef(uint, GetTrace, void **buf, uint size);
 
 #undef self

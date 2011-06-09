@@ -15,7 +15,7 @@ def(void, Destroy) {
 	scall(Matches_Free, this->matches);
 }
 
-static def(void, AddMatch, ref(Files) *files, u32 address, u32 file, u32 line) {
+static def(void, AddMatch, ref(Files) *files, ref(Pointer) address, u32 file, u32 line) {
 	assert(file != 0);
 	assert(file - 1 < files->len);
 
@@ -224,7 +224,7 @@ def(void, ParseLineNumberProgram) {
 	}
 }
 
-def(ref(Match), ResolveSymbol, void *addr) {
+def(ref(Match), ResolveSymbol, ref(Pointer) addr) {
 	fwd(i, this->matches->len) {
 		if (i + 1 < this->matches->len) {
 			if (addr >= this->matches->buf[i + 1].address) {
@@ -237,5 +237,5 @@ def(ref(Match), ResolveSymbol, void *addr) {
 		}
 	}
 
-	return (ref(Match)) { .address = NULL };
+	return (ref(Match)) { .address = 0 };
 }

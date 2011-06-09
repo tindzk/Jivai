@@ -2,7 +2,7 @@
 
 #define self Backtrace
 
-sdef(void, PrintTrace, void **addr, size_t size) {
+sdef(void, PrintTrace, void **addr, uint size) {
 	ELF elf;
 
 	if (!System_IsRunningOnValgrind()) {
@@ -37,7 +37,8 @@ sdef(void, PrintTrace, void **addr, size_t size) {
 			System_Err(function);
 			System_Err($("("));
 
-			DWARF_Match match = DWARF_ResolveSymbol(&dwarf, addr[i]);
+			assert(sizeof(void *) == sizeof(DWARF_Pointer));
+			DWARF_Match match = DWARF_ResolveSymbol(&dwarf, (DWARF_Pointer) addr[i]);
 
 			if (match.file.name.len > 0) {
 				String line = Integer_ToString(match.line);
@@ -60,7 +61,7 @@ sdef(void, PrintTrace, void **addr, size_t size) {
 	ELF_Destroy(&elf);
 }
 
-inline sdef(void *, GetFrameAddr, u32 level) {
+inline sdef(void *, GetFrameAddr, uint level) {
 	switch (level) {
 		case 1: return __builtin_frame_address(1);
 		case 2: return __builtin_frame_address(2);
@@ -82,7 +83,7 @@ inline sdef(void *, GetFrameAddr, u32 level) {
 	}
 }
 
-inline sdef(void *, GetReturnAddr, u32 level) {
+inline sdef(void *, GetReturnAddr, uint level) {
 	switch (level) {
 		case 1: return __builtin_return_address(1);
 		case 2: return __builtin_return_address(2);
@@ -104,8 +105,8 @@ inline sdef(void *, GetReturnAddr, u32 level) {
 	}
 }
 
-sdef(size_t, GetTrace, void **buf, u32 size) {
-	size_t i;
+sdef(uint, GetTrace, void **buf, uint size) {
+	uint i;
 
 	for (i = 1; i < size; i++) {
 		if (Backtrace_GetFrameAddr(i) == NULL) {

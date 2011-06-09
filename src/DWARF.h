@@ -62,7 +62,7 @@ record(ref(File)) {
 Array(ref(File), ref(Files));
 
 record(ref(Match)) {
-	void *address;
+	ref(Pointer) address;
 	ref(File) file;
 	u32 line;
 };
@@ -77,6 +77,6 @@ class {
 rsdef(self, New, RdBuffer buf);
 def(void, Destroy);
 def(void, ParseLineNumberProgram);
-def(ref(Match), ResolveSymbol, void *addr);
+def(ref(Match), ResolveSymbol, ref(Pointer) addr);
 
 #undef self

@@ -18,6 +18,9 @@ def(void *, GetAddr) {
 }
 
 tsCase(Acute, "Line number program") {
+	Assert($("Compiled for correct architecture"),
+		sizeof(void *) == sizeof(DWARF_Pointer));
+
 	bool error = false;
 
 	try {
@@ -26,7 +29,7 @@ tsCase(Acute, "Line number program") {
 		DWARF dwarf = DWARF_New(ELF_GetSection(&elf, $(".debug_line")));
 		DWARF_ParseLineNumberProgram(&dwarf);
 
-		DWARF_Match match = DWARF_ResolveSymbol(&dwarf, call(GetAddr)); u32 line = __LINE__;
+		DWARF_Match match = DWARF_ResolveSymbol(&dwarf, (DWARF_Pointer) call(GetAddr)); u32 line = __LINE__;
 
 		Assert($("Line number"), match.line == line);
 		Assert($("File name"),   String_Equals(match.file.name, $("DWARF.c")));

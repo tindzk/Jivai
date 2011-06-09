@@ -52,7 +52,7 @@ record(ExceptionManager) {
 #if Exception_SaveTrace
 		struct {
 			void *buf[Exception_TraceSize];
-			size_t len;
+			uint len;
 		} trace;
 #endif
 
@@ -128,7 +128,7 @@ static inline sdef(void *, GetData) {
 		return __exc_mgr.details.trace.buf;
 	}
 
-	static inline sdef(size_t, GetTraceLength) {
+	static inline sdef(uint, GetTraceLength) {
 		return __exc_mgr.details.trace.len;
 	}
 #else
