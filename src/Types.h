@@ -15,11 +15,15 @@ typedef unsigned int       u32;
 typedef   signed long long s64;
 typedef unsigned long long u64;
 
-typedef   signed char  byte;
-typedef unsigned char  ubyte;
-typedef unsigned short ushort;
-typedef unsigned int   uint;
-typedef unsigned long  ulong;
+/* 16/32/64 bit big-endian representation. */
+typedef u16 be16;
+typedef u32 be32;
+typedef u64 be64;
+
+/* 16/32/64 bit little-endian representation. */
+typedef u16 le16;
+typedef u32 le32;
+typedef u64 le64;
 
 #if defined(__x86_64__)
 	typedef unsigned long size_t;
@@ -37,14 +41,9 @@ typedef unsigned long  ulong;
 	typedef u32 uword;
 #endif
 
-typedef sword IntPtr;
-
-/* 16/32/64 bit big-endian representation. */
-typedef u16 be16;
-typedef u32 be32;
-typedef u64 be64;
-
-/* 16/32/64 bit little-endian representation. */
-typedef u16 le16;
-typedef u32 le32;
-typedef u64 le64;
+typedef   sword        IntPtr;
+typedef   signed char  byte;
+typedef unsigned char  ubyte;
+typedef unsigned short ushort;
+typedef unsigned int   uint;
+typedef unsigned long  ulong;
