@@ -22,22 +22,22 @@ typedef unsigned int   uint;
 typedef unsigned long  ulong;
 
 #if defined(__x86_64__)
-	typedef unsigned long  size_t;
-	typedef   signed long  ssize_t;
-	typedef   signed long  IntPtr;
-	typedef   signed int   shalf;
-	typedef unsigned int   uhalf;
-	typedef   signed long  sword;
-	typedef unsigned long  uword;
+	typedef unsigned long size_t;
+	typedef   signed long ssize_t;
+	typedef s32 shalf;
+	typedef u32 uhalf;
+	typedef s64 sword;
+	typedef u64 uword;
 #else
-	typedef unsigned int   size_t;
-	typedef   signed int   ssize_t;
-	typedef   signed int   IntPtr;
-	typedef   signed short shalf;
-	typedef unsigned short uhalf;
-	typedef   signed int   sword;
-	typedef unsigned int   uword;
+	typedef unsigned int size_t;
+	typedef   signed int ssize_t;
+	typedef s16 shalf;
+	typedef s16 uhalf;
+	typedef s32 sword;
+	typedef u32 uword;
 #endif
+
+typedef sword IntPtr;
 
 /* 16/32/64 bit big-endian representation. */
 typedef u16 be16;
