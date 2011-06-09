@@ -152,7 +152,7 @@ overload def(size_t, Write, char c) {
 	return Channel_Write(&this->ch, c);
 }
 
-sdef(void, GetContents, RdString path, String *res) {
+overload sdef(void, GetContents, RdString path, String *res) {
 	File file = scall(New, path, FileStatus_ReadOnly);
 
 	size_t len = 0;
@@ -165,4 +165,23 @@ sdef(void, GetContents, RdString path, String *res) {
 
 		res->len += len;
 	} while (len > 0);
+}
+
+overload sdef(String, GetContents, RdString path) {
+	File file = scall(New, path, FileStatus_ReadOnly);
+
+	size_t len  = 0;
+	size_t size = scall(GetSize, &file);
+
+	String res = String_New(size);
+
+	do {
+		len = scall(Read, &file,
+			res.buf + res.len,
+			size - res.len);
+
+		res.len += len;
+	} while (len > 0);
+
+	return res;
 }

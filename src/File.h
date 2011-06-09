@@ -47,6 +47,7 @@ overload def(void, Read, String *res);
 overload def(size_t, Write, void *buf, size_t len);
 overload def(size_t, Write, RdString s);
 overload def(size_t, Write, char c);
-sdef(void, GetContents, RdString path, String *res);
+overload sdef(void, GetContents, RdString path, String *res);
+overload sdef(String, GetContents, RdString path);
 
 #undef self
