@@ -2,13 +2,13 @@
 
 #import "TestSuite.h"
 
-#define self tsIntMacros
+#define self tsMacros
 
 class {
 
 };
 
-tsRegister("Integer Macros") {
+tsRegister("Macros") {
 	return true;
 }
 
