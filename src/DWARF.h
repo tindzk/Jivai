@@ -7,12 +7,39 @@
 
 #define self DWARF
 
+/* Only version 2 and 3 are supported. */
+#ifndef DWARF_Version
+	#define DWARF_Version 2
+#endif
+
+#ifndef DWARF_64bit
+	#define DWARF_64bit defined(__x86_64__)
+#endif
+
 #define DW_LNS_extended_op 0
 
+#if DWARF_64bit
+	typedef s64 ref(Pointer);
+#else
+	typedef s32 ref(Pointer);
+#endif
+
 record(ref(LineTableHeader)) {
-	uword total_length;
-	uhalf version;
-	uword header_length;
+#if DWARF_Version == 3 && DWARF_64bit
+	u32 total_length0;
+	u64 total_length;
+#else
+	u32 total_length;
+#endif
+
+	u16 version;
+
+#if DWARF_Version == 3 && DWARF_64bit
+	u64 header_length;
+#else
+	u32 header_length;
+#endif
+
 	ubyte minimum_instruction_length;
 	ubyte default_is_stmt;
 	byte  line_base;

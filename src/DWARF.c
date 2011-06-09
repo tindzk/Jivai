@@ -64,10 +64,15 @@ static def(void *, AddFile, RdStringArray *paths, ref(Files) *files, void *ptr) 
 static def(void, StateMachine, RdStringArray *paths, ref(Files) *files, void *p, ref(LineTableHeader) *hdr) {
 	u32 file = 1;
 	u32 line = 1;
-	u32 address = 0;
+	ref(Pointer) address = 0;
 
-	/* The first opcode must be an extended opcode setting the initial address. */
-	assert(*(ubyte *) p == 0);
+	/* The first opcode must be an extended opcode setting the initial address.
+	 *
+	 * TODO This doesn't seem to be valid for 64-bit binaries compiled
+	 * with Clang where in some cases the first opcode sets the column
+	 * to 0.
+	 */
+	// assert(*(ubyte *) p == 0);
 
 	int addrAdvance =
 		((255 - hdr->opcode_base) / hdr->line_range * hdr->minimum_instruction_length);
@@ -93,8 +98,8 @@ static def(void, StateMachine, RdStringArray *paths, ref(Files) *files, void *p,
 				call(AddMatch, files, address, file, line);
 				break;
 			} else if (opcode == DW_LNE_set_address) {
-				address = *(u32 *) cur;
-				assert(opsize == sizeof(u32));
+				address = *(ref(Pointer) *) cur;
+				assert(opsize == sizeof(ref(Pointer)));
 			} else if (opcode == DW_LNE_define_file) {
 				cur = call(AddFile, paths, files, cur);
 			} else {
@@ -159,17 +164,28 @@ static def(void, StateMachine, RdStringArray *paths, ref(Files) *files, void *p,
 def(void, ParseLineNumberProgram) {
 	ref(LineTableHeader) *cur = this->buf.ptr;
 
-	assert(sizeof(cur->header_length) == 4);
-
 	while ((void *) cur < this->buf.ptr + this->buf.len) {
-		assert(cur->version == 2 || cur->version == 3);
+#if DWARF_Version == 3 && DWARF_64bit
+		/* 0xffffffff = -1 */
+		assert(cur->total_length0 == 0xffffffff);
 
-#if defined(__x86_64)
-		assert((u32) cur->header_length == 0xffffff00);
+		assert(this->buf.len > cur->total_length +
+			sizeof(cur->total_length0) +
+			sizeof(cur->total_length));
 #else
-		assert(cur->header_length < 0xffffff00);
+		/* There is a typo in the DWARF 3 specification (Dec 20, 2005).
+		 * It says 0xffffff00 whereas the correct value is 0xfffffff0.
+		 * This was fixed in DWARF 4.
+		 */
+		assert(cur->total_length < 0xfffffff0);
+
+		assert(this->buf.len >
+			cur->total_length + sizeof(cur->total_length));
+
+		assert(cur->header_length < 0xfffffff0);
 #endif
 
+		assert(cur->version == DWARF_Version);
 		assert(cur->header_length < cur->total_length);
 
 		ubyte *ptr = &cur->standard_opcode_lengths[0];

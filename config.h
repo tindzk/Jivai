@@ -3,6 +3,17 @@
  */
 #define Exception_SaveOrigin 1
 
+/* Clang only implements DWARF 2. Setting this to 3 would require
+ * that all binaries used in the DWARF module implement the DWARF 3
+ * specification.
+ */
+#define DWARF_Version 2
+
+/* The DWARF module can only deal exclusively with 32-bit or 64-bit
+ * binaries.
+ */
+#define DWARF_64bit defined(__x86_64__)
+
 /* Enable assertions. */
 #define Exception_Assert 1
 
