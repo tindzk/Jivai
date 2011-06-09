@@ -12,7 +12,7 @@ class {
 	void *old;
 };
 
-tsRegister("Exception handling") {
+tsRegister("Exception") {
 	return true;
 }
 
