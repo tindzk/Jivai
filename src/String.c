@@ -567,26 +567,27 @@ sdef(bool, Between, RdString s, RdString left, RdString right, RdString *res) {
 		return false;
 	}
 
-	s = String_Slice(s, offset);
-
-	ssize_t posLeft = scall(Find, s, left);
+	ssize_t posLeft = scall(Find, (RdString) {
+		.buf = s.buf + offset,
+		.len = s.len - offset
+	}, left);
 
 	if (posLeft == ref(NotFound)) {
 		return false;
 	}
 
-	posLeft += left.len;
+	posLeft += offset + 1;
 
 	ssize_t posRight = scall(Find, (RdString) {
-		.buf = s.buf + posLeft + 1,
-		.len = s.len - posLeft - 1
+		.buf = s.buf + posLeft,
+		.len = s.len - posLeft
 	}, right);
 
 	if (posRight == ref(NotFound)) {
 		return false;
 	}
 
-	posRight += posLeft + 1;
+	posRight += posLeft;
 
 	*res = (RdString) {
 		.buf = s.buf    + posLeft,

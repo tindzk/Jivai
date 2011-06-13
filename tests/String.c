@@ -371,13 +371,13 @@ tsCase(Acute, "Split") {
 	RdString subject = $("This  is  a  sentence.");
 
 	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
-	Assert($("Equals"),       String_Equals(part, $("This")));
+	Assert($("Equals"), String_Equals(part, $("This")));
 	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
-	Assert($("Equals"),       String_Equals(part, $("is")));
+	Assert($("Equals"), String_Equals(part, $("is")));
 	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
-	Assert($("Equals"),       String_Equals(part, $("a")));
+	Assert($("Equals"), String_Equals(part, $("a")));
 	Assert($("Result"), String_Split(subject, $("  "), &part) == true);
-	Assert($("Equals"),       String_Equals(part, $("sentence.")));
+	Assert($("Equals"), String_Equals(part, $("sentence.")));
 	Assert($("Result"), String_Split(subject, $("  "), &part) == false);
 }
 
@@ -530,9 +530,11 @@ tsCase(Acute, "Between") {
 
 	Assert($("Result"), !String_Between(s, $("H"), $("World!"), &result));
 	Assert($("Equals"), String_Equals(result, $("")));
+}
 
-	s = $("<a><b><c>");
-	result = $("");
+tsCase(Acute, "Between (2)") {
+	RdString s = $("<a><b><c>");
+	RdString result = $("");
 
 	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
 	Assert($("Equals"), String_Equals(result, $("a")));
@@ -542,6 +544,23 @@ tsCase(Acute, "Between") {
 
 	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
 	Assert($("Equals"), String_Equals(result, $("c")));
+
+	Assert($("Result"), !String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
+}
+
+tsCase(Acute, "Between (3)") {
+	RdString s = $("<><><>");
+	RdString result = $("");
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
+
+	Assert($("Result"), String_Between(s, $("<"), $(">"), &result));
+	Assert($("Equals"), String_Equals(result, $("")));
 
 	Assert($("Result"), !String_Between(s, $("<"), $(">"), &result));
 	Assert($("Equals"), String_Equals(result, $("")));
