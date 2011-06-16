@@ -24,7 +24,7 @@
 	}                                                                                    \
 	static inline void tripleConcat(name, _, Delete)(InstName(name) $this, size_t idx) { \
 		if ($this.addr->len - idx - 1 > 0) {                                             \
-			Memory_Copy(                                                                 \
+			Memory_Move(                                                                 \
 				 $this.addr->buf + idx,                                                  \
 				 $this.addr->buf + idx + 1,                                              \
 				($this.addr->len - idx - 1) * sizeof(type));                             \
