@@ -1,4 +1,3 @@
-#import <sys/wait.h>
 #import <sys/types.h>
 
 #import "String.h"
@@ -17,12 +16,11 @@ class {
 	int stdOut;
 };
 
-rsdef(self, New, RdString cmd);
-def(void, Destroy);
-def(void, AddParameter, RdString param);
-def(String, GetCommandLine);
-def(void, MapStdOut, int fd);
-overload def(int, Spawn, float *time);
-overload def(int, Spawn);
+rsdef(self, new, RdString cmd);
+def(void, destroy);
+def(void, addParameter, RdString param);
+def(String, getCommandLine);
+def(void, mapStdOut, int fd);
+def(pid_t, spawn);
 
 #undef self
