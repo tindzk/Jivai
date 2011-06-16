@@ -1,8 +1,6 @@
 #import "Main.h"
 
 int main(int argc, char *argv[], char *envp[]) {
-	Signal0();
-
 	Application app;
 	Application_Init(&app, argc, argv, envp);
 
@@ -12,8 +10,6 @@ int main(int argc, char *argv[], char *envp[]) {
 		ret = Application_Run(&app)
 			? ExitStatus_Success
 			: ExitStatus_Failure;
-	} catch(Signal, SigInt) {
-
 	} catchAny {
 		Exception_Print(e);
 
