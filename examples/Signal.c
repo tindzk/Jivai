@@ -15,6 +15,13 @@ def(bool, Run) {
 		/* Not mapped. */
 		int *ptr = NULL;
 		*ptr = 0;
+	} else if (this->args->buf[0].buf[0] == 'c') {
+		/* Illegal operand (see http://en.wikipedia.org/wiki/SIGILL). */
+		const static unsigned char insn[4] = {
+			0xff, 0xff, 0xff, 0xff
+		};
+
+		((void (*)()) insn)();
 	}
 
 	return true;

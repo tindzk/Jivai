@@ -163,6 +163,24 @@ static noReturn sdef(void, onSystemSignal, int signal, __unused siginfo_t *info,
 		} else {
 			printf("Address %p not mapped.\n", info->si_addr);
 		}
+	} else if (code == ref(IllegalInstruction)) {
+		if (info->si_code == ILL_ILLOPC) {
+			printf("Illegal opcode at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_ILLOPN) {
+			printf("Illegal operand at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_ILLADR) {
+			printf("Illegal addressing mode at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_ILLTRP) {
+			printf("Illegal trap at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_PRVOPC) {
+			printf("Privileged opcode at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_PRVREG) {
+			printf("Privileged register at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_COPROC) {
+			printf("Co-processor error at %p.\n", info->si_addr);
+		} else if (info->si_code == ILL_BADSTK) {
+			printf("Internal stack error at %p.\n", info->si_addr);
+		}
 	}
 
 #if Exception_SaveTrace
