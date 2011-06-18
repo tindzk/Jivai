@@ -3,6 +3,8 @@
 #define self Application
 
 def(void, Init, int argc, char *argv[], char *envp[]) {
+	FPU_setExceptions(FPU_Exception_All);
+
 	size_t envItems = 0;
 	for (char **cur = envp; *cur != NULL; cur++) {
 		envItems++;
