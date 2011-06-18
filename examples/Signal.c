@@ -22,6 +22,19 @@ def(bool, Run) {
 		};
 
 		((void (*)()) insn)();
+	} else if (this->args->buf[0].buf[0] == 'd') {
+		/* Integer division by zero.
+		 * `volatile' needed to eliminate compile-time optimizations
+		 * (see http://en.wikipedia.org/wiki/SIGFPE).
+		 */
+		volatile int x = 42;
+		volatile int y = 0;
+		x = x / y;
+	} else if (this->args->buf[0].buf[0] == 'e') {
+		/* Floating point division by zero. */
+		volatile float x = 45;
+		volatile float y = 0;
+		x = x / y;
 	}
 
 	return true;

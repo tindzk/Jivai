@@ -181,6 +181,24 @@ static noReturn sdef(void, onSystemSignal, int signal, __unused siginfo_t *info,
 		} else if (info->si_code == ILL_BADSTK) {
 			printf("Internal stack error at %p.\n", info->si_addr);
 		}
+	} else if (code == ref(ArithmeticError)) {
+		if (info->si_code == FPE_INTDIV) {
+			printf("Integer division by zero %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_INTOVF) {
+			printf("Integer overflow at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTDIV) {
+			printf("Floating point division by zero at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTOVF) {
+			printf("Floating point overflow at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTUND) {
+			printf("Floating point underflow at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTRES) {
+			printf("Floating point inexact result at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTINV) {
+			printf("Invalid floating point operation at %p.\n", info->si_addr);
+		} else if (info->si_code == FPE_FLTSUB) {
+			printf("Subscript out of range at %p.\n", info->si_addr);
+		}
 	}
 
 #if Exception_SaveTrace
