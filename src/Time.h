@@ -1,3 +1,4 @@
+#import "String.h"
 #import "Kernel.h"
 #import "Number.h"
 #import "Integer.h"

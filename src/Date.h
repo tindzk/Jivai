@@ -1,3 +1,4 @@
+#import "String.h"
 #import "Integer.h"
 
 #define self Date
