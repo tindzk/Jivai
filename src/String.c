@@ -128,22 +128,22 @@ overload sdef(RdString, Slice, RdString s, ssize_t offset, ssize_t length) {
 	};
 }
 
-overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
+overload def(void, Crop, ssize_t offset, ssize_t length) {
 	size_t right;
 
 	if (offset < 0) {
-		offset += dest->len;
+		offset += this->len;
 	}
 
 	if (length < 0) {
-		right = length + dest->len;
+		right = length + this->len;
 	} else {
 		right = length + offset;
 	}
 
 	if ((size_t) offset > right     ||
-		(size_t) offset > dest->len ||
-		right           > dest->len)
+		(size_t) offset > this->len ||
+		right           > this->len)
 	{
 		throw(BufferOverflow);
 	}
@@ -151,18 +151,18 @@ overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length) {
 	assert(right - offset > 0);
 
 	if (offset > 0) {
-		assert(dest->buf != NULL);
+		assert(this->buf != NULL);
 
 		/* Memory_Move is preferable because it also works with overlapping
 		 * memory areas.
 		 */
 
-		Memory_Move(dest->buf,
-			dest->buf + offset,
+		Memory_Move(this->buf,
+			this->buf + offset,
 			right     - offset);
 	}
 
-	dest->len = right - offset;
+	this->len = right - offset;
 }
 
 def(void, Delete, ssize_t offset, ssize_t length) {
@@ -189,17 +189,17 @@ def(void, Delete, ssize_t offset, ssize_t length) {
 	this->len = this->len - length;
 }
 
-overload sdef(void, Prepend, self *dest, RdString s) {
-	self tmp = scall(Concat, s, dest->rd);
-	scall(Copy, dest, tmp.rd);
+overload def(void, Prepend, RdString s) {
+	self tmp = scall(Concat, s, this->rd);
+	call(Copy, tmp.rd);
 	scall(Destroy, &tmp);
 }
 
-overload sdef(void, Prepend, self *dest, char c) {
-	self tmp = String_New(dest->len + 1);
+overload def(void, Prepend, char c) {
+	self tmp = String_New(this->len + 1);
 	scall(Append, &tmp, c);
-	scall(Append, &tmp, dest->rd);
-	scall(Copy, dest, tmp.rd);
+	scall(Append, &tmp, this->rd);
+	call(Copy, tmp.rd);
 	scall(Destroy, &tmp);
 }
 
@@ -219,26 +219,26 @@ def(void, Copy, RdString src) {
 	this->len = src.len;
 }
 
-overload sdef(void, Append, self *dest, RdString s) {
+overload def(void, Append, RdString s) {
 	if (s.len == 0) {
 		return;
 	}
 
 	/* Resize the buffer if necessary. */
-	scall(Align, dest, dest->len + s.len);
+	call(Align, this->len + s.len);
 
 	/* Append s. */
-	Memory_Copy(dest->buf + dest->len, s.buf, s.len);
-	dest->len += s.len;
+	Memory_Copy(this->buf + this->len, s.buf, s.len);
+	this->len += s.len;
 }
 
-overload sdef(void, Append, self *dest, char c) {
-	scall(Align, dest, dest->len + 1);
-	dest->buf[dest->len] = c;
-	dest->len++;
+overload def(void, Append, char c) {
+	call(Align, this->len + 1);
+	this->buf[this->len] = c;
+	this->len++;
 }
 
-overload sdef(void, Append, self *dest, FmtString s) {
+overload def(void, Append, FmtString s) {
 #if String_FmtChecks
 	s.val++;
 #endif
@@ -264,19 +264,19 @@ overload sdef(void, Append, self *dest, FmtString s) {
 		}
 	}
 
-	scall(Align, dest, len);
+	call(Align, len);
 
 	fwd(i, s.fmt.len) {
 		if (i + 1 < s.fmt.len && s.fmt.buf[i] == '!' && s.fmt.buf[i + 1] == '%') {
-			dest->buf[dest->len] = '%';
-			dest->len++, i++;
+			this->buf[this->len] = '%';
+			this->len++, i++;
 		} else if (s.fmt.buf[i] == '%') {
-			Memory_Copy(dest->buf + dest->len, val->buf, val->len);
-			dest->len += val->len;
+			Memory_Copy(this->buf + this->len, val->buf, val->len);
+			this->len += val->len;
 			val++;
 		} else {
-			dest->buf[dest->len] = s.fmt.buf[i];
-			dest->len++;
+			this->buf[this->len] = s.fmt.buf[i];
+			this->len++;
 		}
 	}
 }
@@ -639,7 +639,7 @@ def(bool, Filter, RdString s1, RdString s2) {
 	scall(Append, &out, String_Slice(this->rd, left, right - left));
 	scall(Append, &out, String_Slice(this->rd, right + s2.len));
 
-	scall(Copy, this, out.rd);
+	call(Copy, out.rd);
 
 	scall(Destroy, &out);
 
@@ -664,7 +664,7 @@ def(bool, Outside, RdString left, RdString right) {
 	scall(Append, &out, String_Slice(this->rd, 0, posLeft));
 	scall(Append, &out, String_Slice(this->rd, posRight + right.len));
 
-	scall(Copy, this, out.rd);
+	call(Copy, out.rd);
 
 	scall(Destroy, &out);
 

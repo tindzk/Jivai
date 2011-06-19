@@ -102,15 +102,15 @@ def(void, Align, size_t size);
 sdef(self, Clone, RdString s);
 sdef(char, CharAt, RdString s, ssize_t offset);
 overload sdef(RdString, Slice, RdString s, ssize_t offset, ssize_t length);
-overload sdef(void, Crop, self *dest, ssize_t offset, ssize_t length);
+overload def(void, Crop, ssize_t offset, ssize_t length);
 def(void, Delete, ssize_t offset, ssize_t length);
-overload sdef(void, Prepend, self *dest, RdString s);
-overload sdef(void, Prepend, self *dest, char c);
+overload def(void, Prepend, RdString s);
+overload def(void, Prepend, char c);
 def(void, Assign, String src);
 def(void, Copy, RdString src);
-overload sdef(void, Append, self *dest, RdString s);
-overload sdef(void, Append, self *dest, char c);
-overload sdef(void, Append, self *dest, FmtString s);
+overload def(void, Append, RdString s);
+overload def(void, Append, char c);
+overload def(void, Append, FmtString s);
 sdef(bool, BeginsWith, RdString s, RdString needle);
 sdef(bool, EndsWith, RdString s, RdString needle);
 def(void, ToLower);
@@ -289,12 +289,12 @@ static inline overload sdef(RdString, Slice, RdString s, ssize_t offset) {
 	return scall(Slice, s, offset, s.len - offset);
 }
 
-static inline overload sdef(void, Crop, self *dest, ssize_t offset) {
+static inline overload def(void, Crop, ssize_t offset) {
 	if (offset < 0) {
-		offset += dest->len;
+		offset += this->len;
 	}
 
-	scall(Crop, dest, offset, dest->len - offset);
+	call(Crop, offset, this->len - offset);
 }
 
 static alwaysInline sdef(bool, Equals, RdString s, RdString needle) {
