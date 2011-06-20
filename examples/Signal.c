@@ -35,6 +35,11 @@ def(bool, Run) {
 		volatile float x = 45;
 		volatile float y = 0;
 		x = x / y;
+	} else if (this->args->buf[0].buf[0] == 'f') {
+		/* Invalid floating point operation. */
+		volatile float x = 0.0;
+		volatile float y = 0.0;
+		x = x / y;
 	}
 
 	return true;
