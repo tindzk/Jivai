@@ -139,11 +139,18 @@ static inline sdef(void *, GetData) {
 	Exception_SetTrace();             \
 	Exception_SetOrigin($$(__func__)) \
 
-#define throw(e)                  \
-	do {                          \
-		Exception_SetException(); \
-		Exception_Raise(ref(e));  \
-	} while(0)
+/* Needed to silence -Wunused-value (which is generated due to the
+ * `false' in throw().
+ */
+static alwaysInline bool __exc_return(bool value) {
+	return value;
+}
+
+#define throw(e) __exc_return(({ \
+	Exception_SetException();    \
+	Exception_Raise(ref(e));     \
+	false;                       \
+}))
 
 #define try                                    \
 {                                              \

@@ -33,7 +33,8 @@ def(void, Reset) {
 }
 
 def(void, ThrowExc) {
-	throw(CustomException);
+	/* throw() is safe to be used like this: */
+	true && throw(CustomException);
 }
 
 def(void, Start) {
