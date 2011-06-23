@@ -15,6 +15,24 @@
 #define when(lbl) \
 	if (0) lbl: if (1)
 
+/* ret() can be used to leave functions with little effort:
+ *  1. expr || ret(false);
+ *  2. while (expr || ret(false)) { ... }
+ *
+ * As opposed to:
+ *  1. if (!expr) {
+ *         return false;
+ *     }
+ *  2. while (true) {
+ *         if (!expr) {
+ *             return false;
+ *         }
+ *         ...
+ *     }
+ */
+#define ret(val) \
+	({ return val; false; })
+
 #define range(i, lower, upper) \
 	for (typeof(lower) i = (lower); i <= (upper); i++)
 
