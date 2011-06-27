@@ -29,7 +29,7 @@ record(ref(UserContext)) {
 
 set(ref(Type)) {
 	ref(Type_Terminate)           = 15,
-	ref(Type_TerminateChild)      = 17,
+	ref(Type_ChildStatus)         = 17,
 	ref(Type_Interrupt)           = 2,
 	ref(Type_Quit)                = 3,
 	ref(Type_Kill)                = 9,

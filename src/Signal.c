@@ -35,7 +35,7 @@ rsdef(self, New) {
 	sigaddset(&res.mask, ref(Type_Quit));
 	sigaddset(&res.mask, ref(Type_HangUp));
 
-	sigaddset(&res.mask, ref(Type_TerminateChild));
+	sigaddset(&res.mask, ref(Type_ChildStatus));
 
 	sigprocmask(SIG_BLOCK, &res.mask, NULL);
 
@@ -73,7 +73,7 @@ static def(void, onSignal) {
 		throw(UnknownError);
 	}
 
-	if (sig.ssi_signo == ref(Type_TerminateChild)) {
+	if (sig.ssi_signo == ref(Type_ChildStatus)) {
 		fwd(i, this->terminations->len) {
 			ref(ChildTermination) termination =
 				this->terminations->buf[i];
