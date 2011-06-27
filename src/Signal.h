@@ -28,19 +28,19 @@ record(ref(UserContext)) {
 };
 
 set(ref(Type)) {
-	ref(Type_Terminate)           = SIGTERM,
-	ref(Type_TerminateChild)      = SIGCHLD,
-	ref(Type_Interrupt)           = SIGINT,
-	ref(Type_Quit)                = SIGQUIT,
-	ref(Type_Kill)                = SIGKILL,
-	ref(Type_Stop)                = SIGSTOP,
-	ref(Type_HangUp)              = SIGHUP,
-	ref(Type_Alarm)               = SIGALRM,
-	ref(Type_BusError)            = SIGBUS,
-	ref(Type_ArithmeticError)     = SIGFPE,
-	ref(Type_IllegalInstruction)  = SIGILL,
-	ref(Type_InvalidMemoryAccess) = SIGSEGV,
-	ref(Type_Pipe)                = SIGPIPE,
+	ref(Type_Terminate)           = 15,
+	ref(Type_TerminateChild)      = 17,
+	ref(Type_Interrupt)           = 2,
+	ref(Type_Quit)                = 3,
+	ref(Type_Kill)                = 9,
+	ref(Type_Stop)                = 19,
+	ref(Type_HangUp)              = 1,
+	ref(Type_Alarm)               = 14,
+	ref(Type_BusError)            = 7,
+	ref(Type_ArithmeticError)     = 8,
+	ref(Type_IllegalInstruction)  = 4,
+	ref(Type_InvalidMemoryAccess) = 11,
+	ref(Type_Pipe)                = 13
 };
 
 /* System signals will be turned into an exception which shouldn't
