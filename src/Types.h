@@ -5,6 +5,9 @@
 	((void *) 0)
 #endif
 
+#define null \
+	((void *) 0)
+
 /* Short names for explicitly-sized types. */
 typedef   signed char       s8;
 typedef unsigned char       u8;
