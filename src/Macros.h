@@ -33,6 +33,9 @@
 #define ret(val) \
 	({ return val; false; })
 
+#define jmp(lbl) \
+	({ goto lbl; false; })
+
 #define range(i, lower, upper) \
 	for (typeof(lower) i = (lower); i <= (upper); i++)
 
