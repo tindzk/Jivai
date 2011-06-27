@@ -281,7 +281,7 @@ overload def(void, Append, FmtString s) {
 	}
 }
 
-sdef(bool, BeginsWith, RdString s, RdString needle) {
+overload sdef(bool, BeginsWith, RdString s, RdString needle) {
 	if (needle.len == 0) {
 		return true;
 	} else if (needle.len > s.len) {
@@ -291,7 +291,15 @@ sdef(bool, BeginsWith, RdString s, RdString needle) {
 	return Memory_Equals(s.buf, needle.buf, needle.len);
 }
 
-sdef(bool, EndsWith, RdString s, RdString needle) {
+overload sdef(bool, BeginsWith, RdString s, char needle) {
+	if (s.len == 0) {
+		return false;
+	}
+
+	return s.buf[0] == needle;
+}
+
+overload sdef(bool, EndsWith, RdString s, RdString needle) {
 	if (needle.len == 0) {
 		return true;
 	} else if (needle.len > s.len) {
@@ -299,6 +307,14 @@ sdef(bool, EndsWith, RdString s, RdString needle) {
 	}
 
 	return Memory_Equals(s.buf + s.len - needle.len, needle.buf, needle.len);
+}
+
+overload sdef(bool, EndsWith, RdString s, char needle) {
+	if (s.len == 0) {
+		return false;
+	}
+
+	return s.buf[s.len - 1] == needle;
 }
 
 def(void, ToLower) {
