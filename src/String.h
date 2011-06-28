@@ -21,9 +21,9 @@
 #define String_FmtChecks 1
 #endif
 
-// @exc DoubleFree
-// @exc BufferOverflow
-// @exc ElementMismatch
+exc(DoubleFree)
+exc(BufferOverflow)
+exc(ElementMismatch)
 
 enum {
 	ref(TrimLeft)  = Bit(0),

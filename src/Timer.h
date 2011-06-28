@@ -6,7 +6,7 @@
 
 #define self Timer
 
-// @exc UnknownError
+exc(UnknownError)
 
 Callback(ref(OnTimer), bool, u64 dropped);
 

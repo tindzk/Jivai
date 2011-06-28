@@ -5,6 +5,29 @@
 
 #define self Path
 
+exc(AccessDenied)
+exc(AlreadyExists)
+exc(AttributeNonExistent)
+exc(BufferTooSmall)
+exc(CreationFailed)
+exc(DeletingFailed)
+exc(DirectoryNotEmpty)
+exc(EmptyPath)
+exc(GettingAttributeFailed)
+exc(InsufficientSpace)
+exc(IsDir)
+exc(NameTooLong)
+exc(NonExistentFile)
+exc(NonExistentPath)
+exc(NotDirectory)
+exc(PermissionDenied)
+exc(ReadingLinkFailed)
+exc(ResolvingFailed)
+exc(SettingAttributeFailed)
+exc(SettingTimeFailed)
+exc(StatFailed)
+exc(TruncatingFailed)
+
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
 #endif
@@ -12,29 +35,6 @@
 #ifndef AT_SYMLINK_NOFOLLOW
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
-
-// @exc AccessDenied
-// @exc AlreadyExists
-// @exc AttributeNonExistent
-// @exc BufferTooSmall
-// @exc CreationFailed
-// @exc DeletingFailed
-// @exc DirectoryNotEmpty
-// @exc EmptyPath
-// @exc GettingAttributeFailed
-// @exc InsufficientSpace
-// @exc IsDir
-// @exc NameTooLong
-// @exc NonExistentFile
-// @exc NonExistentPath
-// @exc NotDirectory
-// @exc PermissionDenied
-// @exc ReadingLinkFailed
-// @exc ResolvingFailed
-// @exc SettingAttributeFailed
-// @exc SettingTimeFailed
-// @exc StatFailed
-// @exc TruncatingFailed
 
 overload sdef(bool, Exists, RdString path, bool follow);
 sdef(String, GetCwd);

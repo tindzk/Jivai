@@ -6,7 +6,7 @@
 
 #define self Time
 
-// @exc GetTimeOfDayFailed
+exc(GetTimeOfDayFailed)
 
 class {
 	u8 hour;

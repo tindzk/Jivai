@@ -5,7 +5,7 @@
 
 #define self HTTP_Query
 
-// @exc ExceedsPermittedLength
+exc(ExceedsPermittedLength)
 
 class {
 	HTTP_OnParameter onParameter;

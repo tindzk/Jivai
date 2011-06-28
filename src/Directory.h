@@ -4,12 +4,12 @@
 
 #define self Directory
 
+exc(CannotOpenDirectory)
+exc(ReadingFailed)
+
 #ifndef Directory_BufSize
 #define Directory_BufSize 1024
 #endif
-
-// @exc CannotOpenDirectory
-// @exc ReadingFailed
 
 record(ref(LinuxEntry)) {
 	unsigned long inode;

@@ -4,7 +4,7 @@
 
 #define self DocumentTree
 
-// @exc IllegalNesting
+exc(IllegalNesting)
 
 record(ref(Attr)) {
 	CarrierString name;

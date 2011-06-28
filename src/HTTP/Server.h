@@ -12,10 +12,10 @@
 
 #define self HTTP_Server
 
-// @exc BodyTooLarge
-// @exc BodyUnexpected
-// @exc HeaderTooLarge
-// @exc UnknownContentType
+exc(BodyTooLarge)
+exc(BodyUnexpected)
+exc(HeaderTooLarge)
+exc(UnknownContentType)
 
 Callback(ref(OnRequest), void);
 Callback(ref(OnRespond), void, bool);

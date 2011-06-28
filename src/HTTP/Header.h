@@ -10,12 +10,12 @@
 
 #define self HTTP_Header
 
-// @exc EmptyRequestUri
-// @exc RequestMalformed
-// @exc ResponseMalformed
-// @exc UnknownMethod
-// @exc UnknownStatus
-// @exc UnknownVersion
+exc(EmptyRequestUri)
+exc(RequestMalformed)
+exc(ResponseMalformed)
+exc(UnknownMethod)
+exc(UnknownStatus)
+exc(UnknownVersion)
 
 record(ref(Events)) {
 	HTTP_OnRequestInfo  onRequestInfo;

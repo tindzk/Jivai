@@ -63,13 +63,13 @@
 
 #define self Pattern
 
-// @exc EmptyPattern
-// @exc NoClosingBracket
-// @exc UnbalancedBrackets
-// @exc JumpOffsetTooBig
-// @exc OffsetOverflow
-// @exc OffsetUnderflow
-// @exc UnknownCommand
+exc(EmptyPattern)
+exc(NoClosingBracket)
+exc(UnbalancedBrackets)
+exc(JumpOffsetTooBig)
+exc(OffsetOverflow)
+exc(OffsetUnderflow)
+exc(UnknownCommand)
 
 set(ref(Token)) {
 	ref(Token_End),

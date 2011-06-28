@@ -10,7 +10,9 @@
 
 #define self Exception
 
-// @exc AssertFailed
+#define exc(...)
+
+exc(AssertFailed)
 
 #ifndef Exception_SaveOrigin
 #define Exception_SaveOrigin 1

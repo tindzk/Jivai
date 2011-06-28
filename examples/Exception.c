@@ -4,7 +4,7 @@
 
 #define self Application
 
-// @exc CustomException
+exc(CustomException)
 
 void func3(void) {
 	throw(CustomException);

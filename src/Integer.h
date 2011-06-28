@@ -3,8 +3,8 @@
 
 #define self Integer
 
-// @exc Overflow
-// @exc Underflow
+exc(Overflow)
+exc(Underflow)
 
 s8  Int8_Parse(RdString s);
 s16 Int16_Parse(RdString s);

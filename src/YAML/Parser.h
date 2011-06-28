@@ -4,9 +4,9 @@
 
 #define self YAML_Parser
 
-// @exc ColonMissing
-// @exc InvalidIndention
-// @exc SpaceIndention
+exc(ColonMissing)
+exc(InvalidIndention)
+exc(SpaceIndention)
 
 class {
 	size_t depth;

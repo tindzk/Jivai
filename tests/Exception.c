@@ -2,7 +2,7 @@
 
 #define self tsException
 
-// @exc CustomException
+exc(CustomException)
 
 class {
 	size_t cntTry;

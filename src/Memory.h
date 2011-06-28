@@ -2,12 +2,13 @@
 
 #define self Memory
 
+#define exc(...)
+exc(OutOfMemory)
+exc(Overlapping)
+
 #ifndef Memory_PageSize
 #define Memory_PageSize 4096
 #endif
-
-// @exc OutOfMemory
-// @exc Overlapping
 
 record(ref(Chunk)) {
 	size_t size; /* Usable size. */

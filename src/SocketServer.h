@@ -1,12 +1,14 @@
+#import "Kernel.h"
 #import "Socket.h"
+#import "Exception.h"
 
 #define self SocketServer
 
-// @exc AddressInUse
-// @exc AcceptFailed
-// @exc BindFailed
-// @exc ListenFailed
-// @exc SetSocketOption
+exc(AddressInUse)
+exc(AcceptFailed)
+exc(BindFailed)
+exc(ListenFailed)
+exc(SetSocketOption)
 
 class {
 	Socket socket;

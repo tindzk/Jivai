@@ -5,7 +5,7 @@
 
 #define self NetworkAddress
 
-// @exc GetAddrInfoFailed
+exc(GetAddrInfoFailed)
 
 record(self) {
 	unsigned long ip;

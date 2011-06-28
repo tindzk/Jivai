@@ -10,13 +10,13 @@
 
 #define self Signal
 
-// @exc Alarm
-// @exc ArithmeticError
-// @exc BusError
-// @exc IllegalInstruction
-// @exc InvalidMemoryAccess
-// @exc Pipe
-// @exc UnknownError
+exc(Alarm)
+exc(ArithmeticError)
+exc(BusError)
+exc(IllegalInstruction)
+exc(InvalidMemoryAccess)
+exc(Pipe)
+exc(UnknownError)
 
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 record(ref(UserContext)) {

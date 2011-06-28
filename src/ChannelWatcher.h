@@ -6,6 +6,13 @@
 
 #define self ChannelWatcher
 
+exc(ChannelAlreadyAdded)
+exc(ChannelNotSupported)
+exc(InvalidChannel)
+exc(SettingCloexecFailed)
+exc(UnknownChannel)
+exc(UnknownError)
+
 #ifndef ChannelWatcher_NumEvents
 #define ChannelWatcher_NumEvents 4096
 #endif
@@ -32,13 +39,6 @@ class {
 	Channel ch;
 	EpollEvent events[ref(NumEvents)];
 };
-
-// @exc ChannelAlreadyAdded
-// @exc ChannelNotSupported
-// @exc InvalidChannel
-// @exc SettingCloexecFailed
-// @exc UnknownChannel
-// @exc UnknownError
 
 rsdef(self, New);
 def(void, Destroy);

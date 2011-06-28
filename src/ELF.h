@@ -8,8 +8,8 @@
 
 #define self ELF
 
-// @exc InvalidFile
-// @exc UnknownError
+exc(InvalidFile)
+exc(UnknownError)
 
 Callback(ref(OnSection), bool, RdString name, RdBuffer sect);
 

@@ -5,8 +5,8 @@
 
 #define self Process
 
-// @exc ForkFailed
-// @exc SpawningProcessFailed
+exc(ForkFailed)
+exc(SpawningProcessFailed)
 
 extern char **environ;
 

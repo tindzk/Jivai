@@ -5,6 +5,9 @@
 
 #define self Socket
 
+exc(SetSocketOption)
+exc(SocketFailed)
+
 set(ref(Protocol)) {
 	ref(Protocol_TCP),
 	ref(Protocol_UDP)
@@ -14,9 +17,6 @@ set(ref(Option)) {
 	ref(Option_Blocking)    = Bit(0),
 	ref(Option_CloseOnExec) = Bit(1)
 };
-
-// @exc SetSocketOption
-// @exc SocketFailed
 
 class {
 	Channel ch;

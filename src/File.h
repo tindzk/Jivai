@@ -5,25 +5,25 @@
 
 #define self File
 
+exc(AccessDenied)
+exc(AlreadyExists)
+exc(AttributeNonExistent)
+exc(BufferTooSmall)
+exc(CannotOpenFile)
+exc(GettingAttributeFailed)
+exc(InvalidFileDescriptor)
+exc(InvalidParameter)
+exc(IsDirectory)
+exc(NotFound)
+exc(NotWritable)
+exc(SeekingFailed)
+exc(SettingAttributeFailed)
+exc(StatFailed)
+exc(TruncatingFailed)
+
 class {
 	Channel ch;
 };
-
-// @exc AccessDenied
-// @exc AlreadyExists
-// @exc AttributeNonExistent
-// @exc BufferTooSmall
-// @exc CannotOpenFile
-// @exc GettingAttributeFailed
-// @exc InvalidFileDescriptor
-// @exc InvalidParameter
-// @exc IsDirectory
-// @exc NotFound
-// @exc NotWritable
-// @exc SeekingFailed
-// @exc SettingAttributeFailed
-// @exc StatFailed
-// @exc TruncatingFailed
 
 set(ref(SeekType)) {
 	ref(SeekType_Set) = 0,

@@ -9,8 +9,8 @@
 
 #define self Terminal
 
-// @exc IoctlFailed
-// @exc ElementMismatch
+exc(IoctlFailed)
+exc(ElementMismatch)
 
 /* VT100 escape sequence strings. */
 #define Terminal_VT100_Normal              $("\33[0m")

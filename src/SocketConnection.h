@@ -10,16 +10,16 @@
 
 #define self SocketConnection
 
+exc(ConnectionRefused)
+exc(ConnectionReset)
+exc(FileDescriptorUnusable)
+exc(InvalidFileDescriptor)
+exc(NotConnected)
+exc(UnknownError)
+
 #ifndef SocketConnection_ChunkSize
 #define SocketConnection_ChunkSize 65536
 #endif
-
-// @exc ConnectionRefused
-// @exc ConnectionReset
-// @exc FileDescriptorUnusable
-// @exc InvalidFileDescriptor
-// @exc NotConnected
-// @exc UnknownError
 
 class {
 	Channel ch;

@@ -2,12 +2,13 @@
 
 #define self Channel
 
-// @exc IsDirectory
-// @exc ReadingFailed
-// @exc ReadingInterrupted
-// @exc UnknownError
-// @exc WritingFailed
-// @exc WritingInterrupted
+#define exc(...)
+exc(IsDirectory)
+exc(ReadingFailed)
+exc(ReadingInterrupted)
+exc(UnknownError)
+exc(WritingFailed)
+exc(WritingInterrupted)
 
 set(ChannelId) {
 	ChannelId_StdIn  = 0,

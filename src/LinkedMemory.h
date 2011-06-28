@@ -5,9 +5,9 @@
 
 #define self LinkedMemory
 
-// @exc HasParent
-// @exc NotBundling
-// @exc AlreadyBundling
+exc(HasParent)
+exc(NotBundling)
+exc(AlreadyBundling)
 
 struct ref(Session);
 

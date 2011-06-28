@@ -3,7 +3,7 @@
 
 #define self SocketClient
 
-// @exc ConnectFailed
+exc(ConnectFailed)
 
 class {
 	Socket_Protocol protocol;

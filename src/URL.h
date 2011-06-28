@@ -3,7 +3,7 @@
 
 #define self URL
 
-// @exc SchemeMissing
+exc(SchemeMissing)
 
 record(ref(Parts)) {
 	RdString scheme;

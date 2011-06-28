@@ -5,7 +5,7 @@
 
 #define self Terminal_InputLine
 
-// @exc CommandExceedsAllowedLength
+exc(CommandExceedsAllowedLength)
 
 Callback(ref(OnKeyUp),    void);
 Callback(ref(OnKeyDown),  void);

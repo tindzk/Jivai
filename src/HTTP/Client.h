@@ -9,6 +9,12 @@
 
 #define self HTTP_Client
 
+exc(BufferTooSmall)
+exc(ConnectionError)
+exc(ConnectionReset)
+exc(MalformedChunk)
+exc(ResponseMalformed)
+
 /* Will be mostly used for buffering the headers.
  * Therefore, it shouldn't be too large.
  */
@@ -23,12 +29,6 @@
 #ifndef HTTP_Client_ReadChunkSize
 #define HTTP_Client_ReadChunkSize 16384
 #endif
-
-// @exc BufferTooSmall
-// @exc ConnectionError
-// @exc ConnectionReset
-// @exc MalformedChunk
-// @exc ResponseMalformed
 
 record(ref(RequestItem)) {
 	HTTP_Method   method;

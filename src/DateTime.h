@@ -5,12 +5,12 @@
 
 #define self DateTime
 
+exc(YearLower1970)
+
 class {
 	Date date;
 	Time time;
 };
-
-// @exc YearLower1970
 
 rsdef(self, New);
 rsdef(self, FromDate, Date date);
