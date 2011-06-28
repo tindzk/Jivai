@@ -456,7 +456,9 @@ sdef(bool, Parse, RdString pattern, RdString subject, ...) {
 				ofs = -1;
 			}
 
-			if (subject.buf[subj] != pattern.buf[i]) {
+			if (subj >= subject.len ||
+				subject.buf[subj] != pattern.buf[i])
+			{
 				VarArg_End(argptr);
 				return false;
 			}
