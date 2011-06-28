@@ -299,8 +299,12 @@ static inline overload def(void, Crop, ssize_t offset) {
 	call(Crop, offset, this->len - offset);
 }
 
-static alwaysInline sdef(bool, Equals, RdString s, RdString needle) {
+static alwaysInline overload sdef(bool, Equals, RdString s, RdString needle) {
 	return s.len == needle.len && Memory_Equals(s.buf, needle.buf, s.len);
+}
+
+static alwaysInline overload sdef(bool, Equals, RdString s, char needle) {
+	return s.len == 1 && s.buf[0] == needle;
 }
 
 static alwaysInline overload sdef(bool, Contains, RdString s, char needle) {
