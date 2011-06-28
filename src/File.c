@@ -173,6 +173,11 @@ overload sdef(String, GetContents, RdString path) {
 	size_t len  = 0;
 	u64    size = scall(GetSize, &file);
 
+	if (size == 0) {
+		/* This is the case for /dev/stdin. */
+		size = 4096;
+	}
+
 	assert(size <= MaxValue(size_t));
 
 	String res = String_New((size_t) size);
