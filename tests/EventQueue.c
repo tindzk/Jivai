@@ -23,8 +23,8 @@ tsDestroy {
 tsCase(Acute, "HasEvents()") {
 	Assert($("Is empty"), !EventQueue_HasEvents(&this->queue));
 
-	EventQueue_Enqueue(&this->queue, 1234, 1);
-	EventQueue_Enqueue(&this->queue, 2345, 2);
+	EventQueue_Enqueue(&this->queue, (void *) 1234, 1);
+	EventQueue_Enqueue(&this->queue, (void *) 2345, 2);
 
 	Assert($("Not empty"), EventQueue_HasEvents(&this->queue));
 
@@ -35,16 +35,16 @@ tsCase(Acute, "HasEvents()") {
 }
 
 tsCase(Acute, "Prune()") {
-	EventQueue_Enqueue(&this->queue, 2345, 1);
-	EventQueue_Enqueue(&this->queue, 1234, 2);
-	EventQueue_Enqueue(&this->queue, 2345, 1);
-	EventQueue_Enqueue(&this->queue, 1234, 2);
+	EventQueue_Enqueue(&this->queue, (void *) 2345, 1);
+	EventQueue_Enqueue(&this->queue, (void *) 1234, 2);
+	EventQueue_Enqueue(&this->queue, (void *) 2345, 1);
+	EventQueue_Enqueue(&this->queue, (void *) 1234, 2);
 
-	EventQueue_Prune(&this->queue, 1234);
+	EventQueue_Prune(&this->queue, (void *) 1234);
 
 	Assert($("Not empty"), EventQueue_HasEvents(&this->queue));
 
-	EventQueue_Prune(&this->queue, 2345);
+	EventQueue_Prune(&this->queue, (void *) 2345);
 
 	Assert($("Is empty"), !EventQueue_HasEvents(&this->queue));
 }
