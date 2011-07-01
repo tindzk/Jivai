@@ -111,17 +111,17 @@ sdef(bool, ToMultiByte, int c, String *res) {
     if (c <= 0x7F) {
 		String_Append(res, c);
     } else if (c <= 0x7FF) {
-		String_Append(res, 0xC0 | c >> 6);
-		String_Append(res, 0x80 | c & 0x3F);
+		String_Append(res, 0xC0 | (c >> 6));
+		String_Append(res, 0x80 | (c & 0x3F));
     } else if (c <= 0xFFFF) {
-        String_Append(res, 0xE0 | c >> 12);
-		String_Append(res, 0x80 | c >> 6 & 0x3F);
-		String_Append(res, 0x80 | c      & 0x3F);
+        String_Append(res, 0xE0 | (c >> 12));
+		String_Append(res, 0x80 | (c >> 6 & 0x3F));
+		String_Append(res, 0x80 | (c      & 0x3F));
     } else if (c <= 0x10FFFF) {
-        String_Append(res, 0xF0 | c >> 18);
-		String_Append(res, 0x80 | c >> 12 & 0x3F);
-		String_Append(res, 0x80 | c >>  6 & 0x3F);
-        String_Append(res, 0x80 | c       & 0x3F);
+        String_Append(res, 0xF0 | (c >> 18));
+		String_Append(res, 0x80 | (c >> 12 & 0x3F));
+		String_Append(res, 0x80 | (c >>  6 & 0x3F));
+        String_Append(res, 0x80 | (c       & 0x3F));
     } else {
 		return false;
 	}
