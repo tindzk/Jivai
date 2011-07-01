@@ -151,7 +151,7 @@ sdef(int, fcntl, int id, int cmd, int arg) {
 	return syscall(__NR_fcntl, id, cmd, arg);
 }
 
-sdef(ssize_t, socket, int namespace, int style, int protocol) {
+sdef(int, socket, int namespace, int style, int protocol) {
 #if defined(__NR_socket)
 	return syscall(__NR_socket, namespace, style, protocol);
 #else
@@ -205,7 +205,7 @@ sdef(bool, connect, int id, void *addr, size_t size) {
 #endif
 }
 
-sdef(ssize_t, accept4, int id, void *addr, int *len, int flags) {
+sdef(int, accept4, int id, void *addr, int *len, int flags) {
 #if defined(__NR_accept4)
 	return syscall(__NR_accept4, id, addr, len, flags);
 #else
