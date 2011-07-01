@@ -48,13 +48,13 @@ static alwaysInline bool Instance_IsValid(Instance $this) {
 	tripleConcat(self, _, name)
 
 #define def(ret, method, ...) \
-	ret ref(method)(__unused DynInstName(self) $this, ## __VA_ARGS__)
+	nonNull(1) ret ref(method)(__unused DynInstName(self) $this, ## __VA_ARGS__)
 
 #define odef(ret, method, ...) \
-	overload ret method(__unused InstName(self) $this, ## __VA_ARGS__)
+	nonNull(1) overload ret method(__unused InstName(self) $this, ## __VA_ARGS__)
 
 #define rdef(ret, method, ...) \
-	mustUseResult ret ref(method)(__unused DynInstName(self) $this, ## __VA_ARGS__)
+	nonNull(1) mustUseResult ret ref(method)(__unused DynInstName(self) $this, ## __VA_ARGS__)
 
 #define sdef(ret, method, ...) \
 	ret ref(method)(__VA_ARGS__)
