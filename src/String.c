@@ -359,27 +359,13 @@ overload sdef(bool, Split, RdString s, RdString needle, RdString *res) {
 		return false;
 	}
 
-	size_t cnt = 0;
+	res->buf = s.buf + offset;
+	res->len = s.len - offset;
 
-	for (size_t pos = offset; pos <= s.len; pos++) {
-		if (pos == s.len) {
-			res->buf = s.buf + offset;
-			res->len = pos   - offset;
+	ssize_t pos = String_Find(*res, needle);
 
-			break;
-		} else if (s.buf[pos] == needle.buf[cnt]) {
-			cnt++;
-
-			if (cnt == needle.len) {
-				res->buf = s.buf + offset;
-				res->len = pos   - offset - 1;
-
-				break;
-			}
-		} else if (cnt > 0) {
-			cnt = 0;
-			pos--;
-		}
+	if (pos != String_NotFound) {
+		res->len = pos;
 	}
 
 	return true;
