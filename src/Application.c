@@ -53,7 +53,7 @@ override earlyConstructor void configureMemory(void) {
 		return;
 	}
 
-	if (System_IsRunningOnValgrind()) {
+	if (1 || System_IsRunningOnValgrind()) {
 		String_Print($("[Info] Running in Valgrind. Using traditional allocator functions.\n"));
 		libc = Memory_Libc_New();
 		Memory0(Memory_Libc_AsMemory(&libc));
