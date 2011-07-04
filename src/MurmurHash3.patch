@@ -1,0 +1,98 @@
+34c34
+< inline uint32_t rotl32 ( uint32_t x, int8_t r )
+---
+> FORCE_INLINE uint32_t rotl32 ( uint32_t x, int8_t r )
+39c39
+< inline uint64_t rotl64 ( uint64_t x, int8_t r )
+---
+> FORCE_INLINE uint64_t rotl64 ( uint64_t x, int8_t r )
+55c55
+< FORCE_INLINE uint32_t getblock ( const uint32_t * p, int i )
+---
+> FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, int i )
+60c60
+< FORCE_INLINE uint64_t getblock ( const uint64_t * p, int i )
+---
+> FORCE_INLINE uint64_t getblock64 ( const uint64_t * p, int i )
+68c68
+< FORCE_INLINE uint32_t fmix ( uint32_t h )
+---
+> FORCE_INLINE uint32_t fmix32 ( uint32_t h )
+81c81
+< FORCE_INLINE uint64_t fmix ( uint64_t k )
+---
+> FORCE_INLINE uint64_t fmix64 ( uint64_t k )
+112c112
+<     uint32_t k1 = getblock(blocks,i);
+---
+>     uint32_t k1 = getblock32(blocks,i);
+143c143
+<   h1 = fmix(h1);
+---
+>   h1 = fmix32(h1);
+173,176c173,176
+<     uint32_t k1 = getblock(blocks,i*4+0);
+<     uint32_t k2 = getblock(blocks,i*4+1);
+<     uint32_t k3 = getblock(blocks,i*4+2);
+<     uint32_t k4 = getblock(blocks,i*4+3);
+---
+>     uint32_t k1 = getblock32(blocks,i*4+0);
+>     uint32_t k2 = getblock32(blocks,i*4+1);
+>     uint32_t k3 = getblock32(blocks,i*4+2);
+>     uint32_t k4 = getblock32(blocks,i*4+3);
+239,242c239,242
+<   h1 = fmix(h1);
+<   h2 = fmix(h2);
+<   h3 = fmix(h3);
+<   h4 = fmix(h4);
+---
+>   h1 = fmix32(h1);
+>   h2 = fmix32(h2);
+>   h3 = fmix32(h3);
+>   h4 = fmix32(h4);
+274,275c274,275
+<     uint64_t k1 = getblock(blocks,i*2+0);
+<     uint64_t k2 = getblock(blocks,i*2+1);
+---
+>     uint64_t k1 = getblock64(blocks,i*2+0);
+>     uint64_t k2 = getblock64(blocks,i*2+1);
+296,302c296,302
+<   case 15: k2 ^= uint64_t(tail[14]) << 48;
+<   case 14: k2 ^= uint64_t(tail[13]) << 40;
+<   case 13: k2 ^= uint64_t(tail[12]) << 32;
+<   case 12: k2 ^= uint64_t(tail[11]) << 24;
+<   case 11: k2 ^= uint64_t(tail[10]) << 16;
+<   case 10: k2 ^= uint64_t(tail[ 9]) << 8;
+<   case  9: k2 ^= uint64_t(tail[ 8]) << 0;
+---
+>   case 15: k2 ^= (uint64_t)tail[14] << 48;
+>   case 14: k2 ^= (uint64_t)tail[13] << 40;
+>   case 13: k2 ^= (uint64_t)tail[12] << 32;
+>   case 12: k2 ^= (uint64_t)tail[11] << 24;
+>   case 11: k2 ^= (uint64_t)tail[10] << 16;
+>   case 10: k2 ^= (uint64_t)tail[ 9] << 8;
+>   case  9: k2 ^= (uint64_t)tail[ 8] << 0;
+305,312c305,312
+<   case  8: k1 ^= uint64_t(tail[ 7]) << 56;
+<   case  7: k1 ^= uint64_t(tail[ 6]) << 48;
+<   case  6: k1 ^= uint64_t(tail[ 5]) << 40;
+<   case  5: k1 ^= uint64_t(tail[ 4]) << 32;
+<   case  4: k1 ^= uint64_t(tail[ 3]) << 24;
+<   case  3: k1 ^= uint64_t(tail[ 2]) << 16;
+<   case  2: k1 ^= uint64_t(tail[ 1]) << 8;
+<   case  1: k1 ^= uint64_t(tail[ 0]) << 0;
+---
+>   case  8: k1 ^= (uint64_t)tail[ 7] << 56;
+>   case  7: k1 ^= (uint64_t)tail[ 6] << 48;
+>   case  6: k1 ^= (uint64_t)tail[ 5] << 40;
+>   case  5: k1 ^= (uint64_t)tail[ 4] << 32;
+>   case  4: k1 ^= (uint64_t)tail[ 3] << 24;
+>   case  3: k1 ^= (uint64_t)tail[ 2] << 16;
+>   case  2: k1 ^= (uint64_t)tail[ 1] << 8;
+>   case  1: k1 ^= (uint64_t)tail[ 0] << 0;
+324,325c324,325
+<   h1 = fmix(h1);
+<   h2 = fmix(h2);
+---
+>   h1 = fmix64(h1);
+>   h2 = fmix64(h2);
