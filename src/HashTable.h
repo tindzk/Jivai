@@ -35,7 +35,7 @@ exc(TableIsFull);
 /* These settings will only have an impact on the insertion speed.
  * An additional bitmap can drastically speed up insertion but comes
  * at the cost of a slightly higher memory overhead. For a total of
- * 1 million entries, the bitmap will have a size of about 1 MiB.
+ * 1 million entries, the bitmap will have a size of 122 KiB.
  *
  * The bitmap will be used to find an empty entry. The number of
  * iterations and comparisons is reduced by factor 32. Another
