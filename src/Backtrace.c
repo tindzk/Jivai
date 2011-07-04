@@ -1,4 +1,5 @@
 #import "Backtrace.h"
+#import "ELF.h"
 
 #define self Backtrace
 

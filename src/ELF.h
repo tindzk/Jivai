@@ -1,10 +1,9 @@
 #import <elf.h>
-#import <sys/mman.h>
 
-#import "File.h"
 #import "String.h"
 #import "Buffer.h"
 #import "Exception.h"
+#import "MemoryMappedFile.h"
 
 #define self ELF
 
@@ -40,7 +39,7 @@ Array(ref(Symbol), ref(Symbols));
 
 class {
 	void *base;
-	size_t size;
+	MemoryMappedFile file;
 };
 
 rsdef(self, New, RdString path);

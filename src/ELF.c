@@ -7,23 +7,9 @@ static const char magicSequence[] = {
 };
 
 rsdef(self, New, RdString path) {
-	File file = File_New(path, FileStatus_ReadOnly);
-	Stat64 sb = File_GetStat(&file);
+	MemoryMappedFile file = MemoryMappedFile_new(path);
 
-	/* Must be a regular file to be mmap()-able. */
-	if ((sb.mode & FileMode_Regular) == 0) {
-		throw(InvalidFile);
-	}
-
-	void *base = mmap(0, sb.size, PROT_READ, MAP_SHARED, file.ch.id, 0);
-
-	if (base == MAP_FAILED) {
-		throw(UnknownError);
-	}
-
-	File_Destroy(&file);
-
-	ref(Ehdr) *header = base;
+	ref(Ehdr) *header = MemoryMappedFile_getAddress(&file);
 
 	/* Header must match magic sequence, otherwise it's not a valid ELF file. */
 	if (!Memory_Equals(header->e_ident, (char *) magicSequence, sizeof(magicSequence))) {
@@ -42,15 +28,13 @@ rsdef(self, New, RdString path) {
 	assert(header->e_shstrndx != SHN_UNDEF);
 
 	return (self) {
-		.base = base,
-		.size = sb.size
+		.file = file,
+		.base = MemoryMappedFile_getAddress(&file)
 	};
 }
 
 def(void, Destroy) {
-	if (munmap(this->base, this->size) == -1) {
-		throw(UnknownError);
-	}
+	MemoryMappedFile_destroy(&this->file);
 }
 
 static def(RdString, ResolveSectName, size_t ofs) {
