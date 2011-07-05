@@ -156,39 +156,66 @@ sdef(RdString, getDirectoryName, RdString path) {
 	return dirName;
 }
 
-
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
-sdef(String, Resolve, RdString path) {
+sdef(String, expandDirectory, RdString path) {
 	assert(path.len != 0);
+	assert(scall(isDirectory, path));
 
-	int fd;
+	int fd = Kernel_open($("."), FileStatus_ReadOnly, 0);
 
-	if ((fd = Kernel_open($("."), FileStatus_ReadOnly, 0)) == -1) {
+	if (fd == -1) {
 		throw(ResolvingFailed);
 	}
 
-	bool isDir = scall(isDirectory, path);
-
-	RdString dirpath = !isDir
-		? scall(GetDirectory, path, false)
-		: path;
-
-	String res = String_New(0);
-
-	if (Kernel_chdir(dirpath)) {
-		res = scall(GetCwd);
-
-		if (!isDir) {
-			String_Append(&res, '/');
-			String_Append(&res, scall(GetFilename, path, false));
-		}
-
-		Kernel_fchdir(fd);
+	if (!Kernel_chdir(path)) {
+		Kernel_close(fd);
+		throw(ResolvingFailed);
 	}
 
+	String res = scall(GetCwd);
+
+	Kernel_fchdir(fd);
 	Kernel_close(fd);
 
 	return res;
+}
+
+sdef(String, expandFile, RdString path) {
+	assert(path.len != 0);
+	assert(scall(IsFile, path));
+
+	int fd = Kernel_open($("."), FileStatus_ReadOnly, 0);
+
+	if (fd == -1) {
+		throw(ResolvingFailed);
+	}
+
+	RdString dirPath  = scall(GetDirectory, path, false);
+	RdString filename = scall(GetFilename,  path, false);
+
+	if (!Kernel_chdir(dirPath)) {
+		Kernel_close(fd);
+		throw(ResolvingFailed);
+	}
+
+	String res = scall(GetCwd);
+	String_Append(&res, '/');
+	String_Append(&res, filename);
+
+	Kernel_fchdir(fd);
+	Kernel_close(fd);
+
+	return res;
+}
+
+sdef(String, expand, RdString path) {
+	assert(path.len != 0);
+
+	if (scall(isDirectory, path)) {
+		return scall(expandDirectory, path);
+	}
+
+	return scall(expandFile, path);
 }
 
 overload sdef(void, Create, RdString path, int mode, bool recursive) {
