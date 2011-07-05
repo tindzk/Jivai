@@ -82,6 +82,15 @@ record(FmtString) {
 #define $$(s) \
 	(OmniString) $(s)
 
+/* This creates a reference to a rodata string placing it in the
+ * given section. With the aid of the ELF module, we can then
+ * iterate over all strings stored in this section even if they are
+ * scattered over multiple files.
+ */
+#define RefString(section, s) ({ \
+	static const RdString str __section(section) = $(s); str; \
+})
+
 #undef self
 
 #import "Array.h"
