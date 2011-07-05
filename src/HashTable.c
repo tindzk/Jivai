@@ -301,6 +301,8 @@ static def(ref(Entry) *, allocateEntry, RdString key) {
 }
 
 def(void, insert, RdString key, void *value) {
+	assert((value == null) ^ (this->valueSize != 0));
+
 	double load = call(getLoad);
 
 	if (ref(MaximumLoad) == 0 && (this->count + 1) == this->size) {
