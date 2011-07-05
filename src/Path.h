@@ -45,6 +45,7 @@ overload sdef(void, Truncate, RdString path, u64 length);
 sdef(RdString, GetExtension, RdString path);
 overload sdef(RdString, GetFilename, RdString path, bool verify);
 overload sdef(RdString, GetDirectory, RdString path, bool verify);
+sdef(RdString, getDirectoryName, RdString path);
 sdef(String, Resolve, RdString path);
 overload sdef(void, Create, RdString path, int mode, bool recursive);
 sdef(void, Delete, RdString path);

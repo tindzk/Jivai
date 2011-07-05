@@ -143,6 +143,22 @@ overload sdef(RdString, GetDirectory, RdString path, bool verify) {
 	return String_Slice(path, 0, pos);
 }
 
+sdef(RdString, getDirectoryName, RdString path) {
+	if (path.len != 0 && path.buf[path.len - 1] == '/') {
+		path.len--;
+	}
+
+	RdString dirName = $("");
+	ssize_t pos = String_ReverseFind(path, '/');
+
+	if (pos != String_NotFound) {
+		dirName = String_Slice(path, pos + 1);
+	}
+
+	return dirName;
+}
+
+
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
 sdef(String, Resolve, RdString path) {
 	if (path.len == 0) {
