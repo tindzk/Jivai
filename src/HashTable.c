@@ -96,6 +96,12 @@ def(void, destroy) {
 	Memory_Destroy(this->entries);
 }
 
+def(void, clear) {
+	self table = scall(new, this->size, this->valueSize);
+	scall(destroy, this);
+	*this = table;
+}
+
 static def(u32, getBucket, RdString key) {
 	u32 hash;
 	MurmurHash3_x86_32(key.buf, key.len, 0, &hash);

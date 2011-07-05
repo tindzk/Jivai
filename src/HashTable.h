@@ -101,6 +101,7 @@ static alwaysInline def(double, getLoad) {
 
 rsdef(self, new, u32 len, u16 valueSize);
 def(void, destroy);
+def(void, clear);
 def(ref(Entry) *, getFirst);
 def(ref(Entry) *, getNext, ref(Entry) *cur);
 def(void *, lookup, RdString key);
