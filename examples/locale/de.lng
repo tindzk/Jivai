@@ -1,0 +1,9 @@
+Hello!\n
+Hallo!\n
+
+# Comment lines are ignored.
+   # Comment lines are ignored.
+      # Comment lines are ignored.
+Hello \\n World!\n
+Hallo \\n Welt!\n
+Only the first and second line are evaluated.
