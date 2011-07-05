@@ -271,7 +271,7 @@ sdef(void, DeleteDirectory, RdString path) {
 	}
 }
 
-sdef(void, ReadLink, RdString path, String *out) {
+overload sdef(void, followLink, RdString path, String *out) {
 	ssize_t len = Kernel_readlink(path, out->buf, String_GetSize(*out));
 
 	if (len == -1) {
@@ -289,6 +289,12 @@ sdef(void, ReadLink, RdString path, String *out) {
 	}
 
 	out->len = len;
+}
+
+overload sdef(String, followLink, RdString path) {
+	String res = String_New(256);
+	scall(followLink, path, &res);
+	return res;
 }
 
 sdef(void, Symlink, RdString path1, RdString path2) {

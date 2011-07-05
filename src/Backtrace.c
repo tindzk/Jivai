@@ -9,8 +9,7 @@ sdef(void, PrintTrace, void **addr, uint size) {
 		elf = ELF_New($("/proc/self/exe"));
 	} else {
 		/* As for Valgrind, we have to follow the symbolic link manually. */
-		String link = String_New(256);
-		Path_ReadLink($("/proc/self/exe"), &link);
+		String link = Path_followLink($("/proc/self/exe"));
 		elf = ELF_New(link.rd);
 		String_Destroy(&link);
 	}
