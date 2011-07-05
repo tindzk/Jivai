@@ -48,14 +48,8 @@ class {
 	bool acuteFailed;
 };
 
-#define __tsSection(x) \
-	".suite." #x
-
-#define _tsSection(x) \
-	__tsSection(x)
-
 #define tsSection \
-	__section(_tsSection(self))
+	__section(".suite." quote(self))
 
 #define tsRegister(caption)                       \
 	tsSection Impl(ITestSuite) = {                \

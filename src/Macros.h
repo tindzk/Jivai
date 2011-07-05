@@ -1,5 +1,8 @@
 #import "Compiler.h"
 
+#define _quote(x) #x
+#define quote(x)  _quote(x)
+
 #define set(name)           \
 	typedef enum name name; \
 	enum name
