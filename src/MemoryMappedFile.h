@@ -1,6 +1,6 @@
 #import <sys/mman.h>
 
-#import "File.h"
+#import "String.h"
 
 #define self MemoryMappedFile
 

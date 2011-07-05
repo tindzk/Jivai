@@ -1,4 +1,5 @@
 #import "MemoryMappedFile.h"
+#import "File.h"
 
 #define self MemoryMappedFile
 
