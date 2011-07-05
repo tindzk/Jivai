@@ -7,7 +7,7 @@ then
 fi
 
 echo "output=build/$1.exe
-manifest=Manifest.h
+manifest=yes
 main=$1.c
 include=.
 include=../src
