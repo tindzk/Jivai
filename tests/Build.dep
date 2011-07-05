@@ -1,5 +1,4 @@
 main=TestSuite.c
-output=TestSuite.exe
 manifest=yes
 include=.
 include=../src
