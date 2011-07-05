@@ -20,22 +20,22 @@ sdef(void, PrintTrace, void **addr, uint size) {
 
 	ELF_Symbols *symbols = ELF_GetSymbolTable(&elf);
 
-	System_Err($("Traceback (most recent call first):\n"));
+	System_err($("Traceback (most recent call first):\n"));
 
 	fwd(i, size) {
-		System_Err($("\tat "));
+		System_err($("\tat "));
 
 		RdString function = ELF_Symbols_FindNearest(symbols, addr[i]);
 
 		if (function.len == 0) {
-			System_Err($("0x"));
+			System_err($("0x"));
 
 			String hex = Hex_ToString(addr[i]);
-			System_Err(hex.rd);
+			System_err(hex.rd);
 			String_Destroy(&hex);
 		} else {
-			System_Err(function);
-			System_Err($("("));
+			System_err(function);
+			System_err($("("));
 
 			assert(sizeof(void *) == sizeof(DWARF_Pointer));
 			DWARF_Match match = DWARF_ResolveSymbol(&dwarf, (DWARF_Pointer) addr[i]);
@@ -43,17 +43,17 @@ sdef(void, PrintTrace, void **addr, uint size) {
 			if (match.file.name.len > 0) {
 				String line = Integer_ToString(match.line);
 
-				System_Err(match.file.name);
-				System_Err($(":"));
-				System_Err(line.rd);
+				System_err(match.file.name);
+				System_err($(":"));
+				System_err(line.rd);
 
 				String_Destroy(&line);
 			}
 
-			System_Err($(")"));
+			System_err($(")"));
 		}
 
-		System_Err($("\n"));
+		System_err($("\n"));
 	}
 
 	ELF_Symbols_Free(symbols);
