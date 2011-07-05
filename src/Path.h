@@ -47,7 +47,7 @@ overload sdef(RdString, GetDirectory, RdString path, bool verify);
 sdef(RdString, getDirectoryName, RdString path);
 sdef(String, expandDirectory, RdString path);
 sdef(String, expandFile, RdString path);
-sdef(String, expand, RdString path);
+overload sdef(String, expand, RdString path, bool follow);
 overload sdef(void, Create, RdString path, int mode, bool recursive);
 sdef(void, Delete, RdString path);
 sdef(void, DeleteDirectory, RdString path);
@@ -73,6 +73,14 @@ static inline overload sdef(bool, IsFile, Stat64 attr) {
 
 static inline overload sdef(bool, isDirectory, Stat64 attr) {
 	return attr.mode & FileMode_Directory;
+}
+
+static inline overload sdef(bool, isLink, RdString path) {
+	return scall(GetStat, path).mode & FileMode_Link;
+}
+
+static inline overload sdef(bool, isLink, Stat64 attr) {
+	return attr.mode & FileMode_Link;
 }
 
 static inline overload sdef(void, Truncate, RdString path) {
@@ -113,6 +121,10 @@ static inline overload sdef(void, SetTime, RdString path, time_t timestamp, bool
 
 static inline overload sdef(void, SetTime, RdString path, time_t timestamp) {
 	scall(SetTime, path, timestamp, 0, false);
+}
+
+static inline overload sdef(void, expand, RdString path) {
+	scall(expand, path, false);
 }
 
 #undef self

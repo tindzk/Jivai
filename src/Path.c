@@ -208,10 +208,12 @@ sdef(String, expandFile, RdString path) {
 	return res;
 }
 
-sdef(String, expand, RdString path) {
+overload sdef(String, expand, RdString path, bool follow) {
 	assert(path.len != 0);
 
-	if (scall(isDirectory, path)) {
+	if (follow && scall(isLink, path)) {
+		return scall(followLink, path);
+	} else if (scall(isDirectory, path)) {
 		return scall(expandDirectory, path);
 	}
 

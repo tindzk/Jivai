@@ -65,7 +65,7 @@ set(FileMode) {
 	FileMode_BlockDevice = 0060000,
 	FileMode_Regular     = 0100000,
 	FileMode_FIFO        = 0010000,
-	FileMode_Symlink     = 0120000,
+	FileMode_Link        = 0120000,
 	FileMode_Socket      = 0140000
 };
 
