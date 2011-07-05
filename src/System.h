@@ -21,6 +21,7 @@ static inline sdef(void, err, RdString s) {
 #define String_Print(s) System_out(s)
 
 sdef(bool, IsRunningOnValgrind);
+sdef(RdString, getLanguage);
 sdef(bool, IsDebugging);
 
 #undef self

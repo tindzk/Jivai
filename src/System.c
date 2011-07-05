@@ -17,6 +17,21 @@ sdef(bool, IsRunningOnValgrind) {
 	return false;
 }
 
+sdef(RdString, getLanguage) {
+	assert(__environ != NULL);
+
+	for (char **cur = __environ; *cur != NULL; cur++) {
+		RdString item = String_FromNul(*cur);
+		RdString res;
+
+		if (String_Parse($("LANG=%_"), item, &res)) {
+			return res;
+		}
+	}
+
+	return $("en");
+}
+
 sdef(bool, IsDebugging) {
 	assert(__environ != NULL);
 
