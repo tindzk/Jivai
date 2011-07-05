@@ -114,9 +114,7 @@ overload sdef(RdString, GetFilename, RdString path, bool verify) {
 
 	if (pos == String_NotFound) {
 		return path;
-	}
-
-	if ((size_t) pos + 1 >= path.len) {
+	} else if ((size_t) pos + 1 >= path.len) {
 		return path;
 	}
 
@@ -130,13 +128,9 @@ overload sdef(RdString, GetDirectory, RdString path, bool verify) {
 
 	if (String_Equals(path, $("/"))) {
 		return $("/");
-	}
-
-	if (String_EndsWith(path, $("/"))) {
+	} else if (String_EndsWith(path, $("/"))) {
 		return String_Slice(path, 0, -1);
-	}
-
-	if (verify && scall(IsDirectory, path)) {
+	} else if (verify && scall(IsDirectory, path)) {
 		return path;
 	}
 
