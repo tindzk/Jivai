@@ -140,7 +140,9 @@ overload sdef(RdString, GetDirectory, RdString path, bool verify) {
 }
 
 sdef(RdString, getDirectoryName, RdString path) {
-	if (path.len != 0 && path.buf[path.len - 1] == '/') {
+	assert(path.len != 0);
+
+	if (path.buf[path.len - 1] == '/') {
 		path.len--;
 	}
 
