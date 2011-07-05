@@ -24,9 +24,7 @@ sdef(String, GetCwd) {
 }
 
 sdef(Stat64, GetStat, RdString path) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	Stat64 attr;
 
@@ -52,6 +50,8 @@ sdef(u64, GetSize, RdString path) {
 }
 
 overload sdef(bool, IsDirectory, RdString path) {
+	assert(path.len != 0);
+
 	bool res = false;
 
 	try {
@@ -68,9 +68,7 @@ overload sdef(bool, IsDirectory, RdString path) {
 }
 
 overload sdef(void, Truncate, RdString path, u64 length) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	if (!Kernel_truncate64(path, length)) {
 		if (errno == EACCES) {
@@ -88,6 +86,8 @@ overload sdef(void, Truncate, RdString path, u64 length) {
 }
 
 sdef(RdString, GetExtension, RdString path) {
+	assert(path.len != 0);
+
 	bwd(i, path.len) {
 		if (path.buf[i] == '/') {
 			break;
@@ -102,9 +102,7 @@ sdef(RdString, GetExtension, RdString path) {
 }
 
 overload sdef(RdString, GetFilename, RdString path, bool verify) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	if (verify && !scall(IsFile, path)) {
 		return $("");
@@ -122,9 +120,7 @@ overload sdef(RdString, GetFilename, RdString path, bool verify) {
 }
 
 overload sdef(RdString, GetDirectory, RdString path, bool verify) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	if (String_Equals(path, $("/"))) {
 		return $("/");
@@ -161,9 +157,7 @@ sdef(RdString, getDirectoryName, RdString path) {
 
 /* Modeled after http://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html */
 sdef(String, Resolve, RdString path) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	int fd;
 
@@ -196,9 +190,7 @@ sdef(String, Resolve, RdString path) {
 }
 
 overload sdef(void, Create, RdString path, int mode, bool recursive) {
-	if (path.len == 0) {
-		throw(EmptyPath);
-	}
+	assert(path.len != 0);
 
 	if (String_Equals(path, $("."))) {
 		return;
