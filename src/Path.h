@@ -39,7 +39,7 @@ overload sdef(bool, Exists, RdString path, bool follow);
 sdef(String, GetCwd);
 sdef(Stat64, GetStat, RdString path);
 sdef(u64, GetSize, RdString path);
-overload sdef(bool, IsDirectory, RdString path);
+overload sdef(bool, isDirectory, RdString path);
 overload sdef(void, Truncate, RdString path, u64 length);
 sdef(RdString, GetExtension, RdString path);
 overload sdef(RdString, GetFilename, RdString path, bool verify);
@@ -69,7 +69,7 @@ static inline overload sdef(bool, IsFile, Stat64 attr) {
 	return attr.mode & FileMode_Regular;
 }
 
-static inline overload sdef(bool, IsDirectory, Stat64 attr) {
+static inline overload sdef(bool, isDirectory, Stat64 attr) {
 	return attr.mode & FileMode_Directory;
 }
 

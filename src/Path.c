@@ -49,7 +49,7 @@ sdef(u64, GetSize, RdString path) {
 	return scall(GetStat, path).size;
 }
 
-overload sdef(bool, IsDirectory, RdString path) {
+overload sdef(bool, isDirectory, RdString path) {
 	assert(path.len != 0);
 
 	bool res = false;
@@ -126,7 +126,7 @@ overload sdef(RdString, GetDirectory, RdString path, bool verify) {
 		return $("/");
 	} else if (String_EndsWith(path, $("/"))) {
 		return String_Slice(path, 0, -1);
-	} else if (verify && scall(IsDirectory, path)) {
+	} else if (verify && scall(isDirectory, path)) {
 		return path;
 	}
 
@@ -167,7 +167,7 @@ sdef(String, Resolve, RdString path) {
 		throw(ResolvingFailed);
 	}
 
-	bool isDir = scall(IsDirectory, path);
+	bool isDir = scall(isDirectory, path);
 
 	RdString dirpath = !isDir
 		? scall(GetDirectory, path, false)
