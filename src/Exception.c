@@ -75,11 +75,11 @@ sdef(OmniString, Format, int code) {
 }
 
 sdef(void, Print, int code) {
-	System_Err(scall(Format, code).rd);
-	System_Err($("\n"));
+	System_err(scall(Format, code).rd);
+	System_err($("\n"));
 }
 
 sdef(void, Shutdown, int code) {
 	scall(Print, code);
-	System_Exit(ExitStatus_Failure);
+	System_exit(ExitStatus_Failure);
 }
