@@ -123,8 +123,8 @@ static inline overload sdef(void, SetTime, RdString path, time_t timestamp) {
 	scall(SetTime, path, timestamp, 0, false);
 }
 
-static inline overload sdef(void, expand, RdString path) {
-	scall(expand, path, false);
+static inline overload sdef(String, expand, RdString path) {
+	return scall(expand, path, false);
 }
 
 #undef self
