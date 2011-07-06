@@ -23,6 +23,28 @@ sdef(String, GetCwd) {
 	return s;
 }
 
+sdef(Stat, getLinkStat, RdString path) {
+	assert(path.len != 0);
+
+	Stat attr;
+
+	if (!Kernel_lstat(path, &attr)) {
+		if (errno == EACCES) {
+			throw(AccessDenied);
+		} else if (errno == ENAMETOOLONG) {
+			throw(NameTooLong);
+		} else if (errno == ENOENT) {
+			throw(NonExistentPath);
+		} else if (errno == ENOTDIR) {
+			throw(NotDirectory);
+		} else {
+			throw(StatFailed);
+		}
+	}
+
+	return attr;
+}
+
 sdef(Stat64, GetStat, RdString path) {
 	assert(path.len != 0);
 

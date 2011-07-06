@@ -37,6 +37,7 @@ exc(TruncatingFailed)
 
 overload sdef(bool, Exists, RdString path, bool follow);
 sdef(String, GetCwd);
+sdef(Stat, getLinkStat, RdString path);
 sdef(Stat64, GetStat, RdString path);
 sdef(u64, GetSize, RdString path);
 overload sdef(bool, isDirectory, RdString path);
@@ -76,7 +77,7 @@ static inline overload sdef(bool, isDirectory, Stat64 attr) {
 }
 
 static inline overload sdef(bool, isLink, RdString path) {
-	return scall(GetStat, path).mode & FileMode_Link;
+	return scall(getLinkStat, path).mode & FileMode_Link;
 }
 
 static inline overload sdef(bool, isLink, Stat64 attr) {
