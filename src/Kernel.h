@@ -50,7 +50,7 @@ set(FileStatus) {
 	FileStatus_ReadOnly  = 00,
 	FileStatus_WriteOnly = 01,
 	FileStatus_ReadWrite = 02,
-	FileStatus_Directory = 0200000,
+	FileStatus_Folder    = 0200000,
 	FileStatus_NoFollow  = 0400000,
 	FileStatus_Append    = 02000,
 	FileStatus_Create    = 0100,
@@ -60,7 +60,7 @@ set(FileStatus) {
 
 set(FileMode) {
 	FileMode_Mask        = 0170000,
-	FileMode_Directory   = 0040000,
+	FileMode_Folder      = 0040000,
 	FileMode_CharDevice  = 0020000,
 	FileMode_BlockDevice = 0060000,
 	FileMode_Regular     = 0100000,
@@ -98,21 +98,24 @@ record(Time_UnixEpoch) {
 };
 
 record(Stat) {
-	__dev_t device;
-	unsigned short int __pad1;
-	__ino_t inode;
-	__mode_t mode;
-	__nlink_t hardlinks;
-	__uid_t uid;
-	__gid_t gid;
-	__dev_t rdev;
-	unsigned short int __pad2;
-	__off_t size;
-	__blksize_t blksize;
-	__blkcnt_t blocks;
-	Time_UnixEpoch atime;
-	Time_UnixEpoch mtime;
-	Time_UnixEpoch ctime;
+	unsigned long  device;
+	unsigned long  inode;
+	unsigned short mode;
+	unsigned short nlink;
+	unsigned short uid;
+	unsigned short gid;
+	unsigned long  rdev;
+	unsigned long  size;
+	unsigned long  blksize;
+	unsigned long  blocks;
+	unsigned long  atime;
+	unsigned long  atime_nsec;
+	unsigned long  mtime;
+	unsigned long  mtime_nsec;
+	unsigned long  ctime;
+	unsigned long  ctime_nsec;
+	unsigned long  __unused4;
+	unsigned long  __unused5;
 };
 
 #if defined(__x86_64__)
@@ -204,6 +207,7 @@ sdef(bool, fchdir, int id);
 sdef(bool, lstat, RdString path, Stat *attr);
 sdef(bool, stat, RdString path, Stat *attr);
 sdef(size_t, getcwd, char *buf, size_t size);
+sdef(bool, lstat64, RdString path, Stat64 *attr);
 sdef(bool, stat64, RdString path, Stat64 *attr);
 sdef(bool, fstat64, int id, Stat64 *attr);
 sdef(bool, truncate64, RdString path, u64 len);

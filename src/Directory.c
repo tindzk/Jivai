@@ -4,7 +4,7 @@
 
 rsdef(self, New, RdString path) {
 	int id = Kernel_open(path,
-		FileStatus_Directory |
+		FileStatus_Folder |
 		FileStatus_ReadOnly, 0);
 
 	if (id == -1) {

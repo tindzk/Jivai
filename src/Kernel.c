@@ -75,7 +75,7 @@ sdef(ssize_t, fgetxattr, int id, RdString name, char *buf, size_t size) {
 }
 
 sdef(bool, symlink, RdString path1, RdString path2) {
-	return syscall(__NR_readlink,
+	return syscall(__NR_symlink,
 		String_ToNul(path1),
 		String_ToNul(path2)) == 0;
 }
@@ -105,6 +105,10 @@ sdef(bool, stat, RdString path, Stat *attr) {
 
 sdef(size_t, getcwd, char *buf, size_t size) {
 	return syscall(__NR_getcwd, buf, size);
+}
+
+sdef(bool, lstat64, RdString path, Stat64 *attr) {
+	return syscall(__NR_lstat64, String_ToNul(path), attr) == 0;
 }
 
 sdef(bool, stat64, RdString path, Stat64 *attr) {
