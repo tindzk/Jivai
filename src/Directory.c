@@ -61,5 +61,13 @@ def(bool, Read, ref(Entry) *res) {
 
 	this->bpos += item->reclen;
 
+	if (res->type == ref(ItemType_Directory)) {
+		if (String_Equals(res->name, '.') ||
+			String_Equals(res->name, $("..")))
+		{
+			return call(Read, res);
+		}
+	}
+
 	return true;
 }
