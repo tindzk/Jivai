@@ -1,0 +1,23 @@
+# Create a library.
+library=yes
+
+# Set input and output paths.
+main=Jivai.c
+output=Jivai.dll
+
+# Produce a debugging release.
+optimlevel=0
+dbgsym=yes
+debug=yes
+
+# Include the configuration file.
+inclhdr=config.h
+
+# Path to the sources.
+include=src/
+map=src/:build/:Jivai
+
+# This is only needed for the Manifest generation.
+manifest=yes
+include=./
+map=./:build/
