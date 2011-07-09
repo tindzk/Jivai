@@ -18,6 +18,11 @@
 #define when(lbl) \
 	if (0) lbl: if (1)
 
+/* Hide Clang warning "expression result unused" (-Wunused-value). */
+static alwaysInline int _useValue(int value) {
+	return value;
+}
+
 /* ret() can be used to leave functions with little effort:
  *  1. expr || ret(false);
  *  2. while (expr || ret(false)) { ... }
@@ -34,10 +39,10 @@
  *     }
  */
 #define ret(val) \
-	({ return val; false; })
+	_useValue(({ return val; false; }))
 
 #define jmp(lbl) \
-	({ goto lbl; false; })
+	_useValue(({ goto lbl; false; }))
 
 #define range(i, lower, upper) \
 	for (typeof(lower) i = (lower); i <= (upper); i++)
