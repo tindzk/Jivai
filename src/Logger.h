@@ -1,5 +1,6 @@
 #import "Bit.h"
 #import "String.h"
+#import "Locale.h"
 #import "BitMask.h"
 
 #define self Logger
