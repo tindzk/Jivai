@@ -1,7 +1,13 @@
+#define _GNU_SOURCE
+#import <link.h> /* dl_iterate_phdr() */
+#undef _GNU_SOURCE
+
 #import "FPU.h"
 #import "String.h"
+#import "Locale.h"
 #import "Logger.h"
 #import "Terminal.h"
+#import "Directory.h"
 #import "Memory/Map.h"
 #import "Memory/Libc.h"
 #import "Memory/Logger.h"

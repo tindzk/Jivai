@@ -14,14 +14,14 @@ def(bool, Run) {
 	call(print);
 
 	System_out($("\nGerman:\n"));
-	Locale_load(Locale_GetInstance(), $("locale/de.lng"));
+	Locale_setLanguage(Locale_GetInstance(), $("de"));
 	call(print);
 
 	/* Messages without translation are returned in its original form. */
 	System_out(t("This is an untranslated message.\n"));
 
 	System_out($("\nFrench:\n"));
-	Locale_load(Locale_GetInstance(), $("locale/fr.lng"));
+	Locale_setLanguage(Locale_GetInstance(), $("fr"));
 	call(print);
 
 	/* Multiple occurrences of the same string are allowed. These are

@@ -1,4 +1,5 @@
 #import "Locale.h"
+#import "Application.h"
 
 #define self Locale
 
@@ -7,7 +8,9 @@ SingletonDestructor(self);
 
 rsdef(self, New) {
 	return (self) {
-		.tbl = HashTable_new(1024, sizeof(ref(Item)))
+		.tbl = HashTable_new(1024, sizeof(ref(Item))),
+		.contexts = HashTable_new(8, sizeof(ref(Context))),
+		.language = String_New(0)
 	};
 }
 
@@ -22,8 +25,20 @@ static sdef(void, destroyItems, HashTable *tbl) {
 }
 
 def(void, Destroy) {
+	String_Destroy(&this->language);
+
 	scall(destroyItems, &this->tbl);
 	HashTable_destroy(&this->tbl);
+
+	for (HashTable_Entry *cur = HashTable_getFirst(&this->contexts);
+							cur != null;
+							cur = HashTable_getNext(&this->contexts, cur))
+	{
+		ref(Context) *data = (void *) cur->data;
+		String_Destroy(&data->path);
+	}
+
+	HashTable_destroy(&this->contexts);
 }
 
 sdef(String, decode, RdString s) {
@@ -62,10 +77,10 @@ sdef(String, encode, RdString s) {
 	return res;
 }
 
-sdef(void, createInitial, RdString binary, RdString path) {
+sdef(void, createInitial, RdString binary, RdString out) {
 	ELF elf = ELF_New(binary);
 
-	File file = File_New(path,
+	File file = File_New(out,
 		FileStatus_WriteOnly |
 		FileStatus_Truncate  |
 		FileStatus_Create);
@@ -76,18 +91,23 @@ sdef(void, createInitial, RdString binary, RdString path) {
 	HashTable tbl = HashTable_new(sect.len / sizeof(RdString), 0);
 
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
-		if (HashTable_lookup(&tbl, *cur) != null) {
+		RdString str = {
+			.len = cur->len,
+			.buf = (IntPtr) elf.base + cur->buf
+		};
+
+		if (HashTable_lookup(&tbl, str) != null) {
 			continue;
 		}
 
-		String encoded = scall(encode, *cur);
+		String encoded = scall(encode, str);
 
 		File_Write(&file, encoded.rd);
 		File_Write(&file, $("\n\n\n"));
 
 		String_Destroy(&encoded);
 
-		HashTable_insert(&tbl, *cur, null);
+		HashTable_insert(&tbl, str, null);
 	}
 
 	HashTable_destroy(&tbl);
@@ -108,15 +128,20 @@ sdef(void, check, RdString binary, RdString path, ref(OnCheckError) cb) {
 
 	/* Find messages that aren't defined in the language file. */
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
-		if (HashTable_lookup(&bin, *cur) != null) {
+		RdString str = {
+			.len = cur->len,
+			.buf = (IntPtr) elf.base + cur->buf
+		};
+
+		if (HashTable_lookup(&bin, str) != null) {
 			/* Ignore duplicates. */
 			continue;
 		}
 
-		HashTable_insert(&bin, *cur, null);
+		HashTable_insert(&bin, str, null);
 
-		if (HashTable_lookup(&lng, *cur) == null) {
-			callback(cb, ref(CheckError_Missing), *cur);
+		if (HashTable_lookup(&lng, str) == null) {
+			callback(cb, ref(CheckError_Missing), str);
 		}
 	}
 
@@ -145,10 +170,14 @@ sdef(void, check, RdString binary, RdString path, ref(OnCheckError) cb) {
 
 sdef(void, dump, RdString path, ref(OnMessage) cb) {
 	ELF elf = ELF_New(path);
+
 	RdBuffer sect = ELF_GetSection(&elf, $(".locale"));
 
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
-		callback(cb, *cur);
+		callback(cb, (RdString) {
+			.len = cur->len,
+			.buf = (IntPtr) elf.base + cur->buf
+		});
 	}
 
 	ELF_Destroy(&elf);
@@ -218,7 +247,70 @@ overload def(void, load, RdString path) {
 	scall(load, path, &this->tbl);
 }
 
-def(RdString, getTranslation, RdString value) {
+/* All contexts should be added as early as possible. The language file
+ * is lazy-loaded. The path must be valid but does not necessarily
+ * need to contain any language files.
+ */
+def(void, addContext, RdString context, String path) {
+	assert(Path_isFolderPath(path.rd) && Path_exists(path.rd));
+
+	ref(Context) entry = {
+		.path   = path,
+		.loaded = false
+	};
+
+	HashTable_insert(&this->contexts, context, &entry);
+}
+
+def(bool, hasContext, RdString context) {
+	return HashTable_lookup(&this->contexts, context) != null;
+}
+
+/* Call this method when a language file was changed. The respective
+ * context will be reloaded the next time translate() is called.
+ */
+def(void, flush) {
+	scall(destroyItems, &this->tbl);
+	HashTable_clear(&this->tbl);
+
+	for (HashTable_Entry *cur = HashTable_getFirst(&this->contexts);
+							cur != null;
+							cur = HashTable_getNext(&this->contexts, cur))
+	{
+		ref(Context) *data = (void *) cur->data;
+		data->loaded = false;
+	}
+}
+
+def(void, setLanguage, RdString lng) {
+	assert(lng.len != 0);
+
+	call(flush);
+	String_Copy(&this->language, lng);
+}
+
+def(RdString, translate, RdString context, RdString value) {
+	ref(Context) *entry = HashTable_lookup(&this->contexts, context);
+
+	if (entry == null) {
+		return value;
+	}
+
+	if (!entry->loaded) {
+		if (this->language.len != 0) {
+			String path = String_Format($("%%.lng"),
+				entry->path.rd, this->language.rd);
+
+			if (Path_exists(path.rd)) {
+				scall(load, path.rd, &this->tbl);
+			}
+
+			String_Destroy(&path);
+		}
+
+		entry->loaded = true;
+	}
+
 	ref(Item) *item = HashTable_lookup(&this->tbl, value);
 
 	if (item == null) {
