@@ -44,7 +44,7 @@ typedef u64 le64;
 	typedef u32 uword;
 #endif
 
-typedef   sword        IntPtr;
+typedef   uword        IntPtr;
 typedef   signed int   wchar;
 typedef   signed char  byte;
 typedef unsigned char  ubyte;
