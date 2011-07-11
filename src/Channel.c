@@ -101,7 +101,7 @@ overload def(size_t, Read, void *buf, size_t len) {
 		if (errno == EINTR) {
 			throw(ReadingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(IsDirectory);
+			throw(IsFolder);
 		} else {
 			throw(ReadingFailed);
 		}
@@ -123,7 +123,7 @@ overload def(size_t, Write, void *buf, size_t len) {
 		if (errno == EINTR) {
 			throw(WritingInterrupted);
 		} else if (errno == EISDIR) {
-			throw(IsDirectory);
+			throw(IsFolder);
 		} else {
 			throw(WritingFailed);
 		}

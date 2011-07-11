@@ -3,7 +3,7 @@
 #define self Channel
 
 #define exc(...)
-exc(IsDirectory)
+exc(IsFolder)
 exc(ReadingFailed)
 exc(ReadingInterrupted)
 exc(UnknownError)

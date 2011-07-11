@@ -11,7 +11,7 @@ rsdef(self, New, RdString path, int flags) {
 		} else if (errno == ENOENT) {
 			throw(NotFound);
 		} else if (errno == EISDIR) {
-			throw(IsDirectory);
+			throw(IsFolder);
 		} else if (errno == EEXIST) {
 			throw(AlreadyExists);
 		} else {
