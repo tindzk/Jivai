@@ -3,6 +3,9 @@
 #define self File
 
 rsdef(self, new, RdString path, int flags) {
+	assert(Path_isFilePath(path));
+	assert(((flags & FileStatus_Create) != 0) ^ Path_exists(path));
+
 	int id = Kernel_open(path, flags, 0666);
 
 	if (id == -1) {
