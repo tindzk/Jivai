@@ -71,32 +71,38 @@
  * assertions enabled.
  */
 
+inline sdef(bool, isPath, RdString path) {
+	return path.len != 0
+		&& !String_Contains(path, $("//"));
+}
+
 sdef(bool, isAbsolutePath, RdString path) {
 	assert(path.len != 0);
-	return path.buf[0] == '/';
+	return scall(isPath, path)
+		&& path.buf[0] == '/';
 }
 
 sdef(bool, isFolderPath, RdString path) {
-	return path.len != 0
+	return scall(isPath, path)
 		&& path.buf[path.len - 1] == '/';
 }
 
 sdef(bool, isFilePath, RdString path) {
-	return path.len != 0
+	return scall(isPath, path)
 		&& path.buf[path.len - 1] != '/'
 		&& !String_Equals(path, $("."))
 		&& !String_Equals(path, $(".."));
 }
 
 sdef(bool, isCreatableFolderPath, RdString path) {
-	return path.len != 0
+	return scall(isPath, path)
 		&& path.buf[path.len - 1] == '/'
 		&& !String_Equals(path, $("."))
 		&& !String_Equals(path, $(".."));
 }
 
 sdef(bool, isCreatableFilePath, RdString path) {
-	return path.len != 0
+	return scall(isPath, path)
 		&& path.buf[path.len - 1] != '/'
 		&& !String_Equals(path, $("."))
 		&& !String_Equals(path, $(".."))
