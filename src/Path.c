@@ -414,7 +414,7 @@ sdef(void, deleteLink, RdString path) {
 	assert(scall(isFolderPath, path) || scall(isFilePath, path));
 	assert(scall(exists, path, false));
 
-#if Exception_Assert
+#if Exception_Assertions
 	Stat64 meta = scall(getMeta, path, false);
 
 	assert(scall(isLink, meta));

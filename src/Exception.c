@@ -56,7 +56,7 @@ sdef(OmniString, FormatAssert) {
 }
 
 sdef(OmniString, Format, int code) {
-	if (code == ref(AssertFailed)) {
+	if (code == ref(AssertionFailed)) {
 		return scall(FormatAssert);
 	}
 
