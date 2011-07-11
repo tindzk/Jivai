@@ -18,8 +18,6 @@ static inline sdef(void, err, RdString s) {
 	Channel_Write(Channel_StdErr, s);
 }
 
-#define String_Print(s) System_out(s)
-
 sdef(bool, IsRunningOnValgrind);
 sdef(RdString, getLanguage);
 sdef(bool, IsDebugging);
