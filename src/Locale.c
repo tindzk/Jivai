@@ -93,7 +93,7 @@ sdef(void, createInitial, RdString binary, RdString out) {
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
 		RdString str = {
 			.len = cur->len,
-			.buf = (IntPtr) elf.base + cur->buf
+			.buf = ELF_getRealAddress(&elf, cur->buf)
 		};
 
 		if (HashTable_lookup(&tbl, str) != null) {
@@ -130,7 +130,7 @@ sdef(void, check, RdString binary, RdString path, ref(OnCheckError) cb) {
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
 		RdString str = {
 			.len = cur->len,
-			.buf = (IntPtr) elf.base + cur->buf
+			.buf = ELF_getRealAddress(&elf, cur->buf)
 		};
 
 		if (HashTable_lookup(&bin, str) != null) {
@@ -176,7 +176,7 @@ sdef(void, dump, RdString path, ref(OnMessage) cb) {
 	for (RdString *cur = sect.ptr; (void *) cur < sect.ptr + sect.len; cur++) {
 		callback(cb, (RdString) {
 			.len = cur->len,
-			.buf = (IntPtr) elf.base + cur->buf
+			.buf = ELF_getRealAddress(&elf, cur->buf)
 		});
 	}
 

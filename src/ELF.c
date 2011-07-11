@@ -37,6 +37,38 @@ def(void, Destroy) {
 	MemoryMappedFile_destroy(&this->file);
 }
 
+def(void *, getRealAddress, void *virtAddr) {
+	IntPtr addr = (IntPtr) virtAddr;
+
+	ref(Ehdr) *header  = this->base;
+	ref(Shdr) *section = this->base + header->e_shoff;
+
+	fwd(i, header->e_shnum) {
+		ref(Shdr) *cur = &section[i];
+
+		if (i + 1 == header->e_shnum) {
+			if (addr >= cur->sh_addr) {
+				goto match;
+			}
+		} else {
+			ref(Shdr) *next = &section[i + 1];
+			if (addr >= cur->sh_addr && addr < next->sh_addr) {
+				goto match;
+			}
+		}
+
+		when (match) {
+			size_t sectOfs = addr - cur->sh_addr;
+			size_t fileOfs = cur->sh_offset + sectOfs;
+			return this->base + fileOfs;
+		}
+	}
+
+	/* The provided virtual address is invalid. */
+	assert(false);
+	return null;
+}
+
 static def(RdString, ResolveSectName, size_t ofs) {
 	ref(Ehdr) *header   = this->base;
 	ref(Shdr) *section  = this->base + header->e_shoff;

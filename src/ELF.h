@@ -44,6 +44,7 @@ class {
 
 rsdef(self, New, RdString path);
 def(void, Destroy);
+def(void *, getRealAddress, void *virtAddr);
 overload def(RdBuffer, GetSection, RdString name);
 overload def(RdBuffer, GetSection, ref(Word) type);
 def(void, Each, RdString name, ref(OnSection) onSection);
