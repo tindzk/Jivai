@@ -1,14 +1,14 @@
-#import "Directory.h"
+#import "Folder.h"
 
-#define self Directory
+#define self Folder
 
-rsdef(self, New, RdString path) {
+rsdef(self, new, RdString path) {
 	int id = Kernel_open(path,
 		FileStatus_Folder |
 		FileStatus_ReadOnly, 0);
 
 	if (id == -1) {
-		throw(CannotOpenDirectory);
+		throw(CannotOpenFolder);
 	}
 
 	return (self) {
@@ -17,11 +17,11 @@ rsdef(self, New, RdString path) {
 	};
 }
 
-def(void, Destroy) {
+def(void, destroy) {
 	Channel_Destroy(&this->ch);
 }
 
-def(bool, Read, ref(Entry) *res) {
+def(bool, read, ref(Entry) *res) {
 	if (this->bpos == 0 || this->bpos >= this->nread) {
 		int id = Channel_GetId(&this->ch);
 
@@ -61,11 +61,11 @@ def(bool, Read, ref(Entry) *res) {
 
 	this->bpos += item->reclen;
 
-	if (res->type == ref(ItemType_Directory)) {
+	if (res->type == ref(ItemType_Folder)) {
 		if (String_Equals(res->name, '.') ||
 			String_Equals(res->name, $("..")))
 		{
-			return call(Read, res);
+			return call(read, res);
 		}
 	}
 

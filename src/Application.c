@@ -97,11 +97,11 @@ def(void, Init, int argc, char *argv[], char *envp[]) {
 		 * external libraries.
 		 * Just copy the respective locales to Locale/<LibraryName>/.
 		 */
-		Directory dir = Directory_New(lngpath.rd);
+		Folder dir = Folder_new(lngpath.rd);
 
-		Directory_Entry entry;
-		while (Directory_Read(&dir, &entry)) {
-			if (entry.type == Directory_ItemType_Directory) {
+		Folder_Entry entry;
+		while (Folder_read(&dir, &entry)) {
+			if (entry.type == Folder_ItemType_Folder) {
 				String contextPath = String_Format($("%%/"), lngpath.rd, entry.name);
 
 				Logger_Debug(&this->logger,
@@ -112,7 +112,7 @@ def(void, Init, int argc, char *argv[], char *envp[]) {
 			}
 		}
 
-		Directory_Destroy(&dir);
+		Folder_destroy(&dir);
 
 		Logger_Debug(&this->logger, $("Adding default context."));
 		Locale_addContext(Locale_GetInstance(), $("main"), lngpath);

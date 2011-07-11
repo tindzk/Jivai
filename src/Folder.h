@@ -2,13 +2,13 @@
 #import "Channel.h"
 #import "Exception.h"
 
-#define self Directory
+#define self Folder
 
-exc(CannotOpenDirectory)
+exc(CannotOpenFolder)
 exc(ReadingFailed)
 
-#ifndef Directory_BufSize
-#define Directory_BufSize 1024
+#ifndef Folder_BufSize
+#define Folder_BufSize 1024
 #endif
 
 record(ref(LinuxEntry)) {
@@ -22,7 +22,7 @@ class {
 	Channel ch;
 	ref(LinuxEntry) *d;
 	ssize_t nread;
-	char buf[Directory_BufSize];
+	char buf[Folder_BufSize];
 	int bpos;
 };
 
@@ -30,7 +30,7 @@ set(ref(ItemType)) {
 	ref(ItemType_Unknown)     =  0,
 	ref(ItemType_FIFO)        =  1,
 	ref(ItemType_CharDevice)  =  2,
-	ref(ItemType_Directory)   =  4,
+	ref(ItemType_Folder)      =  4,
 	ref(ItemType_BlockDevice) =  6,
 	ref(ItemType_Regular)     =  8,
 	ref(ItemType_Symlink)     = 10,
@@ -44,8 +44,8 @@ record(ref(Entry)) {
 	RdString name;
 };
 
-rsdef(self, New, RdString path);
-def(void, Destroy);
-def(bool, Read, ref(Entry) *res);
+rsdef(self, new, RdString path);
+def(void, destroy);
+def(bool, read, ref(Entry) *res);
 
 #undef self
