@@ -13,7 +13,7 @@ tsRegister("Folder") {
 }
 
 tsCase(Acute, "Listing") {
-	Folder folder = Folder_new($("../tests"));
+	Folder folder = Folder_new($("../tests/"));
 
 	size_t iter = 0;
 

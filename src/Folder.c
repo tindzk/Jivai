@@ -3,6 +3,8 @@
 #define self Folder
 
 rsdef(self, new, RdString path) {
+	assert(Path_isFolderPath(path) && Path_exists(path));
+
 	int id = Kernel_open(path,
 		FileStatus_Folder |
 		FileStatus_ReadOnly, 0);

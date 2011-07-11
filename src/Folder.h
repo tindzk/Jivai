@@ -1,3 +1,4 @@
+#import "Path.h"
 #import "String.h"
 #import "Channel.h"
 #import "Exception.h"
