@@ -150,8 +150,8 @@ override earlyConstructor void configureMemory(void) {
 		return;
 	}
 
-	if (1 || System_IsRunningOnValgrind()) {
-		String_Print($("[Info] Running in Valgrind. Using traditional allocator functions.\n"));
+	if (System_IsRunningOnValgrind()) {
+		System_out($("[Info] Running in Valgrind. Using traditional allocator functions.\n"));
 		libc = Memory_Libc_New();
 		Memory0(Memory_Libc_AsMemory(&libc));
 	} else if (System_IsDebugging()) {
@@ -160,8 +160,14 @@ override earlyConstructor void configureMemory(void) {
 
 		Memory0(Memory_Logger_AsMemory(&logger));
 	} else {
-		map = Memory_Map_New();
-		Memory0(Memory_Map_AsMemory(&map));
+		/* Memory_Map still needs some optimising. glibc's allocator
+		 * is currently the better choice.
+		 */
+		// map = Memory_Map_New();
+		// Memory0(Memory_Map_AsMemory(&map));
+
+		libc = Memory_Libc_New();
+		Memory0(Memory_Libc_AsMemory(&libc));
 	}
 
 	configured = true;
