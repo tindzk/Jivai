@@ -21,3 +21,5 @@ map=src/:build/:Jivai
 manifest=yes
 include=./
 map=./:build/
+
+link=@m
