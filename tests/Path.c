@@ -110,11 +110,11 @@ tsCase(Acute, "Meta information") {
 }
 
 tsCase(Acute, "File") {
-	File file = File_New($("test.dat"), FileStatus_Create | FileStatus_WriteOnly);
+	File file = File_new($("test.dat"), FileStatus_Create | FileStatus_WriteOnly);
 	rpt(1024) {
-		File_Write(&file, '\0');
+		File_write(&file, '\0');
 	}
-	File_Destroy(&file);
+	File_destroy(&file);
 
 	Assert($("Size"), Path_getSize($("test.dat")) == 1024);
 
@@ -209,8 +209,8 @@ tsCase(Acute, "Links (invalid)") {
 }
 
 tsCase(Acute, "File") {
-	File file = File_New($("test.dat"), FileStatus_Create);
-	File_Destroy(&file);
+	File file = File_new($("test.dat"), FileStatus_Create);
+	File_destroy(&file);
 
 	Path_createLink($("test.dat"), $("temp"));
 

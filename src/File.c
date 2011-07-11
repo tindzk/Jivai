@@ -2,7 +2,7 @@
 
 #define self File
 
-rsdef(self, New, RdString path, int flags) {
+rsdef(self, new, RdString path, int flags) {
 	int id = Kernel_open(path, flags, 0666);
 
 	if (id == -1) {
@@ -24,17 +24,17 @@ rsdef(self, New, RdString path, int flags) {
 	};
 }
 
-def(void, Destroy) {
+def(void, destroy) {
 	Channel_Destroy(&this->ch);
 }
 
-def(void, SetXattr, RdString name, RdString value) {
+def(void, setExtendedAttribute, RdString name, RdString value) {
 	if (!Kernel_fsetxattr(Channel_GetId(&this->ch), name, value.buf, value.len, 0)) {
 		throw(SettingAttributeFailed);
 	}
 }
 
-overload def(String, GetXattr, RdString name) {
+overload def(String, getExtendedAttribute, RdString name) {
 	ssize_t size = Kernel_fgetxattr(Channel_GetId(&this->ch), name, NULL, 0);
 
 	if (size == -1) {
@@ -56,7 +56,7 @@ overload def(String, GetXattr, RdString name) {
 	return res;
 }
 
-overload def(void, GetXattr, RdString name, String *value) {
+overload def(void, getExtendedAttribute, RdString name, String *value) {
 	ssize_t size = Kernel_fgetxattr(Channel_GetId(&this->ch), name, value->buf, String_GetSize(*value));
 
 	if (size == -1) {
@@ -72,7 +72,7 @@ overload def(void, GetXattr, RdString name, String *value) {
 	value->len = size;
 }
 
-overload def(void, Truncate, u64 length) {
+overload def(void, truncate, u64 length) {
 	if (!Kernel_ftruncate64(Channel_GetId(&this->ch), length)) {
 		if (errno == EBADF) {
 			throw(InvalidFileDescriptor);
@@ -86,11 +86,7 @@ overload def(void, Truncate, u64 length) {
 	}
 }
 
-overload def(void, Truncate) {
-	call(Truncate, 0);
-}
-
-def(Stat64, GetStat) {
+def(Stat64, getMeta) {
 	Stat64 attr;
 
 	if (!Kernel_fstat64(Channel_GetId(&this->ch), &attr)) {
@@ -106,11 +102,7 @@ def(Stat64, GetStat) {
 	return attr;
 }
 
-def(u64, GetSize) {
-	return call(GetStat).size;
-}
-
-def(u64, Seek, u64 offset, ref(SeekType) whence) {
+def(u64, seek, u64 offset, ref(SeekType) whence) {
 	assert(Channel_IsReadable(&this->ch));
 
 	u64 pos;
@@ -128,38 +120,38 @@ def(u64, Seek, u64 offset, ref(SeekType) whence) {
 	return pos;
 }
 
-def(u64, Tell) {
-	return call(Seek, 0L, ref(SeekType_Cur));
+def(u64, tell) {
+	return call(seek, 0L, ref(SeekType_Cur));
 }
 
-overload def(size_t, Read, void *buf, size_t len) {
+overload def(size_t, read, void *buf, size_t len) {
 	return Channel_Read(&this->ch, buf, len);
 }
 
-overload def(void, Read, String *res) {
+overload def(void, read, String *res) {
 	return Channel_Read(&this->ch, res);
 }
 
-overload def(size_t, Write, void *buf, size_t len) {
+overload def(size_t, write, void *buf, size_t len) {
 	return Channel_Write(&this->ch, buf, len);
 }
 
-overload def(size_t, Write, RdString s) {
+overload def(size_t, write, RdString s) {
 	return Channel_Write(&this->ch, s);
 }
 
-overload def(size_t, Write, char c) {
+overload def(size_t, write, char c) {
 	return Channel_Write(&this->ch, c);
 }
 
-overload sdef(void, GetContents, RdString path, String *res) {
-	File file = scall(New, path, FileStatus_ReadOnly);
+overload sdef(void, getContents, RdString path, String *res) {
+	File file = scall(new, path, FileStatus_ReadOnly);
 
 	size_t len = 0;
 	size_t size = String_GetSize(*res);
 
 	do {
-		len = scall(Read, &file,
+		len = scall(read, &file,
 			res->buf + res->len,
 			size - res->len);
 
@@ -167,11 +159,11 @@ overload sdef(void, GetContents, RdString path, String *res) {
 	} while (len > 0);
 }
 
-overload sdef(String, GetContents, RdString path) {
-	File file = scall(New, path, FileStatus_ReadOnly);
+overload sdef(String, getContents, RdString path) {
+	File file = scall(new, path, FileStatus_ReadOnly);
 
 	size_t len  = 0;
-	u64    size = scall(GetSize, &file);
+	u64    size = scall(getSize, &file);
 
 	if (size == 0) {
 		/* This is the case for /dev/stdin. */
@@ -183,7 +175,7 @@ overload sdef(String, GetContents, RdString path) {
 	String res = String_New((size_t) size);
 
 	do {
-		len = scall(Read, &file,
+		len = scall(read, &file,
 			res.buf + res.len,
 			(size_t) size - res.len);
 

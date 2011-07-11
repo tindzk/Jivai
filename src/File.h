@@ -31,23 +31,29 @@ set(ref(SeekType)) {
 	ref(SeekType_End)
 };
 
-rsdef(self, New, RdString path, int flags);
-def(void, Destroy);
-def(void, SetXattr, RdString name, RdString value);
-overload def(String, GetXattr, RdString name);
-overload def(void, GetXattr, RdString name, String *value);
-overload def(void, Truncate, u64 length);
-overload def(void, Truncate);
-def(Stat64, GetStat);
-def(u64, GetSize);
-def(u64, Seek, u64 offset, ref(SeekType) whence);
-def(u64, Tell);
-overload def(size_t, Read, void *buf, size_t len);
-overload def(void, Read, String *res);
-overload def(size_t, Write, void *buf, size_t len);
-overload def(size_t, Write, RdString s);
-overload def(size_t, Write, char c);
-overload sdef(void, GetContents, RdString path, String *res);
-overload sdef(String, GetContents, RdString path);
+rsdef(self, new, RdString path, int flags);
+def(void, destroy);
+def(void, setExtendedAttribute, RdString name, RdString value);
+overload def(String, getExtendedAttribute, RdString name);
+overload def(void, getExtendedAttribute, RdString name, String *value);
+overload def(void, truncate, u64 length);
+def(Stat64, getMeta);
+def(u64, seek, u64 offset, ref(SeekType) whence);
+def(u64, tell);
+overload def(size_t, read, void *buf, size_t len);
+overload def(void, read, String *res);
+overload def(size_t, write, void *buf, size_t len);
+overload def(size_t, write, RdString s);
+overload def(size_t, write, char c);
+overload sdef(void, getContents, RdString path, String *res);
+overload sdef(String, getContents, RdString path);
+
+static overload alwaysInline def(void, truncate) {
+	call(truncate, 0);
+}
+
+static overload alwaysInline def(u64, getSize) {
+	return call(getMeta).size;
+}
 
 #undef self

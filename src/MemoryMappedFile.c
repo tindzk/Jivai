@@ -4,8 +4,8 @@
 #define self MemoryMappedFile
 
 rsdef(self, new, RdString path) {
-	File file = File_New(path, FileStatus_ReadOnly);
-	Stat64 sb = File_GetStat(&file);
+	File file = File_new(path, FileStatus_ReadOnly);
+	Stat64 sb = File_getMeta(&file);
 
 	/* Must be a regular file to be mmap()-able. */
 	if ((sb.mode & FileMode_Regular) == 0) {
@@ -21,7 +21,7 @@ rsdef(self, new, RdString path) {
 		throw(UnknownError);
 	}
 
-	File_Destroy(&file);
+	File_destroy(&file);
 
 	return res;
 }

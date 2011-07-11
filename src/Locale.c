@@ -80,7 +80,7 @@ sdef(String, encode, RdString s) {
 sdef(void, createInitial, RdString binary, RdString out) {
 	ELF elf = ELF_New(binary);
 
-	File file = File_New(out,
+	File file = File_new(out,
 		FileStatus_WriteOnly |
 		FileStatus_Truncate  |
 		FileStatus_Create);
@@ -102,8 +102,8 @@ sdef(void, createInitial, RdString binary, RdString out) {
 
 		String encoded = scall(encode, str);
 
-		File_Write(&file, encoded.rd);
-		File_Write(&file, $("\n\n\n"));
+		File_write(&file, encoded.rd);
+		File_write(&file, $("\n\n\n"));
 
 		String_Destroy(&encoded);
 
@@ -112,7 +112,7 @@ sdef(void, createInitial, RdString binary, RdString out) {
 
 	HashTable_destroy(&tbl);
 
-	File_Destroy(&file);
+	File_destroy(&file);
 
 	ELF_Destroy(&elf);
 }
@@ -184,7 +184,7 @@ sdef(void, dump, RdString path, ref(OnMessage) cb) {
 }
 
 overload sdef(void, load, RdString path, HashTable *tbl) {
-	String file = File_GetContents(path);
+	String file = File_getContents(path);
 
 	RdString iter = $("");
 	while (String_Split(file.rd, $("\n\n"), &iter)) {
