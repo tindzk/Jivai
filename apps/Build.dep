@@ -1,9 +1,78 @@
-manifest=yes
-include=./
-include=../../src/
-map=./:../build/
-map=../../src/:../build/Jivai/
+# -------
+# General
+# -------
 optimlevel=0
 dbgsym=yes
 debug=yes
+
+# --------
+# Manifest
+# --------
+manifest=yes
+include=./
+
+# -----
+# Paths
+# -----
 inclhdr=../../config.h
+include=../../src/
+
+# The third parameter designates the context name which will be set as
+# the compile-time constant "Namespace" for all source files matching
+# this mapping. Generally, it is only needed for external libraries.
+# If it's omitted, the default value will be "main". During start-up
+# the binary will search the language files for the context "main" in
+# Locale/. However, a custom context may be used but this requires the
+# application language files to be stored in Locale/<context>/ instead.
+map=./:../build/
+
+# ------------------
+# Static compilation
+# ------------------
+# This builds Jivai (but only those classes on which your application
+# depends, though) and embeds it directly into the final binary. If
+# you only use a subset of Jivai, this will eventually save some space
+# as a full-fledged .dll with all classes built-in won't be needed.
+# Yet, if the client already has a compatible Jivai library installed,
+# it would be certainly better to rather use the system library instead
+# as it is more likely to be regularly updated and therefore might be
+# less prone to bugs and security flaws.
+#
+# Note that when compiled statically, the locale messages from all
+# external libraries will be merged into the `.locale' section of the
+# ELF binary.
+#
+# For full localisation support, it is necessary to copy Jivai's
+# language files to Locale/Jivai/ and the locales of other third-party
+# libraries to their respective paths in Locale/.
+#
+# Sometimes it is necessary to have a `clean' binary. For instance,
+# if you were to use the locale.exe tool to create a new or update an
+# existing language file. In this case, it is helpful to have a binary
+# that only contains your own messages. Otherwise, you'd have to filter
+# out manually all messages used by any compiled-in third-party library
+# which defeats the purpose of the locale tool. For a clean binary,
+# you just need to link the program dynamically against all used .dlls.
+map=../../src/:../build/Jivai/:Jivai
+
+# -------------------
+# Dynamic compilation
+# -------------------
+# Note that Jivai must have been built with the same configuration
+# settings as this project. Using deviating settings may lead to
+# undefined behaviour.
+#
+# If you want to ship a binary along with the Jivai.dll, make sure to
+# copy Jivai's locales to Locale/Jivai/. This presupposes that Jivai's
+# Build.dep has the context name set to "Jivai".
+#
+# However, if you don't include the Jivai.dll but the Locale/Jivai/
+# folder still contains Jivai's language files, your application might
+# use outdated or might even have missing translations when the system's
+# library is newer. That is, Locale/<context>/ always has a higher
+# precedence over the system libraries. Only include it in your
+# distribution when it's actually needed.
+#
+# You need to comment out the above `map' for ../../src/ for this to
+# work.
+# link=@:../../Jivai.dll
