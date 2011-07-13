@@ -4,7 +4,11 @@
 
 rsdef(self, new, RdString path, int flags) {
 	assert(Path_isFilePath(path));
-	assert(((flags & FileStatus_Create) != 0) ^ Path_exists(path));
+
+	__unused bool c = (flags & FileStatus_Create) != 0;
+	__unused bool e = Path_exists(path);
+
+	assert((!e && c) || e);
 
 	int id = Kernel_open(path, flags, 0666);
 
