@@ -84,9 +84,11 @@ static alwaysInline int _useValue(int value) {
 		name < &(arr)->buf[(arr)->len];               \
 		name++)
 
-#define seach(i, name, arr) \
-	for (typeof((arr)->len) i = 0; ; ({ break; })) \
-	for (typeof((arr)->buf[0]) name = (arr)->buf[i]; i < (arr)->len; i++)
+#define seach(i, name, arr)                                  \
+	for (typeof((arr)->len) i = 0; ; ({ break; }))           \
+	for (typeof((arr)->buf[0]) name;                         \
+		i < (arr)->len && ({ name = (arr)->buf[i]; true; }); \
+		i++)
 
 #define getIndex(name, arr) \
 	(size_t) ((name) - (arr)->buf)
