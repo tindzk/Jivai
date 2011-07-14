@@ -38,6 +38,7 @@ sdef(RdString, ResolveLevel, ref(Level) level);
 
 #define Logger_Log(this, level, fmt, ...)       \
 	do {                                        \
+		assert(this != null);                   \
 		if (Logger_IsEnabled(this, level)) {    \
 			callback((this)->printer,           \
 				FmtString(fmt, ## __VA_ARGS__), \
