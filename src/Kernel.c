@@ -11,6 +11,10 @@ sdef(bool, close, int id) {
 	return syscall(__NR_close, id) == 0;
 }
 
+sdef(bool, access, RdString path, int mode) {
+	return syscall(__NR_access, String_ToNul(path), mode) == 0;
+}
+
 sdef(void, exit, ExitStatus status) {
 	syscall(__NR_exit, status);
 }

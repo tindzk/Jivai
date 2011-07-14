@@ -306,3 +306,17 @@ tsCase(Acute, "Extended attributes") {
 	Assert($("Equals"), String_Equals(value.rd, $("value")));
 	String_Destroy(&value);
 }
+
+tsCase(Acute, "Permissions") {
+	Assert($("Readable"),   Path_isReadable($("./TestSuite.exe")));
+	Assert($("Writable"),   Path_isWritable($("./TestSuite.exe")));
+	Assert($("Executable"), Path_isExecutable($("./TestSuite.exe")));
+
+	Assert($("Readable"),   Path_isReadable($("./")));
+	Assert($("Writable"),   Path_isWritable($("./")));
+	Assert($("Executable"), Path_isExecutable($("./")));
+
+	Assert($("Readable"),    Path_isReadable($("/dev/")));
+	Assert($("Writable"),   !Path_isWritable($("/dev/")));
+	Assert($("Executable"),  Path_isExecutable($("/dev/")));
+}

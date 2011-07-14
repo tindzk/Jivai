@@ -187,6 +187,7 @@ record(EpollEvent) {
 
 sdef(int, open, RdString path, int flags, int mode);
 sdef(bool, close, int id);
+sdef(bool, access, RdString path, int mode);
 sdef(void, exit, ExitStatus status);
 sdef(ssize_t, read, int id, void *buf, size_t len);
 sdef(ssize_t, write, int id, void *buf, size_t len);

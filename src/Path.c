@@ -197,6 +197,27 @@ overload sdef(bool, exists, RdString path, bool follow) {
 	}
 }
 
+sdef(bool, isReadable, RdString path) {
+	assert(scall(isFilePath, path) || scall(isFolderPath, path));
+	assert(scall(exists, path, true));
+
+	return Kernel_access(path, R_OK);
+}
+
+sdef(bool, isWritable, RdString path) {
+	assert(scall(isFilePath, path) || scall(isFolderPath, path));
+	assert(scall(exists, path, true));
+
+	return Kernel_access(path, W_OK);
+}
+
+sdef(bool, isExecutable, RdString path) {
+	assert(scall(isFilePath, path) || scall(isFolderPath, path));
+	assert(scall(exists, path, true));
+
+	return Kernel_access(path, X_OK);
+}
+
 /* Returns the path of the current working folder. */
 sdef(String, getCurrent) {
 	String s = String_New(512);
