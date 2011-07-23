@@ -1,0 +1,12 @@
+*.swp
+*.dll
+*.exe
+
+dev/
+build/
+
+Manifest.*
+
+src/MurmurHash3.h
+src/MurmurHash3.c
+src/MurmurHash3.orig.c
