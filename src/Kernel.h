@@ -8,6 +8,7 @@
 
 #if defined(__x86_64__)
 #define __NR_stat64      __NR_stat
+#define __NR_lstat64     __NR_lstat
 #define __NR_fstat64     __NR_fstat
 #define __NR_sendfile64  __NR_sendfile
 #define __NR_truncate64  __NR_truncate
