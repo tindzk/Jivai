@@ -14,7 +14,8 @@ static alwaysInline def(u32, getEntrySize) {
 
 /* Resolves a bucket to its pointer without prior validation. */
 static alwaysInline def(ref(Entry) *, getEntry, s32 bucket) {
-	return this->entries + bucket * call(getEntrySize);
+	assert(bucket == -1 || bucket <= this->size);
+	return this->entries + (s32) (bucket * call(getEntrySize));
 }
 
 rsdef(self, new, u32 len, u16 valueSize) {
@@ -117,10 +118,12 @@ def(ref(Entry) *, getFirst) {
 def(ref(Entry) *, getNext, ref(Entry) *cur) {
 	ref(Entry) *end = call(getEntry, this->size);
 
+	assert(cur <= end);
+
 	for (;;) {
 		cur = (void *) cur + call(getEntrySize);
 
-		if (cur == end) {
+		if (cur >= end) {
 			return null;
 		} else if (cur->key.len != 0) {
 			return cur;
