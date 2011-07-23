@@ -3,7 +3,7 @@
 #import <Date.h>
 #import <Date/RFC822.h>
 #import <DateTime.h>
-#import <Directory.h>
+#import <Folder.h>
 #import <Ecriture.h>
 #import <Ecriture/Builder.h>
 #import <Ecriture/Parser.h>
