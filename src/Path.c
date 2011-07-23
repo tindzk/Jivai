@@ -33,10 +33,10 @@
  * behaviour when compiling your application without assertions which
  * disable most checks.
  *
- * isAbsolutePath(), isFolderPath(), isFilePath(), isCreatableFolderPath()
- * and isCreatableFilePath() are methods to check the legality of the
- * given path. As no validation is performed, these functions work with
- * inexistant paths.
+ * isFileName(), isFolderName(), isAbsolutePath(), isFolderPath(),
+ * isFilePath(), isCreatableFolderPath() and isCreatableFilePath() are
+ * methods to check the legality of the given file name or path. As no
+ * validation is performed, these functions work with inexistent paths.
  *
  * getFileExtension(), getFileName(), getFolderName(), getFolderPath()
  * work on inexistant paths as well. However, as for most methods, the
@@ -70,6 +70,18 @@
  * Therefore, a production build should be preferably not shipped with
  * assertions enabled.
  */
+
+sdef(bool, isFileName, RdString name) {
+	return name.len != 0
+		&& !String_Equals(name, $("."))
+		&& !String_Equals(name, $(".."))
+		&& !String_Contains(name, $("/"));
+}
+
+sdef(bool, isFolderName, RdString name) {
+	return name.len != 0
+		&& !String_Contains(name, $("/"));
+}
 
 inline sdef(bool, isPath, RdString path) {
 	return path.len != 0

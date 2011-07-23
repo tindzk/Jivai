@@ -27,6 +27,8 @@ exc(UnknownError)
 #define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
+sdef(bool, isFileName, RdString name);
+sdef(bool, isFolderName, RdString name);
 sdef(bool, isPath, RdString path);
 sdef(bool, isAbsolutePath, RdString path);
 sdef(bool, isFolderPath, RdString path);
