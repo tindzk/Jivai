@@ -98,28 +98,28 @@ record(Time_UnixEpoch) {
 	long   nsec;
 };
 
+#if defined(__x86_64__)
 record(Stat) {
-	unsigned long  device;
-	unsigned long  inode;
-	unsigned short mode;
-	unsigned short nlink;
-	unsigned short uid;
-	unsigned short gid;
+	unsigned long  dev;
+	unsigned long  ino;
+	unsigned long  nlink;
+	unsigned int   mode;
+	unsigned int   uid;
+	unsigned int   gid;
+	unsigned int   __pad0;
 	unsigned long  rdev;
-	unsigned long  size;
-	unsigned long  blksize;
-	unsigned long  blocks;
+	long           size;
+	long           blksize;
+	long           blocks;
 	unsigned long  atime;
 	unsigned long  atime_nsec;
 	unsigned long  mtime;
 	unsigned long  mtime_nsec;
 	unsigned long  ctime;
 	unsigned long  ctime_nsec;
-	unsigned long  __unused4;
-	unsigned long  __unused5;
+	long           unused[3];
 };
 
-#if defined(__x86_64__)
 record(Stat64) {
 	__dev_t device;
 	__ino64_t inode;
@@ -138,6 +138,26 @@ record(Stat64) {
 	long int unused[3];
 };
 #else
+record(Stat) {
+	unsigned long  device;
+	unsigned long  inode;
+	unsigned short mode;
+	unsigned short nlink;
+	unsigned short uid;
+	unsigned short gid;
+	unsigned long  rdev;
+	unsigned long  size;
+	unsigned long  blksize;
+	unsigned long  blocks;
+	unsigned long  atime;
+	unsigned long  atime_nsec;
+	unsigned long  mtime;
+	unsigned long  mtime_nsec;
+	unsigned long  ctime;
+	unsigned long  ctime_nsec;
+	unsigned long  unused[2];
+};
+
 record(Stat64) {
 	__dev_t device;
 	unsigned int __pad1;
