@@ -21,15 +21,31 @@ record(ref(Task)) {
 	Timer timer;
 };
 
-rsdef(self, New, ClockType type);
-def(void, Destroy);
-def(void, SetTimer, int sec);
-def(void, SetInterval, int sec);
-rdef(u64, Read);
-def(Task *, AsTask, ref(OnTimer) onTimer);
+rsdef(self, new, ClockType type);
+def(void, destroy);
+overload def(void, setRelative, time_t start, time_t interval);
+overload def(void, setAbsolute, time_t start, time_t interval);
+rdef(u64, read);
+def(Task *, asTask, ref(OnTimer) onTimer);
 
-static alwaysInline rdef(bool, IsInterval) {
+static alwaysInline rdef(bool, isInterval) {
 	return this->interval;
+}
+
+/* Register a timer expiring every `sec' seconds, starting `sec' seconds
+ * from now.
+ */
+static alwaysInline def(void, setInterval, int sec) {
+	call(setRelative, sec, sec);
+}
+
+/* Relative/absolute timers that are not recurring. */
+static alwaysInline overload def(void, setRelative, time_t start) {
+	call(setRelative, start, 0);
+}
+
+static alwaysInline overload def(void, setAbsolute, time_t start) {
+	call(setAbsolute, start, 0);
 }
 
 #undef self
