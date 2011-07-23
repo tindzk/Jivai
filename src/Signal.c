@@ -97,7 +97,9 @@ def(void, listen) {
 
 	this->evLoop =
 		EventLoop_AddChannel(EventLoop_GetInstance(), &this->ch,
-			EventLoop_OnInput_For(this, ref(onSignal)));
+			EventLoop_OnInput_For(this, ref(onSignal)),
+			EventLoop_OnOutput_Empty(),
+			EventLoop_OnDestroy_Empty());
 }
 
 static def(void, commit) {
@@ -112,8 +114,13 @@ static def(void, commit) {
 def(void, add, int signal) {
 	assert(scall(isCustomSignal, signal));
 
+	__unused sigset_t old = this->mask;
+
 	int st = sigaddset(&this->mask, signal);
 	assert(st != -1);
+
+	/* Already set? */
+	assert(!Memory_Equals(&old, &this->mask, sizeof(this->mask)));
 
 	sigprocmask(SIG_SETMASK, &this->mask, NULL);
 
@@ -123,8 +130,13 @@ def(void, add, int signal) {
 def(void, delete, int signal) {
 	assert(scall(isCustomSignal, signal));
 
+	__unused sigset_t old = this->mask;
+
 	int st = sigdelset(&this->mask, signal);
 	assert(st != -1);
+
+	/* Not set. */
+	assert(!Memory_Equals(&old, &this->mask, sizeof(this->mask)));
 
 	sigprocmask(SIG_SETMASK, &this->mask, NULL);
 
