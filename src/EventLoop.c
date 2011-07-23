@@ -37,18 +37,35 @@ def(void, Destroy) {
 		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
 }
 
-def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput) {
+def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy) {
 	ref(Entry) *entry = Memory_New(sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
 
 	entry->type = ref(EntryType_Channel);
 
 	ref(ChannelEntry) *data = (void *) entry->data;
 
-	data->ch = ch;
-	data->cb = onInput;
+	data->ch    = ch;
+	data->cbIn  = onInput;
+	data->cbOut = onOutput;
+	data->cbDestroy = onDestroy;
 
-	ChannelWatcher_Subscribe(&this->watcher, data->ch, ChannelWatcher_Events_Input, entry);
+	int flags = 0;
 
+	if (hasCallback(onInput)) {
+		flags |= ChannelWatcher_Events_Input;
+	}
+
+	if (hasCallback(onOutput)) {
+		flags |= ChannelWatcher_Events_Output;
+	}
+
+	if (hasCallback(onDestroy)) {
+		flags |= ChannelWatcher_Events_Error;
+		flags |= ChannelWatcher_Events_HangUp;
+		flags |= ChannelWatcher_Events_PeerHangUp;
+	}
+
+	ChannelWatcher_Subscribe(&this->watcher, data->ch, flags, entry);
 	DoublyLinkedList_InsertEnd(&this->entries, entry);
 
 	return entry;
@@ -168,8 +185,22 @@ def(void, DetachClient, void *addr) {
 static def(void, OnChannelEvent, int events, ref(Entry) *entry) {
 	ref(ChannelEntry) *data = (void *) entry->data;
 
+	if (BitMask_Has(events,
+			ChannelWatcher_Events_Error  |
+			ChannelWatcher_Events_HangUp |
+			ChannelWatcher_Events_PeerHangUp))
+	{
+		/* Error occurred or connection hung up. */
+		callback(data->cbDestroy);
+		return;
+	}
+
 	if (BitMask_Has(events, ChannelWatcher_Events_Input)) {
-		callback(data->cb);
+		callback(data->cbIn);
+	}
+
+	if (BitMask_Has(events, ChannelWatcher_Events_Output)) {
+		callback(data->cbOut);
 	}
 }
 
@@ -187,7 +218,6 @@ static def(void, OnClientEvent, int events, ref(Entry) *entry) {
 			ChannelWatcher_Events_HangUp |
 			ChannelWatcher_Events_PeerHangUp))
 	{
-		/* Error occurred or connection hung up. */
 		call(_DetachClient, entry);
 		return;
 	}

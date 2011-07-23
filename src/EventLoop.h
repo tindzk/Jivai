@@ -15,12 +15,17 @@ Interface(ref(Client)) {
 };
 
 Callback(ref(OnInput),      void);
+Callback(ref(OnOutput),     void);
+Callback(ref(OnDestroy),    void);
 Callback(ref(OnTimeout),    void, int timeout);
 Callback(ref(OnConnection), void, SocketServer *socket);
 
 record(ref(ChannelEntry)) {
 	Channel *ch;
-	ref(OnInput) cb;
+
+	ref(OnInput)   cbIn;
+	ref(OnOutput)  cbOut;
+	ref(OnDestroy) cbDestroy;
 };
 
 record(ref(SocketEntry)) {
@@ -58,7 +63,7 @@ class {
 
 rsdef(self, New);
 def(void, Destroy);
-def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput);
+def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy);
 def(void, DetachChannel, ref(Entry) *entry, bool watcher);
 def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection);
 def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client);
