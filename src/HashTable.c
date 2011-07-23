@@ -104,8 +104,13 @@ def(void, clear) {
 }
 
 static def(u32, getBucket, RdString key) {
+#if defined(__x86_64__)
+	u64 hash;
+	MurmurHash3_x64_128(key.buf, key.len, 0, &hash);
+#else
 	u32 hash;
 	MurmurHash3_x86_32(key.buf, key.len, 0, &hash);
+#endif
 
 	return (hash & this->mask);
 }
