@@ -44,6 +44,12 @@ static alwaysInline int _useValue(int value) {
 #define jmp(lbl) \
 	_useValue(({ goto lbl; false; }))
 
+#define break() \
+	_useValue(({ break; false; }))
+
+#define continue() \
+	_useValue(({ continue; false; }))
+
 #define range(i, lower, upper) \
 	for (typeof(lower) i = (lower); i <= (upper); i++)
 
