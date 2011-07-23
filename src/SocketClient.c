@@ -25,7 +25,7 @@ def(SocketConnection, Connect, RdString hostname, unsigned short port) {
 	int id = Channel_GetId(ch);
 
 	if (!Kernel_connect(id, &addr, sizeof(addr))) {
-		throw(ConnectFailed);
+		errno == EINPROGRESS || throw(ConnectFailed);
 	}
 
 	NetworkAddress naddr = {
