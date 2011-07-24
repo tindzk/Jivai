@@ -195,3 +195,18 @@ overload sdef(String, getContents, RdString path) {
 
 	return res;
 }
+
+sdef(void, setContents, RdString path, RdString value) {
+	File file = scall(new, path, FileStatus_WriteOnly);
+
+	for (;;) {
+		size_t len = scall(write, &file, value.buf, value.len);
+
+		(len > 0) || break();
+
+		value.buf += len;
+		value.len -= len;
+	}
+
+	scall(destroy, &file);
+}

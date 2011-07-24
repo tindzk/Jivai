@@ -47,6 +47,7 @@ overload def(size_t, write, RdString s);
 overload def(size_t, write, char c);
 overload sdef(void, getContents, RdString path, String *res);
 overload sdef(String, getContents, RdString path);
+sdef(void, setContents, RdString path, RdString value);
 
 static overload alwaysInline def(void, truncate) {
 	call(truncate, 0);
