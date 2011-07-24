@@ -164,6 +164,8 @@ overload sdef(void, getContents, RdString path, String *res) {
 
 		res->len += len;
 	} while (len > 0);
+
+	scall(destroy, &file);
 }
 
 overload sdef(String, getContents, RdString path) {
@@ -188,6 +190,8 @@ overload sdef(String, getContents, RdString path) {
 
 		res.len += len;
 	} while (len > 0);
+
+	scall(destroy, &file);
 
 	return res;
 }
