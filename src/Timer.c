@@ -56,7 +56,7 @@ overload def(void, setAbsolute, time_t start, time_t interval) {
 		throw(UnknownError);
 	}
 
-	this->interval = false;
+	this->interval = (interval != 0);
 }
 
 /* Returns the number of expirations that have occurred since the last
