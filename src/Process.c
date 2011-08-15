@@ -44,6 +44,8 @@ def(void, mapStdOut, int fd) {
 }
 
 sdef(void, suspend, pid_t pid) {
+	assert(pid > 0);
+
 	int status;
 	__unused int result = waitpid(pid, &status, WNOHANG);
 
