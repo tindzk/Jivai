@@ -43,6 +43,13 @@ def(void, mapStdOut, int fd) {
 	this->stdOut = fd;
 }
 
+sdef(void, suspend, pid_t pid) {
+	int status;
+	__unused int result = waitpid(pid, &status, WNOHANG);
+
+	assert(result == pid);
+}
+
 def(pid_t, spawn) {
 	pid_t pid = fork();
 
