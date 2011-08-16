@@ -313,7 +313,7 @@ def(RdString, translate, RdString context, RdString value) {
 
 	ref(Item) *item = HashTable_lookup(&this->tbl, value);
 
-	if (item == null) {
+	if (item == null || item->dest.len == 0) {
 		return value;
 	}
 
