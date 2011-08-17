@@ -141,6 +141,13 @@ rsdef(ref(Week), getRealWeek, self date) {
 	}
 }
 
+rsdef(self, fromWeek, ref(Week) week) {
+	YearDay jan1WeekDay = scall(GetWeekDay, (self) { week.year, 1, 1 });
+	YearDay dayOfYear   = (week.week * 7) - (jan1WeekDay - 1) + 1;
+
+	return scall(fromDayOfYear, week.year, dayOfYear);
+}
+
 rsdef(short, Compare, self a, self b) {
 	short year = Integer_Compare(a.year, b.year);
 

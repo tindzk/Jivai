@@ -66,7 +66,7 @@ tsCase(Acute, "Real week number") {
 	Assert($("2011-01-01"), week.year == 2010 && week.week == 52);
 
 	week = Date_getRealWeek((Date) {2011, 1, 2});
-	Assert($("2011-01-01"), week.year == 2010 && week.week == 52);
+	Assert($("2011-01-02"), week.year == 2010 && week.week == 52);
 
 	week = Date_getRealWeek((Date) {2011, 1, 3});
 	Assert($("2011-01-03"), week.year == 2011 && week.week == 1);
@@ -91,6 +91,20 @@ tsCase(Acute, "Real week number") {
 
 	week = Date_getRealWeek((Date) {2012, 12, 31});
 	Assert($("2012-12-31"), week.year == 2012 && week.week == 52);
+}
+
+tsCase(Acute, "Real week number") {
+	Date date = Date_fromWeek((Date_Week) { 2010, 52 });
+	Assert($("2010-12-27"), date.year == 2010 && date.month == 12 && date.day == 27);
+
+	date = Date_fromWeek((Date_Week) { 2011, 1 });
+	Assert($("2011-01-03"), date.year == 2011 && date.month == 1 && date.day == 3);
+
+	date = Date_fromWeek((Date_Week) { 2011, 2 });
+	Assert($("2011-01-10"), date.year == 2011 && date.month == 1 && date.day == 10);
+
+	date = Date_fromWeek((Date_Week) { 2011, 3 });
+	Assert($("2011-01-17"), date.year == 2011 && date.month == 1 && date.day == 17);
 }
 
 tsCase(Acute, "Date to day of year") {
