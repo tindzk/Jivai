@@ -56,27 +56,33 @@ tsCase(Acute, "Week number") {
 }
 
 tsCase(Acute, "Real week number") {
-	Assert($("2011-01-01"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 1}) == 1);
+	Date_Week week = Date_getRealWeek((Date) {2011, 1, 1});
+	Assert($("2011-01-01"), week.year == 2010 && week.week == 52);
 
-	Assert($("2011-01-03"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 3}) == 2);
+	week = Date_getRealWeek((Date) {2011, 1, 2});
+	Assert($("2011-01-01"), week.year == 2010 && week.week == 52);
 
-	Assert($("2011-01-10"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 10}) == 3);
+	week = Date_getRealWeek((Date) {2011, 1, 3});
+	Assert($("2011-01-03"), week.year == 2011 && week.week == 1);
 
-	Assert($("2011-01-11"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 11}) == 3);
+	week = Date_getRealWeek((Date) {2011, 1, 10});
+	Assert($("2011-01-10"), week.year == 2011 && week.week == 2);
 
-	Assert($("2011-01-12"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 12}) == 3);
+	week = Date_getRealWeek((Date) {2011, 1, 11});
+	Assert($("2011-01-11"), week.year == 2011 && week.week == 2);
 
-	Assert($("2011-01-15"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 15}) == 3);
+	week = Date_getRealWeek((Date) {2011, 1, 15});
+	Assert($("2011-01-15"), week.year == 2011 && week.week == 2);
 
-	Assert($("2011-01-16"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 16}) == 3);
+	week = Date_getRealWeek((Date) {2011, 1, 16});
+	Assert($("2011-01-16"), week.year == 2011 && week.week == 2);
 
-	Assert($("2011-01-17"),
-		Date_GetRealWeekNumber((Date) {2011, 1, 17}) == 4);
+	week = Date_getRealWeek((Date) {2011, 1, 17});
+	Assert($("2011-01-17"), week.year == 2011 && week.week == 3);
+
+	week = Date_getRealWeek((Date) {2011, 12, 31});
+	Assert($("2011-12-31"), week.year == 2011 && week.week == 52);
+
+	week = Date_getRealWeek((Date) {2012, 12, 31});
+	Assert($("2012-12-31"), week.year == 2012 && week.week == 52);
 }

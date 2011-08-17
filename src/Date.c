@@ -77,7 +77,7 @@ rsdef(bool, IsLeapYear, Year year) {
 
 rsdef(YearWeek, GetWeekNumber, self date) {
 	YearDay  dayOfYear   = scall(GetDayOfYear, date);
-	YearDay  jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+	YearDay  jan1WeekDay = scall(GetWeekDay, (self) { date.year, 1, 1 });
 	WeekDay  weekDay     = scall(GetWeekDay, date);
 	YearWeek weekNumber  = 0;
 	Year     yearNumber  = date.year;
@@ -120,11 +120,25 @@ rsdef(YearWeek, GetWeekNumber, self date) {
 	return weekNumber;
 }
 
-rsdef(YearWeek, GetRealWeekNumber, self date) {
+rsdef(ref(Week), getRealWeek, self date) {
 	YearDay dayOfYear   = scall(GetDayOfYear, date);
-	YearDay jan1WeekDay = scall(GetWeekDay, (Date) { date.year, 1, 1 });
+	YearDay jan1WeekDay = scall(GetWeekDay, (self) { date.year, 1, 1 });
 
-	return (7 + (dayOfYear - 1) + (jan1WeekDay - 1)) / 7;
+	/* The last day of this year's first week. */
+	YearDay lastDay = 7 - jan1WeekDay + 1;
+
+	if (date.month > 1 || date.day > lastDay) {
+		/* The date belongs to this year. */
+		return (ref(Week)) {
+			.year = date.year,
+			.week = (dayOfYear - 1 + jan1WeekDay - 1) / 7
+		};
+	} else {
+		return (ref(Week)) {
+			.year = date.year - 1,
+			.week = 52
+		};
+	}
 }
 
 rsdef(short, Compare, self a, self b) {

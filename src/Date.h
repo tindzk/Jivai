@@ -43,6 +43,11 @@ set(ref(WeekDay)) {
 	ref(WeekDay_Unset)
 };
 
+record(ref(Week)) {
+	Year     year;
+	YearWeek week;
+};
+
 enum {
 	ref(SecondsMinute) = 60,
 	ref(SecondsHour)   = ref(SecondsMinute) *  60,
@@ -59,7 +64,7 @@ const RdString  ref(WeekDays)[8];
 rsdef(self, New);
 rsdef(bool, IsLeapYear, Year year);
 rsdef(YearWeek, GetWeekNumber, self date);
-rsdef(YearWeek, GetRealWeekNumber, self date);
+rsdef(ref(Week), getRealWeek, self date);
 rsdef(short, Compare, self a, self b);
 rsdef(YearDay, GetDayOfYear, self date);
 rsdef(WeekDay, GetWeekDay, self date);
