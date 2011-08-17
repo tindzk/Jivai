@@ -92,3 +92,40 @@ tsCase(Acute, "Real week number") {
 	week = Date_getRealWeek((Date) {2012, 12, 31});
 	Assert($("2012-12-31"), week.year == 2012 && week.week == 52);
 }
+
+tsCase(Acute, "Date to day of year") {
+	Assert($("2011-01-01"), Date_getDayOfYear((Date) { 2011, 1, 1  }) == 1);
+	Assert($("2011-01-31"), Date_getDayOfYear((Date) { 2011, 1, 31 }) == 31);
+	Assert($("2011-02-01"), Date_getDayOfYear((Date) { 2011, 2, 1  }) == 31 + 1);
+	Assert($("2011-03-01"), Date_getDayOfYear((Date) { 2011, 3, 1  }) == 31 + 28 + 1);
+
+	Assert($("2012-02-01"), Date_getDayOfYear((Date) { 2012, 2, 1  }) == 31 + 1);
+	Assert($("2012-02-29"), Date_getDayOfYear((Date) { 2012, 2, 29 }) == 31 + 29);
+	Assert($("2012-03-01"), Date_getDayOfYear((Date) { 2012, 3, 1  }) == 31 + 29 + 1);
+}
+
+tsCase(Acute, "Date from day of year") {
+	Date date = Date_fromDayOfYear(2011, 1);
+	Assert($("2011-01-01"),
+		date.year == 2011 && date.month == 1 && date.day == 1);
+
+	date = Date_fromDayOfYear(2011, 31);
+	Assert($("2011-01-31"),
+		date.year == 2011 && date.month == 1 && date.day == 31);
+
+	date = Date_fromDayOfYear(2011, 31 + 1);
+	Assert($("2011-02-01"),
+		date.year == 2011 && date.month == 2 && date.day == 1);
+
+	date = Date_fromDayOfYear(2012, 31 + 1);
+	Assert($("2012-02-01"),
+		date.year == 2012 && date.month == 2 && date.day == 1);
+
+	date = Date_fromDayOfYear(2012, 31 + 29);
+	Assert($("2012-02-29"),
+		date.year == 2012 && date.month == 2 && date.day == 29);
+
+	date = Date_fromDayOfYear(2012, 31 + 29 + 1);
+	Assert($("2012-03-01"),
+		date.year == 2012 && date.month == 3 && date.day == 1);
+}

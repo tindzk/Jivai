@@ -66,7 +66,8 @@ rsdef(bool, IsLeapYear, Year year);
 rsdef(YearWeek, GetWeekNumber, self date);
 rsdef(ref(Week), getRealWeek, self date);
 rsdef(short, Compare, self a, self b);
-rsdef(YearDay, GetDayOfYear, self date);
+rsdef(YearDay, getDayOfYear, self date);
+rsdef(self, fromDayOfYear, Year year, YearDay day);
 rsdef(WeekDay, GetWeekDay, self date);
 rsdef(String, Format, self date, bool wday);
 

@@ -76,7 +76,7 @@ rsdef(bool, IsLeapYear, Year year) {
  */
 
 rsdef(YearWeek, GetWeekNumber, self date) {
-	YearDay  dayOfYear   = scall(GetDayOfYear, date);
+	YearDay  dayOfYear   = scall(getDayOfYear, date);
 	YearDay  jan1WeekDay = scall(GetWeekDay, (self) { date.year, 1, 1 });
 	WeekDay  weekDay     = scall(GetWeekDay, date);
 	YearWeek weekNumber  = 0;
@@ -121,7 +121,7 @@ rsdef(YearWeek, GetWeekNumber, self date) {
 }
 
 rsdef(ref(Week), getRealWeek, self date) {
-	YearDay dayOfYear   = scall(GetDayOfYear, date);
+	YearDay dayOfYear   = scall(getDayOfYear, date);
 	YearDay jan1WeekDay = scall(GetWeekDay, (self) { date.year, 1, 1 });
 
 	/* The last day of this year's first week. */
@@ -157,7 +157,7 @@ rsdef(short, Compare, self a, self b) {
 	return Integer_Compare(a.day, b.day);
 }
 
-rsdef(YearDay, GetDayOfYear, self date) {
+rsdef(YearDay, getDayOfYear, self date) {
 	YearDay days = date.day;
 
 	/* Add number of days up until last month. */
@@ -173,6 +173,35 @@ rsdef(YearDay, GetDayOfYear, self date) {
 	}
 
 	return days;
+}
+
+rsdef(self, fromDayOfYear, Year year, YearDay day) {
+	self res = {
+		.year  = year,
+		.month = 1,
+		.day   = 0
+	};
+
+	bool fixUp = false;
+
+	if (Date_IsLeapYear(year)) {
+		if (day >= 31 + 29) {
+			fixUp = (day == 31 + 29);
+			day--;
+		}
+	}
+
+	bwd(i, 12) {
+		if (day > ref(AddedDaysPerMonth)[i]) {
+			day -= ref(AddedDaysPerMonth)[i];
+			res.month = i + 1;
+			break;
+		}
+	}
+
+	res.day = fixUp ? (day + 1) : day;
+
+	return res;
 }
 
 /* See also DateTime_ToUnixEpoch(). */

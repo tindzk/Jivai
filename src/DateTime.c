@@ -62,17 +62,15 @@ sdef(self, FromUnixEpoch, u64 time) {
 		res.date.year--;
 	}
 
-	res.date.month = 0;
+	res.date.month = 1;
 
 	bwd(i, 12) {
 		if (days > Date_AddedDaysPerMonth[i]) {
 			days -= Date_AddedDaysPerMonth[i];
-			res.date.month = i;
+			res.date.month = i + 1;
 			break;
 		}
 	}
-
-	res.date.month++;
 
 	res.date.day   = days;
 	res.date.year += 1970;
@@ -94,7 +92,7 @@ sdef(u64, ToUnixEpoch, self dateTime) {
 
 	short years = dateTime.date.year - 1970;
 
-	int days = Date_GetDayOfYear(dateTime.date);
+	uint days = Date_getDayOfYear(dateTime.date);
 
 	/* Add days since 1970. */
 	days += years * 365;
