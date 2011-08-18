@@ -235,6 +235,32 @@ tsCase(Acute, "Folder creation") {
 	Path_deleteFolder($("a/"));
 }
 
+tsCase(Acute, "Moving folders") {
+	Path_createFolder($("a/"), false);
+	Path_createFolder($("b/"), false);
+	Path_createFolder($("c/"), false);
+
+	Path_moveFolder($("a/"), $("c/a/"));
+	Path_moveFolder($("b/"), $("c/b/"));
+
+	Assert($("Exists"), Path_exists($("c/a/")));
+	Assert($("Exists"), Path_exists($("c/b/")));
+
+	Path_deleteFolder($("c/a/"));
+	Path_deleteFolder($("c/b/"));
+	Path_deleteFolder($("c/"));
+}
+
+tsCase(Acute, "Moving files") {
+	File file = File_new($("test.dat"), FileStatus_Create | FileStatus_WriteOnly);
+	File_destroy(&file);
+
+	Path_moveFile($("test.dat"), $("test2.dat"));
+	Assert($("Exists"), Path_exists($("test2.dat")));
+
+	Path_deleteFile($("test2.dat"));
+}
+
 tsCase(Acute, "Time") {
 	Path_createFolder($("test/"));
 

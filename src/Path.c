@@ -408,6 +408,46 @@ sdef(String, expand, RdString path) {
 	}
 }
 
+/* The source path cannot be a link because moving the path it points
+ * to would invalidate the link.
+ * The destination path must not exist but the user needs sufficient
+ * permissions to create it.
+ */
+static sdef(void, move, RdString src, RdString dest) {
+	assert(scall(exists, src, false) && scall(isReadable, src));
+	assert(!scall(isLink, src));
+	assert(!scall(exists, dest, true));
+
+#if Exception_Assertions
+	dest.len--;
+	RdString basePath =
+		String_Slice(dest, 0, String_ReverseFind(dest, '/') + 1);
+	dest.len++;
+
+	if (basePath.len == 0) {
+		basePath = $("./");
+	} else {
+		assert(scall(exists, basePath, false));
+	}
+
+	assert(scall(isWritable, basePath));
+#endif
+
+	if (!Kernel_rename(src, dest)) {
+		throw(UnknownError);
+	}
+}
+
+sdef(void, moveFolder, RdString src, RdString dest) {
+	assert(scall(isFolderPath, src) && scall(isFolderPath, dest));
+	scall(move, src, dest);
+}
+
+sdef(void, moveFile, RdString src, RdString dest) {
+	assert(scall(isFilePath, src) && scall(isFilePath, dest));
+	scall(move, src, dest);
+}
+
 overload sdef(void, createFolder, RdString path, int mode, bool recursive) {
 	assert(scall(isCreatableFolderPath, path));
 	assert(!scall(exists, path, false));

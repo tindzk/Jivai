@@ -11,6 +11,10 @@ sdef(bool, close, int id) {
 	return syscall(__NR_close, id) == 0;
 }
 
+sdef(bool, rename, RdString src, RdString dest) {
+	return syscall(__NR_rename, String_ToNul(src), String_ToNul(dest)) == 0;
+}
+
 sdef(bool, access, RdString path, int mode) {
 	return syscall(__NR_access, String_ToNul(path), mode) == 0;
 }

@@ -52,6 +52,8 @@ sdef(RdString, getFolderPath, RdString path);
 sdef(String, expandFolder, RdString path);
 sdef(String, expandFile, RdString path);
 sdef(String, expand, RdString path);
+sdef(void, moveFolder, RdString src, RdString dest);
+sdef(void, moveFile, RdString src, RdString dest);
 overload sdef(void, createFolder, RdString path, int mode, bool recursive);
 sdef(void, deleteLink, RdString path);
 overload sdef(void, deleteFile, RdString path, bool follow);
