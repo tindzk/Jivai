@@ -95,8 +95,9 @@ static def(void, Parse) {
 			}
 
 			call(CommitDepth);
+			callback(this->onToken, YAML_TokenType_Name,
+				String_Trim(name, String_TrimRight));
 
-			callback(this->onToken, YAML_TokenType_Name, String_Trim(name));
 			name.len = 0;
 
 			/* ParseValue() returns true if it is a section that
@@ -111,12 +112,14 @@ static def(void, Parse) {
 			this->depth++;
 		} else if (c == '\n' && name.len != 0) {
 			throw(ColonMissing);
-		} else {
+		} else if (name.len != 0 || !Char_IsSpace(c)) {
 			StringReader_Extend(&this->reader, &name);
+		} else {
+			StringReader_Consume(&this->reader);
 		}
 	}
 
-	if (String_Trim(name).len != 0) {
+	if (name.len != 0) {
 		throw(ColonMissing);
 	}
 }
