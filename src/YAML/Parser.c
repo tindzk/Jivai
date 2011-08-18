@@ -115,7 +115,7 @@ static def(void, Parse) {
 		}
 	}
 
-	if (name.len != 0) {
+	if (String_Trim(name).len != 0) {
 		throw(ColonMissing);
 	}
 }
