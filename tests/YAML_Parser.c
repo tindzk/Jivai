@@ -97,6 +97,10 @@ tsCase(Acute, "Values") {
 	call(Process, $("name : value"));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("name")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("value")));
+
+	call(Process, $("name: value\n\n"));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("name")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("value")));
 }
 
 tsCase(Acute, "Nesting") {
@@ -106,10 +110,6 @@ tsCase(Acute, "Nesting") {
 	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("name")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("value")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Leave, $("")));
-
-	call(Process, $("name: value\n\n"));
-	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("name")));
-	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("value")));
 }
 
 tsCase(Acute, "Exceptions") {
