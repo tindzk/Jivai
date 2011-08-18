@@ -7,6 +7,7 @@
 
 exc(CannotOpenFolder)
 exc(ReadingFailed)
+exc(SeekingFailed)
 
 #ifndef Folder_BufSize
 #define Folder_BufSize 1024
@@ -47,6 +48,7 @@ record(ref(Entry)) {
 
 rsdef(self, new, RdString path);
 def(void, destroy);
+def(void, reset);
 def(bool, read, ref(Entry) *res);
 
 #undef self

@@ -23,6 +23,16 @@ def(void, destroy) {
 	Channel_Destroy(&this->ch);
 }
 
+def(void, reset) {
+	int id = Channel_GetId(&this->ch);
+
+	u64 pos;
+	Kernel_llseek(id, 0, &pos, SEEK_SET) || throw(SeekingFailed);
+
+	this->bpos  = 0;
+	this->nread = 0;
+}
+
 def(bool, read, ref(Entry) *res) {
 	if (this->bpos == 0 || this->bpos >= this->nread) {
 		int id = Channel_GetId(&this->ch);
