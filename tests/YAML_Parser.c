@@ -81,6 +81,11 @@ tsCase(Acute, "Comments") {
 	call(Process, $("\t\t# Hello "));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Comment, $(" Hello ")));
 
+	call(Process, $("\t# comment\nname: value"));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Comment, $(" comment")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Name,    $("name")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Value,   $("value")));
+
 	call(Process, $("\n# comment\n\n"));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Comment, $(" comment")));
 

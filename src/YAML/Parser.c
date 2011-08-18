@@ -84,7 +84,9 @@ static def(void, Parse) {
 
 	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '#') {
-			name.len = 0;
+			name.len    = 0;
+			this->depth = 0;
+
 			StringReader_Consume(&this->reader);
 			call(ParseComment);
 		} else if (c == ':') {
