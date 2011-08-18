@@ -51,7 +51,7 @@ static def(void, ParseComment) {
 	}
 }
 
-static def(bool, ParseValue) {
+static def(void, ParseValue) {
 	char c;
 	RdString value = $("");
 
@@ -71,28 +71,26 @@ static def(bool, ParseValue) {
 
 	if (value.len != 0) {
 		callback(this->onToken, YAML_TokenType_Value, value);
-		return true;
 	}
-
-	return false;
 }
 
 static def(void, Parse) {
 	char c;
 	RdString name = $("");
-	bool mustIndent = false;
+	bool canIndent = false;
 
 	while (StringReader_Peek(&this->reader, &c)) {
 		if (c == '#') {
 			name.len    = 0;
 			this->depth = 0;
+			canIndent   = false;
 
 			StringReader_Consume(&this->reader);
 			call(ParseComment);
 		} else if (c == ':') {
 			StringReader_Consume(&this->reader);
 
-			if (call(Indent) != mustIndent) {
+			if (!canIndent && call(Indent)) {
 				throw(InvalidIndention);
 			}
 
@@ -100,12 +98,11 @@ static def(void, Parse) {
 			callback(this->onToken, YAML_TokenType_Name,
 				String_Trim(name, String_TrimRight));
 
-			name.len = 0;
+			call(ParseValue);
 
-			/* ParseValue() returns true if it is a section that
-			 * requires indention.
-			 */
-			mustIndent = !call(ParseValue);
+			name.len    = 0;
+			this->depth = 0;
+			canIndent   = true;
 		} else if (c == ' ' && name.len == 0) {
 			/* Spaces cannot be used for indention. */
 			throw(SpaceIndention);

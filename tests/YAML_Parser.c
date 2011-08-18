@@ -167,18 +167,6 @@ tsCase(Acute, "Exceptions") {
 	} tryEnd;
 
 	Assert($("Invalid indention"), caught);
-
-	/* Indention expected. */
-	try {
-		caught = false;
-		call(Process, $("name:\nname: value"));
-	} catch(YAML_Parser, InvalidIndention) {
-		caught = true;
-	} finally {
-
-	} tryEnd;
-
-	Assert($("Invalid indention"), caught);
 }
 
 tsCase(Acute, "Complex") {
@@ -195,6 +183,20 @@ tsCase(Acute, "Complex") {
 	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("c")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("d")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Leave, $("")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("e")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("f")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Leave, $("")));
+
+	call(Process, $(
+		"a: b\n"
+			"\tc: d\n"
+			"\te: f"));
+
+	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("a")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("b")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Enter, $("")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("c")));
+	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("d")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Name,  $("e")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Value, $("f")));
 	Assert($("Matches"), call(Matches, YAML_TokenType_Leave, $("")));
