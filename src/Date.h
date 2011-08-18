@@ -53,6 +53,7 @@ enum {
 	ref(SecondsHour)   = ref(SecondsMinute) *  60,
 	ref(SecondsDay)    = ref(SecondsHour)   *  24,
 	ref(SecondsWeek)   = ref(SecondsDay)    *   7,
+	ref(SecondsMonth)  = ref(SecondsDay)    *  30,
 	ref(SecondsYear)   = ref(SecondsDay)    * 365
 };
 
