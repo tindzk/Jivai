@@ -148,10 +148,10 @@ overload def(void, Crop, ssize_t offset, ssize_t length) {
 		throw(BufferOverflow);
 	}
 
-	assert(right - offset > 0);
+	assert(right - offset >= 0);
 
 	if (offset > 0) {
-		assert(this->buf != NULL);
+		assert(this->buf != null);
 
 		/* Memory_Move is preferable because it also works with overlapping
 		 * memory areas.

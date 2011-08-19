@@ -601,3 +601,22 @@ tsCase(Acute, "Between (3)") {
 	Assert($("Result"), !String_Between(s, $("<"), $(">"), &result));
 	Assert($("Equals"), String_Equals(result, $("")));
 }
+
+tsCase(Acute, "Cropping") {
+	String s = String_New(0);
+	String_Crop(&s, 0);
+	String_Destroy(&s);
+
+	s = String_Clone($("Hello."));
+
+	String_Crop(&s, 0);
+	Assert($("Equals"), String_Equals(s.rd, $("Hello.")));
+
+	String_Crop(&s, 1);
+	Assert($("Equals"), String_Equals(s.rd, $("ello.")));
+
+	String_Crop(&s, 5);
+	Assert($("Equals"), String_Equals(s.rd, $("")));
+
+	String_Destroy(&s);
+}
