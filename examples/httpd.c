@@ -43,10 +43,12 @@ class {
 	String paramTest2;
 
 	Logger *logger;
+
+	Server_Client *client;
 };
 
 def(void, OnRequest) {
-	String strFd = Integer_ToString(this->conn->fd);
+	String strFd = Integer_ToString(this->conn->ch.id);
 	Logger_Info(this->logger, $("Receiving request (via fd=%)."), strFd.rd);
 	String_Destroy(&strFd);
 }
@@ -152,9 +154,10 @@ def(void, OnRespond, bool persistent) {
 	this->persistent = persistent;
 }
 
-def(void, Init, Connection_Client *client, Logger *logger) {
+def(void, Init, Server_Client *client, Logger *logger) {
 	this->logger     = logger;
-	this->conn       = client->conn;
+	this->client     = client;
+	this->conn       = client->socket.conn;
 	this->resp       = String_New(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
@@ -169,7 +172,7 @@ def(void, Init, Connection_Client *client, Logger *logger) {
 	this->paramTest  = String_New(256);
 	this->paramTest2 = String_New(256);
 
-	this->server = HTTP_Server_New(client->conn, 2048, 4096);
+	this->server = HTTP_Server_New(this->conn, 2048, 4096);
 
 	HTTP_Server_BindRequest(&this->server,
 		HTTP_Server_OnRequest_For(this, ref(OnRequest)));
@@ -186,13 +189,13 @@ def(void, Init, Connection_Client *client, Logger *logger) {
 	HTTP_Server_BindRespond(&this->server,
 		HTTP_Server_OnRespond_For(this, ref(OnRespond)));
 
-	String strFd = Integer_ToString(this->conn->fd);
+	String strFd = Integer_ToString(this->conn->ch.id);
 	Logger_Info(this->logger, $("Incoming connection (fd=%)."), strFd.rd);
 	String_Destroy(&strFd);
 }
 
 def(void, Destroy) {
-	String strFd = Integer_ToString(this->conn->fd);
+	String strFd = Integer_ToString(this->conn->ch.id);
 	Logger_Info(this->logger, $("Closing connection (fd=%)."), strFd.rd);
 	String_Destroy(&strFd);
 
@@ -204,21 +207,21 @@ def(void, Destroy) {
 	String_Destroy(&this->paramTest2);
 }
 
-def(Connection_Status, Parse) {
+def(void, Parse) {
 	bool incomplete = HTTP_Server_Process(&this->server);
 
 	/* Whilst the request is incomplete, keep the connection alive. */
 	if (incomplete) {
-		return Connection_Status_Open;
+		return;
 	}
 
 	/* Does the client support persistent connections? */
-	return this->persistent
-		? Connection_Status_Open
-		: Connection_Status_Close;
+	if (!this->persistent) {
+		Server_Client_Close(this->client);
+	}
 }
 
-def(Connection_Status, Respond) {
+def(void, Respond) {
 	if (this->resp.len == 0) {
 		return call(Parse);
 	}
@@ -230,12 +233,12 @@ def(Connection_Status, Respond) {
 		/* Some parts are still unsent. Therefore, the connection must stay
 		 * open.
 		 */
-		return Connection_Status_Open;
+		return;
 	}
 
-	return this->persistent
-		? Connection_Status_Open
-		: Connection_Status_Close;
+	if (!this->persistent) {
+		Server_Client_Close(this->client);
+	}
 }
 
 Impl(Connection) = {
@@ -256,13 +259,23 @@ ExportImpl(Connection);
 
 #define self Application
 
+def(void, shutdown, __unused Signal_Type type) {
+	Logger_Info(&this->logger, $("Server shutdown."));
+	EventLoop_Quit(EventLoop_GetInstance());
+}
+
 def(bool, Run) {
+	Signal_listen(Signal_GetInstance());
+
+	Signal_uponTermination(Signal_GetInstance(),
+		Signal_OnTerminate_For(this, ref(shutdown)));
+
 	Server server = Server_New(HttpConnection_GetImpl(), &this->logger);
 
 	try {
 		Server_Listen(&server, 8080);
 		Logger_Info(&this->logger, $("Server started."));
-	} catch(Socket, AddressInUse) {
+	} catch(SocketServer, AddressInUse) {
 		Logger_Error(&this->logger, $("The address is already in use!"));
 		excReturn false;
 	} finally {
@@ -271,8 +284,6 @@ def(bool, Run) {
 
 	try {
 		EventLoop_Run(EventLoop_GetInstance());
-	} catch(Signal, SigInt) {
-		Logger_Info(&this->logger, $("Server shutdown."));
 	} catchAny {
 		Exception_Print(e);
 
