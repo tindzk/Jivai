@@ -1,7 +1,7 @@
 #import "LinkedList.h"
 
 #define DoublyLinkedList_New() \
-	{ NULL, NULL }
+	{ null, null }
 
 #define DoublyLinkedList_DeclareRef(type) \
 	struct type *prev;                    \
@@ -17,7 +17,7 @@
 	do {                                                   \
 		(newNode)->prev = (node)->prev;                    \
 		(newNode)->next = node;                            \
-		if ((node)->prev == NULL) {                        \
+		if ((node)->prev == null) {                        \
 			(this)->first = newNode;                       \
 		} else {                                           \
 			(node)->prev->next = newNode;                  \
@@ -29,7 +29,7 @@
 	do {                                                  \
 		(newNode)->prev = node;                           \
 		(newNode)->next = (node)->next;                   \
-		if ((node)->next == NULL) {                       \
+		if ((node)->next == null) {                       \
 			(this)->last = newNode;                       \
 		} else {                                          \
 			(node)->next->prev = newNode;                 \
@@ -39,9 +39,9 @@
 
 #define DoublyLinkedList_InsertBeginning(this, node)                  \
 	do {                                                              \
-		if ((this)->first == NULL) {                                  \
-			(node)->prev = NULL;                                      \
-			(node)->next = NULL;                                      \
+		if ((this)->first == null) {                                  \
+			(node)->prev = null;                                      \
+			(node)->next = null;                                      \
 			(this)->first = (this)->last = node;                      \
 		} else {                                                      \
 			DoublyLinkedList_InsertBefore(this, (this)->first, node); \
@@ -51,11 +51,11 @@
 #define DoublyLinkedList_InsertEnd(this, node) \
 	do {                                       \
 		(node)->prev = (this)->last;           \
-		(node)->next = NULL;                   \
-		if ((this)->first == NULL) {           \
+		(node)->next = null;                   \
+		if ((this)->first == null) {           \
 			(this)->first = node;              \
 		}                                      \
-		if ((this)->last != NULL) {            \
+		if ((this)->last != null) {            \
 			(this)->last->next = node;         \
 		}                                      \
 		(this)->last = node;                   \
@@ -63,12 +63,12 @@
 
 #define DoublyLinkedList_Remove(this, node)    \
 	do {                                       \
-		if ((node)->prev == NULL) {            \
+		if ((node)->prev == null) {            \
 			(this)->first = (node)->next;      \
 		} else {                               \
 			(node)->prev->next = (node)->next; \
 		}                                      \
-		if ((node)->next == NULL) {            \
+		if ((node)->next == null) {            \
 			(this)->last = (node)->prev;       \
 		} else {                               \
 			(node)->next->prev = (node)->prev; \
@@ -81,5 +81,8 @@
 #define DoublyLinkedList_Each(...) \
 	LinkedList_Each(__VA_ARGS__)
 
+#define DoublyLinkedList_safeEach(...) \
+	LinkedList_safeEach(__VA_ARGS__)
+
 #define DoublyLinkedList_ReverseEach(this, node) \
-	for (typeof((this)->last) node = (this)->last; node != NULL; node = node->prev)
+	for (typeof((this)->last) node = (this)->last; node != null; node = node->prev)

@@ -3,7 +3,7 @@
 Callback(LinkedList_OnDestroy, void, void *item);
 
 #define LinkedList_New() \
-	{ NULL, NULL }
+	{ null, null }
 
 #define LinkedList_DeclareRef(type) \
 	struct type *next;
@@ -16,8 +16,8 @@ Callback(LinkedList_OnDestroy, void, void *item);
 
 #define LinkedList_Push(this, node) \
 	do {                                 \
-		(node)->next = NULL;             \
-		if ((this)->first == NULL) {     \
+		(node)->next = null;             \
+		if ((this)->first == null) {     \
 			(this)->first = node;        \
 			(this)->last  = node;        \
 		} else {                         \
@@ -35,14 +35,19 @@ Callback(LinkedList_OnDestroy, void, void *item);
 	do {                                            \
 		typeof((this)->first) node = (this)->first; \
 		typeof((this)->first) next;                 \
-		while (node != NULL) {                      \
+		while (node != null) {                      \
 			next = node->next;                      \
 			callback(freeNode, node);               \
 			node = next;                            \
 		}                                           \
-		(this)->first = NULL;                       \
-		(this)->last  = NULL;                       \
+		(this)->first = null;                       \
+		(this)->last  = null;                       \
 	} while (0)
 
 #define LinkedList_Each(this, node) \
-	for (typeof((this)->first) node = (this)->first; node != NULL; node = node->next)
+	for (typeof((this)->first) node = (this)->first; node != null; node = node->next)
+
+#define LinkedList_safeEach(this, node)                     \
+	for (typeof((this)->first) next, node = (this)->first;  \
+			node != null && ({ next = node->next; true; }); \
+			node = next)
