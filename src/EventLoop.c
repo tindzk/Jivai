@@ -37,10 +37,20 @@ def(void, Destroy) {
 		LinkedList_OnDestroy_For(this, ref(_DestroyEntry)));
 }
 
-def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy) {
+def(void, pullDown, void *object) {
+	DoublyLinkedList_safeEach(&this->entries, node) {
+		if (node->object == object) {
+			DoublyLinkedList_Remove(&this->entries, node);
+			call(_DestroyEntry, node);
+		}
+	}
+}
+
+def(ref(Entry) *, AddChannel, void *object, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy) {
 	ref(Entry) *entry = Memory_New(sizeof(ref(Entry)) + sizeof(ref(ChannelEntry)));
 
-	entry->type = ref(EntryType_Channel);
+	entry->type   = ref(EntryType_Channel);
+	entry->object = object;
 
 	ref(ChannelEntry) *data = (void *) entry->data;
 
@@ -91,10 +101,11 @@ def(void, DetachChannel, ref(Entry) *entry, bool watcher) {
 }
 
 /* Listens for incoming connections. */
-def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection) {
+def(void, AttachSocket, void *object, SocketServer *socket, ref(OnConnection) onConnection) {
 	ref(Entry) *entry = Memory_New(sizeof(ref(Entry)) + sizeof(ref(SocketEntry)));
 
-	entry->type = ref(EntryType_Socket);
+	entry->type   = ref(EntryType_Socket);
+	entry->object = object;
 
 	ref(SocketEntry) *data = (void *) entry->data;
 
@@ -111,7 +122,7 @@ def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection) {
 }
 
 /* Accepts incoming connection and listens for data. */
-def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client) {
+def(ref(ClientEntry) *, AcceptClient, void *object, SocketServer *socket, bool edgeTriggered, ref(Client) client) {
 	int flags = 0;
 
 	if (edgeTriggered) {
@@ -139,7 +150,8 @@ def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, 
 		sizeof(ref(ClientEntry)) +
 		delegate(client, getSize));
 
-	entry->type = ref(EntryType_Client);
+	entry->type   = ref(EntryType_Client);
+	entry->object = object;
 
 	ref(ClientEntry) *data = (void *) entry->data;
 	data->client = client;

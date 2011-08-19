@@ -18,10 +18,12 @@ rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
 def(void, Destroy) {
 	SocketServer_Destroy(&this->socket);
 
-	/* The EventLoop may still have pointers to this instance. Therefore, we
-	 * need to destroy it now before the object gets ivnalidated.
+	/* The EventLoop may still have pointers to this instance.
+	 * Therefore, we need to destroy it now before the object gets
+	 * invalidated.
+	 * Only delete those entries that were registered by this class.
 	 */
-	EventLoop_Destroy(EventLoop_GetInstance());
+	EventLoop_pullDown(EventLoop_GetInstance(), this);
 }
 
 def(void, SetEdgeTriggered, bool value) {
@@ -29,17 +31,17 @@ def(void, SetEdgeTriggered, bool value) {
 }
 
 static def(void, OnDestroy, ref(ClientDynInst) inst) {
-	assert(this->conn->destroy != NULL);
+	assert(this->conn->destroy != null);
 	this->conn->destroy(inst.addr->object);
 }
 
 static def(void, OnPull, ref(ClientDynInst) inst) {
-	assert(this->conn->pull != NULL);
+	assert(this->conn->pull != null);
 	this->conn->pull(inst.addr->object);
 }
 
 static def(void, OnPush, ref(ClientDynInst) inst) {
-	assert(this->conn->push != NULL);
+	assert(this->conn->push != null);
 	this->conn->push(inst.addr->object);
 }
 
@@ -49,7 +51,7 @@ static def(size_t, GetSize) {
 
 static def(void, OnConnection, SocketServer *socket) {
 	EventLoop_ClientEntry *entry =
-		EventLoop_AcceptClient(EventLoop_GetInstance(),
+		EventLoop_AcceptClient(EventLoop_GetInstance(), this,
 			socket, this->edgeTriggered, call(AsEventLoop_Client));
 
 	ref(Client) *client = (void *) entry->data;
@@ -64,7 +66,7 @@ def(void, Listen, unsigned short port) {
 	SocketServer_Bind(&this->socket, port);
 	SocketServer_Listen(&this->socket, ref(ConnectionLimit));
 
-	EventLoop_AttachSocket(EventLoop_GetInstance(), &this->socket,
+	EventLoop_AttachSocket(EventLoop_GetInstance(), this, &this->socket,
 		EventLoop_OnConnection_For(this, ref(OnConnection)));
 }
 

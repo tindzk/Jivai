@@ -96,7 +96,7 @@ def(void, listen) {
 	assert(this->evLoop == NULL);
 
 	this->evLoop =
-		EventLoop_AddChannel(EventLoop_GetInstance(), &this->ch,
+		EventLoop_AddChannel(EventLoop_GetInstance(), this, &this->ch,
 			EventLoop_OnInput_For(this, ref(onSignal)),
 			EventLoop_OnOutput_Empty(),
 			EventLoop_OnDestroy_Empty());

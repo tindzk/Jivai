@@ -47,6 +47,7 @@ set(ref(EntryType)) {
 
 record(ref(Entry)) {
 	DoublyLinkedList_DeclareRef(ref(Entry));
+	void *object;
 	ref(EntryType) type;
 	char data[];
 };
@@ -63,10 +64,11 @@ class {
 
 rsdef(self, New);
 def(void, Destroy);
-def(ref(Entry) *, AddChannel, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy);
+def(void, pullDown, void *object);
+def(ref(Entry) *, AddChannel, void *object, Channel *ch, ref(OnInput) onInput, ref(OnOutput) onOutput, ref(OnDestroy) onDestroy);
 def(void, DetachChannel, ref(Entry) *entry, bool watcher);
-def(void, AttachSocket, SocketServer *socket, ref(OnConnection) onConnection);
-def(ref(ClientEntry) *, AcceptClient, SocketServer *socket, bool edgeTriggered, ref(Client) client);
+def(void, AttachSocket, void *object, SocketServer *socket, ref(OnConnection) onConnection);
+def(ref(ClientEntry) *, AcceptClient, void *object, SocketServer *socket, bool edgeTriggered, ref(Client) client);
 def(void, DetachClient, void *addr);
 def(void, Enqueue, void *addr, int events);
 def(void, ClientEnqueue, void *addr, int events);
