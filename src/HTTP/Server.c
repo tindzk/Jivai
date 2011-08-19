@@ -99,9 +99,9 @@ static def(void, OnHeader, RdString name, RdString value) {
 				} else if (String_BeginsWith(value, $("multipart/form-data"))) {
 					this->headers.contentType = HTTP_ContentType_MultiPart;
 
-					ssize_t posBoundary = String_Find(value,
-						$("multipart/form-data").len,
-						$("boundary="));
+					value = String_Slice(value, $("multipart/form-data").len);
+
+					ssize_t posBoundary = String_Find(value, $("boundary="));
 
 					if (posBoundary == String_NotFound) {
 						throw(UnknownContentType);
