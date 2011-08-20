@@ -204,6 +204,12 @@ record(EpollEvent) {
 	};
 } __epollPacked;
 
+/* Constants to be used with *at() system calls. */
+enum {
+	At_Id_CurrentWorkingFolder = -100, /* Use the CWF for relative paths. */
+	At_Flag_NoFollow           = 0x100 /* Don't follow symbolic links.    */
+};
+
 #define self Kernel
 
 sdef(int, open, RdString path, int flags, int mode);

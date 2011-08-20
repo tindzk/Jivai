@@ -19,14 +19,6 @@ exc(NotFolder)
 exc(PermissionDenied)
 exc(UnknownError)
 
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
-
-#ifndef AT_SYMLINK_NOFOLLOW
-#define AT_SYMLINK_NOFOLLOW 0x100
-#endif
-
 sdef(bool, isFileName, RdString name);
 sdef(bool, isFolderName, RdString name);
 sdef(bool, isPath, RdString path);

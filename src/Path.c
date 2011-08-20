@@ -682,9 +682,9 @@ overload sdef(void, setTime, RdString path, Time_UnixEpoch time, bool follow) {
 	assert(scall(isFolderPath, path) || scall(isFilePath, path));
 	assert(scall(exists, path, follow));
 
-	int flags = !follow ? AT_SYMLINK_NOFOLLOW : 0;
+	int flags = !follow ? At_Flag_NoFollow : 0;
 
-	if (!Kernel_utimensat(AT_FDCWD, path, time, flags)) {
+	if (!Kernel_utimensat(At_Id_CurrentWorkingFolder, path, time, flags)) {
 		if (errno == ENAMETOOLONG) {
 			throw(NameTooLong);
 		} else if (errno == ENOENT) {
