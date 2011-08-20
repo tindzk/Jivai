@@ -84,32 +84,41 @@ static sdef(void, onInvoke, Instance inst) {
 	bool keep = callbackRet(task->cb, false, dropped);
 
 	if (!interval || !keep) {
-		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, true);
-		task->entry = null;
+		EventLoop_detach(EventLoop_GetInstance(), task->entry, true);
 	}
 }
 
 static sdef(void, destroyTask, Instance inst) {
 	ref(Task) *task = inst.addr;
 
-	if (task->entry != null) {
-		EventLoop_DetachChannel(EventLoop_GetInstance(), task->entry, false);
-	}
-
 	scall(destroy, &task->timer);
+
+	if (task->entry != null) {
+		EventLoop_detach(EventLoop_GetInstance(), task->entry, false);
+	}
 }
 
 def(Task *, asTask, ref(OnTimer) onTimer) {
-	Task *task = Task_New(sizeof(ref(Task)), ref(destroyTask));
+	EventLoop_Entry *entry = EventLoop_createEntry(
+		EventLoop_GetInstance(), this, sizeof(ref(Task)));
 
-	ref(Task) *data = (void *) task->data;
+	ref(Task) *task = (void *) entry->data;
 
-	data->cb    = onTimer;
-	data->timer = *this;
-	data->entry = EventLoop_AddChannel(EventLoop_GetInstance(), &data->timer.ch,
-		EventLoop_OnInput_For(data, ref(onInvoke)),
-		EventLoop_OnOutput_Empty(),
-		EventLoop_OnDestroy_Empty());
+	task->cb    = onTimer;
+	task->timer = *this;
+	task->entry = entry;
+	task->task  = Task_new(task, ref(destroyTask));
 
-	return task;
+	EventLoop_Options opts = {
+		.ch     = &task->timer.ch,
+		.events = {
+			.inst      = { .addr = task },
+			.onDestroy = ref(destroyTask),
+			.onInput   = ref(onInvoke)
+		}
+	};
+
+	EventLoop_attach(EventLoop_GetInstance(), entry, opts);
+
+	return task->task;
 }

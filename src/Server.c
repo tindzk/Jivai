@@ -2,7 +2,7 @@
 
 #define self Server
 
-rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
+rsdef(self, new, ConnectionInterface *conn, Logger *logger) {
 	self res = (self) {
 		.conn          = conn,
 		.logger        = logger,
@@ -15,7 +15,7 @@ rsdef(self, New, ConnectionInterface *conn, Logger *logger) {
 	return res;
 }
 
-def(void, Destroy) {
+def(void, destroy) {
 	SocketServer_Destroy(&this->socket);
 
 	/* The EventLoop may still have pointers to this instance.
@@ -26,53 +26,85 @@ def(void, Destroy) {
 	EventLoop_pullDown(EventLoop_GetInstance(), this);
 }
 
-def(void, SetEdgeTriggered, bool value) {
+def(void, setEdgeTriggered, bool value) {
 	this->edgeTriggered = value;
 }
 
-static def(void, OnDestroy, ref(ClientDynInst) inst) {
-	assert(this->conn->destroy != null);
-	this->conn->destroy(inst.addr->object);
+static sdef(void, onDestroyConnection, Instance inst) {
+	ref(Client) *client = inst.addr - sizeof(ref(Client));
+
+	InstName(self) $this = { .addr = client->inst };
+	if (this->conn->destroy != null) {
+		this->conn->destroy(client->object);
+	}
+
+	/* Closing the socket channel automatically unsubscribes from epoll. */
+	SocketConnection_Destroy(&client->socket.conn);
+	EventLoop_detach(EventLoop_GetInstance(), client->entry, false);
 }
 
-static def(void, OnPull, ref(ClientDynInst) inst) {
-	assert(this->conn->pull != null);
-	this->conn->pull(inst.addr->object);
-}
+/* Accepts an incoming connection and listens for data. */
+static sdef(void, onConnection, Instance inst) {
+	ref(Socket) *socket = inst.addr;
 
-static def(void, OnPush, ref(ClientDynInst) inst) {
-	assert(this->conn->push != null);
-	this->conn->push(inst.addr->object);
-}
+	InstName(self) $this = { .addr = socket->inst };
 
-static def(size_t, GetSize) {
-	return sizeof(ref(Client)) + this->conn->size;
-}
-
-static def(void, OnConnection, SocketServer *socket) {
-	EventLoop_ClientEntry *entry =
-		EventLoop_AcceptClient(EventLoop_GetInstance(), this,
-			socket, this->edgeTriggered, call(AsEventLoop_Client));
+	EventLoop_Entry *entry = EventLoop_createEntry(
+		EventLoop_GetInstance(), this,
+		sizeof(ref(Client)) + this->conn->size);
 
 	ref(Client) *client = (void *) entry->data;
 
-	client->socket.conn  = &entry->conn;
+	client->inst         = this;
+	client->socket.conn  = SocketServer_Accept(&this->socket, Socket_Option_CloseOnExec);
 	client->socket.state = Connection_State_Established;
+	client->entry        = entry;
+
+	SocketConnection_SetCorking(&client->socket.conn, true);
+
+	EventLoop_Options opts = {
+		.ch            = SocketConnection_GetChannel(&client->socket.conn),
+		.edgeTriggered = this->edgeTriggered,
+		.events        = {
+			.inst      = { .addr = client->object },
+			.onDestroy = ref(onDestroyConnection),
+			.onInput   = this->conn->pull,
+			.onOutput  = this->conn->push
+		}
+	};
+
+	EventLoop_attach(EventLoop_GetInstance(), entry, opts);
 
 	this->conn->init(client->object, client, this->logger);
 }
 
-def(void, Listen, unsigned short port) {
+static sdef(void, onDestroySocket, Instance inst) {
+	ref(Socket) *socket = inst.addr;
+
+	EventLoop_detach(EventLoop_GetInstance(), socket->entry, false);
+}
+
+/* Listens for incoming connections. */
+def(void, listen, ushort port) {
 	SocketServer_Bind(&this->socket, port);
 	SocketServer_Listen(&this->socket, ref(ConnectionLimit));
 
-	EventLoop_AttachSocket(EventLoop_GetInstance(), this, &this->socket,
-		EventLoop_OnConnection_For(this, ref(OnConnection)));
-}
+	EventLoop_Entry *entry = EventLoop_createEntry(
+		EventLoop_GetInstance(), this, sizeof(ref(Socket)));
 
-Impl(EventLoop_Client) = {
-	.getSize   = ref(GetSize),
-	.onInput   = ref(OnPull),
-	.onOutput  = ref(OnPush),
-	.onDestroy = ref(OnDestroy)
-};
+	ref(Socket) *socket = (void *) entry->data;
+
+	socket->inst  = this;
+	socket->entry = entry;
+
+	EventLoop_Options opts = {
+		.ch     = SocketServer_GetChannel(&this->socket),
+		.events = {
+			.inst      = { .addr = socket },
+			.onDestroy = ref(onDestroySocket),
+			.onInput   = ref(onConnection)
+		}
+	};
+
+	EventLoop_attach(EventLoop_GetInstance(), entry, opts);
+}

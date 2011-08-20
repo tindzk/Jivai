@@ -5,11 +5,11 @@
 class {
 	self *next;
 	void (*destroy)(Instance $this);
-	char data[];
+	void *data;
 };
 
-rsdef(self *, New, size_t size, void (*destroy)(Instance $this));
-def(void, Destroy);
+rsdef(self *, new, void *data, void (*destroy)(Instance $this));
+def(void, destroy);
 
 #undef self
 
@@ -19,8 +19,8 @@ class {
 	Task *first;
 };
 
-rsdef(self, New);
-def(void, Destroy);
-def(void, Enqueue, Task *task);
+rsdef(self, new);
+def(void, destroy);
+def(void, enqueue, Task *task);
 
 #undef self

@@ -157,7 +157,7 @@ def(void, OnRespond, bool persistent) {
 def(void, Init, Server_Client *client, Logger *logger) {
 	this->logger     = logger;
 	this->client     = client;
-	this->conn       = client->socket.conn;
+	this->conn       = &client->socket.conn;
 	this->resp       = String_New(2048);
 	this->method     = HTTP_Method_Get;
 	this->version    = HTTP_Version_1_0;
@@ -261,7 +261,7 @@ ExportImpl(Connection);
 
 def(void, shutdown, __unused Signal_Type type) {
 	Logger_Info(&this->logger, $("Server shutdown."));
-	EventLoop_Quit(EventLoop_GetInstance());
+	EventLoop_quit(EventLoop_GetInstance());
 }
 
 def(bool, Run) {
@@ -270,10 +270,10 @@ def(bool, Run) {
 	Signal_uponTermination(Signal_GetInstance(),
 		Signal_OnTerminate_For(this, ref(shutdown)));
 
-	Server server = Server_New(HttpConnection_GetImpl(), &this->logger);
+	Server server = Server_new(HttpConnection_GetImpl(), &this->logger);
 
 	try {
-		Server_Listen(&server, 8080);
+		Server_listen(&server, 8080);
 		Logger_Info(&this->logger, $("Server started."));
 	} catch(SocketServer, AddressInUse) {
 		Logger_Error(&this->logger, $("The address is already in use!"));
@@ -283,7 +283,7 @@ def(bool, Run) {
 	} tryEnd;
 
 	try {
-		EventLoop_Run(EventLoop_GetInstance());
+		EventLoop_run(EventLoop_GetInstance());
 	} catchAny {
 		Exception_Print(e);
 
@@ -295,7 +295,7 @@ def(bool, Run) {
 
 		excReturn false;
 	} finally {
-		Server_Destroy(&server);
+		Server_destroy(&server);
 	} tryEnd;
 
 	return true;

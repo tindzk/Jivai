@@ -2,17 +2,18 @@
 
 #define self Task
 
-rsdef(self *, New, size_t size, void (*destroy)(Instance $this)) {
-	self *res = Memory_New(sizeof(self) + size);
+rsdef(self *, new, void *data, void (*destroy)(Instance $this)) {
+	self *res = Memory_New(sizeof(self));
 
-	res->next    = NULL;
+	res->next    = null;
+	res->data    = data;
 	res->destroy = destroy;
 
 	return res;
 }
 
-def(void, Destroy) {
-	if (this->destroy != NULL) {
+def(void, destroy) {
+	if (this->destroy != null) {
 		this->destroy(this->data);
 	}
 
@@ -23,29 +24,29 @@ def(void, Destroy) {
 
 #define self Tasks
 
-rsdef(self, New) {
+rsdef(self, new) {
 	return (self) {
-		.first = NULL
+		.first = null
 	};
 }
 
-def(void, Destroy) {
-	Task *next = NULL;
+def(void, destroy) {
+	Task *next = null;
 
-	for (Task *cur = this->first; cur != NULL; cur = next) {
+	for (Task *cur = this->first; cur != null; cur = next) {
 		next = cur->next;
-		Task_Destroy(cur);
+		Task_destroy(cur);
 	}
 }
 
-def(void, Enqueue, Task *task) {
-	if (this->first == NULL) {
+def(void, enqueue, Task *task) {
+	if (this->first == null) {
 		this->first = task;
 		return;
 	}
 
-	for (Task *cur = this->first; cur != NULL; cur = cur->next) {
-		if (cur->next == NULL) {
+	for (Task *cur = this->first; cur != null; cur = cur->next) {
+		if (cur->next == null) {
 			cur->next = task;
 			break;
 		}

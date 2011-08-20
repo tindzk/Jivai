@@ -17,7 +17,7 @@ sdef(void, ignoreSignal, int signal) {
 
 	sigemptyset(&sigact.sa_mask);
 
-	if (sigaction(signal, &sigact, NULL) == -1) {
+	if (sigaction(signal, &sigact, null) == -1) {
 		throw(UnknownError);
 	}
 }
@@ -25,7 +25,7 @@ sdef(void, ignoreSignal, int signal) {
 rsdef(self, New) {
 	self res = {
 		/* Initializes callbacks, too. */
-		.terminations = NULL
+		.terminations = null
 	};
 
 	sigemptyset(&res.mask);
@@ -37,7 +37,7 @@ rsdef(self, New) {
 
 	sigaddset(&res.mask, ref(Type_ChildStatus));
 
-	sigprocmask(SIG_BLOCK, &res.mask, NULL);
+	sigprocmask(SIG_BLOCK, &res.mask, null);
 
 	res.ch = Channel_New(
 		signalfd(-1, &res.mask, SFD_NONBLOCK),
@@ -53,19 +53,21 @@ rsdef(self, New) {
 }
 
 def(void, Destroy) {
-	sigprocmask(SIG_UNBLOCK, &this->mask, NULL);
+	sigprocmask(SIG_UNBLOCK, &this->mask, null);
 
 	scall(ChildTerminations_Free, this->terminations);
 
-	if (this->evLoop != NULL) {
-		EventLoop_DetachChannel(
-			EventLoop_GetInstance(), this->evLoop, false);
+	if (this->entry != null) {
+		EventLoop_detach(EventLoop_GetInstance(), this->entry, false);
 	}
 
 	Channel_Destroy(&this->ch);
 }
 
-static def(void, onSignal) {
+static sdef(void, onSignal, Instance inst) {
+	ref(Signal) *signal = inst.addr;
+	InstName(self) $this = { .addr = signal->inst };
+
 	struct signalfd_siginfo sig;
 	size_t len = Channel_Read(&this->ch, &sig, sizeof(sig));
 
@@ -91,15 +93,34 @@ static def(void, onSignal) {
 	}
 }
 
-def(void, listen) {
-	/* This function cannot be called twice. */
-	assert(this->evLoop == NULL);
+static sdef(void, onDestroy, Instance inst) {
+	ref(Signal) *signal = inst.addr;
+	InstName(self) $this = { .addr = signal->inst };
+	EventLoop_detach(EventLoop_GetInstance(), this->entry, false);
+}
 
-	this->evLoop =
-		EventLoop_AddChannel(EventLoop_GetInstance(), this, &this->ch,
-			EventLoop_OnInput_For(this, ref(onSignal)),
-			EventLoop_OnOutput_Empty(),
-			EventLoop_OnDestroy_Empty());
+def(void, listen) {
+	/* This method cannot be called twice. */
+	assert(this->entry == null);
+
+	this->entry = EventLoop_createEntry(EventLoop_GetInstance(), this,
+		sizeof(ref(Signal)));
+
+	ref(Signal) *signal = (void *) this->entry->data;
+
+	signal->inst = this;
+
+	EventLoop_Options opts = {
+		.ch            = &this->ch,
+		.edgeTriggered = false,
+		.events        = {
+			.inst      = { .addr = signal },
+			.onDestroy = ref(onDestroy),
+			.onInput   = ref(onSignal)
+		}
+	};
+
+	EventLoop_attach(EventLoop_GetInstance(), this->entry, opts);
 }
 
 static def(void, commit) {
@@ -122,7 +143,7 @@ def(void, add, int signal) {
 	/* Already set? */
 	assert(!Memory_Equals(&old, &this->mask, sizeof(this->mask)));
 
-	sigprocmask(SIG_SETMASK, &this->mask, NULL);
+	sigprocmask(SIG_SETMASK, &this->mask, null);
 
 	call(commit);
 }
@@ -138,7 +159,7 @@ def(void, delete, int signal) {
 	/* Not set. */
 	assert(!Memory_Equals(&old, &this->mask, sizeof(this->mask)));
 
-	sigprocmask(SIG_SETMASK, &this->mask, NULL);
+	sigprocmask(SIG_SETMASK, &this->mask, null);
 
 	call(commit);
 }
@@ -241,12 +262,12 @@ static sdef(void, registerSystemSignal, int signal) {
 	struct sigaction sigact = {
 		.sa_flags     = SA_RESTART | SA_SIGINFO,
 		.sa_sigaction = ref(onSystemSignal),
-		.sa_restorer  = NULL
+		.sa_restorer  = null
 	};
 
 	sigemptyset(&sigact.sa_mask);
 
-	if (sigaction(signal, &sigact, NULL) == -1) {
+	if (sigaction(signal, &sigact, null) == -1) {
 		throw(UnknownError);
 	}
 }

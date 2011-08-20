@@ -16,9 +16,10 @@ class {
 };
 
 record(ref(Task)) {
-	ref(OnTimer) cb;
+	Task            *task;
+	Timer           timer;
+	ref(OnTimer)    cb;
 	EventLoop_Entry *entry;
-	Timer timer;
 };
 
 rsdef(self, new, ClockType type);

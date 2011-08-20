@@ -18,6 +18,10 @@ exc(InvalidMemoryAccess)
 exc(Pipe)
 exc(UnknownError)
 
+record(ref(Signal)) {
+	void *inst;
+};
+
 /* This structure mirrors the one found in /usr/include/asm/ucontext.h */
 record(ref(UserContext)) {
 	unsigned long     uc_flags;
@@ -92,7 +96,7 @@ class {
 	Channel ch;
 	sigset_t mask;
 
-	EventLoop_Entry        *evLoop;
+	EventLoop_Entry        *entry;
 	ref(ChildTerminations) *terminations;
 
 	ref(OnCustom)    onCustom;

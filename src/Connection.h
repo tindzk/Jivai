@@ -13,7 +13,7 @@ set(ref(State)) {
 
 record(ref(Client)) {
 	ref(State)       state;
-	SocketConnection *conn;
+	SocketConnection conn;
 };
 
 /* pull = receive data and begin sending the response
