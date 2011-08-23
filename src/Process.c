@@ -1,7 +1,12 @@
 #import "Process.h"
-#import "UniStd.h"
 
 #define self Process
+
+/* Resources:
+ * http://stackoverflow.com/questions/4259629/what-is-the-difference-between-fork-and-vfork/5207945#5207945
+ * http://blog.famzah.net/2009/11/20/fork-gets-slower-as-parent-process-use-more-memory/
+ * http://developers.sun.com/solaris/articles/subprocess/subprocess.html
+ */
 
 rsdef(self, new, RdString cmd) {
 	return (self) {
@@ -47,13 +52,47 @@ sdef(void, suspend, pid_t pid) {
 	assert(pid > 0);
 
 	int status;
-	__unused int result = waitpid(pid, &status, WNOHANG);
+	__unused int result = Kernel_waitpid(pid, &status, WNOHANG);
 
 	assert(result == pid);
 }
 
+static def(char **, getArgs) {
+	char **argv = Memory_New((this->params->len + 2) * sizeof(char *));
+
+	argv[0] = String_ToNulHeap(this->cmd.rd);
+
+	size_t i;
+
+	for (i = 0; i < this->params->len; i++) {
+		argv[i + 1] = String_ToNulHeap(this->params->buf[i].rd);
+	}
+
+	argv[i + 1] = null;
+
+	return argv;
+}
+
+static def(void, freeArgs, char **args) {
+	for (size_t i = 0; args[i] != null; i++) {
+		Memory_Destroy(args[i]);
+	}
+
+	Memory_Destroy(args);
+}
+
+/*
+ * @todo Use clone() for better performance:
+ *       http://blog.famzah.net/2009/11/20/a-much-faster-popen-and-system-implementation-for-linux/
+ *       http://code.google.com/p/popen-noshell/source/browse/trunk/popen_noshell.c
+ */
 def(pid_t, spawn) {
-	pid_t pid = fork();
+	/* Should not be called in child. Otherwise, its memory could only
+	 * be freed when execve() fails.
+	 */
+	char **args = call(getArgs);
+
+	pid_t pid = Kernel_fork();
 
 	if (pid == -1) {
 		throw(ForkFailed);
@@ -61,31 +100,16 @@ def(pid_t, spawn) {
 
 	if (pid == 0) { /* child */
 		if (this->stdOut != -1) {
-			dup2(this->stdOut, ChannelId_StdOut);
+			Kernel_dup2(this->stdOut, ChannelId_StdOut);
 		}
 
-		char *argv[this->params->len + 2];
-		argv[0] = String_ToNulHeap(this->cmd.rd);
-		size_t i;
-		for (i = 0; i < this->params->len; i++) {
-			argv[i + 1] = String_ToNulHeap(this->params->buf[i].rd);
-		}
-		argv[i + 1] = NULL;
-
-		if (execve(argv[0], argv, environ) == -1) {
-			for (size_t i = 0; argv[i] != NULL; i++) {
-				Memory_Destroy(argv[i]);
-				argv[i] = NULL;
-			}
-
-			throw(SpawningProcessFailed);
+		if (!Kernel_execve(this->cmd.rd, args, environ)) {
+			_exit(ref(SpawningProcessFailed));
 		}
 
-		for (size_t i = 0; argv[i] != NULL; i++) {
-			Memory_Destroy(argv[i]);
-		}
-
-		_exit(127);
+		/* execve() does not return on success. */
+	} else { /* parent */
+		call(freeArgs, args);
 	}
 
 	return pid;

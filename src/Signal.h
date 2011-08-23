@@ -83,7 +83,7 @@ static alwaysInline sdef(bool, isExitSignal, ref(Type) signal) {
 
 Callback(ref(OnCustom),         void, ref(Type) type);
 Callback(ref(OnTerminate),      void, ref(Type) type);
-Callback(ref(OnChildTerminate), void, pid_t pid, int status);
+Callback(ref(OnChildTerminate), void, pid_t pid, u8 status);
 
 record(ref(ChildTermination)) {
 	pid_t pid;

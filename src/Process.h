@@ -1,13 +1,11 @@
-#import <sys/types.h>
-#import <sys/wait.h>
-
 #import "String.h"
 #import "Exception.h"
 
 #define self Process
 
+#define Process_SpawningProcessFailed 255
+
 exc(ForkFailed)
-exc(SpawningProcessFailed)
 
 extern char **environ;
 

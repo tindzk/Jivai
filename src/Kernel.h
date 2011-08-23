@@ -256,5 +256,9 @@ sdef(int, accept4, int id, void *addr, int *len, int flags);
 sdef(ssize_t, recv, int id, void *buf, size_t len, int flags);
 sdef(ssize_t, send, int id, void *buf, size_t len, int flags);
 sdef(ssize_t, sendfile64, int outId, int inId, u64 *offset, size_t len);
+sdef(pid_t, fork);
+sdef(bool, dup2, int oldId, int newId);
+sdef(bool, execve, RdString path, char *argv[], char *envp[]);
+sdef(pid_t, waitpid, pid_t pid, int *status, int options);
 
 #undef self

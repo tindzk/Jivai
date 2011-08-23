@@ -24,7 +24,7 @@ sdef(void, ignoreSignal, int signal) {
 
 rsdef(self, New) {
 	self res = {
-		/* Initializes callbacks, too. */
+		/* Initialises callbacks, too. */
 		.terminations = null
 	};
 

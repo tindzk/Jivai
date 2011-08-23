@@ -247,3 +247,19 @@ sdef(ssize_t, send, int id, void *buf, size_t len, int flags) {
 sdef(ssize_t, sendfile64, int outId, int inId, u64 *offset, size_t len) {
 	return syscall(__NR_sendfile64, outId, inId, offset, len);
 }
+
+sdef(pid_t, fork) {
+	return syscall(__NR_fork);
+}
+
+sdef(bool, dup2, int oldId, int newId) {
+	return syscall(__NR_dup2, oldId, newId) != -1;
+}
+
+sdef(bool, execve, RdString path, char *argv[], char *envp[]) {
+	return syscall(__NR_execve, String_ToNul(path), argv, envp) != -1;
+}
+
+sdef(pid_t, waitpid, pid_t pid, int *status, int options) {
+	return syscall(__NR_waitpid, pid, status, options);
+}
