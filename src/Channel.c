@@ -98,7 +98,9 @@ overload def(size_t, Read, void *buf, size_t len) {
 	ssize_t res;
 
 	if ((res = Kernel_read(this->id, buf, len)) == -1) {
-		if (errno == EINTR) {
+		if (errno == EAGAIN) {
+			return 0;
+		} else if (errno == EINTR) {
 			throw(ReadingInterrupted);
 		} else if (errno == EISDIR) {
 			throw(IsFolder);
@@ -120,7 +122,9 @@ overload def(size_t, Write, void *buf, size_t len) {
 	ssize_t res;
 
 	if ((res = Kernel_write(this->id, buf, len)) == -1) {
-		if (errno == EINTR) {
+		if (errno == EAGAIN) {
+			return 0;
+		} else if (errno == EINTR) {
 			throw(WritingInterrupted);
 		} else if (errno == EISDIR) {
 			throw(IsFolder);
