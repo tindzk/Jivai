@@ -87,13 +87,13 @@ static sdef(void, onSignal, Instance inst) {
 			}
 
 			if (sig.ssi_signo == ref(Type_ChildStatus)) {
-				fwd(i, this->terminations->len) {
+				fwd(j, this->terminations->len) {
 					ref(ChildTermination) termination =
-						this->terminations->buf[i];
+						this->terminations->buf[j];
 
 					if (termination.pid == sig.ssi_pid) {
 						callback(termination.cb, sig.ssi_pid, sig.ssi_status);
-						scall(ChildTerminations_Delete, this->terminations, i);
+						scall(ChildTerminations_Delete, this->terminations, j);
 						break;
 					}
 				}

@@ -25,12 +25,13 @@ rsdef(self, New) {
 }
 
 def(void, Destroy) {
+	/* The registered callback may access the channel watcher. */
+	DoublyLinkedList_Destroy(&this->entries,
+		LinkedList_OnDestroy_For(this, ref(destroyEntry)));
+
 	ChannelWatcher_Destroy(&this->watcher);
 
 	EventQueue_Destroy(&this->queue);
-
-	DoublyLinkedList_Destroy(&this->entries,
-		LinkedList_OnDestroy_For(this, ref(destroyEntry)));
 }
 
 def(void, pullDown, void *object) {
