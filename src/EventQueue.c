@@ -48,6 +48,16 @@ def(ref(Event), Pop) {
 	return stackEvent;
 }
 
+def(bool, hasEvent, void *ptr, int flag) {
+	LinkedList_Each(&this->events, node) {
+		if (node->ptr == ptr && (node->flags & flag) != 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 def(void, Prune, void *ptr) {
 	ref(Event) *node = this->events.first;
 	ref(Event) *prev = NULL;

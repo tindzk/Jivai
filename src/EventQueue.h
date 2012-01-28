@@ -20,6 +20,7 @@ rsdef(self, New);
 def(void, Destroy);
 def(void, Enqueue, void *ptr, int flags);
 def(bool, HasEvents);
+def(bool, hasEvent, void *ptr, int flag);
 def(ref(Event), Pop);
 def(void, Prune, void *ptr);
 
