@@ -51,6 +51,17 @@ def(ref(Entry) *, createEntry, void *object, size_t size) {
 	return entry;
 }
 
+/* Stop listening to input/output. Must be called when the channel's
+ * closure doesn't take effect immediately.
+ */
+def(void, finalise, ref(Entry) *entry) {
+	int flags = ChannelWatcher_Events_Error  |
+				ChannelWatcher_Events_HangUp |
+				ChannelWatcher_Events_PeerHangUp;
+
+	ChannelWatcher_Modify(&this->watcher, entry->ch, flags, entry);
+}
+
 /* This method can only be called once for each entry. */
 def(void, attach, ref(Entry) *entry, ref(Options) opts) {
 	int flags = ChannelWatcher_Events_Error  |
@@ -99,6 +110,17 @@ def(void, detach, ref(Entry) *entry, bool watcher) {
 }
 
 static inline def(void, _enqueue, void *entry, int events) {
+	if (BitMask_Has(events,
+			ChannelWatcher_Events_Error  |
+			ChannelWatcher_Events_HangUp |
+			ChannelWatcher_Events_PeerHangUp))
+	{
+		/* Hang ups will free resources and must not occur twice
+		 * in the event queue.
+		 */
+		assert(!EventQueue_hasEvent(&this->queue, entry, events));
+	}
+
 	EventQueue_Enqueue(&this->queue, entry, events);
 }
 

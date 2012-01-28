@@ -50,6 +50,7 @@ rsdef(self, New);
 def(void, Destroy);
 def(void, pullDown, void *object);
 def(ref(Entry) *, createEntry, void *object, size_t size);
+def(void, finalise, ref(Entry) *entry);
 def(void, attach, ref(Entry) *entry, ref(Options) opts);
 def(void, detach, ref(Entry) *entry, bool watcher);
 def(void, enqueue, ref(Entry) *entry, int events);
