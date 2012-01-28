@@ -40,7 +40,7 @@ rsdef(self, New) {
 	sigprocmask(SIG_BLOCK, &res.mask, null);
 
 	res.ch = Channel_New(
-		signalfd(-1, &res.mask, SFD_NONBLOCK),
+		signalfd(-1, &res.mask, SFD_NONBLOCK | SFD_CLOEXEC),
 		FileStatus_NonBlock);
 
 	if (res.ch.id == -1) {
@@ -68,28 +68,45 @@ static sdef(void, onSignal, Instance inst) {
 	ref(Signal) *signal = inst.addr;
 	InstName(self) $this = { .addr = signal->inst };
 
-	struct signalfd_siginfo sig;
-	size_t len = Channel_Read(&this->ch, &sig, sizeof(sig));
+	struct signalfd_siginfo sigs[8];
 
-	if (len != sizeof(sig)) {
-		throw(UnknownError);
-	}
+	for (;;) {
+		size_t len = Channel_Read(&this->ch, &sigs, sizeof(sigs));
 
-	if (sig.ssi_signo == ref(Type_ChildStatus)) {
-		fwd(i, this->terminations->len) {
-			ref(ChildTermination) termination =
-				this->terminations->buf[i];
+		if (len == 0) {
+			break;
+		}
 
-			if (termination.pid == sig.ssi_pid) {
-				callback(termination.cb, sig.ssi_pid, sig.ssi_status);
-				scall(ChildTerminations_Delete, this->terminations, i);
-				break;
+		size_t items = len / sizeof(struct signalfd_siginfo);
+
+		for (size_t i = 0; i < items; i++) {
+			struct signalfd_siginfo sig = sigs[i];
+
+			if (sig.ssi_pid == 0) {
+				continue;
+			}
+
+			if (sig.ssi_signo == ref(Type_ChildStatus)) {
+				fwd(i, this->terminations->len) {
+					ref(ChildTermination) termination =
+						this->terminations->buf[i];
+
+					if (termination.pid == sig.ssi_pid) {
+						callback(termination.cb, sig.ssi_pid, sig.ssi_status);
+						scall(ChildTerminations_Delete, this->terminations, i);
+						break;
+					}
+				}
+			} else if (scall(isExitSignal, sig.ssi_signo)) {
+				callback(this->onTerminate, sig.ssi_signo);
+			} else {
+				callback(this->onCustom, sig.ssi_signo);
 			}
 		}
-	} else if (scall(isExitSignal, sig.ssi_signo)) {
-		callback(this->onTerminate, sig.ssi_signo);
-	} else {
-		callback(this->onCustom, sig.ssi_signo);
+
+		if (len != sizeof(sigs)) {
+			break;
+		}
 	}
 }
 
@@ -124,7 +141,7 @@ def(void, listen) {
 }
 
 static def(void, commit) {
-	int newId = signalfd(this->ch.id, &this->mask, SFD_NONBLOCK);
+	__unused int newId = signalfd(this->ch.id, &this->mask, SFD_NONBLOCK);
 
 	/* This must be true, otherwise we'd have to update the fd in the
 	 * event loop, too.
